@@ -1,0 +1,656 @@
+import React, { useState, useEffect } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, Alert, Platform, Image, ScrollView, ActivityIndicator } from 'react-native';
+import { useCartStore } from '@/store/cartStore';
+import { Ionicons } from '@expo/vector-icons';
+import { supabase } from '@/lib/supabase';
+import Animated, { FadeInLeft, Layout, FadeInUp, useSharedValue, useAnimatedScrollHandler, useAnimatedStyle, withTiming } from 'react-native-reanimated';
+import { useAuth } from '@/providers/AuthProvider';
+import { useAddressStore, Address } from '@/store/addressStore';
+import { useRouter } from 'expo-router';
+import { schedulePushNotification } from '@/lib/NotificationService';
+import { Colors, Spacing, Radius } from '@/constants/theme';
+import ProductCard from '@/components/ProductCard';
+import { Product } from '@/types';
+
+export default function CartScreen() {
+  const router = useRouter();
+  const { items, updateQuantity, removeItem, totalPrice, clearCart } = useCartStore();
+  const { session } = useAuth();
+  const { addresses, selectedAddressId } = useAddressStore();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [recommended, setRecommended] = useState<Product[]>([]);
+
+  useEffect(() => {
+    if (items.length === 0 && recommended.length === 0) {
+      fetchRecommended();
+    }
+  }, [items.length]);
+
+  const fetchRecommended = async () => {
+    try {
+      const { data } = await supabase
+        .from('products')
+        .select('*')
+        .eq('is_active', true)
+        .order('id', { ascending: false })
+        .limit(6);
+      if (data) setRecommended(data);
+    } catch (e) {
+      // Игнорируем ошибку загрузки рекомендаций в production
+    }
+  };
+
+  // Animated Scroll Values
+  const scrollY = useSharedValue(0);
+  const layoutHeight = useSharedValue(0);
+  const contentHeight = useSharedValue(0);
+
+  const scrollHandler = useAnimatedScrollHandler({
+    onScroll: (event) => {
+      scrollY.value = event.contentOffset.y;
+      layoutHeight.value = event.layoutMeasurement.height;
+      contentHeight.value = event.contentSize.height;
+    },
+  });
+
+  const floatingButtonStyle = useAnimatedStyle(() => {
+    if (contentHeight.value === 0 || layoutHeight.value === 0) {
+      return { opacity: 0, transform: [{ translateY: 150 }] }; // Начинаем скрыто, пока не подсчитаны размеры
+    }
+    
+    // Если весь контент полностью помещается на экране (без скролла или почти без),
+    // нам вообще не нужна плавающая кнопка
+    if (contentHeight.value <= layoutHeight.value + 20) {
+      return {
+        opacity: withTiming(0, { duration: 250 }),
+        transform: [{ translateY: withTiming(150, { duration: 300 }) }],
+      };
+    }
+
+    // Если мы долистали почти до конца (в пределах 120 пикселей от дна),
+    // скрываем плавающую кнопку, чтобы исключить наслаивание на оригинальную
+    const isAtBottom = scrollY.value + layoutHeight.value >= contentHeight.value - 120;
+    
+    return {
+      opacity: withTiming(isAtBottom ? 0 : 1, { duration: 250 }),
+      transform: [{ translateY: withTiming(isAtBottom ? 150 : 0, { duration: 300 }) }],
+    };
+  });
+
+  const selectedAddress = addresses.find((a) => a.id === selectedAddressId);
+
+  const formatAddress = (addr: Address) => {
+    if (!addr) return '';
+    const parts = [addr.text];
+    if (addr.house) parts.push(`д. ${addr.house}`);
+    if (addr.entrance) parts.push(`подъезд ${addr.entrance}`);
+    if (addr.floor) parts.push(`этаж ${addr.floor}`);
+    if (addr.apartment) parts.push(`кв. ${addr.apartment}`);
+    return parts.join(', ');
+  };
+
+  const handleCheckout = async () => {
+    // Soft Gating: Гость хочет купить? Отправляем на логин.
+    if (!session?.user) {
+      router.push('/(auth)/login');
+      return;
+    }
+    
+    if (!selectedAddress) {
+      if (Platform.OS === 'web') window.alert('Укажите адрес доставки!');
+      else Alert.alert('Внимание', 'Пожалуйста, выберите адрес доставки перед оформлением заказа.');
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const { data: orderData, error: orderError } = await supabase
+        .from('orders')
+        .insert({
+          user_id: session.user.id,
+          total_amount: totalPrice,
+          delivery_address: formatAddress(selectedAddress),
+          status: 'pending', 
+        })
+        .select()
+        .single();
+
+      if (orderError) throw orderError;
+
+      const orderItems = items.map((item) => ({
+        order_id: orderData.id,
+        product_id: item.product.id,
+        quantity: item.quantity,
+        price_at_time: Number(item.product.price),
+      }));
+
+      const { error: itemsError } = await supabase
+        .from('order_items')
+        .insert(orderItems);
+
+      if (itemsError) throw itemsError;
+
+      if (Platform.OS === 'web') {
+        window.alert('Ура! Ваш заказ успешно оформлен и передан на сборку 🛒');
+      } else {
+        Alert.alert('Готово!', 'Ваш заказ успешно оформлен и передан на сборку 🛒');
+        schedulePushNotification("Заказ оформлен! ✅", "Ваш продуктовый набор уже начали собирать на складе.", 2);
+        schedulePushNotification("Курьер в пути! 🚴‍♂️", "Ожидайте доставку примерно через 15 минут. Вы можете отслеживать статус в приложении.", 15);
+      }
+
+      clearCart();
+      router.push('/orders');
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Произошла ошибка при оформлении заказа';
+      console.error('Ошибка оформления заказа:', errorMessage);
+      if (Platform.OS === 'web') window.alert(`Ошибка: ${errorMessage}`);
+      else Alert.alert('Ошибка оформления', errorMessage);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const renderFooter = () => (
+    <View style={styles.listFooter}>
+      <Text style={styles.addressLabel}>Куда доставлять?</Text>
+      <TouchableOpacity 
+        style={styles.addressSelector}
+        onPress={() => {
+          if (!session?.user) {
+            router.push('/(auth)/login');
+          } else {
+            router.push('/addresses');
+          }
+        }}
+        disabled={isSubmitting}
+      >
+        <View style={{ flex: 1, marginRight: 12 }}>
+          {selectedAddress ? (
+            <Text style={styles.addressSelectedText} numberOfLines={1}>{formatAddress(selectedAddress)}</Text>
+          ) : (
+            <Text style={styles.addressPlaceholder}>Выберите адрес доставки</Text>
+          )}
+        </View>
+        <Ionicons name="chevron-forward" size={20} color={Colors.light.textLight} />
+      </TouchableOpacity>
+
+      <View style={styles.receiptCard}>
+        <Text style={styles.receiptTitle}>Детали заказа</Text>
+        
+        <View style={styles.receiptRow}>
+          <Text style={styles.receiptText}>Товары ({items.length})</Text>
+          <Text style={styles.receiptText}>{totalPrice.toFixed(0)} ₽</Text>
+        </View>
+        
+        <View style={styles.receiptRow}>
+          <Text style={styles.receiptText}>Доставка</Text>
+          <Text style={styles.receiptTextFree}>Бесплатно</Text>
+        </View>
+
+        <View style={styles.receiptDivider} />
+
+        <View style={styles.receiptRowTotal}>
+          <Text style={styles.receiptTotalLabel}>Итого</Text>
+          <Text style={styles.receiptTotalPrice}>{totalPrice.toFixed(0)} ₽</Text>
+        </View>
+      </View>
+
+      {/* ОРГАНИЧНАЯ КНОПКА (Она плавно заменяет собой плавающую, когда пользователь доскроллил до конца) */}
+      <View style={{ marginTop: Spacing.l }}>
+        <TouchableOpacity 
+          style={[styles.checkoutButton, isSubmitting && { opacity: 0.7 }]} 
+          onPress={handleCheckout}
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? (
+             <ActivityIndicator color="#fff" />
+          ) : (
+             <>
+               <Text style={styles.checkoutText}>Оформить заказ</Text>
+               <View style={styles.checkoutPriceTag}>
+                 <Text style={styles.checkoutPriceText}>{totalPrice.toFixed(0)} ₽</Text>
+               </View>
+             </>
+          )}
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+
+  if (items.length === 0) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>Корзина</Text>
+        <ScrollView contentContainerStyle={styles.emptyScrollContent} showsVerticalScrollIndicator={false}>
+          <View style={styles.emptyHeader}>
+            <View style={styles.emptyIconCircle}>
+              <Ionicons name="cart-outline" size={48} color={Colors.light.primary} />
+            </View>
+            <Text style={styles.emptyTitle}>В корзине пусто</Text>
+            <Text style={styles.emptySubText}>Посмотрите популярные товары или перейдите в каталог</Text>
+            
+            <TouchableOpacity style={styles.goShoppingBtn} onPress={() => router.push('/(tabs)/(index)')}>
+              <Text style={styles.goShoppingBtnText}>Перейти к покупкам</Text>
+            </TouchableOpacity>
+          </View>
+
+          {recommended.length > 0 && (
+            <View style={styles.recommendedSection}>
+              <Text style={styles.sectionTitle}>Обратите внимание</Text>
+              <View style={styles.gridContainer}>
+                {recommended.map((item, index) => (
+                  <View key={`rec-${item.id}`} style={styles.gridItem}>
+                    <ProductCard item={item} index={index} />
+                  </View>
+                ))}
+              </View>
+            </View>
+          )}
+        </ScrollView>
+      </View>
+    );
+  }
+
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Корзина</Text>
+      
+      <Animated.FlatList
+        data={items}
+        keyExtractor={(item) => item.product.id}
+        contentContainerStyle={styles.listContainer}
+        itemLayoutAnimation={Layout.springify()}
+        ListFooterComponent={renderFooter}
+        showsVerticalScrollIndicator={false}
+        onScroll={scrollHandler}
+        scrollEventThrottle={16}
+        onLayout={(e) => {
+          layoutHeight.value = e.nativeEvent.layout.height;
+        }}
+        onContentSizeChange={(_, height) => {
+          contentHeight.value = height;
+        }}
+        renderItem={({ item, index }) => (
+          <Animated.View 
+            entering={FadeInLeft.delay(index * 50).duration(400)} 
+            layout={Layout.springify()} 
+            style={styles.cartItem}
+          >
+            <TouchableOpacity 
+              style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}
+              activeOpacity={0.7}
+              onPress={() => router.push({
+                pathname: '/(tabs)/(index,cart,orders,profile)/product/[id]',
+                params: { id: item.product.id, name: item.product.name }
+              } as any)}
+            >
+              {item.product.image_url ? (
+                <Image source={{ uri: item.product.image_url }} style={styles.itemImage} />
+              ) : (
+                <View style={[styles.itemImage, { backgroundColor: Colors.light.borderLight }]} />
+              )}
+              
+              <View style={styles.itemInfo}>
+                <Text style={styles.itemName}>{item.product.name}</Text>
+                <Text style={styles.itemPrice}>{(Number(item.product.price) * item.quantity).toFixed(0)} ₽</Text>
+                {item.quantity > 1 && (
+                  <Text style={{fontSize: 12, color: Colors.light.textLight, marginTop: 2}}>
+                    {Number(item.product.price)} ₽ / шт
+                  </Text>
+                )}
+              </View>
+            </TouchableOpacity>
+
+            <View style={styles.quantityControl}>
+              <TouchableOpacity style={styles.circleButton} onPress={() => updateQuantity(item.product.id, item.quantity - 1)}>
+                <Ionicons name="remove" size={16} color="#374151" />
+              </TouchableOpacity>
+              
+              <Text style={styles.quantityText}>{item.quantity}</Text>
+              
+              <TouchableOpacity style={styles.circleButton} onPress={() => updateQuantity(item.product.id, item.quantity + 1)}>
+                <Ionicons name="add" size={16} color="#374151" />
+              </TouchableOpacity>
+            </View>
+
+            <TouchableOpacity style={styles.deleteButton} onPress={() => removeItem(item.product.id)}>
+              <Ionicons name="trash-outline" size={22} color={Colors.light.error} />
+            </TouchableOpacity>
+          </Animated.View>
+        )}
+      />
+
+      {/* FLOATING BUTTON (Она исчезает, когда мы доскроллили до органичной кнопки) */}
+      <Animated.View 
+        style={[styles.floatingButtonContainer, floatingButtonStyle]}
+        pointerEvents="box-none"
+      >
+        <TouchableOpacity 
+          style={[styles.floatingCheckoutButton, isSubmitting && { opacity: 0.7 }]} 
+          onPress={handleCheckout}
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? (
+             <ActivityIndicator color="#fff" size="small" />
+          ) : (
+             <>
+               <Text style={styles.floatingCheckoutText}>Оформить заказ</Text>
+               <View style={styles.floatingCheckoutPriceTag}>
+                 <Text style={styles.floatingCheckoutPriceText}>{totalPrice.toFixed(0)} ₽</Text>
+               </View>
+             </>
+          )}
+        </TouchableOpacity>
+      </Animated.View>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: Colors.light.background,
+    paddingTop: Platform.OS === 'ios' ? 60 : 40,
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: '800',
+    color: Colors.light.text,
+    paddingHorizontal: 20,
+    marginBottom: 20,
+  },
+  listContainer: {
+    paddingHorizontal: 20,
+    paddingBottom: Spacing.xxl, // Нам больше не нужно огромное пространство (120px), так как кнопка уезжает в конце скролла
+  },
+  cartItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: Radius.xl,
+    padding: 12,
+    marginBottom: 12,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.03,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 10,
+  },
+  itemImage: {
+    width: 60,
+    height: 60,
+    borderRadius: 14,
+    marginRight: Spacing.m,
+  },
+  itemInfo: {
+    flex: 1,
+  },
+  itemName: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: Colors.light.text,
+    marginBottom: Spacing.xs,
+  },
+  itemPrice: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: Colors.light.primary,
+  },
+  quantityControl: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.light.borderLight,
+    borderRadius: Radius.xxl,
+    paddingHorizontal: Spacing.xs,
+    paddingVertical: Spacing.xs,
+    marginRight: 12,
+  },
+  circleButton: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 1,
+    shadowColor: '#000',
+    shadowOpacity: 0.06,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+  },
+  quantityText: {
+    fontSize: 16,
+    fontWeight: '700',
+    marginHorizontal: 12,
+    color: Colors.light.text,
+    minWidth: 12,
+    textAlign: 'center',
+  },
+  deleteButton: {
+    padding: Spacing.s,
+  },
+  emptyScrollContent: {
+    paddingHorizontal: 20,
+    paddingBottom: Spacing.xl,
+  },
+  emptyHeader: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: Spacing.xl,
+    marginBottom: 40,
+  },
+  emptyIconCircle: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: Colors.light.primaryLight,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: Spacing.m,
+  },
+  emptyTitle: {
+    fontSize: 22,
+    fontWeight: '800',
+    color: Colors.light.text,
+    marginBottom: Spacing.s,
+  },
+  emptySubText: {
+    fontSize: 15,
+    color: Colors.light.textSecondary,
+    textAlign: 'center',
+    marginBottom: Spacing.l,
+    paddingHorizontal: Spacing.l,
+    lineHeight: 22,
+  },
+  goShoppingBtn: {
+    backgroundColor: Colors.light.primary,
+    paddingHorizontal: Spacing.xl,
+    paddingVertical: 14,
+    borderRadius: Radius.xl,
+    elevation: 4,
+    shadowColor: Colors.light.primary,
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+  },
+  goShoppingBtnText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '700',
+  },
+  recommendedSection: {
+    marginBottom: Spacing.xxl,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: '800',
+    color: Colors.light.text,
+    marginBottom: Spacing.m,
+  },
+  gridContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  gridItem: {
+    width: '48%',
+    marginBottom: Spacing.m,
+  },
+  listFooter: {
+    marginTop: Spacing.m,
+    paddingBottom: 20,
+  },
+  addressLabel: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: Colors.light.text,
+    marginBottom: 12,
+    paddingHorizontal: Spacing.xs,
+  },
+  addressSelector: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: '#fff',
+    borderRadius: 18,
+    padding: Spacing.m,
+    marginBottom: Spacing.l,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.03,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 10,
+  },
+  addressSelectedText: {
+    fontSize: 15,
+    color: Colors.light.text,
+    fontWeight: '600',
+  },
+  addressPlaceholder: {
+    fontSize: 15,
+    color: Colors.light.textSecondary,
+    fontWeight: '500'
+  },
+  receiptCard: {
+    backgroundColor: '#fff',
+    borderRadius: Radius.xl,
+    padding: 20,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.03,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 10,
+  },
+  receiptTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: Colors.light.text,
+    marginBottom: Spacing.m,
+  },
+  receiptRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+  },
+  receiptText: {
+    fontSize: 15,
+    color: Colors.light.textSecondary,
+    fontWeight: '500',
+  },
+  receiptTextFree: {
+    fontSize: 15,
+    color: Colors.light.primary,
+    fontWeight: '700',
+  },
+  receiptDivider: {
+    height: 1,
+    backgroundColor: Colors.light.borderLight,
+    marginVertical: Spacing.m,
+    marginHorizontal: -20,
+  },
+  receiptRowTotal: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  receiptTotalLabel: {
+    fontSize: 18,
+    fontWeight: '800',
+    color: Colors.light.text,
+  },
+  receiptTotalPrice: {
+    fontSize: 24,
+    fontWeight: '900',
+    color: Colors.light.text,
+  },
+  // Плавающая кнопка
+  floatingButtonContainer: {
+    position: 'absolute',
+    bottom: Platform.OS === 'ios' ? 16 : 12,
+    left: Spacing.xxl,
+    right: Spacing.xxl,
+  },
+  floatingCheckoutButton: {
+    flexDirection: 'row',
+    backgroundColor: Colors.light.primary,
+    borderRadius: 100,
+    paddingVertical: 12,
+    paddingHorizontal: Spacing.m,
+    alignItems: 'center',
+    justifyContent: 'space-between', 
+    elevation: 6,
+    shadowColor: Colors.light.primary,
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 4 },
+  },
+  floatingCheckoutText: {
+    color: '#fff',
+    fontSize: 15,
+    fontWeight: '700',
+    marginLeft: Spacing.xs,
+  },
+  floatingCheckoutPriceTag: {
+    backgroundColor: 'rgba(255,255,255,0.25)',
+    paddingHorizontal: 10,
+    paddingVertical: Spacing.xs,
+    borderRadius: Radius.l,
+  },
+  floatingCheckoutPriceText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '800',
+  },
+  checkoutButton: {
+    flexDirection: 'row',
+    backgroundColor: Colors.light.primary,
+    borderRadius: 100,
+    paddingVertical: Spacing.m,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    justifyContent: 'space-between', 
+    elevation: 8,
+    shadowColor: Colors.light.primary,
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 6 },
+  },
+  checkoutText: {
+    color: '#fff',
+    fontSize: 17,
+    fontWeight: '700',
+    marginLeft: Spacing.s,
+  },
+  checkoutPriceTag: {
+    backgroundColor: 'rgba(255,255,255,0.25)',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: Radius.xl,
+  },
+  checkoutPriceText: {
+    color: '#fff',
+    fontSize: 15,
+    fontWeight: '800',
+  }
+});
