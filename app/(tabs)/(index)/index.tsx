@@ -41,7 +41,7 @@ export default function HomeScreen() {
   const { addresses, selectedAddressId, loadAddresses } = useAddressStore();
   const selectedAddress = addresses.find(a => a.id === selectedAddressId);
   const displayAddress = selectedAddress 
-    ? [selectedAddress.text, selectedAddress.house].filter(Boolean).join(', ') 
+    ? selectedAddress.text.replace(/^г\. Буйнакск, /, '') 
     : 'Выберите адрес';
 
   // Прямая привязка анимации к позиции скролла — нет конфликтов, нет дрожания
@@ -63,7 +63,7 @@ export default function HomeScreen() {
   useEffect(() => {
     fetchFullHierarchy();
     fetchPopularProducts();
-  }, []);
+  }, [fetchFullHierarchy]);
 
   // Загружаем имя и адрес при каждом фокусе на страницу
   useFocusEffect(
@@ -72,7 +72,7 @@ export default function HomeScreen() {
         fetchUserInfo();
         loadAddresses(); // Синхронизируем адреса из стора
       }
-    }, [session])
+    }, [session, loadAddresses])
   );
 
   async function fetchPopularProducts() {
@@ -315,31 +315,7 @@ const styles = StyleSheet.create({
   hierarchyContainer: {
     paddingTop: 0,
   },
-  cardContainer: { flex: 1, margin: Spacing.s },
-  card: {
-    flex: 1, height: 190, borderRadius: Radius.l,
-    elevation: 2, shadowColor: '#000', shadowOpacity: 0.04, shadowOffset: { width: 0, height: 4 }, shadowRadius: 10,
-  },
-  imageBackground: { width: '100%', height: '100%', borderRadius: Radius.l, overflow: 'hidden' },
   gradientOverlay: { ...StyleSheet.absoluteFillObject, borderRadius: Radius.l },
-  cardTitle: {
-    color: '#fff', fontSize: 16, fontWeight: '800',
-    textShadowColor: 'rgba(0,0,0,0.4)', textShadowOffset: { width: 0, height: 2 },
-    position: 'absolute', bottom: Spacing.s, left: Spacing.s, right: Spacing.s,
-  },
-  darkModeOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.2)' },
-  
-  // Широкая карточка
-  wideCardContainer: { paddingHorizontal: 12, marginBottom: Spacing.s },
-  wideCard: { 
-    height: 140, borderRadius: Radius.l, overflow: 'hidden',
-    elevation: 4, shadowColor: '#000', shadowOpacity: 0.1, shadowOffset: { width: 0, height: 4 }, shadowRadius: 10,
-  },
-  wideCardTitle: {
-    color: '#fff', fontSize: 22, fontWeight: '900',
-    position: 'absolute', bottom: Spacing.m, left: Spacing.m, right: Spacing.m,
-  },
-
   // Баннеры
   bannersSection: { marginBottom: Spacing.xl, marginTop: Spacing.l },
   bannersScroll: { paddingHorizontal: Spacing.m },
@@ -348,7 +324,6 @@ const styles = StyleSheet.create({
     elevation: 6, shadowColor: Colors.light.primary, shadowOpacity: 0.2, shadowOffset: { width: 0, height: 8 }, shadowRadius: 12,
   },
   bannerImage: { width: '100%', height: '100%', borderRadius: Radius.l },
-  bannerOverlay: { ...StyleSheet.absoluteFillObject, backgroundColor: 'rgba(0,0,0,0.3)', borderRadius: Radius.l },
   bannerTitle: {
     color: '#fff', fontSize: 20, fontWeight: '900',
     textShadowColor: 'rgba(0,0,0,0.8)', textShadowOffset: { width: 0, height: 2 },
@@ -372,6 +347,4 @@ const styles = StyleSheet.create({
   popularInfo: { padding: Spacing.s },
   popularName: { fontSize: 13, fontWeight: '600', color: Colors.light.text, marginBottom: 4 },
   popularPrice: { fontSize: 15, fontWeight: '800', color: Colors.light.primary },
-
-  emptyText: { textAlign: 'center', marginTop: 60, fontSize: 16, color: Colors.light.textLight },
 });

@@ -9,7 +9,10 @@ export interface Address {
   floor?: string;
   intercom?: string;
   apartment?: string;
+  comment?: string;
   is_selected: boolean;
+  lat?: number;
+  lon?: number;
 }
 
 interface AddressStore {
@@ -17,7 +20,17 @@ interface AddressStore {
   selectedAddressId: string | null;
   isLoading: boolean;
   error: string | null;
-  addAddress: (details: { text: string, house?: string, entrance?: string, floor?: string, intercom?: string, apartment?: string }) => Promise<void>;
+  addAddress: (details: { 
+    text: string, 
+    house?: string, 
+    entrance?: string, 
+    floor?: string, 
+    intercom?: string, 
+    apartment?: string,
+    comment?: string,
+    lat?: number,
+    lon?: number
+  }) => Promise<void>;
   removeAddress: (id: string) => Promise<void>;
   selectAddress: (id: string) => Promise<void>;
   loadAddresses: () => Promise<void>;
@@ -90,6 +103,9 @@ export const useAddressStore = create<AddressStore>((set, get) => ({
           floor: details.floor,
           intercom: details.intercom,
           apartment: details.apartment,
+          comment: details.comment,
+          lat: details.lat,
+          lon: details.lon,
           is_selected: isFirst
         })
         .select()
@@ -145,19 +161,30 @@ export const useAddressStore = create<AddressStore>((set, get) => ({
       if (!session) return;
 
       // Быстрое локальное обновление стейта
-      set({ selectedAddressId: id });
+      const updatedAddresses = get().addresses.map(a => ({
+        ...a,
+        is_selected: a.id === id
+      }));
+      set({ 
+        selectedAddressId: id,
+        addresses: updatedAddresses
+      });
 
       // На бэкенде в 2 этапа: снимаем флажок у всех адресов этого пользователя
-      await supabase
+      const { error: resetError } = await supabase
         .from('addresses')
         .update({ is_selected: false })
         .eq('user_id', session.user.id);
+      
+      if (resetError) throw resetError;
 
       // Ставим флажок "Выбрано" (is_selected = true) на тот адрес, который мы кликнули
-      await supabase
+      const { error: selectError } = await supabase
         .from('addresses')
         .update({ is_selected: true })
         .eq('id', id);
+
+      if (selectError) throw selectError;
         
     } catch (e: unknown) {
       const errorMessage = e instanceof Error ? e.message : 'Не удалось выбрать адрес';

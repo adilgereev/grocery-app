@@ -11,12 +11,19 @@ export default function AddressesScreen() {
   const router = useRouter();
 
   const renderAddressText = (item: Address) => {
-    const parts = [item.text];
+    // Убираем город из основной строки для отображения
+    const cleanAddress = item.text.replace(/^г\. Буйнакск, /, '');
+    
+    const parts = [cleanAddress];
     if (item.house) parts.push(`д. ${item.house}`);
     if (item.entrance) parts.push(`под. ${item.entrance}`);
     if (item.floor) parts.push(`эт. ${item.floor}`);
     if (item.apartment) parts.push(`кв. ${item.apartment}`);
-    return parts.join(', ');
+    
+    return {
+      main: parts.join(', '),
+      city: item.text.includes('г. Буйнакск') ? 'г. Буйнакск' : ''
+    };
   };
 
   return (
@@ -36,8 +43,8 @@ export default function AddressesScreen() {
         renderItem={({ item }) => (
           <TouchableOpacity 
             style={[styles.addressCard, selectedAddressId === item.id && styles.selectedCard]}
-            onPress={() => {
-              selectAddress(item.id);
+            onPress={async () => {
+              await selectAddress(item.id);
               router.back();
             }}
             activeOpacity={0.7}
@@ -48,9 +55,16 @@ export default function AddressesScreen() {
                 size={24} 
                 color={selectedAddressId === item.id ? Colors.light.primary : Colors.light.icon} 
               />
-              <Text style={[styles.addressText, selectedAddressId === item.id && styles.selectedAddressText]}>
-                {renderAddressText(item)}
-              </Text>
+              <View style={{ flex: 1, marginLeft: 12 }}>
+                <Text style={[styles.addressText, selectedAddressId === item.id && styles.selectedAddressText]}>
+                  {renderAddressText(item).main}
+                </Text>
+                {renderAddressText(item).city ? (
+                  <Text style={styles.citySubtext}>
+                    {renderAddressText(item).city}
+                  </Text>
+                ) : null}
+              </View>
             </View>
             <TouchableOpacity 
               onPress={() => {
@@ -143,11 +157,15 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   addressText: {
-    fontSize: 16,
-    color: '#374151',
-    marginLeft: 12,
-    flex: 1,
-    lineHeight: 22,
+    fontSize: 15,
+    color: Colors.light.text,
+    fontWeight: '600',
+    lineHeight: 20,
+  },
+  citySubtext: {
+    fontSize: 13,
+    color: Colors.light.textSecondary,
+    marginTop: 2,
   },
   selectedAddressText: {
     color: '#065F46',
