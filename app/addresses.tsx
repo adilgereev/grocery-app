@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList, Platform, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAddressStore, Address } from '@/store/addressStore';
@@ -10,21 +10,44 @@ export default function AddressesScreen() {
   const { addresses, selectedAddressId, removeAddress, selectAddress } = useAddressStore();
   const router = useRouter();
 
-  const renderAddressText = (item: Address) => {
-    // Убираем город из основной строки для отображения
-    const cleanAddress = item.text.replace(/^г\. Буйнакск, /, '');
-    
-    const parts = [cleanAddress];
-    if (item.house) parts.push(`д. ${item.house}`);
-    if (item.entrance) parts.push(`под. ${item.entrance}`);
-    if (item.floor) parts.push(`эт. ${item.floor}`);
-    if (item.apartment) parts.push(`кв. ${item.apartment}`);
-    
+  // Кэшируем функцию, чтобы не пересчитывать при каждом рендере
+  const renderAddressText = useMemo(() => (item: Address) => {
+    // Убираем город, республику и типовые префиксы улицы
+    let cleanStreet = item.text
+      .replace(/^г\. Буйнакск, /, '')
+      .replace(/, Республика Дагестан$/, '');
+
+    // Извлекаем номер дома из текста
+    const houseMatch = cleanStreet.match(/д\.\s*(\d+)/);
+    let houseNumber = '';
+    if (houseMatch) {
+      houseNumber = houseMatch[1];
+      // Убираем "д. 56" из названия улицы
+      cleanStreet = cleanStreet.replace(/,\s*д\.\s*\d+.*$/, '').replace(/д\.\s*\d+.*$/, '');
+    }
+
+    // Извлекаем номер квартиры из текста (или из поля apartment)
+    let apartmentNumber = '';
+    if (item.apartment) {
+      apartmentNumber = item.apartment;
+    } else {
+      const apartmentMatch = item.text.match(/кв\.\s*(\d+)/);
+      apartmentNumber = apartmentMatch ? apartmentMatch[1] : '';
+    }
+
+    // Убираем префиксы улицы (ул, пр-кт и т.д.)
+    cleanStreet = cleanStreet.replace(/^(ул|пр-кт|б-р|пер|туп|наб)\.?\s*/i, '').trim();
+
+    // Формируем вторую строку с номером дома и квартирой
+    let secondLine = '';
+    if (houseNumber) secondLine += `д. ${houseNumber}`;
+    if (apartmentNumber) secondLine += (secondLine ? ', ' : '') + `кв. ${apartmentNumber}`;
+
     return {
-      main: parts.join(', '),
-      city: item.text.includes('г. Буйнакск') ? 'г. Буйнакск' : ''
+      street: cleanStreet,
+      housePart: secondLine
     };
-  };
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -50,18 +73,20 @@ export default function AddressesScreen() {
             activeOpacity={0.7}
           >
             <View style={styles.addressInfo}>
-              <Ionicons 
-                name={selectedAddressId === item.id ? "radio-button-on" : "radio-button-off"} 
-                size={24} 
-                color={selectedAddressId === item.id ? Colors.light.primary : Colors.light.icon} 
-              />
-              <View style={{ flex: 1, marginLeft: 12 }}>
+              {/* Кастомная радио-кнопка в стиле Emerald */}
+              <View style={[
+                styles.radioOuter,
+                selectedAddressId === item.id && styles.radioOuterSelected
+              ]}>
+                {selectedAddressId === item.id && <View style={styles.radioInner} />}
+              </View>
+              <View style={{ flex: 1, marginLeft: 16 }}>
                 <Text style={[styles.addressText, selectedAddressId === item.id && styles.selectedAddressText]}>
-                  {renderAddressText(item).main}
+                  {renderAddressText(item).street}
                 </Text>
-                {renderAddressText(item).city ? (
-                  <Text style={styles.citySubtext}>
-                    {renderAddressText(item).city}
+                {renderAddressText(item).housePart ? (
+                  <Text style={styles.houseSubtext}>
+                    {renderAddressText(item).housePart}
                   </Text>
                 ) : null}
               </View>
@@ -114,7 +139,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 20,
+    padding: Spacing.l,
     backgroundColor: '#fff',
     borderBottomWidth: 1,
     borderBottomColor: Colors.light.borderLight,
@@ -136,40 +161,64 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: '#fff',
-    padding: Spacing.m,
+    padding: Spacing.l,
     borderRadius: Radius.l,
-    marginBottom: 12,
-    borderWidth: 2,
+    marginBottom: Spacing.m,
+    borderWidth: 1.5,
     borderColor: 'transparent',
-    elevation: 2,
+
+    // Премиальные тени
+    elevation: 3,
     shadowColor: '#000',
-    shadowOpacity: 0.03,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 6,
+    shadowOpacity: 0.04,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 12,
   },
   selectedCard: {
     borderColor: Colors.light.primary,
-    backgroundColor: Colors.light.primaryLight,
+    backgroundColor: '#F0FDF4', // Мягкий зеленый фон
+    shadowOpacity: 0.08, // Чуть сильнее тень при выборе
+    shadowColor: Colors.light.primary,
   },
   addressInfo: {
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
   },
+  // Стили кастомной радио-кнопки
+  radioOuter: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    borderWidth: 2,
+    borderColor: '#E5E7EB',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'transparent',
+  },
+  radioOuterSelected: {
+    borderColor: Colors.light.primary,
+  },
+  radioInner: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: Colors.light.primary,
+  },
   addressText: {
     fontSize: 15,
     color: Colors.light.text,
     fontWeight: '600',
-    lineHeight: 20,
+    lineHeight: 21,
   },
-  citySubtext: {
+  houseSubtext: {
     fontSize: 13,
     color: Colors.light.textSecondary,
-    marginTop: 2,
+    marginTop: Spacing.xs,
   },
   selectedAddressText: {
-    color: '#065F46',
-    fontWeight: '600',
+    color: Colors.light.primary,
+    fontWeight: '700',
   },
   deleteBtn: {
     padding: Spacing.s,
@@ -178,8 +227,8 @@ const styles = StyleSheet.create({
   emptyContainer: {
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 60,
-    paddingHorizontal: 20,
+    marginTop: Spacing.xxl,
+    paddingHorizontal: Spacing.l,
   },
   emptyText: {
     textAlign: 'center',

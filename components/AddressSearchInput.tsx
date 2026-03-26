@@ -43,7 +43,9 @@ export default function AddressSearchInput({ onSelect, placeholder, initialValue
       }
       setIsLoading(true);
       const res = await getAddressSuggestions(val, city);
-      setSuggestions(res);
+      // Исключаем варианты с участком (stead), показываем только дома (house)
+      const filtered = res.filter(s => !s.data.stead);
+      setSuggestions(filtered);
       setIsLoading(false);
     }, 500),
     [city]

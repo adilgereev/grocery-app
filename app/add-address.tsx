@@ -46,13 +46,13 @@ export default function AddAddressScreen() {
     const data = suggestion.data;
     if (!data.street_with_type) return suggestion.value;
 
-    let base = `${data.street_with_type}`;
+    // Если есть номер дома в DaData — добавляем
     if (data.house) {
-      base += `, д. ${data.house}`;
-    } else {
-      base += ', ';
+      return `${data.street_with_type}, д. ${data.house}`;
     }
-    return base;
+
+    // Если нет номера дома — просто возвращаем улицу (пользователь допишет вручную)
+    return data.street_with_type;
   };
 
   const showAlert = (title: string, message: string) => {
@@ -77,11 +77,15 @@ export default function AddAddressScreen() {
         ? address.trim()
         : `г. Буйнакск, ${address.trim()}`;
 
+      // Извлекаем номер дома из адреса
+      const houseMatch = fullAddress.match(/д\.\s*(\d+)/);
+      const houseNumber = houseMatch ? houseMatch[1] : undefined;
+
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
       await addAddress({
         text: fullAddress,
-        house: undefined,
+        house: houseNumber,
         entrance: entrance.trim() || undefined,
         floor: floor.trim() || undefined,
         intercom: intercom.trim() || undefined,

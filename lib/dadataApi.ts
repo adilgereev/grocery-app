@@ -45,6 +45,7 @@ export const getAddressSuggestions = async (query: string, city?: string): Promi
       }
     );
 
+    console.log('DaData API Response:', response.data.suggestions);
     return response.data.suggestions || [];
   } catch (error) {
     console.error('DaData Suggesion Error:', error);
