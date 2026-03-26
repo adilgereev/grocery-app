@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Alert, Platform, Image, ScrollView, ActivityIndicator } from 'react-native';
+import Animated, { FadeInLeft, Layout, useSharedValue, useAnimatedScrollHandler, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { useCartStore } from '@/store/cartStore';
 import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '@/lib/supabase';
-import Animated, { FadeInLeft, Layout, FadeInUp, useSharedValue, useAnimatedScrollHandler, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { useAuth } from '@/providers/AuthProvider';
 import { useAddressStore, Address } from '@/store/addressStore';
 import { useRouter } from 'expo-router';
@@ -12,6 +12,13 @@ import { Colors, Spacing, Radius } from '@/constants/theme';
 import ProductCard from '@/components/ProductCard';
 import { Product } from '@/types';
 
+type PaymentMethod = 'online' | 'cash';
+
+const PAYMENT_METHODS: Record<PaymentMethod, { label: string; icon: string; description: string }> = {
+  cash: { label: 'Наличными курьеру', icon: 'cash-outline', description: 'Оплата при получении' },
+  online: { label: 'Онлайн', icon: 'card', description: 'Списание с карты' },
+};
+
 export default function CartScreen() {
   const router = useRouter();
   const { items, updateQuantity, removeItem, totalPrice, clearCart } = useCartStore();
@@ -19,6 +26,7 @@ export default function CartScreen() {
   const { addresses, selectedAddressId } = useAddressStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [recommended, setRecommended] = useState<Product[]>([]);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cash');
 
   useEffect(() => {
     if (items.length === 0 && recommended.length === 0) {
@@ -95,7 +103,7 @@ export default function CartScreen() {
       router.push('/(auth)/login');
       return;
     }
-    
+
     if (!selectedAddress) {
       if (Platform.OS === 'web') window.alert('Укажите адрес доставки!');
       else Alert.alert('Внимание', 'Пожалуйста, выберите адрес доставки перед оформлением заказа.');
@@ -111,7 +119,8 @@ export default function CartScreen() {
           user_id: session.user.id,
           total_amount: totalPrice,
           delivery_address: formatAddress(selectedAddress),
-          status: 'pending', 
+          status: 'pending',
+          payment_method: paymentMethod,
         })
         .select()
         .single();
@@ -131,10 +140,11 @@ export default function CartScreen() {
 
       if (itemsError) throw itemsError;
 
+      const paymentText = paymentMethod === 'cash' ? 'Наличными' : 'Онлайн';
       if (Platform.OS === 'web') {
-        window.alert('Ура! Ваш заказ успешно оформлен и передан на сборку 🛒');
+        window.alert(`Ура! Ваш заказ успешно оформлен. Оплата: ${paymentText} при получении 🛒`);
       } else {
-        Alert.alert('Готово!', 'Ваш заказ успешно оформлен и передан на сборку 🛒');
+        Alert.alert('Готово!', `Ваш заказ успешно оформлен и передан на сборку 🛒\nОплата: ${paymentText} при получении`);
         schedulePushNotification("Заказ оформлен! ✅", "Ваш продуктовый набор уже начали собирать на складе.", 2);
         schedulePushNotification("Курьер в пути! 🚴‍♂️", "Ожидайте доставку примерно через 15 минут. Вы можете отслеживать статус в приложении.", 15);
       }
@@ -154,7 +164,7 @@ export default function CartScreen() {
   const renderFooter = () => (
     <View style={styles.listFooter}>
       <Text style={styles.addressLabel}>Куда доставлять?</Text>
-      <TouchableOpacity 
+      <TouchableOpacity
         style={styles.addressSelector}
         onPress={() => {
           if (!session?.user) {
@@ -174,6 +184,50 @@ export default function CartScreen() {
         </View>
         <Ionicons name="chevron-forward" size={20} color={Colors.light.textLight} />
       </TouchableOpacity>
+
+      {/* Выбор способа оплаты */}
+      <Text style={styles.paymentLabel}>Способ оплаты</Text>
+      <View style={styles.paymentContainer}>
+        {(Object.keys(PAYMENT_METHODS) as PaymentMethod[]).map((method) => {
+          const isSelected = paymentMethod === method;
+          return (
+            <TouchableOpacity
+              key={method}
+              style={[
+                styles.paymentOption,
+                isSelected && styles.paymentOptionSelected,
+              ]}
+              onPress={() => setPaymentMethod(method)}
+              disabled={isSubmitting}
+              activeOpacity={0.7}
+            >
+              <View style={styles.paymentIconContainer}>
+                <Ionicons
+                  name={PAYMENT_METHODS[method].icon as keyof typeof Ionicons.glyphMap}
+                  size={20}
+                  color={isSelected ? Colors.light.primary : Colors.light.textSecondary}
+                />
+              </View>
+              <View style={{ flex: 1 }}>
+                <Text style={[
+                  styles.paymentLabelOption,
+                  isSelected && styles.paymentLabelOptionSelected,
+                ]}>
+                  {PAYMENT_METHODS[method].label}
+                </Text>
+                <Text style={styles.paymentDescription}>
+                  {PAYMENT_METHODS[method].description}
+                </Text>
+              </View>
+              {isSelected && (
+                <View style={styles.paymentCheckmark}>
+                  <Ionicons name="checkmark-circle" size={22} color={Colors.light.primary} />
+                </View>
+              )}
+            </TouchableOpacity>
+          );
+        })}
+      </View>
 
       <View style={styles.receiptCard}>
         <Text style={styles.receiptTitle}>Детали заказа</Text>
@@ -531,6 +585,68 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: Colors.light.textSecondary,
     fontWeight: '500'
+  },
+  // Выбор способа оплаты
+  paymentLabel: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: Colors.light.text,
+    marginBottom: 12,
+    paddingHorizontal: Spacing.xs,
+  },
+  paymentContainer: {
+    gap: 10,
+    marginBottom: Spacing.l,
+  },
+  paymentOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 18,
+    padding: Spacing.m,
+    borderWidth: 2,
+    borderColor: 'transparent',
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOpacity: 0.03,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 6,
+  },
+  paymentOptionSelected: {
+    backgroundColor: Colors.light.primaryLight,
+    borderColor: Colors.light.primaryBorder,
+    borderWidth: 2,
+    elevation: 3,
+    shadowColor: Colors.light.primary,
+    shadowOpacity: 0.15,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 8,
+  },
+  paymentIconContainer: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: Colors.light.borderLight,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: Spacing.m,
+  },
+  paymentLabelOption: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: Colors.light.text,
+    marginBottom: 2,
+  },
+  paymentLabelOptionSelected: {
+    color: Colors.light.primary,
+  },
+  paymentDescription: {
+    fontSize: 12,
+    color: Colors.light.textSecondary,
+    fontWeight: '500',
+  },
+  paymentCheckmark: {
+    marginLeft: Spacing.s,
   },
   receiptCard: {
     backgroundColor: '#fff',

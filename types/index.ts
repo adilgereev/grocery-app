@@ -59,6 +59,7 @@ export interface Order {
   status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
   total_amount: number;
   delivery_address: string; // Formatted address string
+  payment_method?: 'online' | 'cash';
   created_at: string;
 }
 

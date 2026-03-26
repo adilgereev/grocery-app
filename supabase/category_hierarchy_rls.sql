@@ -1,7 +1,11 @@
 -- Создание view для удобной работы с иерархией категорий
 -- Представление содержит расширенную информацию о категориях с родительскими данными
 
-CREATE OR REPLACE VIEW public.categories_with_hierarchy AS
+DROP VIEW IF EXISTS public.categories_with_hierarchy;
+
+CREATE VIEW public.categories_with_hierarchy
+WITH (security_invoker = true)
+AS
 SELECT
   c.*,
   p.name as parent_name,

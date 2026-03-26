@@ -4,10 +4,8 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
 import Skeleton from '@/components/Skeleton';
-import { ErrorToast, ToastType } from '@/components/ErrorToast';
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { useCartStore } from '@/store/cartStore';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Product } from '@/types';
 
 // Конфигурация статусов заказа
@@ -19,10 +17,17 @@ const STATUS_CONFIG: Record<string, { label: string; icon: string; color: string
   cancelled:  { label: 'Отменён',        icon: 'close-circle-outline',   color: '#EF4444', bg: '#FEF2F2', emoji: '❌' },
 };
 
+// Конфигурация способов оплаты
+const PAYMENT_CONFIG: Record<PaymentMethod, { label: string; icon: string }> = {
+  cash: { label: 'Наличными курьеру', icon: 'cash-outline' },
+  online: { label: 'Онлайн', icon: 'card' },
+};
+
 // Шаги трекера (без ожидания — сразу сборка)
 const TRACKER_STEPS = ['processing', 'shipped', 'delivered'];
 
 type OrderStatus = 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+type PaymentMethod = 'online' | 'cash';
 
 interface Order {
   id: string;
@@ -30,6 +35,7 @@ interface Order {
   total_amount: number;
   delivery_address: string;
   created_at: string;
+  payment_method?: PaymentMethod;
 }
 
 interface OrderItem {
@@ -42,7 +48,6 @@ interface OrderItem {
 export default function OrderDetailsScreen() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
-  const insets = useSafeAreaInsets();
   const addItemsBatch = useCartStore(state => state.addItemsBatch);
 
   const [order, setOrder] = useState<Order | null>(null);
@@ -161,7 +166,6 @@ export default function OrderDetailsScreen() {
   const status = order.status?.toLowerCase() || 'pending';
   const config = STATUS_CONFIG[status] || STATUS_CONFIG.pending;
   const isCancelled = status === 'cancelled';
-  const isDelivered = status === 'delivered';
   const currentStepIndex = status === 'pending' ? 0 : TRACKER_STEPS.indexOf(status);
 
   return (
@@ -235,6 +239,23 @@ export default function OrderDetailsScreen() {
             <Text style={styles.addressText}>{order.delivery_address}</Text>
           </View>
         </View>
+
+        {/* Способ оплаты */}
+        {order.payment_method && (
+          <View style={styles.paymentCard}>
+            <View style={styles.paymentIconContainer}>
+              <Ionicons
+                name={PAYMENT_CONFIG[order.payment_method].icon as keyof typeof Ionicons.glyphMap}
+                size={20}
+                color={Colors.light.primary}
+              />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={styles.paymentTitle}>Способ оплаты</Text>
+              <Text style={styles.paymentText}>{PAYMENT_CONFIG[order.payment_method].label}</Text>
+            </View>
+          </View>
+        )}
 
         {/* Список товаров */}
         <Text style={styles.sectionTitle}>Товары · {orderItems.length} шт</Text>
@@ -342,6 +363,20 @@ const styles = StyleSheet.create({
   addressTitle: { fontSize: 12, color: Colors.light.textLight, fontWeight: '600', marginBottom: 2 },
   addressText: { fontSize: 14, color: Colors.light.text, fontWeight: '600', lineHeight: 20 },
 
+  // Способ оплаты
+  paymentCard: {
+    backgroundColor: '#fff', borderRadius: Radius.xl, padding: Spacing.m, marginBottom: Spacing.l,
+    flexDirection: 'row', alignItems: 'center',
+    elevation: 1, shadowColor: '#000', shadowOpacity: 0.03, shadowOffset: { width: 0, height: 2 }, shadowRadius: 6,
+  },
+  paymentIconContainer: {
+    width: 40, height: 40, borderRadius: 20,
+    backgroundColor: Colors.light.primaryLight, justifyContent: 'center', alignItems: 'center',
+    marginRight: Spacing.m,
+  },
+  paymentTitle: { fontSize: 12, color: Colors.light.textLight, fontWeight: '600', marginBottom: 2 },
+  paymentText: { fontSize: 14, color: Colors.light.text, fontWeight: '600', lineHeight: 20 },
+
   // Секция
   sectionTitle: { fontSize: 18, fontWeight: '800', color: Colors.light.text, marginBottom: Spacing.s },
 
@@ -379,7 +414,6 @@ const styles = StyleSheet.create({
   repeatButtonText: { color: '#fff', fontSize: 16, fontWeight: '700' },
 
   // Пустое состояние
-  emptyText: { fontSize: 18, color: Colors.light.textSecondary, marginBottom: 20, fontWeight: '500' },
   errorText: { fontSize: 18, color: Colors.light.textSecondary, marginTop: Spacing.m, marginBottom: 20, fontWeight: '500', textAlign: 'center' },
   retryButtonCenter: { backgroundColor: Colors.light.primary, flexDirection: 'row', alignItems: 'center', paddingHorizontal: Spacing.xl, paddingVertical: Spacing.m, borderRadius: Radius.l, marginBottom: Spacing.m },
   retryButtonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
