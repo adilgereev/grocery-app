@@ -19,6 +19,7 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Category } from '@/types';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -212,6 +213,7 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
+      <SafeAreaView style={{ backgroundColor: '#fff' }} edges={['top']} />
       {/* Умная шапка: приветствие скрывается при скролле */}
       <View style={styles.header}>
         {/* Анимированная строка приветствия + адрес */}
@@ -272,7 +274,6 @@ const styles = StyleSheet.create({
 
   header: {
     paddingHorizontal: Spacing.m,
-    paddingTop: 54,
     paddingBottom: Spacing.m,
     backgroundColor: '#fff',
     borderBottomLeftRadius: Radius.xxl,

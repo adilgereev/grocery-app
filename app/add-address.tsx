@@ -1,20 +1,30 @@
-import React, { useState } from 'react';
-import {
-  View, Text, StyleSheet, TouchableOpacity, TextInput,
-  Platform, ActivityIndicator, Keyboard, TouchableWithoutFeedback, ScrollView, Alert
-, Modal } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import AddressSearchInput from '@/components/AddressSearchInput';
+import MapPicker from '@/components/MapPicker';
+import { Colors, Radius, Spacing } from '@/constants/theme';
 import { useAddressStore } from '@/store/addressStore';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { Colors, Spacing, Radius } from '@/constants/theme';
-import AddressSearchInput from '@/components/AddressSearchInput';
-import MapPicker from '@/components/MapPicker';
+import React, { useState } from 'react';
+import {
+  ActivityIndicator,
+  Alert,
+  Keyboard,
+  Modal,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  View
+} from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { DaDataSuggestion, getAddressByCoords } from '@/lib/dadataApi';
-import Animated, { FadeInDown, FadeOutUp, Layout } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
+import Animated, { FadeInDown, FadeOutUp, Layout } from 'react-native-reanimated';
 
 export default function AddAddressScreen() {
   const { addAddress, isLoading, error, clearError } = useAddressStore();
@@ -30,15 +40,17 @@ export default function AddAddressScreen() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [mapVisible, setMapVisible] = useState(false);
   const [coords, setCoords] = useState<{ lat: number; lon: number } | null>(null);
-  
+
   // Вспомогательная функция для красивого форматирования адреса
   const formatAddressString = (suggestion: DaDataSuggestion) => {
     const data = suggestion.data;
-    if (!data.street_with_type) return suggestion.value; 
-    
+    if (!data.street_with_type) return suggestion.value;
+
     let base = `${data.street_with_type}`;
     if (data.house) {
       base += `, д. ${data.house}`;
+    } else {
+      base += ', ';
     }
     return base;
   };
@@ -61,8 +73,8 @@ export default function AddAddressScreen() {
     clearError();
 
     try {
-      const fullAddress = address.trim().startsWith('г. Буйнакск') 
-        ? address.trim() 
+      const fullAddress = address.trim().startsWith('г. Буйнакск')
+        ? address.trim()
         : `г. Буйнакск, ${address.trim()}`;
 
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
@@ -103,36 +115,38 @@ export default function AddAddressScreen() {
           <View style={{ width: 40 }} />
         </View>
 
-        <ScrollView
+        <KeyboardAwareScrollView
           style={{ flex: 1 }}
           contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
+          extraScrollHeight={80}
+          enableOnAndroid={true}
         >
           {/* Секция 1: Основной адрес */}
-          <Animated.View 
+          <Animated.View
             entering={FadeInDown.duration(400)}
-            style={styles.card}
+            style={[styles.card, { zIndex: 10 }]}
           >
-            <View style={styles.fieldGroup}>
+            <View style={[styles.fieldGroup, { zIndex: 99 }]}>
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.s }}>
                 <View style={styles.labelWithIcon}>
-                  <Ionicons name="location-sharp" size={16} color={Colors.light.primary} />
+                  <Ionicons name="location-sharp" size={18} color={Colors.light.primary} />
                   <Text style={styles.fieldLabel}>Адрес доставки*</Text>
                 </View>
-                <TouchableOpacity 
+                <TouchableOpacity
                   onPress={() => {
                     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                     setMapVisible(true);
-                  }} 
+                  }}
                   style={styles.mapLink}
                 >
-                  <Ionicons name="map" size={14} color={Colors.light.primary} />
+                  <Ionicons name="map" size={16} color={Colors.light.primary} />
                   <Text style={styles.mapLinkText}>На карте</Text>
                 </TouchableOpacity>
               </View>
               <AddressSearchInput
-                city="Буйнакск" 
+                city="Буйнакск"
                 initialValue={address}
                 onSelect={(suggestion: DaDataSuggestion) => {
                   setAddress(formatAddressString(suggestion));
@@ -140,12 +154,11 @@ export default function AddAddressScreen() {
                   Haptics.selectionAsync();
                 }}
               />
-              <Text style={styles.cityLabel}>Буйнакск, Республика Дагестан</Text>
             </View>
 
             {/* Тоггл частного дома - встроен в карточку */}
             <TouchableOpacity
-              style={styles.toggleRow}
+              style={styles.toggleRowCompact}
               onPress={() => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                 setIsPrivateHouse(!isPrivateHouse);
@@ -153,17 +166,17 @@ export default function AddAddressScreen() {
               activeOpacity={0.7}
             >
               <View style={styles.toggleTextContainer}>
-                <Ionicons 
-                  name={isPrivateHouse ? "home" : "business"} 
-                  size={20} 
-                  color={isPrivateHouse ? Colors.light.primary : Colors.light.textSecondary} 
+                <Ionicons
+                  name={isPrivateHouse ? "home" : "business"}
+                  size={20}
+                  color={isPrivateHouse ? Colors.light.primary : Colors.light.textSecondary}
                 />
-                <Text style={styles.toggleLabel}>Частный дом / Коттедж</Text>
+                <Text style={styles.toggleLabel}>Частный дом</Text>
               </View>
               <View style={[styles.switchBase, isPrivateHouse && styles.switchActive]}>
-                <Animated.View 
+                <Animated.View
                   layout={Layout.springify()}
-                  style={[styles.switchThumb, isPrivateHouse && styles.switchThumbActive]} 
+                  style={[styles.switchThumb, isPrivateHouse && styles.switchThumbActive]}
                 />
               </View>
             </TouchableOpacity>
@@ -171,29 +184,28 @@ export default function AddAddressScreen() {
 
           {/* Секция 2: Детали (только если не частный дом) */}
           {!isPrivateHouse && (
-            <Animated.View 
+            <Animated.View
               entering={FadeInDown.delay(100).duration(400)}
               exiting={FadeOutUp.duration(300)}
               style={styles.card}
             >
               <Text style={styles.sectionSubtitle}>ДЕТАЛИ АДРЕСА</Text>
-              
-              <View style={styles.fieldGroup}>
-                <View style={styles.inputWithIcon}>
-                  <Ionicons name="key-outline" size={18} color={Colors.light.textLight} style={styles.inputIcon} />
-                  <TextInput
-                    style={styles.cleanInput}
-                    placeholder="Квартира"
-                    placeholderTextColor={Colors.light.textLight}
-                    value={apartment}
-                    onChangeText={setApartment}
-                    keyboardType="numeric"
-                  />
-                </View>
-              </View>
 
               <View style={styles.rowGroup}>
                 <View style={[styles.fieldGroup, { flex: 1, marginRight: Spacing.s }]}>
+                  <View style={styles.compactInputWrapper}>
+                    <Text style={styles.compactLabel}>КВАРТИРА</Text>
+                    <TextInput
+                      style={styles.compactInput}
+                      placeholder="№"
+                      placeholderTextColor={Colors.light.textLight}
+                      value={apartment}
+                      onChangeText={setApartment}
+                      keyboardType="numeric"
+                    />
+                  </View>
+                </View>
+                <View style={[styles.fieldGroup, { flex: 1 }]}>
                   <View style={styles.compactInputWrapper}>
                     <Text style={styles.compactLabel}>ПОДЪЕЗД</Text>
                     <TextInput
@@ -206,6 +218,9 @@ export default function AddAddressScreen() {
                     />
                   </View>
                 </View>
+              </View>
+
+              <View style={styles.rowGroup}>
                 <View style={[styles.fieldGroup, { flex: 1, marginRight: Spacing.s }]}>
                   <View style={styles.compactInputWrapper}>
                     <Text style={styles.compactLabel}>ЭТАЖ</Text>
@@ -221,14 +236,14 @@ export default function AddAddressScreen() {
                 </View>
                 <View style={[styles.fieldGroup, { flex: 1 }]}>
                   <View style={styles.compactInputWrapper}>
-                    <Text style={styles.compactLabel}>КОД</Text>
+                    <Text style={styles.compactLabel}>ДОМОФОН</Text>
                     <TextInput
                       style={styles.compactInput}
                       placeholder="Код"
                       placeholderTextColor={Colors.light.textLight}
                       value={intercom}
                       onChangeText={setIntercom}
-                      keyboardType="phone-pad"
+                      keyboardType="numeric"
                     />
                   </View>
                 </View>
@@ -241,10 +256,7 @@ export default function AddAddressScreen() {
             entering={FadeInDown.delay(200).duration(400)}
             style={styles.card}
           >
-            <View style={styles.labelWithIcon}>
-              <Ionicons name="chatbubble-ellipses-outline" size={16} color={Colors.light.primary} />
-              <Text style={styles.sectionSubtitle}>КОММЕНТАРИЙ ДЛЯ КУРЬЕРА</Text>
-            </View>
+            <Text style={styles.sectionSubtitle}>КОММЕНТАРИЙ ДЛЯ КУРЬЕРА</Text>
             <View style={[styles.inputWithIcon, { height: 100, alignItems: 'flex-start', paddingTop: 12 }]}>
               <TextInput
                 style={[styles.cleanInput, { textAlignVertical: 'top' }]}
@@ -268,7 +280,7 @@ export default function AddAddressScreen() {
               </TouchableOpacity>
             </View>
           ) : null}
-        </ScrollView>
+        </KeyboardAwareScrollView>
 
         {/* Кнопка сохранить */}
         <View style={styles.footer}>
@@ -328,7 +340,7 @@ const styles = StyleSheet.create({
     elevation: 4, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.05, shadowRadius: 8,
     zIndex: 10,
   },
-  backButton: { 
+  backButton: {
     padding: Spacing.s,
     backgroundColor: Colors.light.borderLight,
     borderRadius: Radius.m,
@@ -337,18 +349,18 @@ const styles = StyleSheet.create({
 
   scrollContent: { padding: Spacing.l, paddingBottom: 40 },
 
-  fieldGroup: { marginBottom: Spacing.m },
+  fieldGroup: { marginBottom: Spacing.s },
   fieldLabel: {
     fontSize: 13, fontWeight: '700', color: Colors.light.textSecondary,
     marginBottom: Spacing.xs, textTransform: 'uppercase', letterSpacing: 0.5,
   },
-  
-  rowGroup: { flexDirection: 'row', marginBottom: Spacing.m },
+
+  rowGroup: { flexDirection: 'row', marginBottom: Spacing.s },
 
   // Карточки
   card: {
     borderRadius: Radius.xl,
-    marginBottom: Spacing.xl,
+    marginBottom: Spacing.l,
   },
   labelWithIcon: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   sectionSubtitle: {
@@ -356,17 +368,17 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: Colors.light.textSecondary,
     letterSpacing: 1.5,
-    marginBottom: Spacing.l,
+    marginBottom: Spacing.s,
     textTransform: 'uppercase',
   },
 
   // Кастомный переключатель
-  toggleRow: {
+  toggleRowCompact: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: Spacing.m,
-    paddingTop: Spacing.m,
+    marginTop: Spacing.xs,
+    paddingTop: Spacing.s,
   },
   toggleTextContainer: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   toggleLabel: { fontSize: 15, fontWeight: '600', color: Colors.light.text },
@@ -400,7 +412,6 @@ const styles = StyleSheet.create({
     height: 56,
     paddingHorizontal: Spacing.m,
   },
-  inputIcon: { marginRight: 10 },
   cleanInput: {
     flex: 1,
     fontSize: 16,
@@ -455,7 +466,7 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     backgroundColor: 'transparent',
   },
-  submitButtonDisabled: { 
+  submitButtonDisabled: {
     shadowColor: '#000',
     shadowOpacity: 0,
     elevation: 0,
@@ -470,9 +481,9 @@ const styles = StyleSheet.create({
   },
   submitButtonText: { color: '#fff', fontSize: 17, fontWeight: '800', letterSpacing: 0.3 },
 
-  mapLink: { 
-    flexDirection: 'row', 
-    alignItems: 'center', 
+  mapLink: {
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 6,
     backgroundColor: Colors.light.primaryLight,
     paddingHorizontal: 12,
@@ -480,11 +491,4 @@ const styles = StyleSheet.create({
     borderRadius: Radius.m,
   },
   mapLinkText: { fontSize: 13, color: Colors.light.primary, fontWeight: '800' },
-  cityLabel: {
-    fontSize: 12,
-    color: Colors.light.textSecondary,
-    marginTop: Spacing.s,
-    marginLeft: 2,
-    fontWeight: '600',
-  },
 });

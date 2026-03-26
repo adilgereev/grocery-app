@@ -1,10 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import {
-  View, Text, StyleSheet, TouchableOpacity, Dimensions
+  View, Text, StyleSheet, TouchableOpacity, Dimensions, Platform
 } from 'react-native';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Radius } from '@/constants/theme';
 
 const { width, height } = Dimensions.get('window');
 
@@ -65,7 +65,9 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
   map: { width, height },
   header: {
-    position: 'absolute', top: 50, left: 20, right: 20,
+    position: 'absolute',
+    top: Platform.OS === 'ios' ? 60 : 30 + (Platform.OS === 'android' ? 10 : 0),
+    left: 20, right: 20,
     backgroundColor: '#fff', padding: 15, borderRadius: Radius.m,
     flexDirection: 'row', alignItems: 'center', elevation: 10,
     shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 10,
