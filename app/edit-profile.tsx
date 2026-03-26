@@ -4,9 +4,10 @@ import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/providers/AuthProvider';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { Colors, Spacing } from '@/constants/theme';
+import { Colors, Spacing, Radius } from '@/constants/theme';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Skeleton from '@/components/Skeleton';
+import { formatPhoneDisplay } from '@/lib/sms';
 
 export default function EditProfileScreen() {
   const router = useRouter();
@@ -16,7 +17,8 @@ export default function EditProfileScreen() {
   const [saving, setSaving] = useState(false);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [phone, setPhone] = useState('');
+  const [phone, setPhone] = useState(''); // Только для отображения (нередактируемый)
+  const [firstNameError, setFirstNameError] = useState(false);
 
   useEffect(() => {
     if (session?.user) {
@@ -34,11 +36,12 @@ export default function EditProfileScreen() {
         .single();
         
       if (error) throw error;
-      
+
       if (data) {
         setFirstName(data.first_name || '');
         setLastName(data.last_name || '');
         setPhone(data.phone || '');
+        console.log('Профиль загружен:', { firstName: data.first_name, lastName: data.last_name, phone: data.phone });
       }
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Неизвестная ошибка';
@@ -49,6 +52,17 @@ export default function EditProfileScreen() {
   };
 
   const handleSave = async () => {
+    // Валидация: имя обязательно
+    if (!firstName.trim()) {
+      setFirstNameError(true);
+      if (Platform.OS === 'web') {
+        window.alert('Ошибка', 'Поле "Имя" обязательно');
+      } else {
+        Alert.alert('Ошибка', 'Поле "Имя" обязательно');
+      }
+      return;
+    }
+
     try {
       setSaving(true);
       const { error } = await supabase
@@ -56,7 +70,6 @@ export default function EditProfileScreen() {
         .update({
           first_name: firstName,
           last_name: lastName,
-          phone: phone,
         })
         .eq('id', session?.user.id);
 
@@ -102,47 +115,38 @@ export default function EditProfileScreen() {
           </View>
         ) : (
           <View>
+            {/* Телефон (нередактируемый) */}
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Email (логин)</Text>
-              <TextInput 
-                style={[styles.input, styles.disabledInput]} 
-                value={session?.user?.email} 
-                editable={false} 
-              />
-              <Text style={styles.helpText}>Для смены адреса почты обратитесь в поддержку</Text>
+              <Text style={styles.label}>Телефон</Text>
+              <View style={styles.phoneDisplay}>
+                <Text style={styles.phoneText}>
+                  {phone ? formatPhoneDisplay(phone) : 'Не указан'}
+                </Text>
+              </View>
+              <Text style={styles.phoneHint}>
+                Для изменения номера обратитесь в поддержку
+              </Text>
             </View>
 
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Имя</Text>
-              <TextInput 
-                style={styles.input} 
+              <TextInput
+                style={styles.input}
                 placeholder="Например, Иван"
                 placeholderTextColor={Colors.light.textLight}
-                value={firstName} 
-                onChangeText={setFirstName} 
+                value={firstName}
+                onChangeText={setFirstName}
               />
             </View>
 
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Фамилия</Text>
-              <TextInput 
-                style={styles.input} 
+              <TextInput
+                style={styles.input}
                 placeholder="Например, Иванов"
                 placeholderTextColor={Colors.light.textLight}
-                value={lastName} 
-                onChangeText={setLastName} 
-              />
-            </View>
-
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>Телефон</Text>
-              <TextInput 
-                style={styles.input} 
-                placeholder="+7 (999) 000-00-00"
-                placeholderTextColor={Colors.light.textLight}
-                keyboardType="phone-pad"
-                value={phone} 
-                onChangeText={setPhone} 
+                value={lastName}
+                onChangeText={setLastName}
               />
             </View>
           </View>
@@ -199,6 +203,25 @@ const styles = StyleSheet.create({
   inputGroup: {
     marginBottom: 20,
   },
+  // Отображение телефона (нередактируемый)
+  phoneDisplay: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.light.disabledBackground,
+    borderRadius: Radius.l,
+    padding: Spacing.m,
+  },
+  phoneText: {
+    flex: 1,
+    fontSize: 16,
+    fontWeight: '600',
+    color: Colors.light.disabledText,
+  },
+  phoneHint: {
+    fontSize: 12,
+    color: Colors.light.textSecondary,
+    fontWeight: '500',
+  },
   label: {
     fontSize: 15,
     fontWeight: '600',
@@ -213,16 +236,6 @@ const styles = StyleSheet.create({
     padding: Spacing.m,
     fontSize: 16,
     color: Colors.light.text,
-  },
-  disabledInput: {
-    color: Colors.light.textLight,
-    backgroundColor: Colors.light.background,
-  },
-  helpText: {
-    fontSize: 12,
-    color: Colors.light.textLight,
-    marginTop: 6,
-    marginLeft: Spacing.xs,
   },
   footerInner: {
     padding: Spacing.l,

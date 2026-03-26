@@ -27,6 +27,9 @@ export const Colors = {
     icon: '#6B7280',
     tabIconDefault: '#9CA3AF',
     tabIconSelected: tintColorLight,
+    // Disabled/Readonly поля
+    disabledBackground: '#F3F4F6',
+    disabledText: '#9CA3AF',
   },
   dark: {
     primary: tintColorDark,
@@ -46,6 +49,9 @@ export const Colors = {
     icon: '#9CA3AF',
     tabIconDefault: '#6B7280',
     tabIconSelected: tintColorDark,
+    // Disabled/Readonly поля
+    disabledBackground: '#2D3748',
+    disabledText: '#9CA3AF',
   },
 };
 
