@@ -14,7 +14,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Animated,
   Dimensions,
@@ -80,7 +80,9 @@ export default function HomeScreen() {
 
   async function fetchPopularProducts() {
     try {
-      setPopularLoading(true);
+      if (popularProducts.length === 0) { // Silent refresh check
+        setPopularLoading(true);
+      }
       const { data, error } = await supabase
         .from('products')
         .select('id, name, price, image_url, unit')
@@ -128,11 +130,13 @@ export default function HomeScreen() {
   );
 
   // Секция «Популярное»
-  const renderPopularProducts = () => {
-    if (popularLoading) {
+  // Секция «Популярное» (Мемоизирована)
+  const popularSection = useMemo(() => {
+    if (popularLoading && popularProducts.length === 0) {
       return <PopularProductsSkeleton count={5} />;
     }
-    if (!popularProducts.length) return null;
+    if (popularProducts.length === 0 && !popularLoading) return null;
+
     return (
       <View style={styles.popularSection}>
         <View style={styles.sectionHeader}>
@@ -177,10 +181,10 @@ export default function HomeScreen() {
         </ScrollView>
       </View>
     );
-  };
+  }, [popularProducts, popularLoading, addItem]);
 
-  // Секция баннеров
-  const renderBanners = () => (
+  // Секция баннеров (Мемоизирована)
+  const bannersSection = useMemo(() => (
     <View style={styles.bannersSection}>
       <Text style={[styles.sectionTitle, { paddingHorizontal: Spacing.m, marginBottom: Spacing.s }]}>Акции и новинки</Text>
       <ScrollView
@@ -208,29 +212,33 @@ export default function HomeScreen() {
         ))}
       </ScrollView>
     </View>
-  );
+  ), []);
 
-  const ListHeader = () => {
-    return (
-      <>
-        {renderBanners()}
-        {renderPopularProducts()}
+  // Секция категорий (Мемоизирована)
+  const categoriesSection = useMemo(() => (
+    <>
+      {categoriesLoading && categoriesWithSubs.length === 0 ? (
+        <SubcategoriesSkeleton count={6} />
+      ) : categoriesWithSubs.length > 0 ? (
+        <View style={styles.hierarchyContainer}>
+          {categoriesWithSubs.map((category) => (
+            <CategoryHierarchySection key={category.id} category={category} />
+          ))}
+        </View>
+      ) : (
+        <Text style={[styles.sectionTitle, { paddingHorizontal: Spacing.m }]}>Категории</Text>
+      )}
+    </>
+  ), [categoriesLoading, categoriesWithSubs]);
 
-        {/* Секция иерархических категорий */}
-        {categoriesLoading ? (
-          <SubcategoriesSkeleton count={6} />
-        ) : categoriesWithSubs.length > 0 ? (
-          <View style={styles.hierarchyContainer}>
-            {categoriesWithSubs.map((category) => (
-              <CategoryHierarchySection key={category.id} category={category} />
-            ))}
-          </View>
-        ) : (
-          <Text style={[styles.sectionTitle, { paddingHorizontal: Spacing.m }]}>Категории</Text>
-        )}
-      </>
-    );
-  };
+  // Стабильный заголовок списка
+  const listHeader = useMemo(() => (
+    <>
+      {bannersSection}
+      {popularSection}
+      {categoriesSection}
+    </>
+  ), [bannersSection, popularSection, categoriesSection]);
 
   return (
     <View style={styles.container}>
@@ -283,7 +291,7 @@ export default function HomeScreen() {
         showsVerticalScrollIndicator={false}
         onScroll={handleScroll}
         scrollEventThrottle={16}
-        ListHeaderComponent={<ListHeader />}
+        ListHeaderComponent={listHeader}
         renderItem={() => null} // Рендер происходит в ListHeader
       />
     </View>
@@ -371,10 +379,10 @@ const styles = StyleSheet.create({
   popularName: { fontSize: 13, fontWeight: '600', color: Colors.light.textSecondary, marginBottom: 2 },
   popularPrice: { fontSize: 14, fontWeight: '800', color: Colors.light.text },
   popularUnit: { fontSize: 11, color: Colors.light.textLight, fontWeight: '600' },
-  addPopularButton: { 
+  addPopularButton: {
     position: 'absolute', bottom: 8, right: 8,
-    width: 32, height: 32, borderRadius: 16, backgroundColor: Colors.light.primary, 
-    justifyContent: 'center', alignItems: 'center', elevation: 3, 
+    width: 32, height: 32, borderRadius: 16, backgroundColor: Colors.light.primary,
+    justifyContent: 'center', alignItems: 'center', elevation: 3,
     shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 4, shadowOffset: { width: 0, height: 2 }
   },
 });
