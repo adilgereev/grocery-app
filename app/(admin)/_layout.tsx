@@ -2,7 +2,7 @@ import { Stack, useRouter } from 'expo-router';
 import { useAuth } from '@/providers/AuthProvider';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
-import { View, ActivityIndicator } from 'react-native';
+import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { Colors } from '@/constants/theme';
 
 export default function AdminLayout() {
@@ -12,6 +12,7 @@ export default function AdminLayout() {
 
   useEffect(() => {
     checkAdmin();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session]);
 
   const checkAdmin = async () => {
@@ -36,16 +37,16 @@ export default function AdminLayout() {
 
   if (isAdmin === null) {
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#fff' }}>
+      <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={Colors.light.primary} />
       </View>
     );
   }
 
   return (
-    <Stack screenOptions={{ 
+    <Stack screenOptions={{
       headerShown: true,
-      headerStyle: { backgroundColor: '#fff' },
+      headerStyle: { backgroundColor: Colors.light.background },
       headerTintColor: Colors.light.text,
       headerTitleStyle: { fontWeight: '700' }
     }}>
@@ -57,3 +58,12 @@ export default function AdminLayout() {
     </Stack>
   );
 }
+
+const styles = StyleSheet.create({
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: Colors.light.background,
+  },
+});

@@ -7,6 +7,7 @@ import { useAppStore } from '@/store/appStore';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Colors, Spacing, Radius } from '@/constants/theme';
+import { formatPhoneDisplay } from '@/lib/sms';
 import Skeleton from '@/components/Skeleton';
 import { useFocusEffect } from '@react-navigation/native';
 import { useCallback } from 'react';
@@ -122,7 +123,7 @@ export default function ProfileScreen() {
             </View>
             <View style={styles.userInfo}>
               <Text style={styles.userName} numberOfLines={1}>{getDisplayName()}</Text>
-              <Text style={styles.userPhone}>{profile?.phone || 'Телефон не указан'}</Text>
+              <Text style={styles.userPhone}>{profile?.phone ? formatPhoneDisplay(profile.phone) : 'Телефон не указан'}</Text>
             </View>
             <View style={styles.editIconContainer}>
               <Ionicons name="pencil" size={18} color={Colors.light.primary} />

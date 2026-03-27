@@ -5,8 +5,9 @@ import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/providers/AuthProvider';
 import { Ionicons } from '@expo/vector-icons';
 import Skeleton from '@/components/Skeleton';
-import { ErrorToast, ToastType } from '@/components/ErrorToast';
+import { ErrorToast } from '@/components/ErrorToast';
 import { Colors, Spacing, Radius } from '@/constants/theme';
+import { cleanAddress } from '@/lib/address';
 import { Order } from '@/types';
 
 // Конфигурация статусов (синхронизирована с order/[id].tsx)
@@ -168,7 +169,7 @@ export default function OrdersScreen() {
                 {/* Адрес */}
                 <View style={styles.addressRow}>
                   <Ionicons name="location-outline" size={15} color={Colors.light.textSecondary} />
-                  <Text style={styles.addressText} numberOfLines={1}>{item.delivery_address}</Text>
+                  <Text style={styles.addressText} numberOfLines={1}>{cleanAddress(item.delivery_address)}</Text>
                 </View>
 
                 {/* Нижняя строка: дата + сумма */}

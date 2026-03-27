@@ -16,7 +16,7 @@ export default function AdminDashboard() {
 
       <View style={styles.menuContainer}>
         <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/(admin)/add-product')}>
-          <View style={[styles.menuIcon, { backgroundColor: '#EEF2FF' }]}>
+          <View style={[styles.menuIcon, styles.menuIconAdd]}>
             <Ionicons name="add-circle" size={24} color="#6366F1" />
           </View>
           <View style={styles.menuTextContainer}>
@@ -29,7 +29,7 @@ export default function AdminDashboard() {
         <View style={styles.divider} />
 
         <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/(admin)/catalog')}>
-          <View style={[styles.menuIcon, { backgroundColor: '#FEF2F2' }]}>
+          <View style={[styles.menuIcon, styles.menuIconCatalog]}>
             <Ionicons name="list" size={24} color="#EF4444" />
           </View>
           <View style={styles.menuTextContainer}>
@@ -42,7 +42,7 @@ export default function AdminDashboard() {
         <View style={styles.divider} />
 
         <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/(admin)/orders')}>
-          <View style={[styles.menuIcon, { backgroundColor: '#ECFDF5' }]}>
+          <View style={[styles.menuIcon, styles.menuIconOrders]}>
             <Ionicons name="cube" size={24} color="#10B981" />
           </View>
           <View style={styles.menuTextContainer}>
@@ -55,7 +55,7 @@ export default function AdminDashboard() {
         <View style={styles.divider} />
 
         <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/(admin)/categories')}>
-          <View style={[styles.menuIcon, { backgroundColor: '#FFF7ED' }]}>
+          <View style={[styles.menuIcon, styles.menuIconCategories]}>
             <Ionicons name="grid" size={24} color="#F97316" />
           </View>
           <View style={styles.menuTextContainer}>
@@ -73,7 +73,7 @@ export default function AdminDashboard() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: Colors.light.background,
   },
   content: {
     padding: Spacing.m,
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
     color: Colors.light.textSecondary,
   },
   menuContainer: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.light.card,
     borderRadius: Radius.xl,
     paddingVertical: Spacing.xs,
     shadowColor: '#000',
@@ -114,6 +114,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: Spacing.m,
   },
+  // eslint-disable-next-line react-native/no-color-literals
+  menuIconAdd: { backgroundColor: '#EEF2FF' },
+  // eslint-disable-next-line react-native/no-color-literals
+  menuIconCatalog: { backgroundColor: '#FEF2F2' },
+  // eslint-disable-next-line react-native/no-color-literals
+  menuIconOrders: { backgroundColor: '#ECFDF5' },
+  // eslint-disable-next-line react-native/no-color-literals
+  menuIconCategories: { backgroundColor: '#FFF7ED' },
   menuTextContainer: {
     flex: 1,
   },

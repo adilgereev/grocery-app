@@ -73,18 +73,24 @@ export default function AddAddressScreen() {
     clearError();
 
     try {
-      const fullAddress = address.trim().startsWith('г. Буйнакск')
-        ? address.trim()
-        : `г. Буйнакск, ${address.trim()}`;
+      const rawAddress = address.trim();
 
-      // Извлекаем номер дома из адреса
-      const houseMatch = fullAddress.match(/д\.\s*(\d+)/);
+      // Извлекаем номер дома из сырого адреса
+      const houseMatch = rawAddress.match(/д\.\s*(\d+)/);
       const houseNumber = houseMatch ? houseMatch[1] : undefined;
+
+      // Очищаем адрес для сохранения только улицы (без города, региона и дома)
+      let cleanStreet = rawAddress
+        .replace(/^г\. Буйнакск,?\s*/i, '')
+        .replace(/,?\s*Республика Дагестан$/i, '')
+        .replace(/,?\s*Респ\. Дагестан$/i, '')
+        .replace(/,?\s*д\.\s*\d+.*$/i, '')
+        .trim();
 
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
       await addAddress({
-        text: fullAddress,
+        text: cleanStreet,
         house: houseNumber,
         entrance: entrance.trim() || undefined,
         floor: floor.trim() || undefined,

@@ -1,24 +1,24 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TextInput, TouchableOpacity, ActivityIndicator, Alert, Platform, ScrollView } from 'react-native';
+import Skeleton from '@/components/Skeleton';
+import { Colors, FontSize, Fonts, Radius, Spacing } from '@/constants/theme';
+import { formatPhoneDisplay } from '@/lib/sms';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/providers/AuthProvider';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Alert, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Skeleton from '@/components/Skeleton';
-import { formatPhoneDisplay } from '@/lib/sms';
 
 export default function EditProfileScreen() {
   const router = useRouter();
   const { session } = useAuth();
-  
+
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [phone, setPhone] = useState(''); // Только для отображения (нередактируемый)
-  const [firstNameError, setFirstNameError] = useState(false);
 
   useEffect(() => {
     if (session?.user) {
@@ -34,32 +34,25 @@ export default function EditProfileScreen() {
         .select('first_name, last_name, phone')
         .eq('id', session?.user.id)
         .single();
-        
+
       if (error) throw error;
 
       if (data) {
         setFirstName(data.first_name || '');
         setLastName(data.last_name || '');
         setPhone(data.phone || '');
-        console.log('Профиль загружен:', { firstName: data.first_name, lastName: data.last_name, phone: data.phone });
       }
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Неизвестная ошибка';
-      console.error('Ошибка загрузки профиля:', errorMessage);
     } finally {
       setLoading(false);
     }
   };
 
   const handleSave = async () => {
-    // Валидация: имя обязательно
     if (!firstName.trim()) {
-      setFirstNameError(true);
-      if (Platform.OS === 'web') {
-        window.alert('Ошибка', 'Поле "Имя" обязательно');
-      } else {
-        Alert.alert('Ошибка', 'Поле "Имя" обязательно');
-      }
+      if (Platform.OS === 'web') window.alert('Укажите имя');
+      else Alert.alert('Внимание', 'Укажите имя');
       return;
     }
 
@@ -83,7 +76,6 @@ export default function EditProfileScreen() {
       router.back();
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Неизвестная ошибка';
-      console.error('Ошибка сохранения профиля:', errorMessage);
       if (Platform.OS === 'web') window.alert(errorMessage);
       else Alert.alert('Ошибка', errorMessage);
     } finally {
@@ -95,23 +87,24 @@ export default function EditProfileScreen() {
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
       <View style={styles.header}>
         <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={24} color={Colors.light.text} />
+          <Ionicons name="arrow-back" size={FontSize.xxxl} color={Colors.light.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Личные данные</Text>
-        <View style={{ width: 40 }} />
+        <View style={{ width: Spacing.xxxl }} />
       </View>
 
-      <ScrollView 
-        contentContainerStyle={styles.scrollContent} 
-        keyboardShouldPersistTaps="handled" 
+      <KeyboardAwareScrollView
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
         showsVerticalScrollIndicator={false}
-        automaticallyAdjustKeyboardInsets={true}
+        enableOnAndroid={true}
+        extraScrollHeight={Spacing.m}
       >
         {loading ? (
           <View>
-            <Skeleton width="100%" height={60} borderRadius={14} style={{ marginBottom: 20 }} />
-            <Skeleton width="100%" height={60} borderRadius={14} style={{ marginBottom: 20 }} />
-            <Skeleton width="100%" height={60} borderRadius={14} style={{ marginBottom: 20 }} />
+            <Skeleton width="100%" height={Spacing.xxxl} borderRadius={Radius.l} style={{ marginBottom: Spacing.m }} />
+            <Skeleton width="100%" height={Spacing.xxxl} borderRadius={Radius.l} style={{ marginBottom: Spacing.m }} />
+            <Skeleton width="100%" height={Spacing.xxxl} borderRadius={Radius.l} style={{ marginBottom: Spacing.m }} />
           </View>
         ) : (
           <View>
@@ -152,11 +145,11 @@ export default function EditProfileScreen() {
           </View>
         )}
 
-      </ScrollView>
+      </KeyboardAwareScrollView>
 
       <View style={styles.footerInner}>
-        <TouchableOpacity 
-          style={[styles.saveButton, saving && { opacity: 0.7 }]} 
+        <TouchableOpacity
+          style={[styles.saveButton, saving && { opacity: 0.7 }]}
           onPress={handleSave}
           disabled={saving || loading}
         >
@@ -174,34 +167,35 @@ export default function EditProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.light.card,
   },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingVertical: 12,
+    paddingHorizontal: Spacing.m,
+    paddingVertical: Spacing.s + Spacing.xs,
     borderBottomWidth: 1,
     borderBottomColor: Colors.light.borderLight,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.light.card,
   },
   backButton: {
-    width: 40,
-    height: 40,
+    width: Spacing.xxxl,
+    height: Spacing.xxxl,
     justifyContent: 'center',
     alignItems: 'flex-start',
   },
   headerTitle: {
-    fontSize: 18,
+    fontSize: FontSize.xl,
     fontWeight: '700',
     color: Colors.light.text,
+    fontFamily: Fonts.sans,
   },
   scrollContent: {
     padding: Spacing.l,
   },
   inputGroup: {
-    marginBottom: 20,
+    marginBottom: Spacing.m + Spacing.s,
   },
   // Отображение телефона (нередактируемый)
   phoneDisplay: {
@@ -213,50 +207,56 @@ const styles = StyleSheet.create({
   },
   phoneText: {
     flex: 1,
-    fontSize: 16,
+    fontSize: FontSize.l,
     fontWeight: '600',
     color: Colors.light.disabledText,
+    fontFamily: Fonts.sans,
   },
   phoneHint: {
-    fontSize: 12,
+    fontSize: FontSize.s,
     color: Colors.light.textSecondary,
     fontWeight: '500',
+    fontFamily: Fonts.sans,
   },
   label: {
-    fontSize: 15,
+    fontSize: FontSize.m,
     fontWeight: '600',
-    color: '#4B5563',
+    color: Colors.light.textSecondary,
     marginBottom: Spacing.s,
+    fontFamily: Fonts.sans,
   },
   input: {
     backgroundColor: Colors.light.background,
     borderWidth: 1,
     borderColor: Colors.light.border,
-    borderRadius: 14,
+    borderRadius: Radius.xl,
     padding: Spacing.m,
-    fontSize: 16,
+    fontSize: FontSize.l,
     color: Colors.light.text,
+    fontFamily: Fonts.sans,
+    textAlignVertical: 'center' as const,
   },
   footerInner: {
     padding: Spacing.l,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.light.card,
     borderTopWidth: 1,
     borderTopColor: Colors.light.borderLight,
   },
   saveButton: {
     backgroundColor: Colors.light.primary,
-    borderRadius: 14,
-    paddingVertical: 18,
+    borderRadius: Radius.xl,
+    paddingVertical: Spacing.m + Spacing.s,
     alignItems: 'center',
     shadowColor: Colors.light.primary,
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
+    shadowOpacity: 0.08,
+    shadowRadius: 12,
     shadowOffset: { width: 0, height: 4 },
     elevation: 4,
   },
   saveButtonText: {
     color: '#fff',
-    fontSize: 18,
+    fontSize: FontSize.xl,
     fontWeight: '700',
+    fontFamily: Fonts.sans,
   },
 });

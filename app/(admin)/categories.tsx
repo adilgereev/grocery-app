@@ -103,7 +103,7 @@ export default function CategoriesScreen() {
       try {
         const publicUrl = await uploadImage(result.assets[0].uri, 'categories');
         setImageUrl(publicUrl);
-      } catch (error) {
+      } catch {
         Alert.alert('Ошибка', 'Не удалось загрузить изображение');
       } finally {
         setUploading(false);
@@ -351,7 +351,7 @@ export default function CategoriesScreen() {
                 <View style={styles.labelRow}>
                   <Text style={styles.label}>Ссылка на фото или HEX-код</Text>
                   <TouchableOpacity onPress={pickImage} disabled={uploading}>
-                    <Text style={[styles.pickText, uploading && { opacity: 0.5 }]}>
+                    <Text style={[styles.pickText, uploading && styles.pickTextDisabled]}>
                       {uploading ? 'Загрузка...' : 'Выбрать файл'}
                     </Text>
                   </TouchableOpacity>
@@ -398,21 +398,21 @@ export default function CategoriesScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F9FAFB' },
+  container: { flex: 1, backgroundColor: Colors.light.background },
   centerContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   header: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    padding: Spacing.m, backgroundColor: '#fff', borderBottomWidth: 1, borderBottomColor: Colors.light.borderLight,
+    padding: Spacing.m, backgroundColor: Colors.light.card, borderBottomWidth: 1, borderBottomColor: Colors.light.borderLight,
   },
   headerTitle: { fontSize: 16, fontWeight: '700', color: Colors.light.text },
   addBtn: {
     flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.light.primary,
     paddingHorizontal: 12, paddingVertical: 8, borderRadius: Radius.m,
   },
-  addBtnText: { color: '#fff', fontWeight: '700', marginLeft: 4, fontSize: 14 },
+  addBtnText: { color: Colors.light.card, fontWeight: '700', marginLeft: 4, fontSize: 14 },
   list: { padding: Spacing.m },
   card: {
-    backgroundColor: '#fff', borderRadius: Radius.l, padding: Spacing.m, marginBottom: Spacing.m,
+    backgroundColor: Colors.light.card, borderRadius: Radius.l, padding: Spacing.m, marginBottom: Spacing.m,
     shadowColor: '#000', shadowOpacity: 0.05, shadowOffset: { width: 0, height: 4 }, shadowRadius: 8, elevation: 2,
   },
   subcategoryCard: {
@@ -435,16 +435,18 @@ const styles = StyleSheet.create({
   empty: { textAlign: 'center', color: Colors.light.textSecondary, marginTop: 40 },
 
   // Модалка
+  // eslint-disable-next-line react-native/no-color-literals
   modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' },
-  modalContent: { backgroundColor: '#fff', borderTopLeftRadius: Radius.xxl, borderTopRightRadius: Radius.xxl, padding: Spacing.l, maxHeight: '80%' },
+  modalContent: { backgroundColor: Colors.light.card, borderTopLeftRadius: Radius.xxl, borderTopRightRadius: Radius.xxl, padding: Spacing.l, maxHeight: '80%' },
   modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.xl },
   modalTitle: { fontSize: 20, fontWeight: '800', color: Colors.light.text },
   formGroup: { marginBottom: Spacing.l },
   labelRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.s },
   label: { fontSize: 14, fontWeight: '700', color: Colors.light.textSecondary },
   pickText: { fontSize: 14, fontWeight: '700', color: Colors.light.primary },
+  pickTextDisabled: { opacity: 0.5 },
   input: {
-    backgroundColor: '#F3F4F6', height: 50, borderRadius: Radius.m, paddingHorizontal: Spacing.m,
+    backgroundColor: Colors.light.background, height: 50, borderRadius: Radius.m, paddingHorizontal: Spacing.m,
     fontSize: 16, color: Colors.light.text,
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
   },
@@ -456,6 +458,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.primary, height: 56, borderRadius: Radius.l,
     justifyContent: 'center', alignItems: 'center', marginTop: Spacing.m, marginBottom: Spacing.xl,
   },
-  submitBtnText: { color: '#fff', fontSize: 16, fontWeight: '700' },
+  submitBtnText: { color: Colors.light.card, fontSize: 16, fontWeight: '700' },
   btnDisabled: { opacity: 0.6 },
 });

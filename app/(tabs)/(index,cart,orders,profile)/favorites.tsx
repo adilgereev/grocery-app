@@ -155,11 +155,6 @@ const styles = StyleSheet.create({
   backButton: {
     padding: Spacing.xs,
   },
-  centerContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   title: {
     fontSize: 20,
     fontWeight: '800',

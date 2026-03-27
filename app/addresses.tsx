@@ -2,52 +2,17 @@ import React, { useMemo } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList, Platform, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAddressStore, Address } from '@/store/addressStore';
+import { formatFullAddress } from '@/utils/addressFormatter';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, FontSize, Spacing, Radius } from '@/constants/theme';
 
 export default function AddressesScreen() {
   const { addresses, selectedAddressId, removeAddress, selectAddress } = useAddressStore();
   const router = useRouter();
 
-  // Кэшируем функцию, чтобы не пересчитывать при каждом рендере
-  const renderAddressText = useMemo(() => (item: Address) => {
-    // Убираем город, республику и типовые префиксы улицы
-    let cleanStreet = item.text
-      .replace(/^г\. Буйнакск, /, '')
-      .replace(/, Республика Дагестан$/, '');
-
-    // Извлекаем номер дома из текста
-    const houseMatch = cleanStreet.match(/д\.\s*(\d+)/);
-    let houseNumber = '';
-    if (houseMatch) {
-      houseNumber = houseMatch[1];
-      // Убираем "д. 56" из названия улицы
-      cleanStreet = cleanStreet.replace(/,\s*д\.\s*\d+.*$/, '').replace(/д\.\s*\d+.*$/, '');
-    }
-
-    // Извлекаем номер квартиры из текста (или из поля apartment)
-    let apartmentNumber = '';
-    if (item.apartment) {
-      apartmentNumber = item.apartment;
-    } else {
-      const apartmentMatch = item.text.match(/кв\.\s*(\d+)/);
-      apartmentNumber = apartmentMatch ? apartmentMatch[1] : '';
-    }
-
-    // Убираем префиксы улицы (ул, пр-кт и т.д.)
-    cleanStreet = cleanStreet.replace(/^(ул|пр-кт|б-р|пер|туп|наб)\.?\s*/i, '').trim();
-
-    // Формируем вторую строку с номером дома и квартирой
-    let secondLine = '';
-    if (houseNumber) secondLine += `д. ${houseNumber}`;
-    if (apartmentNumber) secondLine += (secondLine ? ', ' : '') + `кв. ${apartmentNumber}`;
-
-    return {
-      street: cleanStreet,
-      housePart: secondLine
-    };
-  }, []);
+  // Используем централизованное форматирование
+  const displayAddress = (item: Address) => formatFullAddress(item);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -61,6 +26,11 @@ export default function AddressesScreen() {
 
       <FlatList
         data={addresses}
+        ListHeaderComponent={
+          addresses.length > 0 ? (
+            <Text style={styles.cityHint}>Доставка по г. Буйнакск</Text>
+          ) : null
+        }
         keyExtractor={(item) => item.id}
         contentContainerStyle={[styles.list, { flexGrow: 1 }]}
         renderItem={({ item }) => (
@@ -82,13 +52,8 @@ export default function AddressesScreen() {
               </View>
               <View style={{ flex: 1, marginLeft: 16 }}>
                 <Text style={[styles.addressText, selectedAddressId === item.id && styles.selectedAddressText]}>
-                  {renderAddressText(item).street}
+                  {displayAddress(item)}
                 </Text>
-                {renderAddressText(item).housePart ? (
-                  <Text style={styles.houseSubtext}>
-                    {renderAddressText(item).housePart}
-                  </Text>
-                ) : null}
               </View>
             </View>
             <TouchableOpacity 
@@ -148,7 +113,7 @@ const styles = StyleSheet.create({
     padding: Spacing.xs,
   },
   title: {
-    fontSize: 18,
+    fontSize: FontSize.xl,
     fontWeight: 'bold',
     color: Colors.light.text,
   },
@@ -206,15 +171,10 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.primary,
   },
   addressText: {
-    fontSize: 15,
+    fontSize: FontSize.l,
     color: Colors.light.text,
     fontWeight: '600',
-    lineHeight: 21,
-  },
-  houseSubtext: {
-    fontSize: 13,
-    color: Colors.light.textSecondary,
-    marginTop: Spacing.xs,
+    lineHeight: 24,
   },
   selectedAddressText: {
     color: Colors.light.primary,
@@ -233,9 +193,16 @@ const styles = StyleSheet.create({
   emptyText: {
     textAlign: 'center',
     color: Colors.light.textSecondary,
-    fontSize: 16,
+    fontSize: FontSize.l,
     marginTop: Spacing.m,
     lineHeight: 24,
+  },
+  cityHint: {
+    fontSize: FontSize.s,
+    fontWeight: '600',
+    color: Colors.light.textSecondary,
+    marginBottom: Spacing.s,
+    paddingLeft: Spacing.xs,
   },
   footer: {
     padding: Spacing.l,
@@ -259,7 +226,7 @@ const styles = StyleSheet.create({
   },
   addButtonText: {
     color: '#fff',
-    fontSize: 17,
+    fontSize: FontSize.l,
     fontWeight: 'bold',
   },
 });

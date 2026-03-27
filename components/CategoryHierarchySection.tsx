@@ -26,6 +26,7 @@ const CategoryHierarchySection = React.memo(({ category }: CategoryHierarchySect
     </View>
   );
 });
+CategoryHierarchySection.displayName = 'CategoryHierarchySection';
 
 export default CategoryHierarchySection;
 

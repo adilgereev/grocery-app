@@ -11,6 +11,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useAddressStore } from '@/store/addressStore';
+import { formatShortAddress } from '@/utils/addressFormatter';
 import {
   Animated,
   Dimensions,
@@ -41,9 +42,7 @@ export default function HomeScreen() {
   // Подключаем хранилище адресов
   const { addresses, selectedAddressId, loadAddresses } = useAddressStore();
   const selectedAddress = addresses.find(a => a.id === selectedAddressId);
-  const displayAddress = selectedAddress 
-    ? selectedAddress.text.replace(/^г\. Буйнакск, /, '') 
-    : 'Выберите адрес';
+  const displayAddress = formatShortAddress(selectedAddress);
 
   // Прямая привязка анимации к позиции скролла — нет конфликтов, нет дрожания
   const scrollY = useRef(new Animated.Value(0)).current;

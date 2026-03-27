@@ -1,6 +1,7 @@
 import { Colors, Radius, Spacing } from '@/constants/theme';
 import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
+import { cleanAddress } from '@/lib/address';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, FlatList, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -21,12 +22,12 @@ interface OrderWithDetails {
   delivery_address: string;
   created_at: string;
   profiles: { first_name: string; last_name: string; phone: string } | { first_name: string; last_name: string; phone: string }[];
-  items?: Array<{
+  items?: {
     id: string;
     quantity: number;
     price_at_time: number;
     product?: { name: string };
-  }>;
+  }[];
 }
 
 export default function ManageOrdersScreen() {
@@ -124,7 +125,7 @@ export default function ManageOrdersScreen() {
         <View style={styles.customerInfo}>
           <TouchableOpacity style={styles.customerRow} onPress={() => callCustomer(profile?.phone)}>
             <Ionicons name="person-circle" size={24} color={Colors.light.textSecondary} />
-            <View style={{ marginLeft: 8, flex: 1 }}>
+            <View style={styles.customerInfoContainer}>
               <Text style={styles.customerName}>{customerName}</Text>
               <Text style={styles.customerPhone}>{profile?.phone || 'Телефон не указан'}</Text>
             </View>
@@ -134,7 +135,7 @@ export default function ManageOrdersScreen() {
 
         <View style={styles.addressBox}>
           <Ionicons name="location" size={16} color={Colors.light.textSecondary} />
-          <Text style={styles.addressText} numberOfLines={2}>{item.delivery_address}</Text>
+          <Text style={styles.addressText} numberOfLines={2}>{cleanAddress(item.delivery_address)}</Text>
         </View>
 
         <View style={styles.footer}>
@@ -174,7 +175,7 @@ export default function ManageOrdersScreen() {
 
   if (loading) {
     return (
-      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center' }]}>
+      <View style={styles.centerContainer}>
         <ActivityIndicator size="large" color={Colors.light.primary} />
       </View>
     );
@@ -195,10 +196,11 @@ export default function ManageOrdersScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F9FAFB' },
+  container: { flex: 1, backgroundColor: Colors.light.background },
+  centerContainer: { justifyContent: 'center', alignItems: 'center' },
   list: { padding: Spacing.m, paddingBottom: 60 },
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.light.card,
     borderRadius: Radius.l,
     padding: Spacing.m,
     marginBottom: Spacing.m,
@@ -213,8 +215,9 @@ const styles = StyleSheet.create({
   statusBadge: { paddingHorizontal: 12, paddingVertical: 4, borderRadius: Radius.m },
   statusText: { fontSize: 12, fontWeight: '700' },
   customerInfo: { marginBottom: Spacing.s },
-  customerRow: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#F9FAFB', padding: 10, borderRadius: Radius.m },
+  customerRow: { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.light.background, padding: 10, borderRadius: Radius.m },
   customerName: { fontSize: 14, fontWeight: '600', color: Colors.light.text },
+  customerInfoContainer: { marginLeft: Spacing.s, flex: 1 },
   customerPhone: { fontSize: 12, color: Colors.light.textSecondary, marginTop: 2 },
   addressBox: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: Spacing.m },
   addressText: { fontSize: 13, color: Colors.light.textSecondary, marginLeft: 6, flex: 1, lineHeight: 18 },
@@ -222,7 +225,7 @@ const styles = StyleSheet.create({
   price: { fontSize: 18, fontWeight: '800', color: Colors.light.text },
   date: { fontSize: 12, color: Colors.light.textLight },
   actionButton: { paddingVertical: 12, borderRadius: Radius.m, alignItems: 'center' },
-  actionButtonText: { color: '#fff', fontSize: 14, fontWeight: '700' },
+  actionButtonText: { color: Colors.light.card, fontSize: 14, fontWeight: '700' },
   empty: { textAlign: 'center', marginTop: 100, color: Colors.light.textSecondary },
   expandButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: Spacing.s, marginBottom: Spacing.s, backgroundColor: '#EFF6FF', borderRadius: Radius.m },
   expandButtonText: { color: Colors.light.primary, fontSize: 13, fontWeight: '600', marginRight: 4 },

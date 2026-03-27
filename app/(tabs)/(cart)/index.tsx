@@ -6,6 +6,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/providers/AuthProvider';
 import { useAddressStore, Address } from '@/store/addressStore';
+import { formatFullAddress } from '@/utils/addressFormatter';
 import { useRouter } from 'expo-router';
 import { schedulePushNotification } from '@/lib/NotificationService';
 import { Colors, Spacing, Radius } from '@/constants/theme';
@@ -87,15 +88,7 @@ export default function CartScreen() {
 
   const selectedAddress = addresses.find((a) => a.id === selectedAddressId);
 
-  const formatAddress = (addr: Address) => {
-    if (!addr) return '';
-    const parts = [addr.text];
-    if (addr.house) parts.push(`д. ${addr.house}`);
-    if (addr.entrance) parts.push(`подъезд ${addr.entrance}`);
-    if (addr.floor) parts.push(`этаж ${addr.floor}`);
-    if (addr.apartment) parts.push(`кв. ${addr.apartment}`);
-    return parts.join(', ');
-  };
+  const formatAddress = (addr: Address) => formatFullAddress(addr);
 
   const handleCheckout = async () => {
     // Soft Gating: Гость хочет купить? Отправляем на логин.

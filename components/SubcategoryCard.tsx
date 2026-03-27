@@ -56,6 +56,7 @@ const SubcategoryCard = React.memo(({ subcategory, index }: SubcategoryCardProps
     </AnimatedTouchable>
   );
 });
+SubcategoryCard.displayName = 'SubcategoryCard';
 
 export default SubcategoryCard;
 

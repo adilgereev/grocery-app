@@ -131,11 +131,11 @@ export default function CatalogScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F9FAFB' },
+  container: { flex: 1, backgroundColor: Colors.light.background },
   centerContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   list: { padding: Spacing.m },
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.light.card,
     borderRadius: Radius.l,
     padding: Spacing.m,
     marginBottom: Spacing.m,

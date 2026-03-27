@@ -75,6 +75,19 @@ export const Radius = {
   pill: 999,
 };
 
+export const FontSize = {
+  xs: 10,
+  s: 12,
+  m: 14,
+  l: 16,
+  xl: 18,
+  xxl: 20,
+  xxxl: 24,
+  big: 28,
+  huge: 32,
+  hero: 48,
+};
+
 export const Fonts = Platform.select({
   ios: {
     /** iOS `UIFontDescriptorSystemDesignDefault` */

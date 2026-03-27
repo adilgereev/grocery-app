@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
 import Skeleton from '@/components/Skeleton';
 import { Colors, Spacing, Radius } from '@/constants/theme';
+import { cleanAddress } from '@/lib/address';
 import { useCartStore } from '@/store/cartStore';
 import { Product } from '@/types';
 
@@ -99,7 +100,6 @@ export default function OrderDetailsScreen() {
       const errorMessage = err instanceof Error ? err.message : 'Не удалось загрузить детали заказа';
       console.error('Ошибка загрузки деталей заказа:', err);
       setError(errorMessage);
-      ErrorToast({ type: 'error', message: errorMessage });
     } finally {
       setLoading(false);
     }
@@ -236,7 +236,7 @@ export default function OrderDetailsScreen() {
           </View>
           <View style={{ flex: 1 }}>
             <Text style={styles.addressTitle}>Адрес доставки</Text>
-            <Text style={styles.addressText}>{order.delivery_address}</Text>
+            <Text style={styles.addressText}>{cleanAddress(order.delivery_address)}</Text>
           </View>
         </View>
 
