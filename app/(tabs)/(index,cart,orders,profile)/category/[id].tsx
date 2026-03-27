@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView, ActivityIndicator, Platform } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
@@ -8,7 +8,7 @@ import ProductCard from '@/components/ProductCard';
 import SubcategoryCard from '@/components/SubcategoryCard';
 import Skeleton from '@/components/Skeleton';
 import { ErrorToast, ToastType } from '@/components/ErrorToast';
-import { Colors, Spacing } from '@/constants/theme';
+import { Colors, Spacing, Radius } from '@/constants/theme';
 import { Product } from '@/types';
 
 export default function CategoryProductsScreen() {
@@ -103,7 +103,7 @@ export default function CategoryProductsScreen() {
       {loading ? (
         <View style={[styles.listContainer, { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' }]}>
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <Skeleton key={i} width="47%" height={230} borderRadius={20} style={{ marginBottom: Spacing.m }} />
+            <Skeleton key={i} width="47%" height={230} borderRadius={Radius.l} style={{ marginBottom: Spacing.m }} />
           ))}
         </View>
       ) : error ? (
@@ -172,14 +172,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: Spacing.l,
-    paddingTop: 60,
+    paddingTop: Platform.OS === 'ios' ? 60 : 40,
     backgroundColor: '#fff',
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.light.border,
     elevation: 4,
     shadowColor: '#000',
-    shadowOpacity: 0.05,
+    shadowOpacity: 0.04,
     shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 14,
     marginBottom: Spacing.s,
     zIndex: 10,
   },
@@ -187,8 +186,8 @@ const styles = StyleSheet.create({
     padding: Spacing.xs,
   },
   title: {
-    fontSize: 20,
-    fontWeight: '800',
+    fontSize: 22,
+    fontWeight: '700',
     color: Colors.light.text,
   },
   listContainer: {
@@ -238,8 +237,8 @@ const styles = StyleSheet.create({
     paddingTop: Spacing.s,
   },
   subcategoriesTitle: {
-    fontSize: 18,
-    fontWeight: '800',
+    fontSize: 22,
+    fontWeight: '700',
     color: Colors.light.text,
     marginBottom: Spacing.m,
     paddingHorizontal: Spacing.m,
@@ -262,9 +261,9 @@ const styles = StyleSheet.create({
   tagBadge: {
     paddingHorizontal: 16,
     paddingVertical: 8,
-    borderRadius: 20,
+    borderRadius: Radius.pill,
     backgroundColor: Colors.light.borderLight,
-    height: 36,
+    height: 38,
     justifyContent: 'center',
   },
   tagBadgeActive: {

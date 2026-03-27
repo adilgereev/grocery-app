@@ -21,16 +21,20 @@ export default function PopularProductsSkeleton({ count = 4 }: PopularProductsSk
       >
         {Array.from({ length: count }).map((_, i) => (
           <View key={i} style={styles.card}>
-            {/* Имитация картинки */}
-            <Skeleton width="100%" height={110} borderRadius={Radius.xl} />
+            {/* Имитация картинки с плавающей кнопкой */}
+            <View style={styles.imageWrapper}>
+              <Skeleton width="100%" height={110} borderRadius={0} />
+              <View style={styles.floatingButton}>
+                <Skeleton width={32} height={32} borderRadius={16} />
+              </View>
+            </View>
             
             <View style={styles.info}>
-              {/* Имитация названия (2 строки) */}
-              <Skeleton width="90%" height={12} borderRadius={4} style={{ marginBottom: 6 }} />
-              <Skeleton width="60%" height={12} borderRadius={4} style={{ marginBottom: 8 }} />
+              {/* Имитация названия (1 строка для чистоты) */}
+              <Skeleton width="90%" height={14} borderRadius={4} style={{ marginBottom: 8 }} />
               
-              {/* Имитация цены */}
-              <Skeleton width="40%" height={16} borderRadius={4} />
+              {/* Футер: только цена */}
+              <Skeleton width="50%" height={16} borderRadius={4} />
             </View>
           </View>
         ))}
@@ -54,15 +58,27 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.m,
   },
   card: {
-    width: 130,
+    width: 140,
+    height: 180,
     marginRight: Spacing.m,
     backgroundColor: '#fff',
-    borderRadius: Radius.xl,
+    borderRadius: Radius.l,
     padding: 0,
     overflow: 'hidden',
-    // Тень не добавляем в скелетон, чтобы он был "плоским" до загрузки
+  },
+  imageWrapper: {
+    position: 'relative',
+    height: 110,
+    width: '100%',
+  },
+  floatingButton: {
+    position: 'absolute',
+    bottom: 8,
+    right: 8,
   },
   info: {
     padding: Spacing.s,
+    flex: 1,
+    justifyContent: 'center',
   },
 });
