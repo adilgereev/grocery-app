@@ -15,7 +15,6 @@ import { useCallback } from 'react';
 
 export default function ProfileScreen() {
   const router = useRouter();
-  const setHasSeenOnboarding = useAppStore(state => state.setHasSeenOnboarding);
   const { session } = useAuth();
   const clearCart = useCartStore(state => state.clearCart);
   
@@ -213,17 +212,6 @@ export default function ProfileScreen() {
           <Text style={styles.logoutText}>Выйти из аккаунта</Text>
         </TouchableOpacity>
 
-        {/* Dev Tools */}
-        <TouchableOpacity 
-          style={styles.devButton} 
-          onPress={() => {
-             setHasSeenOnboarding(false);
-             Alert.alert('Сброшено', 'Экраны онбординга снова появятся после выхода.');
-          }}
-        >
-          <Text style={styles.devButtonText}>[🛠 Тест] Сброс онбординга</Text>
-        </TouchableOpacity>
-        
         <View style={{ height: 40 }} />
       </ScrollView>
     </View>
@@ -360,12 +348,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: '700',
   },
-  devButton: {
-    alignItems: 'center',
-    paddingVertical: 12,
-  },
-  devButtonText: {
-    color: Colors.light.textLight,
-    fontSize: 13,
-  }
 });

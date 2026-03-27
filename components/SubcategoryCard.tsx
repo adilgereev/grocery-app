@@ -12,15 +12,6 @@ interface SubcategoryCardProps {
   index: number;
 }
 
-const PASTEL_COLORS = [
-  '#E0F2FE', // light blue
-  '#FEF3C7', // light yellow
-  '#F0FDF4', // light green
-  '#FFE4E6', // light pink
-  '#F3E8FF', // light purple
-  '#FFEDD5', // light orange
-];
-
 const SubcategoryCard = React.memo(({ subcategory, index }: SubcategoryCardProps) => {
   const router = useRouter();
 
@@ -35,18 +26,20 @@ const SubcategoryCard = React.memo(({ subcategory, index }: SubcategoryCardProps
   if (patternIndex === 0) cardWidth = '58%';
   if (patternIndex === 1) cardWidth = '38%';
 
-  const bgColor = PASTEL_COLORS[index % PASTEL_COLORS.length];
+  // Цвет фона: из базы (HEX) или нейтральный дефолт
+  const isHex = subcategory.image_url?.startsWith('#');
+  const bgColor = isHex ? subcategory.image_url : '#F9FAFB';
 
   return (
     <AnimatedTouchable
-      style={[styles.card, { width: cardWidth, backgroundColor: bgColor }]}
+      style={[styles.card, { width: cardWidth, backgroundColor: bgColor as string }]}
       activeOpacity={0.85}
       onPress={handlePress}
       entering={FadeInDown.delay((index % 5) * 50).duration(400)}
     >
       <Text style={styles.categoryName} numberOfLines={3}>{subcategory.name}</Text>
 
-      {subcategory.image_url && !subcategory.image_url.startsWith('#') && (
+      {subcategory.image_url && !isHex && (
         <Image
           source={{ uri: subcategory.image_url }}
           style={styles.image}

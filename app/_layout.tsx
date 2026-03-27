@@ -2,7 +2,7 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import AuthProvider, { useAuth } from '@/providers/AuthProvider';
@@ -21,11 +21,11 @@ function RootLayoutNav() {
   const segments = useSegments();
   const router = useRouter();
   
-  const { hasSeenOnboarding, isReady, checkOnboarding } = useAppStore();
+  const { isReady, initialize } = useAppStore();
   const loadAddresses = useAddressStore(state => state.loadAddresses);
 
   useEffect(() => {
-    checkOnboarding();
+    initialize();
     loadAddresses();
     registerForPushNotificationsAsync();
   }, []);
@@ -35,33 +35,24 @@ function RootLayoutNav() {
     if (loading || !isReady) return;
 
     const inAuthGroup = segments[0] === '(auth)';
-    const inOnboarding = segments[0] === 'onboarding';
 
-    // 1. Если не пройдено обучение — всегда отправляем туда
-    if (!hasSeenOnboarding && !inOnboarding) {
-      router.replace('/onboarding');
-    } 
-    // 2. Если пользователь уже авторизован, но находится на экране логина или онбординга
-    else if (session && (inAuthGroup || inOnboarding)) {
+    // Если пользователь уже авторизован, но находится на экране логина
+    if (session && inAuthGroup) {
       if (router.canGoBack()) {
         router.back();
       } else {
         router.replace('/(tabs)/(index)' as any);
       }
     }
-    // 3. Для всех остальных (гости и авторизованные на обычных вкладках) — не вмешиваемся! 
-    // Это и есть "отложенная авторизация".
-  }, [session, loading, segments, isReady, hasSeenOnboarding]);
+  }, [session, loading, segments, isReady]);
 
   if (loading || !isReady) return null;
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="onboarding" />
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="(auth)" />
-        <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
         <Stack.Screen name="addresses" options={{ presentation: 'modal' }} />
       </Stack>
       <StatusBar style="dark" />
