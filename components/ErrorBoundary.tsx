@@ -1,4 +1,5 @@
 import React, { Component, ReactNode } from 'react';
+import { logger } from '@/lib/logger';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Spacing, Radius } from '@/constants/theme';
@@ -32,7 +33,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    console.error('ErrorBoundary caught an error:', error, errorInfo);
+    logger.error('ErrorBoundary caught an error:', error, errorInfo);
 
     this.setState({
       error,
@@ -73,7 +74,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
                   style={styles.detailsButton}
                   onPress={() => {
                     if (this.state.errorInfo?.componentStack) {
-                      console.log('Component Stack:', this.state.errorInfo.componentStack);
+                      logger.log('Component Stack:', this.state.errorInfo.componentStack);
                     }
                   }}
                 >

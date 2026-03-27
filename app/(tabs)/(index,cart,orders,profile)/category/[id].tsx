@@ -8,6 +8,7 @@ import ProductCard from '@/components/ProductCard';
 import SubcategoryCard from '@/components/SubcategoryCard';
 import Skeleton from '@/components/Skeleton';
 import { ErrorToast, ToastType } from '@/components/ErrorToast';
+import { logger } from '@/lib/logger';
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { Product } from '@/types';
 
@@ -54,7 +55,7 @@ export default function CategoryProductsScreen() {
       setActiveTag(null); // Reset tag when category changes
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Не удалось загрузить товары';
-      console.error('Ошибка загрузки товаров:', err);
+      logger.error('Ошибка загрузки товаров:', err);
       setError(errorMessage);
       ErrorToast({ type: 'error', message: errorMessage });
     } finally {

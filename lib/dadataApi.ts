@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { logger } from './logger';
 
 const DADATA_API_KEY = process.env.EXPO_PUBLIC_DADATA_API_KEY || '';
 const SUGGEST_URL = 'https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/address';
@@ -21,7 +22,7 @@ export interface DaDataSuggestion {
 
 export const getAddressSuggestions = async (query: string, city?: string): Promise<DaDataSuggestion[]> => {
   if (!DADATA_API_KEY) {
-    console.warn('DaData API Key is missing. Suggestions will not work.');
+    logger.warn('DaData API Key is missing. Suggestions will not work.');
     return [];
   }
 
@@ -45,10 +46,10 @@ export const getAddressSuggestions = async (query: string, city?: string): Promi
       }
     );
 
-    console.log('DaData API Response:', response.data.suggestions);
+    logger.log('DaData API Response:', response.data.suggestions);
     return response.data.suggestions || [];
   } catch (error) {
-    console.error('DaData Suggesion Error:', error);
+    logger.error('DaData Suggesion Error:', error);
     return [];
   }
 };
@@ -72,7 +73,7 @@ export const getAddressByCoords = async (lat: number, lon: number): Promise<DaDa
     const suggestions = response.data.suggestions || [];
     return suggestions.length > 0 ? suggestions[0] : null;
   } catch (error) {
-    console.error('DaData Geolocate Error:', error);
+    logger.error('DaData Geolocate Error:', error);
     return null;
   }
 };

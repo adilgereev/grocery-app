@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { supabase } from '@/lib/supabase';
+import { logger } from '@/lib/logger';
 
 export interface Address {
   id: string; // uuid from supabase
@@ -78,10 +79,9 @@ export const useAddressStore = create<AddressStore>((set, get) => ({
         addresses: data as Address[],
         selectedAddressId: selected ? selected.id : fallbackId
       });
-    } catch (e: unknown) {
-      const errorMessage = e instanceof Error ? e.message : 'Не удалось загрузить адреса';
-      console.error('Ошибка загрузки адресов:', e);
-      set({ error: errorMessage });
+    } catch (e) {
+      logger.error('Ошибка загрузки адресов:', e);
+      set({ error: e instanceof Error ? e.message : 'Не удалось загрузить адреса', isLoading: false });
     }
   },
 
@@ -118,10 +118,9 @@ export const useAddressStore = create<AddressStore>((set, get) => ({
         addresses: updated,
         selectedAddressId: isFirst ? data.id : get().selectedAddressId
       });
-    } catch (e: unknown) {
-      const errorMessage = e instanceof Error ? e.message : 'Не удалось добавить адрес';
-      console.error('Ошибка добавления адреса:', e);
-      set({ error: errorMessage });
+    } catch (e) {
+      logger.error('Ошибка добавления адреса:', e);
+      set({ error: e instanceof Error ? e.message : 'Не удалось добавить адрес', isLoading: false });
     }
   },
 
@@ -148,10 +147,9 @@ export const useAddressStore = create<AddressStore>((set, get) => ({
           set({ selectedAddressId: null });
         }
       }
-    } catch (e: unknown) {
-      const errorMessage = e instanceof Error ? e.message : 'Не удалось удалить адрес';
-      console.error('Ошибка удаления адреса:', e);
-      set({ error: errorMessage });
+    } catch (e) {
+      logger.error('Ошибка удаления адреса:', e);
+      set({ error: e instanceof Error ? e.message : 'Не удалось удалить адрес', isLoading: false });
     }
   },
 
@@ -186,10 +184,9 @@ export const useAddressStore = create<AddressStore>((set, get) => ({
 
       if (selectError) throw selectError;
         
-    } catch (e: unknown) {
-      const errorMessage = e instanceof Error ? e.message : 'Не удалось выбрать адрес';
-      console.error('Ошибка выбора адреса:', e);
-      set({ error: errorMessage });
+    } catch (e) {
+      logger.error('Ошибка выбора адреса:', e);
+      set({ error: e instanceof Error ? e.message : 'Не удалось выбрать адрес' });
     }
   }
 }));

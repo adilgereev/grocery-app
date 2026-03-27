@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Category, CategoryWithSubcategories, CategoryWithHierarchy } from '@/types';
+import { logger } from '@/lib/logger';
 
 interface CategoryState {
   // Хранилище иерархии категорий
@@ -73,7 +74,7 @@ export const useCategoryStore = create<CategoryState>()(
           });
         } catch (error) {
           const errorMessage = error instanceof Error ? error.message : 'Не удалось загрузить категории';
-          console.error('Ошибка загрузки категорий:', error);
+          logger.error('Ошибка загрузки категорий:', error);
           set({ error: errorMessage, isLoading: false });
         }
       },
@@ -103,7 +104,7 @@ export const useCategoryStore = create<CategoryState>()(
           });
         } catch (error) {
           const errorMessage = error instanceof Error ? error.message : 'Не удалось загрузить иерархию категорий';
-          console.error('Ошибка загрузки иерархии:', error);
+          logger.error('Ошибка загрузки иерархии:', error);
           set({ error: errorMessage, isLoading: false });
         }
       },
@@ -132,7 +133,7 @@ export const useCategoryStore = create<CategoryState>()(
           });
         } catch (error) {
           const errorMessage = error instanceof Error ? error.message : 'Не удалось загрузить все категории';
-          console.error('Ошибка загрузки категорий:', error);
+          logger.error('Ошибка загрузки категорий:', error);
           set({ error: errorMessage, isLoading: false });
         }
       },

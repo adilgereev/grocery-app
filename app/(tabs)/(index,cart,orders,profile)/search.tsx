@@ -1,5 +1,6 @@
 import ProductCard from '@/components/ProductCard';
-import { ErrorToast, ToastType } from '@/components/ErrorToast';
+import { ErrorToast } from '@/components/ErrorToast';
+import { logger } from '@/lib/logger';
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { supabase } from '@/lib/supabase';
 import { useSearchStore } from '@/store/searchStore';
@@ -37,7 +38,7 @@ export default function SearchScreen() {
       if (data) setRecommended(data);
     } catch (e: unknown) {
       const errorMessage = e instanceof Error ? e.message : 'Не удалось загрузить рекомендации';
-      console.error('Ошибка загрузки рекомендаций:', e);
+      logger.error('Ошибка загрузки рекомендаций:', e);
       setError(errorMessage);
     }
   };
@@ -70,7 +71,7 @@ export default function SearchScreen() {
       setResults(data || []);
     } catch (e: unknown) {
       const errorMessage = e instanceof Error ? e.message : 'Не удалось выполнить поиск';
-      console.error('Ошибка поиска:', e);
+      logger.error('Ошибка поиска:', e);
       setError(errorMessage);
       ErrorToast({ type: 'error', message: errorMessage });
       setResults([]);

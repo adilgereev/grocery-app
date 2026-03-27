@@ -15,6 +15,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { logger } from '@/lib/logger';
 import {
   Animated,
   Dimensions,
@@ -88,7 +89,9 @@ export default function HomeScreen() {
         .select('id, name, price, image_url, unit')
         .order('price', { ascending: false })
         .limit(10);
-      if (error) console.error('Ошибка загрузки популярных:', error.message);
+      if (error) {
+        logger.error('Ошибка загрузки популярных:', error.message);
+      }
       setPopularProducts(data || []);
     } finally {
       setPopularLoading(false);
@@ -108,7 +111,7 @@ export default function HomeScreen() {
 
       if (profileData?.first_name) setFirstName(profileData.first_name);
     } catch (error) {
-      console.error('Ошибка в fetchUserInfo:', error);
+      logger.error('Ошибка в fetchUserInfo:', error);
     }
   }
 

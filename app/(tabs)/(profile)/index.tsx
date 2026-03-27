@@ -5,6 +5,7 @@ import { useAuth } from '@/providers/AuthProvider';
 import { useCartStore } from '@/store/cartStore';
 import { useAppStore } from '@/store/appStore';
 import { Ionicons } from '@expo/vector-icons';
+import { logger } from '@/lib/logger';
 import { useRouter } from 'expo-router';
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { formatPhoneDisplay } from '@/lib/sms';
@@ -42,7 +43,7 @@ export default function ProfileScreen() {
       if (data) setProfile(data);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Неизвестная ошибка';
-      console.error('Ошибка загрузки профиля:', errorMessage);
+      logger.error('Ошибка загрузки профиля:', errorMessage);
     } finally {
       setLoading(false);
     }

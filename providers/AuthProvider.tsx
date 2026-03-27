@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
 import { Session } from '@supabase/supabase-js';
 import { supabase } from '@/lib/supabase';
+import { logger } from '@/lib/logger';
 
 type AuthContextType = {
   session: Session | null;
@@ -23,8 +24,9 @@ const savePhoneToProfile = async (userId: string, phone: string) => {
 
     // Если телефон в профиле совпадает с текущим — не сохраняем (избежать дубликатов)
     if (existingProfile?.phone === phone) {
-      console.log('Телефон уже в профиле, пропускаем сохранение:', phone);
-      return true; // Возвращаем успех, даже если ничего не меняли
+      logger.log('Телефон уже в профиле, пропускаем сохранение:', phone);
+      return; // Телефон уже есть
+// Возвращаем успех, даже если ничего не меняли
     }
 
     // Если телефона нет или отличается — сохраняем
@@ -35,10 +37,10 @@ const savePhoneToProfile = async (userId: string, phone: string) => {
 
     if (updateError) throw updateError;
     
-    console.log('Телефон успешно сохранён в профиль:', phone);
+    logger.log('Телефон успешно сохранён в профиль:', phone);
     return true;
   } catch (error) {
-    console.error('Ошибка сохранения телефона:', error);
+    logger.error('Ошибка сохранения телефона:', error);
     return false;
   }
 };

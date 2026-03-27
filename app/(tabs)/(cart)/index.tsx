@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Alert, Platform, Image, Scrol
 import Animated, { FadeInLeft, Layout, useSharedValue, useAnimatedScrollHandler, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { useCartStore } from '@/store/cartStore';
 import { Ionicons } from '@expo/vector-icons';
+import { logger } from '@/lib/logger';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/providers/AuthProvider';
 import { useAddressStore, Address } from '@/store/addressStore';
@@ -146,7 +147,7 @@ export default function CartScreen() {
       router.push('/orders');
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Произошла ошибка при оформлении заказа';
-      console.error('Ошибка оформления заказа:', errorMessage);
+      logger.error('Ошибка оформления заказа:', errorMessage);
       if (Platform.OS === 'web') window.alert(`Ошибка: ${errorMessage}`);
       else Alert.alert('Ошибка оформления', errorMessage);
     } finally {

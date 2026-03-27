@@ -21,6 +21,7 @@ import {
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { logger } from '@/lib/logger';
 import { DaDataSuggestion, getAddressByCoords } from '@/lib/dadataApi';
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -106,7 +107,7 @@ export default function AddAddressScreen() {
       router.back();
     } catch (e: unknown) {
       const errorMessage = e instanceof Error ? e.message : 'Не удалось добавить адрес';
-      console.error('Ошибка добавления адреса:', e);
+      logger.error('Ошибка добавления адреса:', e);
       showAlert('Ошибка', errorMessage);
     } finally {
       setIsSubmitting(false);
@@ -330,7 +331,7 @@ export default function AddAddressScreen() {
                   setAddress(formatAddressString(suggestion));
                 }
               } catch (e) {
-                console.error('Ошибка реверсивного геокодинга:', e);
+                logger.error('Ошибка реверсивного геокодинга:', e);
               }
             }}
           />

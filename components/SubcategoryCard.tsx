@@ -1,9 +1,9 @@
-import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import Animated, { FadeInDown } from 'react-native-reanimated';
-import { useRouter } from 'expo-router';
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Radius, Spacing } from '@/constants/theme';
 import { Category } from '@/types';
+import { useRouter } from 'expo-router';
+import React from 'react';
+import { Image, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import Animated, { FadeInDown } from 'react-native-reanimated';
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
@@ -45,11 +45,11 @@ const SubcategoryCard = React.memo(({ subcategory, index }: SubcategoryCardProps
       entering={FadeInDown.delay((index % 5) * 50).duration(400)}
     >
       <Text style={styles.categoryName} numberOfLines={3}>{subcategory.name}</Text>
-      
+
       {subcategory.image_url && !subcategory.image_url.startsWith('#') && (
-        <Image 
-          source={{ uri: subcategory.image_url }} 
-          style={styles.image} 
+        <Image
+          source={{ uri: subcategory.image_url }}
+          style={styles.image}
           resizeMode="contain"
         />
       )}
@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     padding: Spacing.s,
     lineHeight: 18,
-    maxWidth: '85%', 
+    maxWidth: '85%',
     zIndex: 10,
   },
   image: {

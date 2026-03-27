@@ -1,5 +1,6 @@
 import Skeleton from '@/components/Skeleton';
 import { ErrorToast, ToastType } from '@/components/ErrorToast';
+import { logger } from '@/lib/logger';
 import { Colors, Radius, Spacing } from '@/constants/theme';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/providers/AuthProvider';
@@ -54,7 +55,7 @@ export default function ProductDetailScreen() {
       if (related) setRelatedProducts(related);
     } catch (e: unknown) {
       const errorMessage = e instanceof Error ? e.message : 'Не удалось загрузить товар';
-      console.error('Ошибка загрузки продукта:', e);
+      logger.error('Ошибка загрузки продукта:', e);
       setError(errorMessage);
       ErrorToast({ type: 'error', message: errorMessage });
     } finally {

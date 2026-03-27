@@ -6,6 +6,7 @@ import { useAuth } from '@/providers/AuthProvider';
 import { Ionicons } from '@expo/vector-icons';
 import Skeleton from '@/components/Skeleton';
 import { ErrorToast } from '@/components/ErrorToast';
+import { logger } from '@/lib/logger';
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { cleanAddress } from '@/lib/address';
 import { Order } from '@/types';
@@ -64,7 +65,7 @@ export default function OrdersScreen() {
       setError(null);
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Не удалось загрузить заказы';
-      console.error('Ошибка загрузки заказов:', err);
+      logger.error('Ошибка загрузки заказов:', err);
       setError(errorMessage);
       ErrorToast({ type: 'error', message: errorMessage });
     } finally {

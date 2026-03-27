@@ -1,4 +1,5 @@
 import { supabase } from './supabase';
+import { logger } from './logger';
 import * as FileSystem from 'expo-file-system/legacy';
 import { decode } from 'base64-arraybuffer';
 
@@ -37,7 +38,7 @@ export async function uploadImage(uri: string, folder: 'products' | 'categories'
 
     return publicUrl;
   } catch (error) {
-    console.error('Error uploading image:', error);
+    logger.error('Error uploading image:', error);
     throw error;
   }
 }

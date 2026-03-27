@@ -4,6 +4,8 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
 import Skeleton from '@/components/Skeleton';
+import { ErrorToast } from '@/components/ErrorToast';
+import { logger } from '@/lib/logger';
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { cleanAddress } from '@/lib/address';
 import { useCartStore } from '@/store/cartStore';
@@ -98,7 +100,7 @@ export default function OrderDetailsScreen() {
       setOrderItems(itemsRes.data || []);
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Не удалось загрузить детали заказа';
-      console.error('Ошибка загрузки деталей заказа:', err);
+      logger.error('Ошибка загрузки деталей заказа:', err);
       setError(errorMessage);
     } finally {
       setLoading(false);

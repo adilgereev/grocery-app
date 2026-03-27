@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { supabase } from '@/lib/supabase';
 import { Product } from '@/types';
+import { logger } from '@/lib/logger';
 
 interface FavoriteStore {
   favoriteIds: string[];
@@ -36,7 +37,7 @@ export const useFavoriteStore = create<FavoriteStore>((set, get) => ({
       }
     } catch (e: unknown) {
       const errorMessage = e instanceof Error ? e.message : 'Не удалось загрузить избранное';
-      console.error('Ошибка загрузки избранного:', e);
+      logger.error('Ошибка загрузки избранного:', e);
       set({ error: errorMessage, isLoading: false });
     }
   },
@@ -56,7 +57,7 @@ export const useFavoriteStore = create<FavoriteStore>((set, get) => ({
       }
     } catch (e: unknown) {
       const errorMessage = e instanceof Error ? e.message : 'Не удалось обновить избранное';
-      console.error('Ошибка обновления избранного:', e);
+      logger.error('Ошибка обновления избранного:', e);
       set({ error: errorMessage });
     }
   },

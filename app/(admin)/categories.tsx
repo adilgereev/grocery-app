@@ -1,15 +1,19 @@
 import { Colors, Radius, Spacing } from '@/constants/theme';
-import { supabase } from '@/lib/supabase';
-import { Ionicons } from '@expo/vector-icons';
-import React, { useState, useCallback } from 'react';
-import { useFocusEffect } from 'expo-router';
-import {
-  ActivityIndicator, Alert, FlatList, Modal, StyleSheet,
-  Text, TextInput, TouchableOpacity, View, Image, KeyboardAvoidingView, Platform, ScrollView
-} from 'react-native';
-import { Category } from '@/types';
-import * as ImagePicker from 'expo-image-picker';
 import { uploadImage } from '@/lib/storageUtils';
+import { supabase } from '@/lib/supabase';
+import { Category } from '@/types';
+import { Ionicons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
+import { useFocusEffect } from 'expo-router';
+import React, { useCallback, useState } from 'react';
+import {
+  ActivityIndicator, Alert, FlatList,
+  Image, KeyboardAvoidingView,
+  Modal,
+  Platform, ScrollView,
+  StyleSheet,
+  Text, TextInput, TouchableOpacity, View
+} from 'react-native';
 
 export default function CategoriesScreen() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -138,7 +142,7 @@ export default function CategoriesScreen() {
     const categoryData = {
       name: name.trim(),
       slug: slug,
-      image_url: imageUrl.trim() || null,
+      image_url: selectedParent ? (imageUrl.trim() || null) : null,
       parent_id: selectedParent, // Добавляем родительскую категорию
     };
 
@@ -186,12 +190,12 @@ export default function CategoriesScreen() {
           text: 'Удалить',
           style: 'destructive',
           onPress: async () => {
-              // Сначала "отвязываем" товары от удаляемых категорий (категории и её подкатегорий)
-              // чтобы не нарушить FK constraint через order_items
-              const allIds = [id, ...categories.filter(c => c.parent_id === id).map(c => c.id)];
-              await supabase.from('products').update({ category_id: null }).in('category_id', allIds);
+            // Сначала "отвязываем" товары от удаляемых категорий (категории и её подкатегорий)
+            // чтобы не нарушить FK constraint через order_items
+            const allIds = [id, ...categories.filter(c => c.parent_id === id).map(c => c.id)];
+            await supabase.from('products').update({ category_id: null }).in('category_id', allIds);
 
-              const { error } = await supabase.from('categories').delete().eq('id', id);
+            const { error } = await supabase.from('categories').delete().eq('id', id);
             if (error) {
               Alert.alert('Ошибка', error.message);
             } else {
@@ -223,23 +227,27 @@ export default function CategoriesScreen() {
       <View style={[styles.card, isSubcategory && styles.subcategoryCard]}>
         <View style={styles.infoRow}>
           {isSubcategory && (
-            <Ionicons name="return-down-forward" size={20} color={Colors.light.textLight} style={{ marginRight: Spacing.s }} />
-          )}
-          {isHex ? (
-            <View style={[styles.imagePreview, { backgroundColor: item.image_url || undefined }]} />
-          ) : item.image_url ? (
-            <Image source={{ uri: item.image_url }} style={styles.imagePreview} />
-          ) : (
-            <View style={[styles.imagePreview, { backgroundColor: Colors.light.border }]} />
+            <React.Fragment>
+              <Ionicons name="return-down-forward" size={20} color={Colors.light.textLight} style={{ marginRight: Spacing.s }} />
+              {isHex ? (
+                <View style={[styles.imagePreview, { backgroundColor: item.image_url || undefined }]} />
+              ) : item.image_url ? (
+                <Image source={{ uri: item.image_url }} style={styles.imagePreview} />
+              ) : (
+                <View style={[styles.imagePreview, { backgroundColor: Colors.light.border }]} />
+              )}
+            </React.Fragment>
           )}
           <View style={styles.textContainer}>
             <Text style={styles.catName}>{item.name}</Text>
             {isSubcategory && parentCategory && (
-              <Text style={styles.parentBadge}>← {parentCategory.name}</Text>
+              <React.Fragment>
+                <Text style={styles.parentBadge}>← {parentCategory.name}</Text>
+                <Text style={styles.catUrl} numberOfLines={1}>
+                  {item.image_url || 'Без изображения'}
+                </Text>
+              </React.Fragment>
             )}
-            <Text style={styles.catUrl} numberOfLines={1}>
-              {item.image_url || 'Без изображения'}
-            </Text>
           </View>
         </View>
         <View style={styles.actionsRow}>
@@ -347,34 +355,38 @@ export default function CategoriesScreen() {
                 />
               </View>
 
-              <View style={styles.formGroup}>
-                <View style={styles.labelRow}>
-                  <Text style={styles.label}>Ссылка на фото или HEX-код</Text>
-                  <TouchableOpacity onPress={pickImage} disabled={uploading}>
-                    <Text style={[styles.pickText, uploading && styles.pickTextDisabled]}>
-                      {uploading ? 'Загрузка...' : 'Выбрать файл'}
-                    </Text>
-                  </TouchableOpacity>
-                </View>
-                <TextInput
-                  style={styles.input}
-                  value={imageUrl}
-                  onChangeText={setImageUrl}
-                  placeholder="https://... или #FF0000"
-                  placeholderTextColor={Colors.light.textLight}
-                />
-              </View>
+              {selectedParent !== null && (
+                <React.Fragment>
+                  <View style={styles.formGroup}>
+                    <View style={styles.labelRow}>
+                      <Text style={styles.label}>Ссылка на фото или HEX-код</Text>
+                      <TouchableOpacity onPress={pickImage} disabled={uploading}>
+                        <Text style={[styles.pickText, uploading && styles.pickTextDisabled]}>
+                          {uploading ? 'Загрузка...' : 'Выбрать файл'}
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                    <TextInput
+                      style={styles.input}
+                      value={imageUrl}
+                      onChangeText={setImageUrl}
+                      placeholder="https://... или #FF0000"
+                      placeholderTextColor={Colors.light.textLight}
+                    />
+                  </View>
 
-              {imageUrl ? (
-                <View style={styles.previewSection}>
-                  <Text style={styles.label}>Превью в списке:</Text>
-                  {imageUrl.startsWith('#') ? (
-                    <View style={[styles.previewBox, { backgroundColor: imageUrl }]} />
-                  ) : (
-                    <Image source={{ uri: imageUrl }} style={styles.previewBox} />
-                  )}
-                </View>
-              ) : null}
+                  {imageUrl ? (
+                    <View style={styles.previewSection}>
+                      <Text style={styles.label}>Превью в списке:</Text>
+                      {imageUrl.startsWith('#') ? (
+                        <View style={[styles.previewBox, { backgroundColor: imageUrl }]} />
+                      ) : (
+                        <Image source={{ uri: imageUrl }} style={styles.previewBox} />
+                      )}
+                    </View>
+                  ) : null}
+                </React.Fragment>
+              )}
 
               <TouchableOpacity
                 style={[styles.submitBtn, submitting && styles.btnDisabled]}
