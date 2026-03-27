@@ -6,6 +6,7 @@ import { useAuth } from '@/providers/AuthProvider';
 import { useCategoryStore } from '@/store/categoryStore';
 import CategoryHierarchySection from '@/components/CategoryHierarchySection';
 import SubcategoriesSkeleton from '@/components/SubcategoriesSkeleton';
+import PopularProductsSkeleton from '@/components/PopularProductsSkeleton';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
@@ -37,6 +38,7 @@ export default function HomeScreen() {
   const { categoriesWithSubs, fetchFullHierarchy, isLoading: categoriesLoading } = useCategoryStore();
 
   const [popularProducts, setPopularProducts] = useState<any[]>([]);
+  const [popularLoading, setPopularLoading] = useState(true);
   const [firstName, setFirstName] = useState<string>('');
 
   // Подключаем хранилище адресов
@@ -76,13 +78,18 @@ export default function HomeScreen() {
   );
 
   async function fetchPopularProducts() {
-    const { data, error } = await supabase
-      .from('products')
-      .select('id, name, price, image_url, unit')
-      .order('price', { ascending: false })
-      .limit(10);
-    if (error) console.error('Ошибка загрузки популярных:', error.message);
-    setPopularProducts(data || []);
+    try {
+      setPopularLoading(true);
+      const { data, error } = await supabase
+        .from('products')
+        .select('id, name, price, image_url, unit')
+        .order('price', { ascending: false })
+        .limit(10);
+      if (error) console.error('Ошибка загрузки популярных:', error.message);
+      setPopularProducts(data || []);
+    } finally {
+      setPopularLoading(false);
+    }
   }
 
   async function fetchUserInfo() {
@@ -121,6 +128,9 @@ export default function HomeScreen() {
 
   // Секция «Популярное»
   const renderPopularProducts = () => {
+    if (popularLoading) {
+      return <PopularProductsSkeleton count={5} />;
+    }
     if (!popularProducts.length) return null;
     return (
       <View style={styles.popularSection}>
@@ -193,10 +203,7 @@ export default function HomeScreen() {
 
         {/* Секция иерархических категорий */}
         {categoriesLoading ? (
-          <>
-            <Text style={[styles.sectionTitle, { paddingHorizontal: Spacing.m, marginBottom: Spacing.s }]}>Категории</Text>
-            <SubcategoriesSkeleton count={6} />
-          </>
+          <SubcategoriesSkeleton count={6} />
         ) : categoriesWithSubs.length > 0 ? (
           <View style={styles.hierarchyContainer}>
             {categoriesWithSubs.map((category) => (

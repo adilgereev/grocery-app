@@ -7,16 +7,24 @@ interface SubcategoriesSkeletonProps {
   count?: number;
 }
 
-export default function SubcategoriesSkeleton({ count = 4 }: SubcategoriesSkeletonProps) {
+export default function SubcategoriesSkeleton({ count = 5 }: SubcategoriesSkeletonProps) {
   return (
     <View style={styles.container}>
       <Skeleton width="40%" height={24} borderRadius={8} style={styles.titleSkeleton} />
       <View style={styles.grid}>
-        {Array.from({ length: count }).map((_, i) => (
-          <View key={i} style={styles.cardContainer}>
-            <Skeleton width="100%" height={140} borderRadius={Radius.l} />
-          </View>
-        ))}
+        {Array.from({ length: count }).map((_, i) => {
+          // Мозаичная сетка (5 элементов = 1 блок паттерна)
+          const patternIndex = i % 5;
+          let cardWidth: `${number}%` = '31%';
+          if (patternIndex === 0) cardWidth = '58%';
+          if (patternIndex === 1) cardWidth = '38%';
+
+          return (
+            <View key={i} style={[styles.cardContainer, { width: cardWidth }]}>
+              <Skeleton width="100%" height={110} borderRadius={Radius.l} />
+            </View>
+          );
+        })}
       </View>
     </View>
   );
@@ -34,10 +42,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     paddingHorizontal: Spacing.m,
+    justifyContent: 'space-between',
+    rowGap: Spacing.m,
   },
   cardContainer: {
-    width: '48%',
-    marginRight: Spacing.s,
-    marginBottom: Spacing.s,
+    // Ширина задается динамически
   },
 });
