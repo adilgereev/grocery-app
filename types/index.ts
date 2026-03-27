@@ -35,24 +35,6 @@ export interface Product {
   tags?: string[];
 }
 
-export interface CartItem {
-  product: Product;
-  quantity: number;
-}
-
-export interface Address {
-  id: string;
-  user_id: string;
-  city: string;
-  street: string;
-  house: string;
-  apartment: string | null;
-  entrance: string | null;
-  floor: string | null;
-  is_default: boolean;
-  created_at?: string;
-}
-
 export interface Order {
   id: string;
   user_id: string;
@@ -63,18 +45,6 @@ export interface Order {
   created_at: string;
 }
 
-export interface OrderItem {
-  id: string;
-  order_id: string;
-  product_id: string;
-  quantity: number;
-  price_at_time: number;
-}
-
 export interface ProductWithCategory extends Product {
   category?: { name: string } | null;
-}
-
-export interface OrderWithItems extends Order {
-  items?: (OrderItem & { product?: Product })[];
 }

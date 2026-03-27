@@ -3,7 +3,7 @@ import { Address } from '@/store/addressStore';
 /**
  * Очищает название улицы от города Буйнакск и системных префиксов
  */
-export const cleanStreetName = (text: string): string => {
+const cleanStreetName = (text: string): string => {
   if (!text) return '';
   return text
     .replace(/^г\. Буйнакск, /, '')

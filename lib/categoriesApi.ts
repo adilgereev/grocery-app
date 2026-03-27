@@ -20,7 +20,7 @@ export async function fetchRootCategories(): Promise<Category[]> {
  * Получение подкатегорий по parent_id
  * Использует индекс idx_categories_parent_id
  */
-export async function fetchSubcategories(parentId: string): Promise<Category[]> {
+async function fetchSubcategories(parentId: string): Promise<Category[]> {
   const { data, error } = await supabase
     .from('categories')
     .select('*')
@@ -31,33 +31,6 @@ export async function fetchSubcategories(parentId: string): Promise<Category[]> 
   return data || [];
 }
 
-/**
- * Получение категории с её подкатегориями
- */
-export async function fetchCategoryWithSubcategories(categoryId: string): Promise<CategoryWithSubcategories | null> {
-  // Сначала получаем родительскую категорию
-  const { data: parent, error: parentError } = await supabase
-    .from('categories')
-    .select('*')
-    .eq('id', categoryId)
-    .single();
-
-  if (parentError || !parent) return null;
-
-  // Получаем подкатегории
-  const { data: subcategories, error: subsError } = await supabase
-    .from('categories')
-    .select('*')
-    .eq('parent_id', categoryId)
-    .order('name');
-
-  if (subsError) throw new Error(`Не удалось загрузить подкатегории: ${subsError.message}`);
-
-  return {
-    ...parent,
-    subcategories: subcategories || []
-  };
-}
 
 /**
  * Получение всех категорий с иерархией (через view categories_with_hierarchy)

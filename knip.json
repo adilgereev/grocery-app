@@ -1,0 +1,26 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "entry": [
+    "app/_layout.tsx",
+    "app/**/*.tsx"
+  ],
+  "project": [
+    "**/*.{ts,tsx}"
+  ],
+  "ignoreDependencies": [
+    "expo-router/entry"
+  ],
+  "ignore": [
+    "node_modules/**",
+    ".expo/**",
+    "dist/**",
+    "scripts/**"
+  ],
+  "rules": {
+    "files": "warn",
+    "dependencies": "error",
+    "unlisted": "error",
+    "exports": "warn",
+    "types": "warn"
+  }
+}
