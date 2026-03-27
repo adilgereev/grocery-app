@@ -2,7 +2,7 @@ import { Radius, Spacing } from '@/constants/theme';
 import { Category } from '@/types';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity, DimensionValue } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
@@ -22,7 +22,7 @@ const SubcategoryCard = React.memo(({ subcategory, index }: SubcategoryCardProps
 
   // Мозаичная сетка (5 элементов = 1 блок паттерна)
   const patternIndex = index % 5;
-  let cardWidth: `${number}%` = '31%';
+  let cardWidth: DimensionValue = '31%';
   if (patternIndex === 0) cardWidth = '58%';
   if (patternIndex === 1) cardWidth = '38%';
 
@@ -32,6 +32,7 @@ const SubcategoryCard = React.memo(({ subcategory, index }: SubcategoryCardProps
 
   return (
     <AnimatedTouchable
+      testID="subcategory-card"
       style={[styles.card, { width: cardWidth, backgroundColor: bgColor as string }]}
       activeOpacity={0.85}
       onPress={handlePress}
