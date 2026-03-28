@@ -1,4 +1,5 @@
 import Skeleton from '@/components/Skeleton';
+import ScreenHeader from '@/components/ScreenHeader';
 import { Colors, FontSize, Fonts, Radius, Spacing } from '@/constants/theme';
 import { formatPhoneDisplay } from '@/lib/sms';
 import { supabase } from '@/lib/supabase';
@@ -97,13 +98,7 @@ export default function EditProfileScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      <View style={styles.header}>
-        <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
-          <Ionicons name="arrow-back" size={FontSize.xxxl} color={Colors.light.text} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Личные данные</Text>
-        <View style={{ width: Spacing.xxxl }} />
-      </View>
+      <ScreenHeader title="Личные данные" />
 
       <KeyboardAwareScrollView
         contentContainerStyle={styles.scrollContent}
@@ -200,28 +195,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.light.card,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: Spacing.m,
-    paddingVertical: Spacing.s + Spacing.xs,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.light.borderLight,
-    backgroundColor: Colors.light.card,
-  },
-  backButton: {
-    width: Spacing.xxxl,
-    height: Spacing.xxxl,
-    justifyContent: 'center',
-    alignItems: 'flex-start',
-  },
-  headerTitle: {
-    fontSize: FontSize.xl,
-    fontWeight: '700',
-    color: Colors.light.text,
-    fontFamily: Fonts.sans,
   },
   scrollContent: {
     padding: Spacing.l,

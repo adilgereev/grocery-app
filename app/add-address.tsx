@@ -1,6 +1,7 @@
 import AddressSearchInput from '@/components/AddressSearchInput';
 import MapPicker from '@/components/MapPicker';
-import { Colors, Radius, Spacing } from '@/constants/theme';
+import ScreenHeader from '@/components/ScreenHeader';
+import { Colors, Radius, Spacing, FontSize, Fonts } from '@/constants/theme';
 import { AddressFormData, addressSchema } from '@/lib/schemas';
 import { useAddressStore } from '@/store/addressStore';
 import { Ionicons } from '@expo/vector-icons';
@@ -126,14 +127,7 @@ export default function AddAddressScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      {/* Шапка */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color={Colors.light.text} />
-        </TouchableOpacity>
-        <Text style={styles.title}>Новый адрес</Text>
-        <View style={styles.headerSpacer} />
-      </View>
+      <ScreenHeader title="Новый адрес" />
 
       <KeyboardAwareScrollView
         style={styles.scrollContainer}
@@ -422,25 +416,6 @@ export default function AddAddressScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.light.background },
-
-  header: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    padding: Spacing.l,
-    backgroundColor: Colors.light.card,
-    elevation: 4,
-    shadowColor: Colors.light.text,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    zIndex: 10,
-  },
-  headerSpacer: { width: 40 },
-  backButton: {
-    padding: Spacing.s,
-    backgroundColor: Colors.light.borderLight,
-    borderRadius: Radius.m,
-  },
-  title: { fontSize: 20, fontWeight: '900', color: Colors.light.text },
 
   scrollContainer: { flex: 1 },
   scrollContent: { padding: Spacing.l, paddingBottom: 40, flexGrow: 1 },

@@ -5,7 +5,8 @@ import { useAddressStore, Address } from '@/store/addressStore';
 import { formatFullAddress } from '@/utils/addressFormatter';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { Colors, FontSize, Spacing, Radius } from '@/constants/theme';
+import { Colors, FontSize, Spacing, Radius, Fonts } from '@/constants/theme';
+import ScreenHeader from '@/components/ScreenHeader';
 
 export default function AddressesScreen() {
   const { addresses, selectedAddressId, removeAddress, selectAddress } = useAddressStore();
@@ -15,14 +16,8 @@ export default function AddressesScreen() {
   const displayAddress = (item: Address) => formatFullAddress(item);
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.closeButton}>
-          <Ionicons name="close" size={24} color={Colors.light.text} />
-        </TouchableOpacity>
-        <Text style={styles.title}>Мои адреса</Text>
-        <View style={styles.headerSpacer} />
-      </View>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+      <ScreenHeader title="Мои адреса" />
 
       <FlatList
         data={addresses}
@@ -99,24 +94,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.light.background,
-  },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: Spacing.l,
-    backgroundColor: Colors.light.card,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.light.borderLight,
-  },
-  headerSpacer: { width: 40 },
-  closeButton: {
-    padding: Spacing.xs,
-  },
-  title: {
-    fontSize: FontSize.xl,
-    fontWeight: 'bold',
-    color: Colors.light.text,
   },
   listGrow: {
     padding: Spacing.m,

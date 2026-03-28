@@ -9,6 +9,8 @@ import { useRouter } from 'expo-router';
 import Skeleton from '@/components/Skeleton';
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { Product } from '@/types';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import ScreenHeader from '@/components/ScreenHeader';
 
 export default function FavoritesScreen() {
   const router = useRouter();
@@ -66,25 +68,20 @@ export default function FavoritesScreen() {
 
   if (loading && products.length === 0) {
     return (
-      <View style={styles.loadingContainer}>
+      <SafeAreaView style={styles.loadingContainer} edges={['top', 'bottom']}>
+        <ScreenHeader title="Избранное" />
         <View style={styles.skeletonContainer}>
           {[1, 2, 3, 4, 5, 6].map((i) => (
              <Skeleton key={i} width="47%" height={230} borderRadius={Radius.l} style={styles.skeletonItem} />
           ))}
         </View>
-      </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color={Colors.light.text} />
-        </TouchableOpacity>
-        <Text style={styles.title}>Избранное</Text>
-        <View style={styles.headerRightSpacer} />
-      </View>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+      <ScreenHeader title="Избранное" />
 
       {products.length === 0 ? (
         <ScrollView contentContainerStyle={styles.emptyScrollContent} showsVerticalScrollIndicator={false}>
@@ -127,7 +124,7 @@ export default function FavoritesScreen() {
           renderItem={({ item, index }) => <ProductCard item={item} index={index} />}
         />
       )}
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -136,35 +133,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: Colors.light.background,
   },
-  header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: Spacing.l,
-    paddingTop: 60,
-    backgroundColor: Colors.light.card,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.light.border,
-    elevation: 4,
-    shadowColor: Colors.light.text,
-    shadowOpacity: 0.05,
-    shadowOffset: { width: 0, height: 4 },
-    marginBottom: Spacing.s,
-    zIndex: 10,
-  },
-  headerRightSpacer: { width: 24 },
   loadingContainer: {
     flex: 1,
     backgroundColor: Colors.light.background,
-    paddingTop: 100,
-  },
-  backButton: {
-    padding: Spacing.xs,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: '800',
-    color: Colors.light.text,
   },
   listContainer: {
     padding: Spacing.m,

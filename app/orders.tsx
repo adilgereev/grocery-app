@@ -10,6 +10,8 @@ import { logger } from '@/lib/logger';
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { cleanAddress } from '@/lib/address';
 import { Order } from '@/types';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import ScreenHeader from '@/components/ScreenHeader';
 
 // Конфигурация статусов (синхронизирована с order/[id].tsx)
 const STATUS_CONFIG: Record<string, { label: string; emoji: string; color: string; bg: string }> = {
@@ -92,32 +94,20 @@ export default function OrdersScreen() {
   // Скелетон загрузки
   if (loading) {
     return (
-      <View style={styles.container}>
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-            <Ionicons name="arrow-back" size={24} color={Colors.light.text} />
-          </TouchableOpacity>
-          <Text style={styles.headerTitle}>Мои заказы</Text>
-          <View style={styles.headerRightSpacer} />
-        </View>
+      <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+        <ScreenHeader title="Мои заказы" />
         <View style={styles.listContainer}>
           {[1, 2, 3].map((i) => (
             <Skeleton key={i} width="100%" height={100} borderRadius={Radius.xl} style={styles.skeletonItem} />
           ))}
         </View>
-      </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color={Colors.light.text} />
-        </TouchableOpacity>
-        <Text style={styles.headerTitle}>Мои заказы</Text>
-        <View style={styles.headerRightSpacer} />
-      </View>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+      <ScreenHeader title="Мои заказы" />
 
       {error ? (
         <View style={styles.centerContainer}>
@@ -184,25 +174,12 @@ export default function OrdersScreen() {
           }}
         />
       )}
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.light.background },
-  
-  // Шапка
-  header: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: Spacing.l, paddingTop: 60, paddingBottom: Spacing.m,
-    backgroundColor: Colors.light.card,
-    borderBottomWidth: 1, borderBottomColor: Colors.light.borderLight,
-    elevation: 4, shadowColor: Colors.light.text, shadowOpacity: 0.05, shadowOffset: { width: 0, height: 4 },
-    zIndex: 10,
-  },
-  headerRightSpacer: { width: 24 },
-  headerTitle: { fontSize: 20, fontWeight: '800', color: Colors.light.text },
-  backButton: { padding: Spacing.xs },
   
   centerContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: Spacing.xl },
   listContainer: { paddingHorizontal: Spacing.m, paddingBottom: 20, paddingTop: Spacing.m, flexGrow: 1 },
