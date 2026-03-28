@@ -319,7 +319,7 @@ export default function CartScreen() {
         onContentSizeChange={(_, height) => {
           contentHeight.value = height;
         }}
-        renderItem={({ item, index }) => (
+        renderItem={({ item, index }: { item: any; index: number }) => (
           <Animated.View 
             entering={FadeInLeft.delay(index * 50).duration(400)} 
             layout={Layout.springify()} 
@@ -328,10 +328,7 @@ export default function CartScreen() {
             <TouchableOpacity 
               style={styles.itemTouchRow}
               activeOpacity={0.7}
-              onPress={() => router.push({
-                pathname: '/(tabs)/(index,cart,orders,profile)/product/[id]',
-                params: { id: item.product.id, name: item.product.name }
-              } as any)}
+              onPress={() => router.push(`/product/${item.product.id}?name=${encodeURIComponent(item.product.name)}`)}
             >
               {item.product.image_url ? (
                 <Image source={{ uri: item.product.image_url }} style={styles.itemImage} />
