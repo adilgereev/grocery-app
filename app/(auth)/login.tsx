@@ -1,8 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { StyleSheet, View, TextInput, TouchableOpacity, Text, Platform, ActivityIndicator, Alert, Keyboard } from 'react-native';
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { StyleSheet, View, TextInput, TouchableOpacity, Text, Platform, ActivityIndicator, Alert, Keyboard, KeyboardAvoidingView, TouchableWithoutFeedback, ScrollView } from 'react-native';
 import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { generateOTP, normalizePhone, sendSMS, generatePasswordFromPhone, phoneToEmail } from '@/lib/sms';
 
@@ -22,7 +22,7 @@ export default function Login() {
   // Обратный отсчёт для повторной отправки
   useEffect(() => {
     if (countdown <= 0) return;
-    const timer = setTimeout(() => setCountdown(c => c - 1), 1000);
+    const timer = setTimeout(() => setCountdown((c: number) => c - 1), 1000);
     return () => clearTimeout(timer);
   }, [countdown]);
 
@@ -206,157 +206,163 @@ export default function Login() {
   };
 
   return (
-    <KeyboardAwareScrollView
-      contentContainerStyle={styles.loginScrollContent}
-      keyboardShouldPersistTaps="handled"
-      showsVerticalScrollIndicator={false}
-    >
-      {/* Зеленая шапка с логотипом */}
-      <View style={styles.header}>
-        <View style={styles.logoContainer}>
-          <Ionicons name="basket" size={60} color={Colors.light.white} />
-        </View>
-        <Text style={styles.appName}>Вкусная Доставка</Text>
-        <Text style={styles.subtitle}>
-          Свежие продукты у ваших дверей{'\n'}всего за 15 минут
-        </Text>
-      </View>
+    <View style={styles.container}>
+      <LinearGradient
+        colors={[Colors.light.primary, Colors.light.primaryDark || Colors.light.primary]}
+        style={StyleSheet.absoluteFill}
+      />
+      
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={styles.keyboardView}
+      >
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+          bounces={true}
+          alwaysBounceVertical={true}
+        >
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View style={styles.innerContainer}>
+              {/* Улучшенная шапка */}
+              <View style={styles.header}>
+                <View style={styles.logoContainer}>
+                  <Ionicons name="basket" size={48} color={Colors.light.white} />
+                </View>
+                <Text style={styles.appName}>Вкусная Доставка</Text>
+                <Text style={styles.subtitle}>
+                  Продукты за 15 минут
+                </Text>
+              </View>
 
-      {/* Белая карточка с формой */}
-      <View style={styles.card}>
-        {step === 'phone' ? (
-          <>
-            <Text style={styles.formTitle}>Войти по номеру</Text>
-            <Text style={styles.formHint}>
-              Введите номер телефона, и мы отправим SMS с кодом подтверждения
-            </Text>
+              {/* Карточка формы */}
+              <View style={styles.card}>
+                {step === 'phone' ? (
+                  <>
+                    <Text style={styles.formTitle}>Вход</Text>
+                    <Text style={styles.formHint}>
+                      Введите номер телефона для SMS подтверждения
+                    </Text>
 
-            <View style={styles.phoneInputContainer}>
-              <Ionicons name="call-outline" size={20} color={Colors.light.textLight} />
-              <TextInput
-                style={styles.phoneInput}
-                placeholder="+7 (900) 123-45-67"
-                placeholderTextColor={Colors.light.textLight}
-                value={phone}
-                onChangeText={handlePhoneChange}
-                keyboardType="phone-pad"
-                maxLength={18}
-                autoFocus
-              />
+                    <View style={styles.phoneInputContainer}>
+                      <Ionicons name="call-outline" size={20} color={Colors.light.textLight} />
+                      <TextInput
+                        style={styles.phoneInput}
+                        placeholder="+7 (900) 123-45-67"
+                        placeholderTextColor={Colors.light.textLight}
+                        value={phone}
+                        onChangeText={handlePhoneChange}
+                        keyboardType="phone-pad"
+                        maxLength={18}
+                        autoFocus
+                      />
+                    </View>
+
+                    <TouchableOpacity
+                      style={[styles.primaryButton, loading && styles.primaryButtonDisabled]}
+                      onPress={handleSendOTP}
+                      disabled={loading}
+                    >
+                      {loading ? (
+                        <ActivityIndicator color={Colors.light.white} />
+                      ) : (
+                        <Text style={styles.primaryButtonText}>Продолжить</Text>
+                      )}
+                    </TouchableOpacity>
+                  </>
+                ) : (
+                  <>
+                    <TouchableOpacity onPress={() => setStep('phone')} style={styles.otpBackButton}>
+                      <Ionicons name="arrow-back" size={20} color={Colors.light.text} />
+                      <Text style={styles.backButtonText}>Сменить номер</Text>
+                    </TouchableOpacity>
+
+                    <Text style={styles.formTitle}>Введите код</Text>
+                    <Text style={styles.formHint}>
+                      Код отправлен на <Text style={styles.countryCode}>{phone}</Text>
+                    </Text>
+
+                    <View style={styles.otpContainer}>
+                      {otp.map((digit: string, index: number) => (
+                        <TextInput
+                          key={index}
+                          ref={ref => { otpRefs.current[index] = ref; }}
+                          style={[styles.otpInput, digit ? styles.otpInputFilled : {}]}
+                          value={digit}
+                          onChangeText={(val) => handleOtpChange(val, index)}
+                          onKeyPress={(e) => handleOtpKeyPress(e, index)}
+                          keyboardType="number-pad"
+                          maxLength={1}
+                          selectTextOnFocus
+                        />
+                      ))}
+                    </View>
+
+                    {loading && <ActivityIndicator color={Colors.light.primary} style={styles.otpLoader} />}
+
+                    <TouchableOpacity
+                      onPress={handleResend}
+                      style={styles.resendButton}
+                      disabled={countdown > 0}
+                    >
+                      <Text style={[styles.resendText, countdown > 0 ? styles.resendTextDisabled : styles.resendTextActive]}>
+                        {countdown > 0 ? `Повтор через ${countdown}с` : 'Отправить код повторно'}
+                      </Text>
+                    </TouchableOpacity>
+                  </>
+                )}
+              </View>
             </View>
-
-            <TouchableOpacity
-              style={[styles.primaryButton, loading && styles.primaryButtonDisabled]}
-              onPress={handleSendOTP}
-              disabled={loading}
-            >
-              {loading ? (
-                <ActivityIndicator color={Colors.light.white} />
-              ) : (
-                <Text style={styles.primaryButtonText}>Получить код</Text>
-              )}
-            </TouchableOpacity>
-          </>
-        ) : (
-          <>
-            {/* Кнопка назад */}
-            <TouchableOpacity onPress={() => setStep('phone')} style={styles.otpBackButton}>
-              <Ionicons name="arrow-back" size={22} color={Colors.light.text} />
-            </TouchableOpacity>
-
-            <Text style={styles.formTitle}>Введите код</Text>
-            <Text style={styles.formHint}>
-              SMS с кодом отправлен на{'\n'}
-              <Text style={styles.countryCode}>{phone}</Text>
-            </Text>
-
-            {/* 4 поля OTP */}
-            <View style={styles.otpContainer}>
-              {otp.map((digit, index) => (
-                <TextInput
-                  key={index}
-                  ref={ref => { otpRefs.current[index] = ref; }}
-                  style={[
-                    styles.otpInput,
-                    digit ? styles.otpInputFilled : {},
-                  ]}
-                  value={digit}
-                  onChangeText={(val) => handleOtpChange(val, index)}
-                  onKeyPress={(e) => handleOtpKeyPress(e, index)}
-                  keyboardType="number-pad"
-                  maxLength={1}
-                  selectTextOnFocus
-                />
-              ))}
-            </View>
-
-            {loading && (
-              <ActivityIndicator color={Colors.light.primary} style={styles.otpLoader} />
-            )}
-
-            {/* Повторная отправка */}
-            <TouchableOpacity
-              onPress={handleResend}
-              style={styles.resendButton}
-              disabled={countdown > 0}
-            >
-              <Text style={[
-                styles.resendText,
-                countdown > 0 ? styles.resendTextDisabled : styles.resendTextActive
-              ]}>
-                {countdown > 0
-                  ? `Отправить повторно через ${countdown} сек`
-                  : 'Отправить код повторно'
-                }
-              </Text>
-            </TouchableOpacity>
-          </>
-        )}
-      </View>
-    </KeyboardAwareScrollView>
+          </TouchableWithoutFeedback>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  loginScrollContent: { flexGrow: 1, justifyContent: 'flex-end' },
-  // Шапка
+  container: { flex: 1, backgroundColor: Colors.light.primary },
+  keyboardView: { flex: 1 },
+  scrollContent: { flexGrow: 1, justifyContent: 'center' },
+  innerContainer: { paddingBottom: 60 },
+  
   header: {
-    flex: 1, alignItems: 'center', justifyContent: 'center',
-    paddingTop: Spacing.xxl, paddingBottom: Spacing.xxl, paddingHorizontal: 20,
+    alignItems: 'center',
+    marginBottom: Spacing.xl,
+    paddingTop: 60,
   },
   logoContainer: {
-    width: 100, height: 100,
-    backgroundColor: Colors.light.whiteTransparent,
-    borderRadius: 30, justifyContent: 'center', alignItems: 'center',
-    marginBottom: 20,
+    width: 84, height: 84,
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    borderRadius: 24, justifyContent: 'center', alignItems: 'center',
+    marginBottom: Spacing.m,
   },
   appName: {
-    fontSize: 32, fontWeight: '900', color: Colors.light.white,
-    letterSpacing: 0.5, marginBottom: Spacing.s,
+    fontSize: 28, fontWeight: '900', color: Colors.light.white,
+    letterSpacing: 0.5, marginBottom: 4,
   },
   subtitle: {
-    fontSize: 16, color: Colors.light.primaryBorder,
-    textAlign: 'center', lineHeight: 22, fontWeight: '500',
+    fontSize: 14, color: 'rgba(255, 255, 255, 0.8)',
+    textAlign: 'center', fontWeight: '500',
   },
 
-  // Форма
   card: {
     backgroundColor: Colors.light.card,
-    borderTopLeftRadius: 32,
-    borderTopRightRadius: 32,
+    marginHorizontal: 20,
+    borderRadius: 24,
     padding: Spacing.xl,
-    paddingTop: 40,
-    shadowColor: Colors.light.text,
-    shadowOffset: { width: 0, height: -10 },
-    shadowOpacity: 0.1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.2,
     shadowRadius: 20,
-    elevation: 20,
+    elevation: 10,
   },
   formTitle: {
-    fontSize: 26, fontWeight: 'bold', color: Colors.light.text, marginBottom: Spacing.s,
+    fontSize: 24, fontWeight: 'bold', color: Colors.light.text, marginBottom: 8,
   },
   formHint: {
-    fontSize: 15, color: Colors.light.textSecondary, lineHeight: 22,
+    fontSize: 14, color: Colors.light.textSecondary, lineHeight: 20,
     marginBottom: Spacing.l,
   },
   phoneInputContainer: {
@@ -365,10 +371,10 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.background,
     borderWidth: 1.5,
     borderColor: Colors.light.border,
-    borderRadius: Radius.l,
+    borderRadius: Radius.m,
     paddingHorizontal: Spacing.m,
-    height: 64,
-    marginBottom: Spacing.l,
+    height: 56,
+    marginBottom: Spacing.m,
   },
   phoneInput: {
     flex: 1,
@@ -376,44 +382,33 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: Colors.light.text,
     marginLeft: Spacing.s,
-    letterSpacing: 1,
   },
   countryCode: { color: Colors.light.text, fontWeight: '700' },
 
   primaryButton: {
-    backgroundColor: Colors.light.primary, borderRadius: Radius.l,
-    height: 60, justifyContent: 'center', alignItems: 'center', marginTop: 12,
-    elevation: 3, shadowColor: Colors.light.primary, shadowOpacity: 0.4, shadowRadius: 8, shadowOffset: { width: 0, height: 4 },
+    backgroundColor: Colors.light.primary, borderRadius: Radius.m,
+    height: 54, justifyContent: 'center', alignItems: 'center',
+    shadowColor: Colors.light.primary, shadowOpacity: 0.3, shadowRadius: 6, shadowOffset: { width: 0, height: 3 },
   },
-  primaryButtonDisabled: {
-    backgroundColor: Colors.light.primaryLight, elevation: 0, shadowOpacity: 0,
-  },
-  primaryButtonText: { color: Colors.light.white, fontSize: 18, fontWeight: 'bold' },
+  primaryButtonDisabled: { backgroundColor: Colors.light.primaryLight },
+  primaryButtonText: { color: Colors.light.white, fontSize: 16, fontWeight: 'bold' },
 
-  // OTP экран
   otpBackButton: {
-    width: 44,
-    height: 44,
-    borderRadius: Radius.m,
-    backgroundColor: Colors.light.background,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: Spacing.m,
+    flexDirection: 'row', alignItems: 'center', marginBottom: Spacing.m,
   },
+  backButtonText: { marginLeft: 8, color: Colors.light.textSecondary, fontWeight: '600' },
   otpContainer: {
-    flexDirection: 'row', justifyContent: 'center', gap: 14, marginTop: Spacing.s,
+    flexDirection: 'row', justifyContent: 'space-between', marginTop: Spacing.s,
   },
   otpInput: {
-    width: 64, height: 72,
-    borderWidth: 2, borderColor: Colors.light.border, borderRadius: Radius.l,
-    fontSize: 28, fontWeight: '800', color: Colors.light.text,
+    width: 60, height: 64,
+    borderWidth: 2, borderColor: Colors.light.border, borderRadius: Radius.m,
+    fontSize: 24, fontWeight: '800', color: Colors.light.text,
     textAlign: 'center', backgroundColor: Colors.light.borderLight,
   },
-  otpInputFilled: {
-    borderColor: Colors.light.primary, backgroundColor: Colors.light.primaryLight,
-  },
-  resendButton: { marginTop: Spacing.xl, alignItems: 'center' },
-  resendText: { fontSize: 15, fontWeight: '600' },
+  otpInputFilled: { borderColor: Colors.light.primary, backgroundColor: Colors.light.primaryLight },
+  resendButton: { marginTop: Spacing.l, alignItems: 'center' },
+  resendText: { fontSize: 13, fontWeight: '600' },
   resendTextActive: { color: Colors.light.primary },
   resendTextDisabled: { color: Colors.light.textLight },
   otpLoader: { marginTop: Spacing.m },

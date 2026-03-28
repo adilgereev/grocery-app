@@ -11,6 +11,7 @@ const tintColorDark = '#10B981';
 export const Colors = {
   light: {
     primary: tintColorLight,
+    primaryDark: '#059669',
     primaryLight: '#F0FDF4',
     primaryBorder: '#D1FAE5',
     background: '#F9FAFB',
@@ -45,6 +46,7 @@ export const Colors = {
   },
   dark: {
     primary: tintColorDark,
+    primaryDark: '#065F46',
     primaryLight: '#064E3B',
     primaryBorder: '#065F46',
     background: '#111827',
