@@ -11,7 +11,8 @@ import { Ionicons } from '@expo/vector-icons';
 
 export default function EditProductScreen() {
   const router = useRouter();
-  const { id } = useLocalSearchParams();
+  const params = useLocalSearchParams();
+  const id = Array.isArray(params.id) ? params.id[0] : params.id;
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(false);

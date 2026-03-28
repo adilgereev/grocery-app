@@ -30,10 +30,11 @@ export default function OrdersScreen() {
 
   const fetchOrders = useCallback(async () => {
     try {
+      if (!session?.user?.id) return;
       const { data, error } = await supabase
         .from('orders')
         .select('*')
-        .eq('user_id', session!.user.id)
+        .eq('user_id', session.user.id)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -175,7 +176,7 @@ export default function OrdersScreen() {
 
                 {/* Нижняя строка: дата + сумма */}
                 <View style={styles.bottomRow}>
-                  <Text style={styles.dateText}>{formatDate(item.created_at)}</Text>
+                  <Text style={styles.dateText}>{item.created_at ? formatDate(item.created_at) : ''}</Text>
                   <Text style={styles.totalText}>{Number(item.total_amount).toFixed(0)} ₽</Text>
                 </View>
               </TouchableOpacity>

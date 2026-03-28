@@ -42,7 +42,7 @@ export async function fetchCategoriesWithHierarchy(): Promise<CategoryWithHierar
     .order('name');
 
   if (error) throw new Error(`Не удалось загрузить категории с иерархией: ${error.message}`);
-  return data || [];
+  return (data as unknown) as CategoryWithHierarchy[];
 }
 
 /**

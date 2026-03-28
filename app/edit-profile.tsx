@@ -22,11 +22,12 @@ export default function EditProfileScreen() {
 
   const fetchProfile = useCallback(async () => {
     try {
+      if (!session?.user?.id) return;
       setLoading(true);
       const { data, error } = await supabase
         .from('profiles')
         .select('first_name, last_name, phone')
-        .eq('id', session?.user.id)
+        .eq('id', session.user.id)
         .single();
 
       if (error) throw error;
@@ -56,6 +57,7 @@ export default function EditProfileScreen() {
       return;
     }
 
+    if (!session?.user?.id) return;
     try {
       setSaving(true);
       const { error } = await supabase
@@ -64,7 +66,7 @@ export default function EditProfileScreen() {
           first_name: firstName,
           last_name: lastName,
         })
-        .eq('id', session?.user.id);
+        .eq('id', session.user.id);
 
       if (error) throw error;
 

@@ -21,7 +21,7 @@ interface OrderWithDetails {
   total_amount: number;
   delivery_address: string;
   created_at: string;
-  profiles: { first_name: string; last_name: string; phone: string } | { first_name: string; last_name: string; phone: string }[];
+  profiles: { first_name: string | null; last_name: string | null; phone: string } | { first_name: string | null; last_name: string | null; phone: string }[];
   items?: {
     id: string;
     quantity: number;

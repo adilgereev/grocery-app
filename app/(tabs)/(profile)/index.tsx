@@ -2,6 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Platform, Alert } from 'react-native';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/providers/AuthProvider';
+import { Profile } from '@/types';
 import { useCartStore } from '@/store/cartStore';
 import { Ionicons } from '@expo/vector-icons';
 import { logger } from '@/lib/logger';
@@ -17,19 +18,20 @@ export default function ProfileScreen() {
   const clearCart = useCartStore(state => state.clearCart);
   
   const [loading, setLoading] = useState(true);
-  const [profile, setProfile] = useState<{first_name: string, last_name: string, phone: string, is_admin?: boolean} | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
 
   const fetchProfile = useCallback(async () => {
     try {
+      if (!session?.user?.id) return;
       setLoading(true);
       const { data, error } = await supabase
         .from('profiles')
-        .select('first_name, last_name, phone, is_admin')
-        .eq('id', session?.user.id)
+        .select('*')
+        .eq('id', session.user.id)
         .single();
         
       if (error) throw error;
-      if (data) setProfile(data);
+      if (data) setProfile(data as Profile);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Неизвестная ошибка';
       logger.error('Ошибка загрузки профиля:', errorMessage);

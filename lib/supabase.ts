@@ -39,8 +39,10 @@ const customStorage = {
   },
 };
 
-// Инициализируем клиента Supabase
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+import { Database } from '@/types/supabase';
+
+// Инициализируем клиента Supabase с поддержкой типов
+export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
   auth: {
     storage: customStorage,
     autoRefreshToken: true,
