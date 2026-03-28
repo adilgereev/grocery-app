@@ -2,7 +2,7 @@ import { Colors, Radius, Spacing } from '@/constants/theme';
 import { DaDataSuggestion, getAddressSuggestions } from '@/lib/dadataApi';
 import { Ionicons } from '@expo/vector-icons';
 import debounce from 'lodash.debounce';
-import React, { useCallback, useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import {
   ActivityIndicator,
   FlatList,
