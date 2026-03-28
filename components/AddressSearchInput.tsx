@@ -2,7 +2,7 @@ import { Colors, Radius, Spacing } from '@/constants/theme';
 import { DaDataSuggestion, getAddressSuggestions } from '@/lib/dadataApi';
 import { Ionicons } from '@expo/vector-icons';
 import debounce from 'lodash.debounce';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import {
   ActivityIndicator,
   FlatList,
@@ -17,12 +17,19 @@ import {
 
 interface AddressSearchInputProps {
   onSelect: (suggestion: DaDataSuggestion) => void;
+  onChangeText?: (text: string) => void;
   placeholder?: string;
   initialValue?: string;
   city?: string;
 }
 
-export default function AddressSearchInput({ onSelect, placeholder, initialValue = '', city }: AddressSearchInputProps) {
+export default function AddressSearchInput({ 
+  onSelect, 
+  onChangeText,
+  placeholder, 
+  initialValue = '', 
+  city 
+}: AddressSearchInputProps) {
   const [query, setQuery] = useState(initialValue);
   const [suggestions, setSuggestions] = useState<DaDataSuggestion[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -35,10 +42,10 @@ export default function AddressSearchInput({ onSelect, placeholder, initialValue
     }
   }, [initialValue, query]);
 
-  const fetchSuggestions = useCallback(
-    (val: string) => {
-      const debouncedFetch = debounce(async (inputValue: string) => {
-        if (inputValue.length < 3) {
+  const debouncedFetch = useMemo(
+    () =>
+      debounce(async (inputValue: string) => {
+        if (inputValue.length < 2) {
           setSuggestions([]);
           return;
         }
@@ -46,23 +53,38 @@ export default function AddressSearchInput({ onSelect, placeholder, initialValue
         const res = await getAddressSuggestions(inputValue, city);
         setSuggestions(res);
         setIsLoading(false);
-      }, 500);
-      debouncedFetch(val);
-    },
+      }, 500),
     [city]
   );
 
+  const fetchSuggestions = (val: string) => {
+    debouncedFetch(val);
+  };
+
   const handleChangeText = (text: string) => {
     setQuery(text);
-    setShowSuggestions(true);
+    setShowSuggestions(text.length >= 2);
     fetchSuggestions(text);
+    if (onChangeText) onChangeText(text);
   };
 
   const handleSelect = (item: DaDataSuggestion) => {
-    setQuery(item.value);
-    setSuggestions([]);
-    setShowSuggestions(false);
-    onSelect(item);
+    if (!item.data.house) {
+      // Это выбор просто улицы - добавляем пробел и продолжаем поиск домов
+      const nextQuery = item.value + ' ';
+      setQuery(nextQuery);
+      setShowSuggestions(true);
+      fetchSuggestions(nextQuery);
+      
+      // Передаем обновленное содержимое во внешнюю форму через onChangeText
+      if (onChangeText) onChangeText(nextQuery);
+    } else {
+      // Это уже конкретный дом - завершаем выбор
+      setQuery(item.value);
+      setSuggestions([]);
+      setShowSuggestions(false);
+      onSelect(item);
+    }
   };
 
   return (
@@ -74,7 +96,7 @@ export default function AddressSearchInput({ onSelect, placeholder, initialValue
           placeholderTextColor={Colors.light.textLight}
           value={query}
           onChangeText={handleChangeText}
-          onFocus={() => setShowSuggestions(query.length >= 3)}
+          onFocus={() => setShowSuggestions(query.length >= 2)}
           multiline={true}
           blurOnSubmit={true}
           onSubmitEditing={() => Keyboard.dismiss()}
@@ -89,11 +111,19 @@ export default function AddressSearchInput({ onSelect, placeholder, initialValue
 
         {isLoading && <ActivityIndicator size="small" color={Colors.light.primary} style={styles.loader} />}
         {query.length > 0 && !isLoading && (
-          <TouchableOpacity onPress={() => { setQuery(''); setSuggestions([]); }}>
+          <TouchableOpacity onPress={() => { 
+            setQuery(''); 
+            setSuggestions([]); 
+            if (onChangeText) onChangeText('');
+          }}>
             <Ionicons name="close-circle" size={20} color={Colors.light.textLight} />
           </TouchableOpacity>
         )}
       </View>
+
+      {query.length > 0 && query.length < 2 && !isLoading && (
+        <Text style={styles.hintText}>Минимум 2 символа для поиска</Text>
+      )}
 
       {showSuggestions && suggestions.length > 0 && (
         <View style={styles.suggestionsContainer}>
@@ -133,6 +163,12 @@ const styles = StyleSheet.create({
     color: Colors.light.text,
     paddingTop: Platform.OS === 'ios' ? 4 : 0,
     paddingBottom: Platform.OS === 'ios' ? 4 : 0,
+  },
+  hintText: {
+    fontSize: 12,
+    color: Colors.light.textLight,
+    marginTop: 4,
+    marginLeft: Spacing.m,
   },
   loader: { marginRight: Spacing.s },
   placeholderContainer: {

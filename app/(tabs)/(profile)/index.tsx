@@ -67,14 +67,17 @@ export default function ProfileScreen() {
   const getInitials = () => {
     if (!profile) return '?';
     const f = profile.first_name ? profile.first_name.charAt(0).toUpperCase() : '';
-    const l = profile.last_name ? profile.last_name.charAt(0).toUpperCase() : '';
+    const l = profile.last_name && profile.last_name !== 'null' ? profile.last_name.charAt(0).toUpperCase() : '';
     return (f + l) || 'U';
   };
 
   const getDisplayName = () => {
     if (!profile) return session?.user.email || 'Пользователь';
-    if (profile.first_name || profile.last_name) {
-      return `${profile.first_name} ${profile.last_name}`.trim();
+    const first = profile.first_name || '';
+    const last = (profile.last_name && profile.last_name !== 'null') ? profile.last_name : '';
+    
+    if (first || last) {
+      return `${first} ${last}`.trim();
     }
     return session?.user.email || 'Пользователь';
   };

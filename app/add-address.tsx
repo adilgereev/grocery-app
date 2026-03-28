@@ -1,10 +1,13 @@
 import AddressSearchInput from '@/components/AddressSearchInput';
 import MapPicker from '@/components/MapPicker';
 import { Colors, Radius, Spacing } from '@/constants/theme';
+import { AddressFormData, addressSchema } from '@/lib/schemas';
 import { useAddressStore } from '@/store/addressStore';
 import { Ionicons } from '@expo/vector-icons';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
+import { Controller, useForm } from 'react-hook-form';
 import {
   ActivityIndicator,
   Alert,
@@ -21,8 +24,8 @@ import {
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { logger } from '@/lib/logger';
 import { DaDataSuggestion, getAddressByCoords } from '@/lib/dadataApi';
+import { logger } from '@/lib/logger';
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import Animated, { FadeInDown, FadeOutUp, Layout } from 'react-native-reanimated';
@@ -31,28 +34,36 @@ export default function AddAddressScreen() {
   const { addAddress, isLoading, error, clearError } = useAddressStore();
   const router = useRouter();
 
-  const [address, setAddress] = useState('');
-  const [entrance, setEntrance] = useState('');
-  const [floor, setFloor] = useState('');
-  const [apartment, setApartment] = useState('');
-  const [intercom, setIntercom] = useState('');
-  const [comment, setComment] = useState('');
-  const [isPrivateHouse, setIsPrivateHouse] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [mapVisible, setMapVisible] = useState(false);
-  const [coords, setCoords] = useState<{ lat: number; lon: number } | null>(null);
+
+  const {
+    control,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors, isValid }
+  } = useForm<AddressFormData>({
+    resolver: zodResolver(addressSchema),
+    defaultValues: {
+      text: '',
+      is_private_house: false,
+    }
+  });
+
+  const address = watch('text');
+  const isPrivateHouse = watch('is_private_house');
+  const lat = watch('lat');
+  const lon = watch('lon');
 
   // Вспомогательная функция для красивого форматирования адреса
   const formatAddressString = (suggestion: DaDataSuggestion) => {
     const data = suggestion.data;
     if (!data.street_with_type) return suggestion.value;
 
-    // Если есть номер дома в DaData — добавляем
     if (data.house) {
       return `${data.street_with_type}, д. ${data.house}`;
     }
-
-    // Если нет номера дома — просто возвращаем улицу (пользователь допишет вручную)
     return data.street_with_type;
   };
 
@@ -64,23 +75,18 @@ export default function AddAddressScreen() {
     }
   };
 
-  const handleAddAddress = async () => {
-    if (!address.trim()) {
-      showAlert('Внимание', 'Пожалуйста, введите адрес');
-      return;
-    }
-
+  const handleAddAddress = async (formData: AddressFormData) => {
     setIsSubmitting(true);
     clearError();
 
     try {
-      const rawAddress = address.trim();
+      const rawAddress = formData.text.trim();
 
-      // Извлекаем номер дома из сырого адреса
+      // Извлекаем номер дома из сырого адреса (если он есть в строке)
       const houseMatch = rawAddress.match(/д\.\s*(\d+)/);
-      const houseNumber = houseMatch ? houseMatch[1] : undefined;
+      const houseNumberFromText = houseMatch ? houseMatch[1] : undefined;
 
-      // Очищаем адрес для сохранения только улицы (без города, региона и дома)
+      // Очищаем адрес от префиксов (Буйнакск и т.д.)
       let cleanStreet = rawAddress
         .replace(/^г\. Буйнакск,?\s*/i, '')
         .replace(/,?\s*Республика Дагестан$/i, '')
@@ -92,15 +98,14 @@ export default function AddAddressScreen() {
 
       await addAddress({
         text: cleanStreet,
-        house: houseNumber,
-        entrance: entrance.trim() || undefined,
-        floor: floor.trim() || undefined,
-        intercom: intercom.trim() || undefined,
-        apartment: isPrivateHouse ? undefined : apartment.trim() || undefined,
-        comment: comment.trim() || undefined,
-        // Сохраняем координаты если есть
-        lat: coords?.lat,
-        lon: coords?.lon,
+        house: formData.house || houseNumberFromText,
+        entrance: formData.entrance?.trim() || undefined,
+        floor: formData.floor?.trim() || undefined,
+        intercom: formData.intercom?.trim() || undefined,
+        apartment: formData.is_private_house ? undefined : formData.apartment?.trim() || undefined,
+        comment: formData.comment?.trim() || undefined,
+        lat: formData.lat,
+        lon: formData.lon,
       });
 
       showAlert('Готово', 'Адрес успешно добавлен');
@@ -159,20 +164,36 @@ export default function AddAddressScreen() {
               <AddressSearchInput
                 city="Буйнакск"
                 initialValue={address}
+                onChangeText={(text) => {
+                  setValue('text', text, { shouldValidate: true });
+                  setValue('house', '', { shouldValidate: true }); // Сбрасываем выбранный дом при ручном вводе
+                }}
                 onSelect={(suggestion: DaDataSuggestion) => {
-                  setAddress(formatAddressString(suggestion));
-                  if (suggestion.data.geo_lat) setCoords({ lat: parseFloat(suggestion.data.geo_lat), lon: parseFloat(suggestion.data.geo_lon) });
+                  const formatted = formatAddressString(suggestion);
+                  setValue('text', formatted, { shouldValidate: true });
+                  if (suggestion.data.geo_lat) {
+                    setValue('lat', parseFloat(suggestion.data.geo_lat));
+                    setValue('lon', parseFloat(suggestion.data.geo_lon));
+                  }
+                  if (suggestion.data.house) {
+                    setValue('house', suggestion.data.house, { shouldValidate: true });
+                  } else {
+                    setValue('house', '', { shouldValidate: true });
+                  }
                   Haptics.selectionAsync();
                 }}
               />
+              {errors.house && (
+                <Text style={styles.errorTextInline}>{errors.house.message}</Text>
+              )}
             </View>
 
-            {/* Тоггл частного дома - встроен в карточку */}
+            {/* Тоггл частного дома */}
             <TouchableOpacity
               style={styles.toggleRowCompact}
               onPress={() => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                setIsPrivateHouse(!isPrivateHouse);
+                setValue('is_private_house', !isPrivateHouse);
               }}
               activeOpacity={0.7}
             >
@@ -193,7 +214,7 @@ export default function AddAddressScreen() {
             </TouchableOpacity>
           </Animated.View>
 
-          {/* Секция 2: Детали (только если не частный дом) */}
+          {/* Секция 2: Детали */}
           {!isPrivateHouse && (
             <Animated.View
               entering={FadeInDown.delay(100).duration(400)}
@@ -206,26 +227,40 @@ export default function AddAddressScreen() {
                 <View style={styles.rowGroupFlexMargin}>
                   <View style={styles.compactInputWrapper}>
                     <Text style={styles.compactLabel}>КВАРТИРА</Text>
-                    <TextInput
-                      style={styles.compactInput}
-                      placeholder="№"
-                      placeholderTextColor={Colors.light.textLight}
-                      value={apartment}
-                      onChangeText={setApartment}
-                      keyboardType="numeric"
+                    <Controller
+                      control={control}
+                      name="apartment"
+                      render={({ field: { onChange, onBlur, value } }) => (
+                        <TextInput
+                          style={styles.compactInput}
+                          placeholder="№"
+                          placeholderTextColor={Colors.light.textLight}
+                          onBlur={onBlur}
+                          onChangeText={onChange}
+                          value={value || ''}
+                          keyboardType="numeric"
+                        />
+                      )}
                     />
                   </View>
                 </View>
                 <View style={styles.rowGroupFlex}>
                   <View style={styles.compactInputWrapper}>
                     <Text style={styles.compactLabel}>ПОДЪЕЗД</Text>
-                    <TextInput
-                      style={styles.compactInput}
-                      placeholder="№"
-                      placeholderTextColor={Colors.light.textLight}
-                      value={entrance}
-                      onChangeText={setEntrance}
-                      keyboardType="numeric"
+                    <Controller
+                      control={control}
+                      name="entrance"
+                      render={({ field: { onChange, onBlur, value } }) => (
+                        <TextInput
+                          style={styles.compactInput}
+                          placeholder="№"
+                          placeholderTextColor={Colors.light.textLight}
+                          onBlur={onBlur}
+                          onChangeText={onChange}
+                          value={value || ''}
+                          keyboardType="numeric"
+                        />
+                      )}
                     />
                   </View>
                 </View>
@@ -235,26 +270,40 @@ export default function AddAddressScreen() {
                 <View style={styles.rowGroupFlexMargin}>
                   <View style={styles.compactInputWrapper}>
                     <Text style={styles.compactLabel}>ЭТАЖ</Text>
-                    <TextInput
-                      style={styles.compactInput}
-                      placeholder="№"
-                      placeholderTextColor={Colors.light.textLight}
-                      value={floor}
-                      onChangeText={setFloor}
-                      keyboardType="numeric"
+                    <Controller
+                      control={control}
+                      name="floor"
+                      render={({ field: { onChange, onBlur, value } }) => (
+                        <TextInput
+                          style={styles.compactInput}
+                          placeholder="№"
+                          placeholderTextColor={Colors.light.textLight}
+                          onBlur={onBlur}
+                          onChangeText={onChange}
+                          value={value || ''}
+                          keyboardType="numeric"
+                        />
+                      )}
                     />
                   </View>
                 </View>
                 <View style={styles.rowGroupFlex}>
                   <View style={styles.compactInputWrapper}>
                     <Text style={styles.compactLabel}>ДОМОФОН</Text>
-                    <TextInput
-                      style={styles.compactInput}
-                      placeholder="Код"
-                      placeholderTextColor={Colors.light.textLight}
-                      value={intercom}
-                      onChangeText={setIntercom}
-                      keyboardType="numeric"
+                    <Controller
+                      control={control}
+                      name="intercom"
+                      render={({ field: { onChange, onBlur, value } }) => (
+                        <TextInput
+                          style={styles.compactInput}
+                          placeholder="Код"
+                          placeholderTextColor={Colors.light.textLight}
+                          onBlur={onBlur}
+                          onChangeText={onChange}
+                          value={value || ''}
+                          keyboardType="numeric"
+                        />
+                      )}
                     />
                   </View>
                 </View>
@@ -269,14 +318,21 @@ export default function AddAddressScreen() {
           >
             <Text style={styles.sectionSubtitle}>КОММЕНТАРИЙ ДЛЯ КУРЬЕРА</Text>
             <View style={styles.commentInputContainer}>
-              <TextInput
-                style={styles.commentInput}
-                placeholder="Например: код от ворот 123, оставить у двери..."
-                placeholderTextColor={Colors.light.textLight}
-                value={comment}
-                onChangeText={setComment}
-                multiline
-                numberOfLines={3}
+              <Controller
+                control={control}
+                name="comment"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <TextInput
+                    style={styles.commentInput}
+                    placeholder="Например: код от ворот 123, оставить у двери..."
+                    placeholderTextColor={Colors.light.textLight}
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    value={value || ''}
+                    multiline
+                    numberOfLines={3}
+                  />
+                )}
               />
             </View>
           </Animated.View>
@@ -296,12 +352,12 @@ export default function AddAddressScreen() {
         {/* Кнопка сохранить */}
         <View style={styles.footer}>
           <TouchableOpacity
-            style={[styles.submitButton, (!address.trim() || isSubmitting) && styles.submitButtonDisabled]}
-            disabled={!address.trim() || isSubmitting}
-            onPress={handleAddAddress}
+            style={[styles.submitButton, (!isValid || isSubmitting) && styles.submitButtonDisabled]}
+            disabled={!isValid || isSubmitting}
+            onPress={handleSubmit(handleAddAddress)}
           >
             <LinearGradient
-              colors={(!address.trim() || isSubmitting) ? [Colors.light.textLight, Colors.light.textLight] : [Colors.light.primary, '#059669']}
+              colors={(!isValid || isSubmitting) ? [Colors.light.textLight, Colors.light.textLight] : [Colors.light.primary, '#059669']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={styles.gradientButton}
@@ -321,14 +377,17 @@ export default function AddAddressScreen() {
         {/* Модалка карты */}
         <Modal visible={mapVisible} animationType="slide">
           <MapPicker
-            initialLocation={coords ? { latitude: coords.lat, longitude: coords.lon } : undefined}
+            initialLocation={lat && lon ? { latitude: lat, longitude: lon } : undefined}
             onClose={() => setMapVisible(false)}
-            onLocationSelect={async (lat, lon) => {
-              setCoords({ lat, lon });
+            onLocationSelect={async (newLat, newLon) => {
+              setValue('lat', newLat);
+              setValue('lon', newLon);
               try {
-                const suggestion = await getAddressByCoords(lat, lon);
+                const suggestion = await getAddressByCoords(newLat, newLon);
                 if (suggestion) {
-                  setAddress(formatAddressString(suggestion));
+                  const formatted = formatAddressString(suggestion);
+                  setValue('text', formatted, { shouldValidate: true });
+                  if (suggestion.data.house) setValue('house', suggestion.data.house);
                 }
               } catch (e) {
                 logger.error('Ошибка реверсивного геокодинга:', e);
@@ -348,10 +407,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     padding: Spacing.l,
     backgroundColor: Colors.light.card,
-    elevation: 4, 
-    shadowColor: Colors.light.text, 
-    shadowOffset: { width: 0, height: 4 }, 
-    shadowOpacity: 0.05, 
+    elevation: 4,
+    shadowColor: Colors.light.text,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
     shadowRadius: 8,
     zIndex: 10,
   },
@@ -377,7 +436,6 @@ const styles = StyleSheet.create({
   rowGroupFlex: { flex: 1 },
   rowGroupFlexMargin: { flex: 1, marginRight: Spacing.s },
 
-  // Карточки
   card: {
     borderRadius: Radius.xl,
     marginBottom: Spacing.l,
@@ -397,7 +455,6 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
 
-  // Кастомный переключатель
   toggleRowCompact: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -445,7 +502,6 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
   },
 
-  // Компактные инпуты для ряда
   compactInputWrapper: {
     backgroundColor: Colors.light.card,
     borderRadius: Radius.m,
@@ -466,7 +522,6 @@ const styles = StyleSheet.create({
     padding: 0,
   },
 
-  // Ошибка
   errorContainer: {
     flexDirection: 'row', alignItems: 'center', gap: 10,
     padding: Spacing.m, backgroundColor: Colors.light.errorLight,
@@ -474,8 +529,8 @@ const styles = StyleSheet.create({
     marginTop: Spacing.s,
   },
   errorText: { flex: 1, fontSize: 14, color: Colors.light.error },
+  errorTextInline: { color: Colors.light.error, fontSize: 12, marginTop: 4, fontWeight: '500' },
 
-  // Футер и Кнопка
   footer: {
     backgroundColor: Colors.light.card,
     borderTopWidth: 1, borderTopColor: Colors.light.borderLight,

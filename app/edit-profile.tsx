@@ -9,6 +9,9 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { profileSchema, ProfileFormData } from '@/lib/schemas';
 
 export default function EditProfileScreen() {
   const router = useRouter();
@@ -16,9 +19,20 @@ export default function EditProfileScreen() {
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [phone, setPhone] = useState(''); // Только для отображения (нередактируемый)
+  const [phone, setPhone] = useState(''); // Только для отображения
+
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors }
+  } = useForm<ProfileFormData>({
+    resolver: zodResolver(profileSchema),
+    defaultValues: {
+      first_name: '',
+      last_name: '',
+    }
+  });
 
   const fetchProfile = useCallback(async () => {
     try {
@@ -33,8 +47,10 @@ export default function EditProfileScreen() {
       if (error) throw error;
 
       if (data) {
-        setFirstName(data.first_name || '');
-        setLastName(data.last_name || '');
+        reset({
+          first_name: data.first_name || '',
+          last_name: data.last_name || '',
+        });
         setPhone(data.phone || '');
       }
     } catch (error: unknown) {
@@ -42,7 +58,7 @@ export default function EditProfileScreen() {
     } finally {
       setLoading(false);
     }
-  }, [session]);
+  }, [session, reset]);
 
   useEffect(() => {
     if (session?.user) {
@@ -50,21 +66,15 @@ export default function EditProfileScreen() {
     }
   }, [session, fetchProfile]);
 
-  const handleSave = async () => {
-    if (!firstName.trim()) {
-      if (Platform.OS === 'web') window.alert('Укажите имя');
-      else Alert.alert('Внимание', 'Укажите имя');
-      return;
-    }
-
+  const onSave = async (formData: ProfileFormData) => {
     if (!session?.user?.id) return;
     try {
       setSaving(true);
       const { error } = await supabase
         .from('profiles')
         .update({
-          first_name: firstName,
-          last_name: lastName,
+          first_name: formData.first_name,
+          last_name: formData.last_name || null,
         })
         .eq('id', session.user.id);
 
@@ -73,7 +83,7 @@ export default function EditProfileScreen() {
       if (Platform.OS === 'web') {
         window.alert('Профиль успешно обновлен!');
       } else {
-        Alert.alert('Готово', 'Персональные данные загружены в облако!');
+        Alert.alert('Готово', 'Персональные данные сохранены!');
       }
       router.back();
     } catch (error: unknown) {
@@ -125,24 +135,44 @@ export default function EditProfileScreen() {
 
             <View style={styles.inputGroup}>
               <Text style={styles.label}>Имя</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Например, Иван"
-                placeholderTextColor={Colors.light.textLight}
-                value={firstName}
-                onChangeText={setFirstName}
+              <Controller
+                control={control}
+                name="first_name"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <TextInput
+                    style={[styles.input, errors.first_name && styles.inputError]}
+                    placeholder="Например, Иван"
+                    placeholderTextColor={Colors.light.textLight}
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    value={value}
+                  />
+                )}
               />
+              {errors.first_name && (
+                <Text style={styles.errorText}>{errors.first_name.message}</Text>
+              )}
             </View>
 
             <View style={styles.inputGroup}>
-              <Text style={styles.label}>Фамилия</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Например, Иванов"
-                placeholderTextColor={Colors.light.textLight}
-                value={lastName}
-                onChangeText={setLastName}
+              <Text style={styles.label}>Фамилия (необязательно)</Text>
+              <Controller
+                control={control}
+                name="last_name"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <TextInput
+                    style={[styles.input, errors.last_name && styles.inputError]}
+                    placeholder="Например, Иванов"
+                    placeholderTextColor={Colors.light.textLight}
+                    onBlur={onBlur}
+                    onChangeText={onChange}
+                    value={value || ''}
+                  />
+                )}
               />
+              {errors.last_name && (
+                <Text style={styles.errorText}>{errors.last_name.message}</Text>
+              )}
             </View>
           </View>
         )}
@@ -152,7 +182,7 @@ export default function EditProfileScreen() {
       <View style={styles.footerInner}>
         <TouchableOpacity
           style={[styles.saveButton, saving && styles.saveButtonSaving]}
-          onPress={handleSave}
+          onPress={handleSubmit(onSave)}
           disabled={saving || loading}
         >
           {saving ? (
@@ -199,7 +229,6 @@ const styles = StyleSheet.create({
   inputGroup: {
     marginBottom: Spacing.m + Spacing.s,
   },
-  // Отображение телефона (нередактируемый)
   phoneDisplay: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -238,6 +267,16 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.sans,
     textAlignVertical: 'center' as const,
   },
+  inputError: {
+    borderColor: Colors.light.error,
+  },
+  errorText: {
+    color: Colors.light.error,
+    fontSize: 12,
+    marginTop: 4,
+    marginLeft: 4,
+    fontWeight: '500',
+  },
   footerInner: {
     padding: Spacing.l,
     backgroundColor: Colors.light.card,
@@ -265,3 +304,4 @@ const styles = StyleSheet.create({
     fontFamily: Fonts.sans,
   },
 });
+
