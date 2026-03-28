@@ -2,12 +2,12 @@ import { Colors, Radius, Spacing } from '@/constants/theme';
 import { DaDataSuggestion, getAddressSuggestions } from '@/lib/dadataApi';
 import { Ionicons } from '@expo/vector-icons';
 import debounce from 'lodash.debounce';
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
-  FlatList,
   Keyboard,
   Platform,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -18,17 +18,19 @@ import {
 interface AddressSearchInputProps {
   onSelect: (suggestion: DaDataSuggestion) => void;
   onChangeText?: (text: string) => void;
+  onToggleSuggestions?: (visible: boolean) => void;
   placeholder?: string;
   initialValue?: string;
   city?: string;
 }
 
-export default function AddressSearchInput({ 
-  onSelect, 
+export default function AddressSearchInput({
+  onSelect,
   onChangeText,
-  placeholder, 
-  initialValue = '', 
-  city 
+  onToggleSuggestions,
+  placeholder,
+  initialValue = '',
+  city
 }: AddressSearchInputProps) {
   const [query, setQuery] = useState(initialValue);
   const [suggestions, setSuggestions] = useState<DaDataSuggestion[]>([]);
@@ -41,6 +43,14 @@ export default function AddressSearchInput({
       setQuery(initialValue);
     }
   }, [initialValue, query]);
+
+  // Уведомляем родителя об изменении видимости подсказок
+  useEffect(() => {
+    const isVisible = showSuggestions && suggestions.length > 0;
+    if (onToggleSuggestions) {
+      onToggleSuggestions(isVisible);
+    }
+  }, [showSuggestions, suggestions, onToggleSuggestions]);
 
   const debouncedFetch = useMemo(
     () =>
@@ -75,7 +85,7 @@ export default function AddressSearchInput({
       setQuery(nextQuery);
       setShowSuggestions(true);
       fetchSuggestions(nextQuery);
-      
+
       // Передаем обновленное содержимое во внешнюю форму через onChangeText
       if (onChangeText) onChangeText(nextQuery);
     } else {
@@ -83,6 +93,7 @@ export default function AddressSearchInput({
       setQuery(item.value);
       setSuggestions([]);
       setShowSuggestions(false);
+      Keyboard.dismiss(); // Скрываем клавиатуру при финальном выборе
       onSelect(item);
     }
   };
@@ -100,8 +111,9 @@ export default function AddressSearchInput({
           multiline={true}
           blurOnSubmit={true}
           onSubmitEditing={() => Keyboard.dismiss()}
+          keyboardAppearance="light"
         />
-        
+
         {query.length === 0 && (
           <View style={styles.placeholderContainer} pointerEvents="none">
             <Ionicons name="location-outline" size={20} color={Colors.light.textLight} style={styles.icon} />
@@ -111,9 +123,9 @@ export default function AddressSearchInput({
 
         {isLoading && <ActivityIndicator size="small" color={Colors.light.primary} style={styles.loader} />}
         {query.length > 0 && !isLoading && (
-          <TouchableOpacity onPress={() => { 
-            setQuery(''); 
-            setSuggestions([]); 
+          <TouchableOpacity onPress={() => {
+            setQuery('');
+            setSuggestions([]);
             if (onChangeText) onChangeText('');
           }}>
             <Ionicons name="close-circle" size={20} color={Colors.light.textLight} />
@@ -127,21 +139,27 @@ export default function AddressSearchInput({
 
       {showSuggestions && suggestions.length > 0 && (
         <View style={styles.suggestionsContainer}>
-          <FlatList
-            data={suggestions}
-            keyExtractor={(item) => item.unrestricted_value}
-            renderItem={({ item }) => (
-              <TouchableOpacity style={styles.suggestionItem} onPress={() => handleSelect(item)}>
+          <ScrollView
+            style={styles.suggestionsScroll}
+            nestedScrollEnabled={true}
+            keyboardShouldPersistTaps="always"
+            showsVerticalScrollIndicator={false}
+            onScrollBeginDrag={() => Keyboard.dismiss()}
+          >
+            {suggestions.map((item) => (
+              <TouchableOpacity
+                key={item.unrestricted_value}
+                style={styles.suggestionItem}
+                onPress={() => handleSelect(item)}
+              >
                 <Ionicons name="map-outline" size={18} color={Colors.light.textLight} style={styles.suggestionIcon} />
                 <View style={styles.flex1}>
                   <Text style={styles.suggestionText} numberOfLines={1}>{item.value}</Text>
                   {item.data.city && <Text style={styles.suggestionSubtext}>{item.data.city}</Text>}
                 </View>
               </TouchableOpacity>
-            )}
-            keyboardShouldPersistTaps="always"
-            scrollEnabled={false}
-          />
+            ))}
+          </ScrollView>
         </View>
       )}
     </View>
@@ -187,7 +205,10 @@ const styles = StyleSheet.create({
     marginTop: 4,
     backgroundColor: Colors.light.card, borderRadius: Radius.m,
     elevation: 10, shadowColor: Colors.light.text, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 10,
-    maxHeight: 300, overflow: 'hidden',
+    maxHeight: 400, overflow: 'hidden',
+  },
+  suggestionsScroll: {
+    maxHeight: 400,
   },
   suggestionItem: {
     flexDirection: 'row', alignItems: 'center', padding: Spacing.m,

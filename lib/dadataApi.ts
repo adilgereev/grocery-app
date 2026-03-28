@@ -35,7 +35,7 @@ export const getAddressSuggestions = async (query: string, city?: string): Promi
         from_bound: { value: 'street' }, // Начинаем поиск с улиц
         to_bound: { value: 'house' },     // Заканчиваем домами
         restrict_value: true,            // Не показывать название города в самой подсказке, если он уже в фильтре
-        count: 5,
+        count: 10,            // Увеличили количество возвращаемых подсказок до 10
       },
       {
         headers: {
@@ -46,7 +46,6 @@ export const getAddressSuggestions = async (query: string, city?: string): Promi
       }
     );
 
-    logger.log('DaData API Response:', response.data.suggestions);
     return response.data.suggestions || [];
   } catch (error) {
     logger.error('DaData Suggesion Error:', error);

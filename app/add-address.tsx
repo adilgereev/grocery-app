@@ -11,15 +11,14 @@ import { Controller, useForm } from 'react-hook-form';
 import {
   ActivityIndicator,
   Alert,
-  Keyboard,
   Modal,
   Platform,
+  Pressable,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  TouchableWithoutFeedback,
-  View
+  View,
 } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -28,7 +27,7 @@ import { DaDataSuggestion, getAddressByCoords } from '@/lib/dadataApi';
 import { logger } from '@/lib/logger';
 import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
-import Animated, { FadeInDown, FadeOutUp, Layout } from 'react-native-reanimated';
+
 
 export default function AddAddressScreen() {
   const { addAddress, isLoading, error, clearError } = useAddressStore();
@@ -36,6 +35,12 @@ export default function AddAddressScreen() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [mapVisible, setMapVisible] = useState(false);
+
+  // Refs для компактных полей
+  const apartmentRef = React.useRef<TextInput>(null);
+  const entranceRef = React.useRef<TextInput>(null);
+  const floorRef = React.useRef<TextInput>(null);
+  const intercomRef = React.useRef<TextInput>(null);
 
   const {
     control,
@@ -120,236 +125,252 @@ export default function AddAddressScreen() {
   };
 
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-        {/* Шапка */}
-        <View style={styles.header}>
-          <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-            <Ionicons name="arrow-back" size={24} color={Colors.light.text} />
-          </TouchableOpacity>
-          <Text style={styles.title}>Новый адрес</Text>
-          <View style={styles.headerSpacer} />
-        </View>
+    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+      {/* Шапка */}
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <Ionicons name="arrow-back" size={24} color={Colors.light.text} />
+        </TouchableOpacity>
+        <Text style={styles.title}>Новый адрес</Text>
+        <View style={styles.headerSpacer} />
+      </View>
 
-        <KeyboardAwareScrollView
-          style={styles.scrollContainer}
-          contentContainerStyle={styles.scrollContent}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={false}
-          extraScrollHeight={80}
-          enableOnAndroid={true}
+      <KeyboardAwareScrollView
+        style={styles.scrollContainer}
+        contentContainerStyle={styles.scrollContent}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+        // keyboardDismissMode="on-drag"
+        enableOnAndroid={true}
+        enableAutomaticScroll={true}
+        extraHeight={90}
+        extraScrollHeight={65}
+      >
+        {/* Секция 1: Основной адрес */}
+        <View
+          style={styles.cardWithZIndex}
         >
-          {/* Секция 1: Основной адрес */}
-          <Animated.View
-            entering={FadeInDown.duration(400)}
-            style={styles.cardWithZIndex}
-          >
-            <View style={styles.fieldGroupWithZIndex}>
-              <View style={styles.labelRow}>
-                <View style={styles.labelWithIcon}>
-                  <Ionicons name="location-sharp" size={18} color={Colors.light.primary} />
-                  <Text style={styles.fieldLabel}>Адрес доставки*</Text>
-                </View>
-                <TouchableOpacity
-                  onPress={() => {
-                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                    setMapVisible(true);
-                  }}
-                  style={styles.mapLink}
-                >
-                  <Ionicons name="map" size={16} color={Colors.light.primary} />
-                  <Text style={styles.mapLinkText}>На карте</Text>
-                </TouchableOpacity>
+          <View style={styles.fieldGroupWithZIndex}>
+            <View style={styles.labelRow}>
+              <View style={styles.labelWithIcon}>
+                <Ionicons name="location-sharp" size={18} color={Colors.light.primary} />
+                <Text style={styles.fieldLabel}>Адрес доставки*</Text>
               </View>
-              <AddressSearchInput
-                city="Буйнакск"
-                initialValue={address}
-                onChangeText={(text) => {
-                  setValue('text', text, { shouldValidate: true });
-                  setValue('house', '', { shouldValidate: true }); // Сбрасываем выбранный дом при ручном вводе
+              <TouchableOpacity
+                onPress={() => {
+                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                  setMapVisible(true);
                 }}
-                onSelect={(suggestion: DaDataSuggestion) => {
-                  const formatted = formatAddressString(suggestion);
-                  setValue('text', formatted, { shouldValidate: true });
-                  if (suggestion.data.geo_lat) {
-                    setValue('lat', parseFloat(suggestion.data.geo_lat));
-                    setValue('lon', parseFloat(suggestion.data.geo_lon));
-                  }
-                  if (suggestion.data.house) {
-                    setValue('house', suggestion.data.house, { shouldValidate: true });
-                  } else {
-                    setValue('house', '', { shouldValidate: true });
-                  }
-                  Haptics.selectionAsync();
-                }}
-              />
-              {errors.house && (
-                <Text style={styles.errorTextInline}>{errors.house.message}</Text>
-              )}
-            </View>
-
-            {/* Тоггл частного дома */}
-            <TouchableOpacity
-              style={styles.toggleRowCompact}
-              onPress={() => {
-                Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                setValue('is_private_house', !isPrivateHouse);
-              }}
-              activeOpacity={0.7}
-            >
-              <View style={styles.toggleTextContainer}>
-                <Ionicons
-                  name={isPrivateHouse ? "home" : "business"}
-                  size={20}
-                  color={isPrivateHouse ? Colors.light.primary : Colors.light.textSecondary}
-                />
-                <Text style={styles.toggleLabel}>Частный дом</Text>
-              </View>
-              <View style={[styles.switchBase, isPrivateHouse && styles.switchActive]}>
-                <Animated.View
-                  layout={Layout.springify()}
-                  style={[styles.switchThumb, isPrivateHouse && styles.switchThumbActive]}
-                />
-              </View>
-            </TouchableOpacity>
-          </Animated.View>
-
-          {/* Секция 2: Детали */}
-          {!isPrivateHouse && (
-            <Animated.View
-              entering={FadeInDown.delay(100).duration(400)}
-              exiting={FadeOutUp.duration(300)}
-              style={styles.card}
-            >
-              <Text style={styles.sectionSubtitle}>ДЕТАЛИ АДРЕСА</Text>
-
-              <View style={styles.rowGroup}>
-                <View style={styles.rowGroupFlexMargin}>
-                  <View style={styles.compactInputWrapper}>
-                    <Text style={styles.compactLabel}>КВАРТИРА</Text>
-                    <Controller
-                      control={control}
-                      name="apartment"
-                      render={({ field: { onChange, onBlur, value } }) => (
-                        <TextInput
-                          style={styles.compactInput}
-                          placeholder="№"
-                          placeholderTextColor={Colors.light.textLight}
-                          onBlur={onBlur}
-                          onChangeText={onChange}
-                          value={value || ''}
-                          keyboardType="numeric"
-                        />
-                      )}
-                    />
-                  </View>
-                </View>
-                <View style={styles.rowGroupFlex}>
-                  <View style={styles.compactInputWrapper}>
-                    <Text style={styles.compactLabel}>ПОДЪЕЗД</Text>
-                    <Controller
-                      control={control}
-                      name="entrance"
-                      render={({ field: { onChange, onBlur, value } }) => (
-                        <TextInput
-                          style={styles.compactInput}
-                          placeholder="№"
-                          placeholderTextColor={Colors.light.textLight}
-                          onBlur={onBlur}
-                          onChangeText={onChange}
-                          value={value || ''}
-                          keyboardType="numeric"
-                        />
-                      )}
-                    />
-                  </View>
-                </View>
-              </View>
-
-              <View style={styles.rowGroup}>
-                <View style={styles.rowGroupFlexMargin}>
-                  <View style={styles.compactInputWrapper}>
-                    <Text style={styles.compactLabel}>ЭТАЖ</Text>
-                    <Controller
-                      control={control}
-                      name="floor"
-                      render={({ field: { onChange, onBlur, value } }) => (
-                        <TextInput
-                          style={styles.compactInput}
-                          placeholder="№"
-                          placeholderTextColor={Colors.light.textLight}
-                          onBlur={onBlur}
-                          onChangeText={onChange}
-                          value={value || ''}
-                          keyboardType="numeric"
-                        />
-                      )}
-                    />
-                  </View>
-                </View>
-                <View style={styles.rowGroupFlex}>
-                  <View style={styles.compactInputWrapper}>
-                    <Text style={styles.compactLabel}>ДОМОФОН</Text>
-                    <Controller
-                      control={control}
-                      name="intercom"
-                      render={({ field: { onChange, onBlur, value } }) => (
-                        <TextInput
-                          style={styles.compactInput}
-                          placeholder="Код"
-                          placeholderTextColor={Colors.light.textLight}
-                          onBlur={onBlur}
-                          onChangeText={onChange}
-                          value={value || ''}
-                          keyboardType="numeric"
-                        />
-                      )}
-                    />
-                  </View>
-                </View>
-              </View>
-            </Animated.View>
-          )}
-
-          {/* Секция 3: Комментарий */}
-          <Animated.View
-            entering={FadeInDown.delay(200).duration(400)}
-            style={styles.card}
-          >
-            <Text style={styles.sectionSubtitle}>КОММЕНТАРИЙ ДЛЯ КУРЬЕРА</Text>
-            <View style={styles.commentInputContainer}>
-              <Controller
-                control={control}
-                name="comment"
-                render={({ field: { onChange, onBlur, value } }) => (
-                  <TextInput
-                    style={styles.commentInput}
-                    placeholder="Например: код от ворот 123, оставить у двери..."
-                    placeholderTextColor={Colors.light.textLight}
-                    onBlur={onBlur}
-                    onChangeText={onChange}
-                    value={value || ''}
-                    multiline
-                    numberOfLines={3}
-                  />
-                )}
-              />
-            </View>
-          </Animated.View>
-
-          {/* Ошибка из стора */}
-          {error ? (
-            <View style={styles.errorContainer}>
-              <Ionicons name="alert-circle" size={20} color={Colors.light.error} />
-              <Text style={styles.errorText}>{error}</Text>
-              <TouchableOpacity onPress={() => clearError()}>
-                <Ionicons name="close" size={18} color={Colors.light.error} />
+                style={styles.mapLink}
+              >
+                <Ionicons name="map" size={16} color={Colors.light.primary} />
+                <Text style={styles.mapLinkText}>На карте</Text>
               </TouchableOpacity>
             </View>
-          ) : null}
-        </KeyboardAwareScrollView>
+            <AddressSearchInput
+              city="Буйнакск"
+              initialValue={address}
+              onChangeText={(text) => {
+                setValue('text', text, { shouldValidate: true });
+                setValue('house', '', { shouldValidate: true }); // Сбрасываем выбранный дом при ручном вводе
+              }}
+              onSelect={(suggestion: DaDataSuggestion) => {
+                const formatted = formatAddressString(suggestion);
+                setValue('text', formatted, { shouldValidate: true });
+                if (suggestion.data.geo_lat) {
+                  setValue('lat', parseFloat(suggestion.data.geo_lat));
+                  setValue('lon', parseFloat(suggestion.data.geo_lon));
+                }
+                if (suggestion.data.house) {
+                  setValue('house', suggestion.data.house, { shouldValidate: true });
+                } else {
+                  setValue('house', '', { shouldValidate: true });
+                }
+                Haptics.selectionAsync();
+              }}
+            />
+            {errors.house && (
+              <Text style={styles.errorTextInline}>{errors.house.message}</Text>
+            )}
+          </View>
 
-        {/* Кнопка сохранить */}
+          {/* Тоггл частного дома */}
+          <TouchableOpacity
+            style={styles.toggleRowCompact}
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              setValue('is_private_house', !isPrivateHouse);
+            }}
+            activeOpacity={0.7}
+          >
+            <View style={styles.toggleTextContainer}>
+              <Ionicons
+                name={isPrivateHouse ? "home" : "business"}
+                size={20}
+                color={isPrivateHouse ? Colors.light.primary : Colors.light.textSecondary}
+              />
+              <Text style={styles.toggleLabel}>Частный дом</Text>
+            </View>
+            <View style={[styles.switchBase, isPrivateHouse && styles.switchActive]}>
+              <View
+                style={[styles.switchThumb, isPrivateHouse && styles.switchThumbActive]}
+              />
+            </View>
+          </TouchableOpacity>
+        </View>
+
+        {/* Секция 2: Детали */}
+        {!isPrivateHouse && (
+          <View
+            style={styles.card}
+          >
+
+            <View style={styles.rowGroup}>
+              <View style={styles.rowGroupFlexMargin}>
+                <Pressable
+                  style={styles.compactInputWrapper}
+                  onPress={() => apartmentRef.current?.focus()}
+                >
+                  <Text style={styles.compactLabel}>КВАРТИРА</Text>
+                  <Controller
+                    control={control}
+                    name="apartment"
+                    render={({ field: { onChange, onBlur, value } }) => (
+                      <TextInput
+                        ref={apartmentRef}
+                        style={styles.compactInput}
+                        placeholder="№"
+                        placeholderTextColor={Colors.light.textLight}
+                        onBlur={onBlur}
+                        onChangeText={onChange}
+                        value={value || ''}
+                        keyboardType="numeric"
+                        keyboardAppearance="light"
+                      />
+                    )}
+                  />
+                </Pressable>
+              </View>
+              <View style={styles.rowGroupFlex}>
+                <Pressable
+                  style={styles.compactInputWrapper}
+                  onPress={() => entranceRef.current?.focus()}
+                >
+                  <Text style={styles.compactLabel}>ПОДЪЕЗД</Text>
+                  <Controller
+                    control={control}
+                    name="entrance"
+                    render={({ field: { onChange, onBlur, value } }) => (
+                      <TextInput
+                        ref={entranceRef}
+                        style={styles.compactInput}
+                        placeholder="№"
+                        placeholderTextColor={Colors.light.textLight}
+                        onBlur={onBlur}
+                        onChangeText={onChange}
+                        value={value || ''}
+                        keyboardType="numeric"
+                        keyboardAppearance="light"
+                      />
+                    )}
+                  />
+                </Pressable>
+              </View>
+            </View>
+
+            <View style={styles.rowGroup}>
+              <View style={styles.rowGroupFlexMargin}>
+                <Pressable
+                  style={styles.compactInputWrapper}
+                  onPress={() => floorRef.current?.focus()}
+                >
+                  <Text style={styles.compactLabel}>ЭТАЖ</Text>
+                  <Controller
+                    control={control}
+                    name="floor"
+                    render={({ field: { onChange, onBlur, value } }) => (
+                      <TextInput
+                        ref={floorRef}
+                        style={styles.compactInput}
+                        placeholder="№"
+                        placeholderTextColor={Colors.light.textLight}
+                        onBlur={onBlur}
+                        onChangeText={onChange}
+                        value={value || ''}
+                        keyboardType="numeric"
+                        keyboardAppearance="light"
+                      />
+                    )}
+                  />
+                </Pressable>
+              </View>
+              <View style={styles.rowGroupFlex}>
+                <Pressable
+                  style={styles.compactInputWrapper}
+                  onPress={() => intercomRef.current?.focus()}
+                >
+                  <Text style={styles.compactLabel}>ДОМОФОН</Text>
+                  <Controller
+                    control={control}
+                    name="intercom"
+                    render={({ field: { onChange, onBlur, value } }) => (
+                      <TextInput
+                        ref={intercomRef}
+                        style={styles.compactInput}
+                        placeholder="Код"
+                        placeholderTextColor={Colors.light.textLight}
+                        onBlur={onBlur}
+                        onChangeText={onChange}
+                        value={value || ''}
+                        keyboardType="default"
+                        keyboardAppearance="light"
+                      />
+                    )}
+                  />
+                </Pressable>
+              </View>
+            </View>
+          </View>
+        )}
+
+        {/* Секция 3: Комментарий */}
+        <View
+          style={styles.card}
+        >
+          <Text style={styles.sectionSubtitle}>КОММЕНТАРИЙ ДЛЯ КУРЬЕРА</Text>
+          <View style={styles.commentInputContainer}>
+            <Controller
+              control={control}
+              name="comment"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextInput
+                  style={styles.commentInput}
+                  placeholder="Например: код от ворот 123, оставить у двери..."
+                  placeholderTextColor={Colors.light.textLight}
+                  onBlur={onBlur}
+                  onChangeText={onChange}
+                  value={value || ''}
+                  multiline
+                  numberOfLines={3}
+                  keyboardAppearance="light"
+                />
+              )}
+            />
+          </View>
+        </View>
+
+        {/* Ошибка из стора */}
+        {error ? (
+          <View style={styles.errorContainer}>
+            <Ionicons name="alert-circle" size={20} color={Colors.light.error} />
+            <Text style={styles.errorText}>{error}</Text>
+            <TouchableOpacity onPress={() => clearError()}>
+              <Ionicons name="close" size={18} color={Colors.light.error} />
+            </TouchableOpacity>
+          </View>
+        ) : null}
+
+        {/* Кнопка сохранить перенесена внутрь скролла для идеальной работы клавиатуры */}
         <View style={styles.footer}>
           <TouchableOpacity
             style={[styles.submitButton, (!isValid || isSubmitting) && styles.submitButtonDisabled]}
@@ -367,36 +388,35 @@ export default function AddAddressScreen() {
               ) : (
                 <>
                   <Text style={styles.submitButtonText}>Сохранить адрес</Text>
-                  <Ionicons name="checkmark-circle" size={20} color={Colors.light.card} style={styles.submitIcon} />
                 </>
               )}
             </LinearGradient>
           </TouchableOpacity>
         </View>
+      </KeyboardAwareScrollView>
 
-        {/* Модалка карты */}
-        <Modal visible={mapVisible} animationType="slide">
-          <MapPicker
-            initialLocation={lat && lon ? { latitude: lat, longitude: lon } : undefined}
-            onClose={() => setMapVisible(false)}
-            onLocationSelect={async (newLat, newLon) => {
-              setValue('lat', newLat);
-              setValue('lon', newLon);
-              try {
-                const suggestion = await getAddressByCoords(newLat, newLon);
-                if (suggestion) {
-                  const formatted = formatAddressString(suggestion);
-                  setValue('text', formatted, { shouldValidate: true });
-                  if (suggestion.data.house) setValue('house', suggestion.data.house);
-                }
-              } catch (e) {
-                logger.error('Ошибка реверсивного геокодинга:', e);
+      {/* Модалка карты */}
+      <Modal visible={mapVisible} animationType="slide">
+        <MapPicker
+          initialLocation={lat && lon ? { latitude: lat, longitude: lon } : undefined}
+          onClose={() => setMapVisible(false)}
+          onLocationSelect={async (newLat, newLon) => {
+            setValue('lat', newLat);
+            setValue('lon', newLon);
+            try {
+              const suggestion = await getAddressByCoords(newLat, newLon);
+              if (suggestion) {
+                const formatted = formatAddressString(suggestion);
+                setValue('text', formatted, { shouldValidate: true });
+                if (suggestion.data.house) setValue('house', suggestion.data.house);
               }
-            }}
-          />
-        </Modal>
-      </SafeAreaView>
-    </TouchableWithoutFeedback>
+            } catch (e) {
+              logger.error('Ошибка реверсивного геокодинга:', e);
+            }
+          }}
+        />
+      </Modal>
+    </SafeAreaView>
   );
 }
 
@@ -423,7 +443,7 @@ const styles = StyleSheet.create({
   title: { fontSize: 20, fontWeight: '900', color: Colors.light.text },
 
   scrollContainer: { flex: 1 },
-  scrollContent: { padding: Spacing.l, paddingBottom: 40 },
+  scrollContent: { padding: Spacing.l, paddingBottom: 40, flexGrow: 1 },
 
   fieldGroupWithZIndex: { marginBottom: Spacing.s, zIndex: 99 },
   fieldLabel: {
@@ -532,10 +552,9 @@ const styles = StyleSheet.create({
   errorTextInline: { color: Colors.light.error, fontSize: 12, marginTop: 4, fontWeight: '500' },
 
   footer: {
-    backgroundColor: Colors.light.card,
-    borderTopWidth: 1, borderTopColor: Colors.light.borderLight,
-    paddingHorizontal: Spacing.l, paddingTop: Spacing.m,
-    paddingBottom: Platform.OS === 'ios' ? 34 : 20,
+    marginTop: 'auto',
+    paddingTop: Spacing.xl,
+    paddingBottom: Platform.OS === 'ios' ? 20 : 10,
   },
   submitButton: {
     borderRadius: Radius.l,
@@ -560,7 +579,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   submitButtonText: { color: Colors.light.card, fontSize: 17, fontWeight: '800', letterSpacing: 0.3 },
-  submitIcon: { marginLeft: 8 },
 
   mapLink: {
     flexDirection: 'row',
