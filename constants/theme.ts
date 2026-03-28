@@ -43,6 +43,9 @@ export const Colors = {
     blackTransparent: 'rgba(0,0,0,0.1)',
     white: '#ffffff',
     black: '#000000',
+    // Стеклянные эффекты (Glassmorphism)
+    glassBackground: 'rgba(255, 255, 255, 0.85)',
+    glassBorder: 'rgba(255, 255, 255, 0.6)',
   },
   dark: {
     primary: tintColorDark,
@@ -76,6 +79,9 @@ export const Colors = {
     // Прозрачные цвета
     whiteTransparent: 'rgba(255,255,255,0.15)',
     blackTransparent: 'rgba(0,0,0,0.3)',
+    // Стеклянные эффекты для темной темы
+    glassBackground: 'rgba(31, 41, 55, 0.8)',
+    glassBorder: 'rgba(255, 255, 255, 0.15)',
   },
 };
 

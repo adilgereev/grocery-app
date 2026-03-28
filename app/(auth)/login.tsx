@@ -1,15 +1,17 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { StyleSheet, View, TextInput, TouchableOpacity, Text, Platform, ActivityIndicator, Alert, Keyboard, KeyboardAvoidingView, TouchableWithoutFeedback, ScrollView } from 'react-native';
+import { Colors, Radius, Spacing } from '@/constants/theme';
+import { generateOTP, generatePasswordFromPhone, normalizePhone, phoneToEmail, sendSMS } from '@/lib/sms';
 import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Colors, Spacing, Radius } from '@/constants/theme';
-import { generateOTP, normalizePhone, sendSMS, generatePasswordFromPhone, phoneToEmail } from '@/lib/sms';
+import { useRouter } from 'expo-router';
+import React, { useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, Alert, Keyboard, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 
 // Шаги авторизации
 type AuthStep = 'phone' | 'otp';
 
 export default function Login() {
+  const router = useRouter();
   const [step, setStep] = useState<AuthStep>('phone');
   const [phone, setPhone] = useState('');
   const [otp, setOtp] = useState(['', '', '', '']);
@@ -78,7 +80,7 @@ export default function Login() {
 
     // Автопереход на следующее поле
     if (singleDigit && index < 3) {
-      otpRefs.current[index + 1]?.focus();
+      setTimeout(() => otpRefs.current[index + 1]?.focus(), 10);
     }
 
     // Если все 4 цифры введены — автоотправка
@@ -119,12 +121,18 @@ export default function Login() {
 
       if (insertError) throw insertError;
 
-      // Отправляем SMS
-      const result = await sendSMS(normalized, `Вкусная Доставка: ваш код ${code}`);
+      // Отправляем SMS (только в продакшене, чтобы не тратить баланс при тестах)
+      let result = { success: true, error: null as string | null };
+      if (!__DEV__) {
+        const smsResult = await sendSMS(normalized, `Вкусная Доставка: ваш код ${code}`);
+        result = { success: smsResult.success, error: smsResult.error || null };
+      } else {
+        console.log(`[DEV MODE] SMS bypass for ${normalized}. Your code is: ${code}`);
+      }
 
       // [DEBUG] Показываем код в алерте для тестирования
       // TODO: Убрать перед релизом!
-      showAlert('Код отправлен', `Ваш код (для теста): ${code}\n\nSMS статус: ${result.success ? 'Отправлено' : result.error}`);
+      showAlert('Код отправлен', `Ваш код (для теста): ${code}\n\nSMS статус: ${__DEV__ ? 'Bypassed (DEV)' : (result.success ? 'Отправлено' : result.error)}`);
 
       // Переходим на экран ввода кода независимо от результата SMS
       // (пользователь может получить SMS с задержкой)
@@ -208,10 +216,17 @@ export default function Login() {
   return (
     <View style={styles.container}>
       <LinearGradient
-        colors={[Colors.light.primary, Colors.light.primaryDark || Colors.light.primary]}
+        colors={[Colors.light.primaryLight, Colors.light.white]}
         style={StyleSheet.absoluteFill}
       />
-      
+      <TouchableOpacity
+        style={styles.backButton}
+        onPress={() => router.back()}
+        activeOpacity={0.7}
+      >
+        <Ionicons name="arrow-back" size={24} color={Colors.light.text} />
+      </TouchableOpacity>
+
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         style={styles.keyboardView}
@@ -225,18 +240,16 @@ export default function Login() {
         >
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View style={styles.innerContainer}>
-              {/* Улучшенная шапка */}
               <View style={styles.header}>
                 <View style={styles.logoContainer}>
                   <Ionicons name="basket" size={48} color={Colors.light.white} />
                 </View>
-                <Text style={styles.appName}>Вкусная Доставка</Text>
+                <Text style={styles.appName}>DELIVA</Text>
                 <Text style={styles.subtitle}>
-                  Продукты за 15 минут
+                  Ваш личный маркет
                 </Text>
               </View>
 
-              {/* Карточка формы */}
               <View style={styles.card}>
                 {step === 'phone' ? (
                   <>
@@ -293,8 +306,10 @@ export default function Login() {
                           onChangeText={(val) => handleOtpChange(val, index)}
                           onKeyPress={(e) => handleOtpKeyPress(e, index)}
                           keyboardType="number-pad"
-                          maxLength={1}
+                          maxLength={4}
                           selectTextOnFocus
+                          textContentType="oneTimeCode"
+                          autoComplete="one-time-code"
                         />
                       ))}
                     </View>
@@ -322,11 +337,18 @@ export default function Login() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.light.primary },
+  container: { flex: 1, backgroundColor: Colors.light.white },
+  backButton: {
+    position: 'absolute',
+    top: Platform.OS === 'ios' ? 50 : 30,
+    left: 10,
+    padding: 10, // Удобная область нажатия без визуального круга
+    zIndex: 100,
+  },
   keyboardView: { flex: 1 },
   scrollContent: { flexGrow: 1, justifyContent: 'center' },
   innerContainer: { paddingBottom: 60 },
-  
+
   header: {
     alignItems: 'center',
     marginBottom: Spacing.xl,
@@ -334,29 +356,31 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     width: 84, height: 84,
-    backgroundColor: 'rgba(255, 255, 255, 0.2)',
-    borderRadius: 24, justifyContent: 'center', alignItems: 'center',
+    backgroundColor: Colors.light.primary,
+    borderRadius: Radius.xxl, justifyContent: 'center', alignItems: 'center',
     marginBottom: Spacing.m,
+    shadowColor: Colors.light.primary, shadowOpacity: 0.25, shadowRadius: 12, shadowOffset: { width: 0, height: 6 },
   },
   appName: {
-    fontSize: 28, fontWeight: '900', color: Colors.light.white,
+    fontSize: 28, fontWeight: '900', color: Colors.light.text,
     letterSpacing: 0.5, marginBottom: 4,
   },
   subtitle: {
-    fontSize: 14, color: 'rgba(255, 255, 255, 0.8)',
+    fontSize: 14, color: Colors.light.textSecondary,
     textAlign: 'center', fontWeight: '500',
   },
-
   card: {
-    backgroundColor: Colors.light.card,
-    marginHorizontal: 20,
-    borderRadius: 24,
+    backgroundColor: Colors.light.glassBackground, // Используем токены для эффекта стекла
+    marginHorizontal: Spacing.m,
+    borderRadius: Radius.xxl + 4,
     padding: Spacing.xl,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.2,
-    shadowRadius: 20,
-    elevation: 10,
+    shadowColor: Colors.light.text,
+    shadowOffset: { width: 0, height: 12 },
+    shadowOpacity: 0.08,
+    shadowRadius: 24,
+    elevation: 6,
+    borderWidth: 1.5,
+    borderColor: Colors.light.glassBorder, // Используем токены для эффекта стекла
   },
   formTitle: {
     fontSize: 24, fontWeight: 'bold', color: Colors.light.text, marginBottom: 8,

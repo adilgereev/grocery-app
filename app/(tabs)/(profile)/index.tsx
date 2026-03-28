@@ -88,7 +88,7 @@ export default function ProfileScreen() {
           Войдите в профиль
         </Text>
         <Text style={styles.guestSubtitle}>
-          Чтобы отслеживать статусы заказов, сохранять адреса доставки и копить бонусы
+          Чтобы заказывать продукты, отслеживать заказы и получать бонусы с каждой покупки
         </Text>
         
         <TouchableOpacity 
