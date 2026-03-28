@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, ActivityIndicator, RefreshControl, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { View, Text, StyleSheet, FlatList, RefreshControl, TouchableOpacity, ScrollView } from 'react-native';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/providers/AuthProvider';
 import { useFavoriteStore } from '@/store/favoriteStore';
@@ -20,7 +20,7 @@ export default function FavoritesScreen() {
   
   const { favoriteIds } = useFavoriteStore();
 
-  const fetchRecommended = async () => {
+  const fetchRecommended = useCallback(async () => {
     if (recommended.length > 0) return;
     const { data } = await supabase
       .from('products')
@@ -29,15 +29,9 @@ export default function FavoritesScreen() {
       .order('id', { ascending: false })
       .limit(6);
     if (data) setRecommended(data);
-  };
+  }, [recommended.length]);
 
-  useEffect(() => {
-    if (session?.user) {
-      fetchFavoriteProducts();
-    }
-  }, [session, favoriteIds]);
-
-  const fetchFavoriteProducts = async () => {
+  const fetchFavoriteProducts = useCallback(async () => {
     if (favoriteIds.length === 0) {
       setProducts([]);
       setLoading(false);
@@ -57,7 +51,13 @@ export default function FavoritesScreen() {
     }
     setLoading(false);
     setRefreshing(false);
-  };
+  }, [favoriteIds, fetchRecommended]);
+
+  useEffect(() => {
+    if (session?.user) {
+      fetchFavoriteProducts();
+    }
+  }, [session, favoriteIds, fetchFavoriteProducts]);
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -66,10 +66,10 @@ export default function FavoritesScreen() {
 
   if (loading && products.length === 0) {
     return (
-      <View style={[styles.container, { paddingTop: 100 }]}>
-        <View style={[styles.listContainer, { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' }]}>
+      <View style={styles.loadingContainer}>
+        <View style={styles.skeletonContainer}>
           {[1, 2, 3, 4, 5, 6].map((i) => (
-             <Skeleton key={i} width="47%" height={230} borderRadius={20} style={{ marginBottom: Spacing.m }} />
+             <Skeleton key={i} width="47%" height={230} borderRadius={Radius.l} style={styles.skeletonItem} />
           ))}
         </View>
       </View>
@@ -83,7 +83,7 @@ export default function FavoritesScreen() {
           <Ionicons name="arrow-back" size={24} color={Colors.light.text} />
         </TouchableOpacity>
         <Text style={styles.title}>Избранное</Text>
-        <View style={{ width: 24 }} />
+        <View style={styles.headerRightSpacer} />
       </View>
 
       {products.length === 0 ? (
@@ -123,7 +123,7 @@ export default function FavoritesScreen() {
           }
           showsVerticalScrollIndicator={false}
           numColumns={2}
-          columnWrapperStyle={{ justifyContent: 'space-between' }}
+          columnWrapperStyle={styles.columnWrapper}
           renderItem={({ item, index }) => <ProductCard item={item} index={index} />}
         />
       )}
@@ -142,15 +142,21 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: Spacing.l,
     paddingTop: 60,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.light.card,
     borderBottomWidth: 1,
     borderBottomColor: Colors.light.border,
     elevation: 4,
-    shadowColor: '#000',
+    shadowColor: Colors.light.text,
     shadowOpacity: 0.05,
     shadowOffset: { width: 0, height: 4 },
     marginBottom: Spacing.s,
     zIndex: 10,
+  },
+  headerRightSpacer: { width: 24 },
+  loadingContainer: {
+    flex: 1,
+    backgroundColor: Colors.light.background,
+    paddingTop: 100,
   },
   backButton: {
     padding: Spacing.xs,
@@ -209,10 +215,18 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
   },
   goShoppingBtnText: {
-    color: '#fff',
+    color: Colors.light.card,
     fontSize: 16,
     fontWeight: '700',
   },
+  skeletonContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    paddingHorizontal: Spacing.m,
+  },
+  skeletonItem: { marginBottom: Spacing.m },
+  columnWrapper: { justifyContent: 'space-between' },
   recommendedSection: {
     marginBottom: Spacing.xxl,
   },

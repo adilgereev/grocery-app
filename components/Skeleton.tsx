@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, StyleSheet, DimensionValue, StyleProp, ViewStyle } from 'react-native';
+import { StyleSheet, DimensionValue, StyleProp, ViewStyle } from 'react-native';
 import { Colors } from '@/constants/theme';
 import Animated, { 
   useSharedValue, 
@@ -28,7 +28,7 @@ export default function Skeleton({ width, height, borderRadius = 8, style }: Ske
       -1, // бесконечное повторение
       true // revert (туда-обратно)
     );
-  }, []);
+  }, [opacity]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     opacity: opacity.value,

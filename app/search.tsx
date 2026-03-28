@@ -3,10 +3,9 @@ import { ErrorToast } from '@/components/ErrorToast';
 import { logger } from '@/lib/logger';
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { supabase } from '@/lib/supabase';
-import { useSearchStore } from '@/store/searchStore';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { FlatList, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Product } from '@/types';
@@ -22,11 +21,9 @@ export default function SearchScreen() {
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
 
-  useEffect(() => {
-    fetchRecommended();
-  }, []);
 
-  const fetchRecommended = async () => {
+
+  const fetchRecommended = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('products')
@@ -41,22 +38,9 @@ export default function SearchScreen() {
       logger.error('Ошибка загрузки рекомендаций:', e);
       setError(errorMessage);
     }
-  };
+  }, []);
 
-  useEffect(() => {
-    const delayDebounceFn = setTimeout(() => {
-      if (query.trim()) {
-        searchProducts(query);
-      } else {
-        setResults([]);
-        setHasSearched(false);
-      }
-    }, 500);
-
-    return () => clearTimeout(delayDebounceFn);
-  }, [query]);
-
-  const searchProducts = async (searchQuery: string) => {
+  const searchProducts = useCallback(async (searchQuery: string) => {
     setLoading(true);
     setError(null);
     try {
@@ -79,7 +63,24 @@ export default function SearchScreen() {
       setHasSearched(true);
       setLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchRecommended();
+  }, [fetchRecommended]);
+
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      if (query.trim()) {
+        searchProducts(query);
+      } else {
+        setResults([]);
+        setHasSearched(false);
+      }
+    }, 500);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [query, searchProducts]);
 
   const handleSearchSubmit = (text: string) => {
     const trimmed = text.trim();
@@ -167,10 +168,10 @@ export default function SearchScreen() {
             {error && (
               <TouchableOpacity style={styles.retryButton} onPress={() => query && searchProducts(query)}>
                 {loading ? (
-                  <ActivityIndicator color="#fff" />
+                  <ActivityIndicator color={Colors.light.card} />
                 ) : (
                   <>
-                    <Ionicons name="refresh-outline" size={20} color="#fff" style={{ marginRight: 8 }} />
+                    <Ionicons name="refresh-outline" size={20} color={Colors.light.card} style={styles.retryIcon} />
                     <Text style={styles.retryButtonText}>Повторить</Text>
                   </>
                 )}
@@ -186,7 +187,7 @@ export default function SearchScreen() {
             keyboardShouldPersistTaps="handled"
             keyboardDismissMode="on-drag"
             numColumns={2}
-            columnWrapperStyle={{ justifyContent: 'space-between' }}
+            columnWrapperStyle={styles.columnWrapper}
             renderItem={({ item, index }) => <ProductCard item={item} index={index} />}
           />
         )}
@@ -198,7 +199,7 @@ export default function SearchScreen() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.light.card,
   },
   container: {
     flex: 1,
@@ -208,11 +209,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     padding: Spacing.m,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.light.card,
     borderBottomWidth: 1,
     borderBottomColor: Colors.light.borderLight,
     elevation: 4,
-    shadowColor: '#000',
+    shadowColor: Colors.light.text,
     shadowOpacity: 0.05,
     shadowOffset: { width: 0, height: 4 },
     zIndex: 10,
@@ -249,7 +250,7 @@ const styles = StyleSheet.create({
   emptyText: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#4B5563',
+    color: Colors.light.textSecondary,
     marginTop: Spacing.m,
   },
   emptySubText: {
@@ -267,10 +268,12 @@ const styles = StyleSheet.create({
     marginTop: Spacing.m,
   },
   retryButtonText: {
-    color: '#fff',
+    color: Colors.light.card,
     fontSize: 16,
     fontWeight: '600',
   },
+  retryIcon: { marginRight: 8 },
+  columnWrapper: { justifyContent: 'space-between' },
   // Стили для умного поиска
   emptyStateContainer: {
     padding: 20,
@@ -290,7 +293,7 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   tagBadge: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.light.card,
     paddingHorizontal: 10,
     paddingVertical: Spacing.xs,
     borderRadius: Radius.m,

@@ -62,15 +62,15 @@ export default function MapPicker({ onLocationSelect, onClose, initialLocation }
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
+  container: { flex: 1, backgroundColor: Colors.light.card },
   map: { width, height },
   header: {
     position: 'absolute',
     top: Platform.OS === 'ios' ? 60 : 30 + (Platform.OS === 'android' ? 10 : 0),
     left: 20, right: 20,
-    backgroundColor: '#fff', padding: 15, borderRadius: Radius.m,
+    backgroundColor: Colors.light.card, padding: 15, borderRadius: Radius.m,
     flexDirection: 'row', alignItems: 'center', elevation: 10,
-    shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 10,
+    shadowColor: Colors.light.text, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 10,
   },
   closeButton: { marginRight: 15 },
   title: { fontSize: 16, fontWeight: '700', color: Colors.light.text },
@@ -86,5 +86,5 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center', elevation: 8,
     shadowColor: Colors.light.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 10,
   },
-  confirmButtonText: { color: '#fff', fontSize: 16, fontWeight: '700' },
+  confirmButtonText: { color: Colors.light.card, fontSize: 16, fontWeight: '700' },
 });

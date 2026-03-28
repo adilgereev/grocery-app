@@ -76,7 +76,7 @@ export default function CatalogScreen() {
         {item.image_url ? (
           <Image source={{ uri: item.image_url || '' }} style={styles.image} />
         ) : (
-          <View style={[styles.image, { backgroundColor: Colors.light.border }]} />
+          <View style={styles.placeholderImage} />
         )}
         <View style={styles.textContainer}>
           <Text style={styles.title} numberOfLines={2}>{item.name}</Text>
@@ -87,11 +87,11 @@ export default function CatalogScreen() {
       <View style={styles.actionsRow}>
         <TouchableOpacity style={styles.actionBtn} onPress={() => handleEdit(item.id)}>
           <Ionicons name="pencil" size={18} color={Colors.light.primary} />
-          <Text style={[styles.actionText, { color: Colors.light.primary }]}>Изменить</Text>
+          <Text style={styles.editText}>Изменить</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.actionBtn} onPress={() => handleDelete(item.id, item.name)}>
           <Ionicons name="trash" size={18} color={Colors.light.error} />
-          <Text style={[styles.actionText, { color: Colors.light.error }]}>Удалить</Text>
+          <Text style={styles.deleteText}>Удалить</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -140,7 +140,7 @@ const styles = StyleSheet.create({
     padding: Spacing.m,
     marginBottom: Spacing.m,
     elevation: 2,
-    shadowColor: '#000',
+    shadowColor: Colors.light.text,
     shadowOpacity: 0.05,
     shadowOffset: { width: 0, height: 4 },
     shadowRadius: 8,
@@ -153,7 +153,9 @@ const styles = StyleSheet.create({
   price: { fontSize: 16, fontWeight: '800', color: Colors.light.primary },
   actionsRow: { flexDirection: 'row', borderTopWidth: 1, borderTopColor: Colors.light.borderLight, paddingTop: Spacing.s },
   actionBtn: { flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', paddingVertical: Spacing.s },
-  actionText: { fontSize: 14, fontWeight: '600', marginLeft: 6 },
+  editText: { fontSize: 14, fontWeight: '600', marginLeft: 6, color: Colors.light.primary },
+  deleteText: { fontSize: 14, fontWeight: '600', marginLeft: 6, color: Colors.light.error },
+  placeholderImage: { width: 60, height: 60, borderRadius: Radius.m, marginRight: Spacing.m, backgroundColor: Colors.light.border },
   sectionHeader: { flexDirection: 'row', alignItems: 'center', paddingBottom: Spacing.s, paddingTop: Spacing.m },
   sectionTitle: { fontSize: 20, fontWeight: '800', color: Colors.light.text },
   sectionBadge: { backgroundColor: Colors.light.border, borderRadius: 12, paddingHorizontal: 8, paddingVertical: 2, marginLeft: Spacing.s },

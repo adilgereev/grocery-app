@@ -13,11 +13,11 @@ import { Order } from '@/types';
 
 // Конфигурация статусов (синхронизирована с order/[id].tsx)
 const STATUS_CONFIG: Record<string, { label: string; emoji: string; color: string; bg: string }> = {
-  pending:    { label: 'Собираем',   emoji: '📦', color: '#6366F1', bg: '#EEF2FF' },
-  processing: { label: 'Собираем',   emoji: '📦', color: '#6366F1', bg: '#EEF2FF' },
-  shipped:    { label: 'В пути',     emoji: '🚗', color: '#3B82F6', bg: '#EFF6FF' },
-  delivered:  { label: 'Доставлен',  emoji: '✅', color: '#10B981', bg: '#ECFDF5' },
-  cancelled:  { label: 'Отменён',    emoji: '❌', color: '#EF4444', bg: '#FEF2F2' },
+  pending:    { label: 'Собираем',   emoji: '📦', color: Colors.light.info, bg: Colors.light.infoLight },
+  processing: { label: 'Собираем',   emoji: '📦', color: Colors.light.info, bg: Colors.light.infoLight },
+  shipped:    { label: 'В пути',     emoji: '🚗', color: Colors.light.info, bg: Colors.light.infoLight },
+  delivered:  { label: 'Доставлен',  emoji: '✅', color: Colors.light.success, bg: Colors.light.successLight },
+  cancelled:  { label: 'Отменён',    emoji: '❌', color: Colors.light.error, bg: Colors.light.errorLight },
 };
 
 export default function OrdersScreen() {
@@ -27,6 +27,28 @@ export default function OrdersScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+
+  const fetchOrders = useCallback(async () => {
+    try {
+      const { data, error } = await supabase
+        .from('orders')
+        .select('*')
+        .eq('user_id', session!.user.id)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setOrders(data || []);
+      setError(null);
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Не удалось загрузить заказы';
+      logger.error('Ошибка загрузки заказов:', err);
+      setError(errorMessage);
+      ErrorToast({ type: 'error', message: errorMessage });
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, [session]);
 
   useFocusEffect(
     useCallback(() => {
@@ -49,30 +71,8 @@ export default function OrdersScreen() {
           supabase.removeChannel(channel);
         };
       }
-    }, [session])
+    }, [session, fetchOrders])
   );
-
-  async function fetchOrders() {
-    try {
-      const { data, error } = await supabase
-        .from('orders')
-        .select('*')
-        .eq('user_id', session!.user.id)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setOrders(data || []);
-      setError(null);
-    } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'Не удалось загрузить заказы';
-      logger.error('Ошибка загрузки заказов:', err);
-      setError(errorMessage);
-      ErrorToast({ type: 'error', message: errorMessage });
-    } finally {
-      setLoading(false);
-      setRefreshing(false);
-    }
-  }
 
   const onRefresh = () => {
     setRefreshing(true);
@@ -97,11 +97,11 @@ export default function OrdersScreen() {
             <Ionicons name="arrow-back" size={24} color={Colors.light.text} />
           </TouchableOpacity>
           <Text style={styles.headerTitle}>Мои заказы</Text>
-          <View style={{ width: 24 }} />
+          <View style={styles.headerRightSpacer} />
         </View>
         <View style={styles.listContainer}>
           {[1, 2, 3].map((i) => (
-            <Skeleton key={i} width="100%" height={100} borderRadius={20} style={{ marginBottom: 12 }} />
+            <Skeleton key={i} width="100%" height={100} borderRadius={Radius.xl} style={styles.skeletonItem} />
           ))}
         </View>
       </View>
@@ -115,7 +115,7 @@ export default function OrdersScreen() {
           <Ionicons name="arrow-back" size={24} color={Colors.light.text} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Мои заказы</Text>
-        <View style={{ width: 24 }} />
+        <View style={styles.headerRightSpacer} />
       </View>
 
       {error ? (
@@ -125,10 +125,10 @@ export default function OrdersScreen() {
           <Text style={styles.errorMessage}>{error}</Text>
           <TouchableOpacity style={styles.retryButton} onPress={() => fetchOrders()}>
             {loading ? (
-              <ActivityIndicator color="#fff" />
+              <ActivityIndicator color={Colors.light.card} />
             ) : (
               <>
-                <Ionicons name="refresh-outline" size={20} color="#fff" style={{ marginRight: 8 }} />
+                <Ionicons name="refresh-outline" size={20} color={Colors.light.card} style={styles.retryIcon} />
                 <Text style={styles.retryButtonText}>Повторить</Text>
               </>
             )}
@@ -194,11 +194,12 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     paddingHorizontal: Spacing.l, paddingTop: 60, paddingBottom: Spacing.m,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.light.card,
     borderBottomWidth: 1, borderBottomColor: Colors.light.borderLight,
-    elevation: 4, shadowColor: '#000', shadowOpacity: 0.05, shadowOffset: { width: 0, height: 4 },
+    elevation: 4, shadowColor: Colors.light.text, shadowOpacity: 0.05, shadowOffset: { width: 0, height: 4 },
     zIndex: 10,
   },
+  headerRightSpacer: { width: 24 },
   headerTitle: { fontSize: 20, fontWeight: '800', color: Colors.light.text },
   backButton: { padding: Spacing.xs },
   
@@ -208,12 +209,14 @@ const styles = StyleSheet.create({
   errorTitle: { fontSize: 20, fontWeight: '700', color: Colors.light.text, marginTop: Spacing.m, marginBottom: Spacing.s },
   errorMessage: { fontSize: 14, color: Colors.light.textSecondary, textAlign: 'center', marginBottom: Spacing.l },
   retryButton: { backgroundColor: Colors.light.primary, flexDirection: 'row', alignItems: 'center', paddingHorizontal: Spacing.xl, paddingVertical: Spacing.m, borderRadius: Radius.l },
-  retryButtonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
+  retryButtonText: { color: Colors.light.card, fontSize: 16, fontWeight: '600' },
+  retryIcon: { marginRight: 8 },
+  skeletonItem: { marginBottom: 12 },
 
   // Карточка заказа
   orderCard: {
-    backgroundColor: '#fff', borderRadius: Radius.xl, padding: Spacing.m, marginBottom: Spacing.m,
-    elevation: 1, shadowColor: '#000', shadowOpacity: 0.03, shadowOffset: { width: 0, height: 2 }, shadowRadius: 6,
+    backgroundColor: Colors.light.card, borderRadius: Radius.xl, padding: Spacing.m, marginBottom: Spacing.m,
+    elevation: 1, shadowColor: Colors.light.text, shadowOpacity: 0.03, shadowOffset: { width: 0, height: 2 }, shadowRadius: 6,
   },
 
   // Верхняя строка

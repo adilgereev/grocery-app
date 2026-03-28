@@ -207,17 +207,14 @@ export default function Login() {
 
   return (
     <KeyboardAwareScrollView
-      style={styles.container}
-      contentContainerStyle={{ flexGrow: 1, justifyContent: 'flex-end' }}
+      contentContainerStyle={styles.loginScrollContent}
       keyboardShouldPersistTaps="handled"
-      bounces={false}
       showsVerticalScrollIndicator={false}
-      enableOnAndroid={true}
     >
       {/* Зеленая шапка с логотипом */}
       <View style={styles.header}>
         <View style={styles.logoContainer}>
-          <Ionicons name="basket" size={60} color="#fff" />
+          <Ionicons name="basket" size={60} color={Colors.light.white} />
         </View>
         <Text style={styles.appName}>Вкусная Доставка</Text>
         <Text style={styles.subtitle}>
@@ -226,7 +223,7 @@ export default function Login() {
       </View>
 
       {/* Белая карточка с формой */}
-      <View style={styles.formContainer}>
+      <View style={styles.card}>
         {step === 'phone' ? (
           <>
             <Text style={styles.formTitle}>Войти по номеру</Text>
@@ -234,10 +231,10 @@ export default function Login() {
               Введите номер телефона, и мы отправим SMS с кодом подтверждения
             </Text>
 
-            <View style={styles.inputWrapper}>
-              <Ionicons name="call-outline" size={20} color={Colors.light.textLight} style={styles.inputIcon} />
+            <View style={styles.phoneInputContainer}>
+              <Ionicons name="call-outline" size={20} color={Colors.light.textLight} />
               <TextInput
-                style={styles.input}
+                style={styles.phoneInput}
                 placeholder="+7 (900) 123-45-67"
                 placeholderTextColor={Colors.light.textLight}
                 value={phone}
@@ -254,7 +251,7 @@ export default function Login() {
               disabled={loading}
             >
               {loading ? (
-                <ActivityIndicator color="#fff" />
+                <ActivityIndicator color={Colors.light.white} />
               ) : (
                 <Text style={styles.primaryButtonText}>Получить код</Text>
               )}
@@ -270,7 +267,7 @@ export default function Login() {
             <Text style={styles.formTitle}>Введите код</Text>
             <Text style={styles.formHint}>
               SMS с кодом отправлен на{'\n'}
-              <Text style={{ fontWeight: '700', color: Colors.light.text }}>{phone}</Text>
+              <Text style={styles.countryCode}>{phone}</Text>
             </Text>
 
             {/* 4 поля OTP */}
@@ -294,7 +291,7 @@ export default function Login() {
             </View>
 
             {loading && (
-              <ActivityIndicator color={Colors.light.primary} style={{ marginTop: Spacing.m }} />
+              <ActivityIndicator color={Colors.light.primary} style={styles.otpLoader} />
             )}
 
             {/* Повторная отправка */}
@@ -305,7 +302,7 @@ export default function Login() {
             >
               <Text style={[
                 styles.resendText,
-                countdown > 0 ? { color: Colors.light.textLight } : { color: Colors.light.primary }
+                countdown > 0 ? styles.resendTextDisabled : styles.resendTextActive
               ]}>
                 {countdown > 0
                   ? `Отправить повторно через ${countdown} сек`
@@ -321,10 +318,7 @@ export default function Login() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.light.primary,
-  },
+  loginScrollContent: { flexGrow: 1, justifyContent: 'flex-end' },
   // Шапка
   header: {
     flex: 1, alignItems: 'center', justifyContent: 'center',
@@ -332,12 +326,12 @@ const styles = StyleSheet.create({
   },
   logoContainer: {
     width: 100, height: 100,
-    backgroundColor: 'rgba(255, 255, 255, 0.25)',
+    backgroundColor: Colors.light.whiteTransparent,
     borderRadius: 30, justifyContent: 'center', alignItems: 'center',
     marginBottom: 20,
   },
   appName: {
-    fontSize: 32, fontWeight: '900', color: '#fff',
+    fontSize: 32, fontWeight: '900', color: Colors.light.white,
     letterSpacing: 0.5, marginBottom: Spacing.s,
   },
   subtitle: {
@@ -346,13 +340,17 @@ const styles = StyleSheet.create({
   },
 
   // Форма
-  formContainer: {
-    backgroundColor: '#ffffff',
-    borderTopLeftRadius: 40, borderTopRightRadius: 40,
-    paddingHorizontal: 28, paddingTop: Spacing.xxl,
-    paddingBottom: Platform.OS === 'ios' ? 50 : 40,
-    elevation: 20, shadowColor: '#000', shadowOpacity: 0.15,
-    shadowRadius: 30, shadowOffset: { width: 0, height: -10 },
+  card: {
+    backgroundColor: Colors.light.card,
+    borderTopLeftRadius: 32,
+    borderTopRightRadius: 32,
+    padding: Spacing.xl,
+    paddingTop: 40,
+    shadowColor: Colors.light.text,
+    shadowOffset: { width: 0, height: -10 },
+    shadowOpacity: 0.1,
+    shadowRadius: 20,
+    elevation: 20,
   },
   formTitle: {
     fontSize: 26, fontWeight: 'bold', color: Colors.light.text, marginBottom: Spacing.s,
@@ -361,13 +359,26 @@ const styles = StyleSheet.create({
     fontSize: 15, color: Colors.light.textSecondary, lineHeight: 22,
     marginBottom: Spacing.l,
   },
-  inputWrapper: {
-    flexDirection: 'row', alignItems: 'center',
-    backgroundColor: Colors.light.borderLight, borderRadius: Radius.l,
-    marginBottom: Spacing.m, paddingHorizontal: Spacing.m, height: 60,
+  phoneInputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: Colors.light.background,
+    borderWidth: 1.5,
+    borderColor: Colors.light.border,
+    borderRadius: Radius.l,
+    paddingHorizontal: Spacing.m,
+    height: 64,
+    marginBottom: Spacing.l,
   },
-  inputIcon: { marginRight: 12 },
-  input: { flex: 1, fontSize: 18, color: Colors.light.text, fontWeight: '600', letterSpacing: 0.5 },
+  phoneInput: {
+    flex: 1,
+    fontSize: 18,
+    fontWeight: '700',
+    color: Colors.light.text,
+    marginLeft: Spacing.s,
+    letterSpacing: 1,
+  },
+  countryCode: { color: Colors.light.text, fontWeight: '700' },
 
   primaryButton: {
     backgroundColor: Colors.light.primary, borderRadius: Radius.l,
@@ -375,15 +386,18 @@ const styles = StyleSheet.create({
     elevation: 3, shadowColor: Colors.light.primary, shadowOpacity: 0.4, shadowRadius: 8, shadowOffset: { width: 0, height: 4 },
   },
   primaryButtonDisabled: {
-    backgroundColor: '#34D399', elevation: 0, shadowOpacity: 0,
+    backgroundColor: Colors.light.primaryLight, elevation: 0, shadowOpacity: 0,
   },
-  primaryButtonText: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
+  primaryButtonText: { color: Colors.light.white, fontSize: 18, fontWeight: 'bold' },
 
   // OTP экран
   otpBackButton: {
-    width: 40, height: 40, borderRadius: 20,
-    backgroundColor: Colors.light.borderLight,
-    justifyContent: 'center', alignItems: 'center',
+    width: 44,
+    height: 44,
+    borderRadius: Radius.m,
+    backgroundColor: Colors.light.background,
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: Spacing.m,
   },
   otpContainer: {
@@ -400,4 +414,7 @@ const styles = StyleSheet.create({
   },
   resendButton: { marginTop: Spacing.xl, alignItems: 'center' },
   resendText: { fontSize: 15, fontWeight: '600' },
+  resendTextActive: { color: Colors.light.primary },
+  resendTextDisabled: { color: Colors.light.textLight },
+  otpLoader: { marginTop: Spacing.m },
 });

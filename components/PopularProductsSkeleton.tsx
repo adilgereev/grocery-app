@@ -31,7 +31,7 @@ export default function PopularProductsSkeleton({ count = 4 }: PopularProductsSk
             
             <View style={styles.info}>
               {/* Имитация названия (1 строка для чистоты) */}
-              <Skeleton width="90%" height={14} borderRadius={4} style={{ marginBottom: 8 }} />
+              <Skeleton width="90%" height={14} borderRadius={4} style={styles.skeletonText} />
               
               {/* Футер: только цена */}
               <Skeleton width="50%" height={16} borderRadius={4} />
@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
     width: 140,
     height: 180,
     marginRight: Spacing.m,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.light.card,
     borderRadius: Radius.l,
     padding: 0,
     overflow: 'hidden',
@@ -81,4 +81,5 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
   },
+  skeletonText: { marginBottom: 8 },
 });

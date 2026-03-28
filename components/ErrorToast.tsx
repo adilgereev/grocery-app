@@ -1,7 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Radius } from '@/constants/theme';
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info';
 
@@ -18,7 +18,16 @@ export function ErrorToast({ type, message, duration = 3000, onDismiss }: ToastP
   const translateY = useRef(new Animated.Value(100));
   const opacity = useRef(new Animated.Value(0));
 
-  const showToast = () => {
+  const hideToast = useCallback(() => {
+    Animated.parallel([
+      Animated.timing(opacity.current, { toValue: 0, duration: 250, useNativeDriver: false }),
+      Animated.timing(translateY.current, { toValue: 100, duration: 250, useNativeDriver: false })
+    ]).start(() => {
+      onDismiss?.();
+    });
+  }, [onDismiss]);
+
+  const showToast = useCallback(() => {
     Animated.parallel([
       Animated.timing(opacity.current, { toValue: 1, duration: 300, useNativeDriver: false }),
       Animated.timing(translateY.current, { toValue: 0, duration: 300, useNativeDriver: false })
@@ -27,33 +36,24 @@ export function ErrorToast({ type, message, duration = 3000, onDismiss }: ToastP
     setTimeout(() => {
       hideToast();
     }, duration);
-  };
-
-  const hideToast = () => {
-    Animated.parallel([
-      Animated.timing(opacity.current, { toValue: 0, duration: 250, useNativeDriver: false }),
-      Animated.timing(translateY.current, { toValue: 100, duration: 250, useNativeDriver: false })
-    ]).start(() => {
-      onDismiss?.();
-    });
-  };
+  }, [duration, hideToast]);
 
   useEffect(() => {
     showToast();
-  }, []);
+  }, [showToast]);
 
   const getIcon = () => {
     switch (type) {
       case 'success':
-        return <Ionicons name="checkmark-circle" size={24} color="#fff" />;
+        return <Ionicons name="checkmark-circle" size={24} color={Colors.light.card} />;
       case 'error':
-        return <Ionicons name="close-circle" size={24} color="#fff" />;
+        return <Ionicons name="close-circle" size={24} color={Colors.light.card} />;
       case 'warning':
-        return <Ionicons name="warning" size={24} color="#fff" />;
+        return <Ionicons name="warning" size={24} color={Colors.light.card} />;
       case 'info':
-        return <Ionicons name="information-circle" size={24} color="#fff" />;
+        return <Ionicons name="information-circle" size={24} color={Colors.light.card} />;
       default:
-        return <Ionicons name="information-circle" size={24} color="#fff" />;
+        return <Ionicons name="information-circle" size={24} color={Colors.light.card} />;
     }
   };
 
@@ -66,7 +66,7 @@ export function ErrorToast({ type, message, duration = 3000, onDismiss }: ToastP
       case 'warning':
         return Colors.light.warning;
       case 'info':
-        return '#3B82F6';
+        return Colors.light.info;
       default:
         return Colors.light.text;
     }
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 16,
     borderRadius: Radius.xl,
-    shadowColor: '#000',
+    shadowColor: Colors.light.text,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,
     shadowRadius: 8,
@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 15,
     fontWeight: '600',
-    color: '#fff',
+    color: Colors.light.card,
     lineHeight: 20,
   },
 });

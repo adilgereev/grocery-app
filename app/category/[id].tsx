@@ -1,5 +1,5 @@
-import { useEffect, useState, useMemo } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView, ActivityIndicator, Platform } from 'react-native';
+import React, { useCallback, useEffect, useState, useMemo } from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, Platform } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
@@ -7,7 +7,7 @@ import { useCategoryStore } from '@/store/categoryStore';
 import ProductCard from '@/components/ProductCard';
 import SubcategoryCard from '@/components/SubcategoryCard';
 import Skeleton from '@/components/Skeleton';
-import { ErrorToast, ToastType } from '@/components/ErrorToast';
+import { ErrorToast } from '@/components/ErrorToast';
 import { logger } from '@/lib/logger';
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { Product } from '@/types';
@@ -25,18 +25,7 @@ export default function CategoryProductsScreen() {
   const category = getCategoryById(id as string);
   const subcategories = getSubcategories(id as string);
 
-  useEffect(() => {
-    // Загружаем категории для заполнения store
-    fetchAllCategories();
-
-    if (id) {
-      fetchProducts(id as string);
-    } else {
-      setTimeout(() => setLoading(false), 500);
-    }
-  }, [id]);
-
-  async function fetchProducts(categoryId: string) {
+  const fetchProducts = useCallback(async (categoryId: string) => {
     setLoading(true);
     setError(null);
     try {
@@ -61,7 +50,18 @@ export default function CategoryProductsScreen() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
+
+  useEffect(() => {
+    // Загружаем категории для заполнения store
+    fetchAllCategories();
+
+    if (id) {
+      fetchProducts(id as string);
+    } else {
+      setTimeout(() => setLoading(false), 500);
+    }
+  }, [id, fetchAllCategories, fetchProducts]);
 
   const uniqueTags = useMemo(() => {
     const allTags = products.flatMap((p) => p.tags || []);
@@ -81,7 +81,7 @@ export default function CategoryProductsScreen() {
           <Ionicons name="arrow-back" size={24} color={Colors.light.text} />
         </TouchableOpacity>
         <Text style={styles.title}>{category?.name || name || 'Продукты'}</Text>
-        <View style={{ width: 24 }} />
+        <View style={styles.headerRightSpacer} />
       </View>
 
       {/* Секция подкатегорий (если есть) */}
@@ -102,9 +102,9 @@ export default function CategoryProductsScreen() {
       )}
 
       {loading ? (
-        <View style={[styles.listContainer, { flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'space-between' }]}>
+        <View style={styles.skeletonContainer}>
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <Skeleton key={i} width="47%" height={230} borderRadius={Radius.l} style={{ marginBottom: Spacing.m }} />
+            <Skeleton key={i} width="47%" height={230} borderRadius={Radius.l} style={styles.skeletonItem} />
           ))}
         </View>
       ) : error ? (
@@ -114,7 +114,7 @@ export default function CategoryProductsScreen() {
           <Text style={styles.errorMessage}>{error}</Text>
           <TouchableOpacity style={styles.retryButton} onPress={() => id && fetchProducts(id as string)}>
             {loading ? (
-              <ActivityIndicator color="#fff" />
+              <ActivityIndicator color={Colors.light.card} />
             ) : (
               <Text style={styles.retryButtonText}>Повторить</Text>
             )}
@@ -129,7 +129,7 @@ export default function CategoryProductsScreen() {
           contentContainerStyle={styles.listContainer}
           showsVerticalScrollIndicator={false}
           numColumns={2}
-          columnWrapperStyle={{ justifyContent: 'space-between' }}
+          columnWrapperStyle={styles.columnWrapper}
           ListHeaderComponent={
             uniqueTags.length > 0 ? (
               <View style={styles.tagsWrapper}>
@@ -174,15 +174,16 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     padding: Spacing.l,
     paddingTop: Platform.OS === 'ios' ? 60 : 40,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.light.card,
     elevation: 4,
-    shadowColor: '#000',
+    shadowColor: Colors.light.text,
     shadowOpacity: 0.04,
     shadowOffset: { width: 0, height: 4 },
     shadowRadius: 14,
     marginBottom: Spacing.s,
     zIndex: 10,
   },
+  headerRightSpacer: { width: 24 },
   backButton: {
     padding: Spacing.xs,
   },
@@ -229,10 +230,18 @@ const styles = StyleSheet.create({
     borderRadius: Spacing.l,
   },
   retryButtonText: {
-    color: '#fff',
+    color: Colors.light.card,
     fontSize: 16,
     fontWeight: '600',
   },
+  skeletonContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    padding: Spacing.m,
+  },
+  skeletonItem: { marginBottom: Spacing.m },
+  columnWrapper: { justifyContent: 'space-between' },
   subcategoriesSection: {
     marginBottom: Spacing.l,
     paddingTop: Spacing.s,
@@ -276,6 +285,6 @@ const styles = StyleSheet.create({
     color: Colors.light.textSecondary,
   },
   tagTextActive: {
-    color: '#fff',
+    color: Colors.light.card,
   }
 });

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, Modal, TouchableOpacity, StyleSheet, ScrollView, SafeAreaView } from 'react-native';
-import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Colors, Spacing } from '@/constants/theme';
 import { Category } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -66,7 +66,7 @@ export default function AdminCategoryPicker({ categories, selectedId, onSelect, 
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
+  container: { flex: 1, backgroundColor: Colors.light.card },
   header: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
     padding: Spacing.m, borderBottomWidth: 1, borderBottomColor: Colors.light.borderLight,
@@ -77,17 +77,18 @@ const styles = StyleSheet.create({
   section: { borderBottomWidth: 1, borderBottomColor: Colors.light.borderLight },
   parentRow: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    padding: Spacing.m, backgroundColor: '#F9FAFB'
+    padding: Spacing.m, backgroundColor: Colors.light.card
   },
   parentName: { fontSize: 16, fontWeight: '700', color: Colors.light.text },
   childRow: {
     flexDirection: 'row', alignItems: 'center',
     paddingVertical: Spacing.m, paddingRight: Spacing.m, paddingLeft: Spacing.xl,
     borderTopWidth: 1, borderTopColor: Colors.light.borderLight,
+    backgroundColor: Colors.light.card
   },
   childIcon: { marginRight: Spacing.s },
   childName: { flex: 1, fontSize: 15, fontWeight: '500', color: Colors.light.text },
-  selectedRow: { backgroundColor: '#F0FDF4' }, 
+  selectedRow: { backgroundColor: Colors.light.successLight }, 
   selectedText: { color: Colors.light.primary, fontWeight: '700' },
   emptyText: { textAlign: 'center', marginTop: 40, color: Colors.light.textSecondary }
 });

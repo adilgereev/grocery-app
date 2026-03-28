@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, Platform, ActivityIndicator } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, ActivityIndicator } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
 import Skeleton from '@/components/Skeleton';
-import { ErrorToast } from '@/components/ErrorToast';
 import { logger } from '@/lib/logger';
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { cleanAddress } from '@/lib/address';
@@ -13,11 +12,11 @@ import { Product } from '@/types';
 
 // Конфигурация статусов заказа
 const STATUS_CONFIG: Record<string, { label: string; icon: string; color: string; bg: string; emoji: string }> = {
-  pending:    { label: 'Собираем заказ', icon: 'cube-outline',           color: '#6366F1', bg: '#EEF2FF', emoji: '📦' },
-  processing: { label: 'Собираем заказ', icon: 'cube-outline',           color: '#6366F1', bg: '#EEF2FF', emoji: '📦' },
-  shipped:    { label: 'Курьер в пути',  icon: 'bicycle-outline',        color: '#3B82F6', bg: '#EFF6FF', emoji: '🚗' },
-  delivered:  { label: 'Доставлен',      icon: 'checkmark-done-outline', color: '#10B981', bg: '#ECFDF5', emoji: '✅' },
-  cancelled:  { label: 'Отменён',        icon: 'close-circle-outline',   color: '#EF4444', bg: '#FEF2F2', emoji: '❌' },
+  pending:    { label: 'Собираем заказ', icon: 'cube-outline',           color: Colors.light.info, bg: Colors.light.infoLight, emoji: '📦' },
+  processing: { label: 'Собираем заказ', icon: 'cube-outline',           color: Colors.light.info, bg: Colors.light.infoLight, emoji: '📦' },
+  shipped:    { label: 'Курьер в пути',  icon: 'bicycle-outline',        color: Colors.light.info, bg: Colors.light.infoLight, emoji: '🚗' },
+  delivered:  { label: 'Доставлен',      icon: 'checkmark-done-outline', color: Colors.light.success, bg: Colors.light.successLight, emoji: '✅' },
+  cancelled:  { label: 'Отменён',        icon: 'close-circle-outline',   color: Colors.light.error, bg: Colors.light.errorLight, emoji: '❌' },
 };
 
 // Конфигурация способов оплаты
@@ -58,29 +57,7 @@ export default function OrderDetailsScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (id) {
-      fetchOrderDetails();
-
-      // Подписка на Realtime обновления статуса заказа
-      const channel = supabase.channel(`order_details_${id}`)
-        .on('postgres_changes', {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'orders',
-          filter: `id=eq.${id}`
-        }, () => {
-          fetchOrderDetails();
-        })
-        .subscribe();
-
-      return () => {
-        supabase.removeChannel(channel);
-      };
-    }
-  }, [id]);
-
-  const fetchOrderDetails = async () => {
+  const fetchOrderDetails = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -105,7 +82,29 @@ export default function OrderDetailsScreen() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [id]);
+
+  useEffect(() => {
+    if (id) {
+      fetchOrderDetails();
+
+      // Подписка на Realtime обновления статуса заказа
+      const channel = supabase.channel(`order_details_${id}`)
+        .on('postgres_changes', {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'orders',
+          filter: `id=eq.${id}`
+        }, () => {
+          fetchOrderDetails();
+        })
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
+    }
+  }, [id, fetchOrderDetails]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('ru-RU', {
@@ -131,12 +130,12 @@ export default function OrderDetailsScreen() {
     return (
       <View style={styles.container}>
         <View style={styles.header}>
-          <Skeleton width={150} height={24} borderRadius={8} />
+          <Skeleton width={150} height={24} borderRadius={Radius.s} />
         </View>
-        <View style={{ padding: Spacing.m }}>
-          <Skeleton width="100%" height={120} borderRadius={20} style={{ marginBottom: 20 }} />
-          <Skeleton width="100%" height={80} borderRadius={16} style={{ marginBottom: 16 }} />
-          <Skeleton width="100%" height={80} borderRadius={16} />
+        <View style={styles.loadingContainer}>
+          <Skeleton width="100%" height={120} borderRadius={Radius.xl} style={styles.skeletonLarge} />
+          <Skeleton width="100%" height={80} borderRadius={Radius.l} style={styles.skeletonMedium} />
+          <Skeleton width="100%" height={80} borderRadius={Radius.l} />
         </View>
       </View>
     );
@@ -150,10 +149,10 @@ export default function OrderDetailsScreen() {
         <Text style={styles.errorText}>{error || 'Заказ не найден'}</Text>
         <TouchableOpacity style={styles.retryButtonCenter} onPress={() => fetchOrderDetails()}>
           {loading ? (
-            <ActivityIndicator color="#fff" />
+            <ActivityIndicator color={Colors.light.card} />
           ) : (
             <>
-              <Ionicons name="refresh-outline" size={20} color="#fff" style={{ marginRight: 8 }} />
+              <Ionicons name="refresh-outline" size={20} color={Colors.light.card} style={styles.retryIcon} />
               <Text style={styles.retryButtonText}>Повторить</Text>
             </>
           )}
@@ -178,7 +177,7 @@ export default function OrderDetailsScreen() {
           <Ionicons name="arrow-back" size={24} color={Colors.light.text} />
         </TouchableOpacity>
         <Text style={styles.title}>Заказ №{order.id.substring(0, 8).toUpperCase()}</Text>
-        <View style={{ width: 24 }} />
+        <View style={styles.headerSpacer} />
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
@@ -205,12 +204,12 @@ export default function OrderDetailsScreen() {
                         styles.trackerDot,
                         isActive 
                           ? { backgroundColor: config.color, borderColor: config.color }
-                          : { backgroundColor: '#fff', borderColor: Colors.light.border }
+                          : styles.trackerDotInactive
                       ]}>
                         <Ionicons
                           name={stepConfig.icon as keyof typeof Ionicons.glyphMap}
                           size={16}
-                          color={isActive ? '#fff' : Colors.light.textLight}
+                          color={isActive ? Colors.light.card : Colors.light.textLight}
                         />
                       </View>
                       <Text style={[
@@ -236,7 +235,7 @@ export default function OrderDetailsScreen() {
           <View style={styles.addressIcon}>
             <Ionicons name="location" size={20} color={Colors.light.primary} />
           </View>
-          <View style={{ flex: 1 }}>
+          <View style={styles.flex1}>
             <Text style={styles.addressTitle}>Адрес доставки</Text>
             <Text style={styles.addressText}>{cleanAddress(order.delivery_address)}</Text>
           </View>
@@ -252,7 +251,7 @@ export default function OrderDetailsScreen() {
                 color={Colors.light.primary}
               />
             </View>
-            <View style={{ flex: 1 }}>
+            <View style={styles.flex1}>
               <Text style={styles.paymentTitle}>Способ оплаты</Text>
               <Text style={styles.paymentText}>{PAYMENT_CONFIG[order.payment_method].label}</Text>
             </View>
@@ -269,7 +268,7 @@ export default function OrderDetailsScreen() {
                 {item.product?.image_url ? (
                   <Image source={{ uri: item.product.image_url }} style={styles.productImage} />
                 ) : (
-                  <View style={[styles.productImage, { backgroundColor: Colors.light.borderLight }]} />
+                  <View style={styles.productImagePlaceholder} />
                 )}
                 <View style={styles.productInfo}>
                   <Text style={styles.productName} numberOfLines={2}>{item.product?.name || 'Товар'}</Text>
@@ -290,7 +289,7 @@ export default function OrderDetailsScreen() {
           </View>
           <View style={styles.totalRow}>
             <Text style={styles.totalItems}>Доставка</Text>
-            <Text style={[styles.totalItemsPrice, { color: Colors.light.primary }]}>Бесплатно</Text>
+            <Text style={styles.totalFree}>Бесплатно</Text>
           </View>
           <View style={styles.totalDivider} />
           <View style={styles.totalRow}>
@@ -300,12 +299,12 @@ export default function OrderDetailsScreen() {
 
           {/* Кнопка повтора внутри карточки итого */}
           <TouchableOpacity style={styles.repeatButton} onPress={handleRepeatOrder}>
-            <Ionicons name="bag-handle-outline" size={20} color="#fff" style={{ marginRight: 8 }} />
+            <Ionicons name="bag-handle-outline" size={20} color={Colors.light.card} style={styles.repeatIcon} />
             <Text style={styles.repeatButtonText}>Повторить покупку</Text>
           </TouchableOpacity>
         </View>
 
-        <View style={{ height: Spacing.xl }} />
+        <View style={styles.footerSpacer} />
       </ScrollView>
     </View>
   );
@@ -314,15 +313,23 @@ export default function OrderDetailsScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.light.background },
   centerContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  loadingContainer: { padding: Spacing.m },
+  skeletonLarge: { marginBottom: 20 },
+  skeletonMedium: { marginBottom: 16 },
 
   // Шапка
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     padding: Spacing.l, paddingTop: 60,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.light.card,
     borderBottomWidth: 1, borderBottomColor: Colors.light.borderLight,
-    elevation: 4, shadowColor: '#000', shadowOpacity: 0.05, shadowOffset: { width: 0, height: 4 }, zIndex: 10,
+    elevation: 4, 
+    shadowColor: Colors.light.text, 
+    shadowOpacity: 0.05, 
+    shadowOffset: { width: 0, height: 4 }, 
+    zIndex: 10,
   },
+  headerSpacer: { width: 24 },
   backButton: { padding: Spacing.s, marginRight: Spacing.s },
   title: { fontSize: 18, fontWeight: '800', color: Colors.light.text },
 
@@ -338,8 +345,8 @@ const styles = StyleSheet.create({
 
   // Трекер
   trackerCard: {
-    backgroundColor: '#fff', borderRadius: Radius.xl, padding: Spacing.l, marginBottom: Spacing.m,
-    elevation: 1, shadowColor: '#000', shadowOpacity: 0.03, shadowOffset: { width: 0, height: 2 }, shadowRadius: 6,
+    backgroundColor: Colors.light.card, borderRadius: Radius.xl, padding: Spacing.l, marginBottom: Spacing.m,
+    elevation: 1, shadowColor: Colors.light.text, shadowOpacity: 0.03, shadowOffset: { width: 0, height: 2 }, shadowRadius: 6,
   },
   trackerRow: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'center' },
   trackerStep: { alignItems: 'center', width: 64 },
@@ -348,14 +355,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center', alignItems: 'center',
     borderWidth: 2, marginBottom: 6,
   },
+  trackerDotInactive: { backgroundColor: Colors.light.card, borderColor: Colors.light.border },
   trackerLabel: { fontSize: 11, fontWeight: '700', textAlign: 'center' },
   trackerLine: { flex: 1, height: 3, marginTop: 16, marginHorizontal: -4, borderRadius: 2 },
 
   // Адрес
   addressCard: {
-    backgroundColor: '#fff', borderRadius: Radius.xl, padding: Spacing.m, marginBottom: Spacing.l,
+    backgroundColor: Colors.light.card, borderRadius: Radius.xl, padding: Spacing.m, marginBottom: Spacing.l,
     flexDirection: 'row', alignItems: 'center',
-    elevation: 1, shadowColor: '#000', shadowOpacity: 0.03, shadowOffset: { width: 0, height: 2 }, shadowRadius: 6,
+    elevation: 1, shadowColor: Colors.light.text, shadowOpacity: 0.03, shadowOffset: { width: 0, height: 2 }, shadowRadius: 6,
   },
   addressIcon: {
     width: 40, height: 40, borderRadius: 20,
@@ -367,9 +375,9 @@ const styles = StyleSheet.create({
 
   // Способ оплаты
   paymentCard: {
-    backgroundColor: '#fff', borderRadius: Radius.xl, padding: Spacing.m, marginBottom: Spacing.l,
+    backgroundColor: Colors.light.card, borderRadius: Radius.xl, padding: Spacing.m, marginBottom: Spacing.l,
     flexDirection: 'row', alignItems: 'center',
-    elevation: 1, shadowColor: '#000', shadowOpacity: 0.03, shadowOffset: { width: 0, height: 2 }, shadowRadius: 6,
+    elevation: 1, shadowColor: Colors.light.text, shadowOpacity: 0.03, shadowOffset: { width: 0, height: 2 }, shadowRadius: 6,
   },
   paymentIconContainer: {
     width: 40, height: 40, borderRadius: 20,
@@ -384,11 +392,12 @@ const styles = StyleSheet.create({
 
   // Товары
   itemsCard: {
-    backgroundColor: '#fff', borderRadius: Radius.xl, padding: Spacing.m, marginBottom: Spacing.m,
-    elevation: 1, shadowColor: '#000', shadowOpacity: 0.03, shadowOffset: { width: 0, height: 2 }, shadowRadius: 6,
+    backgroundColor: Colors.light.card, borderRadius: Radius.xl, padding: Spacing.m, marginBottom: Spacing.m,
+    elevation: 1, shadowColor: Colors.light.text, shadowOpacity: 0.03, shadowOffset: { width: 0, height: 2 }, shadowRadius: 6,
   },
   productRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: Spacing.s },
   productImage: { width: 56, height: 56, borderRadius: Radius.m, marginRight: Spacing.m },
+  productImagePlaceholder: { width: 56, height: 56, borderRadius: Radius.m, marginRight: Spacing.m, backgroundColor: Colors.light.borderLight },
   productInfo: { flex: 1 },
   productName: { fontSize: 14, fontWeight: '600', color: Colors.light.text, marginBottom: 4 },
   productQty: { fontSize: 13, color: Colors.light.textSecondary, fontWeight: '500' },
@@ -397,12 +406,13 @@ const styles = StyleSheet.create({
 
   // Итого
   totalCard: {
-    backgroundColor: '#fff', borderRadius: Radius.xl, padding: Spacing.l, marginBottom: Spacing.m,
-    elevation: 1, shadowColor: '#000', shadowOpacity: 0.03, shadowOffset: { width: 0, height: 2 }, shadowRadius: 6,
+    backgroundColor: Colors.light.card, borderRadius: Radius.xl, padding: Spacing.l, marginBottom: Spacing.m,
+    elevation: 1, shadowColor: Colors.light.text, shadowOpacity: 0.03, shadowOffset: { width: 0, height: 2 }, shadowRadius: 6,
   },
   totalRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.s },
   totalItems: { fontSize: 14, color: Colors.light.textSecondary, fontWeight: '500' },
   totalItemsPrice: { fontSize: 14, color: Colors.light.text, fontWeight: '600' },
+  totalFree: { fontSize: 14, color: Colors.light.primary, fontWeight: '600' },
   totalDivider: { height: 1, backgroundColor: Colors.light.borderLight, marginVertical: Spacing.s },
   totalLabel: { fontSize: 18, fontWeight: '800', color: Colors.light.text },
   totalPrice: { fontSize: 20, fontWeight: '900', color: Colors.light.primary },
@@ -413,12 +423,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row', justifyContent: 'center', alignItems: 'center',
     paddingVertical: 16, borderRadius: Radius.l, marginTop: Spacing.l,
   },
-  repeatButtonText: { color: '#fff', fontSize: 16, fontWeight: '700' },
+  repeatIcon: { marginRight: 8 },
+  repeatButtonText: { color: Colors.light.card, fontSize: 16, fontWeight: '700' },
+
+  // Универсальные
+  flex1: { flex: 1 },
+  footerSpacer: { height: Spacing.xl },
 
   // Пустое состояние
   errorText: { fontSize: 18, color: Colors.light.textSecondary, marginTop: Spacing.m, marginBottom: 20, fontWeight: '500', textAlign: 'center' },
   retryButtonCenter: { backgroundColor: Colors.light.primary, flexDirection: 'row', alignItems: 'center', paddingHorizontal: Spacing.xl, paddingVertical: Spacing.m, borderRadius: Radius.l, marginBottom: Spacing.m },
-  retryButtonText: { color: '#fff', fontSize: 16, fontWeight: '600' },
+  retryIcon: { marginRight: 8 },
+  retryButtonText: { color: Colors.light.card, fontSize: 16, fontWeight: '600' },
   backButtonCenter: { backgroundColor: Colors.light.primary, paddingHorizontal: Spacing.l, paddingVertical: 14, borderRadius: Radius.m },
-  backButtonText: { color: '#fff', fontWeight: 'bold', fontSize: 16 },
+  backButtonText: { color: Colors.light.card, fontWeight: 'bold', fontSize: 16 },
 });

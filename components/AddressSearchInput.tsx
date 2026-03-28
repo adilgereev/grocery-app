@@ -33,19 +33,22 @@ export default function AddressSearchInput({ onSelect, placeholder, initialValue
     if (initialValue !== undefined && initialValue !== query) {
       setQuery(initialValue);
     }
-  }, [initialValue]);
+  }, [initialValue, query]);
 
   const fetchSuggestions = useCallback(
-    debounce(async (val: string) => {
-      if (val.length < 3) {
-        setSuggestions([]);
-        return;
-      }
-      setIsLoading(true);
-      const res = await getAddressSuggestions(val, city);
-      setSuggestions(res);
-      setIsLoading(false);
-    }, 500),
+    (val: string) => {
+      const debouncedFetch = debounce(async (inputValue: string) => {
+        if (inputValue.length < 3) {
+          setSuggestions([]);
+          return;
+        }
+        setIsLoading(true);
+        const res = await getAddressSuggestions(inputValue, city);
+        setSuggestions(res);
+        setIsLoading(false);
+      }, 500);
+      debouncedFetch(val);
+    },
     [city]
   );
 
@@ -99,8 +102,8 @@ export default function AddressSearchInput({ onSelect, placeholder, initialValue
             keyExtractor={(item) => item.unrestricted_value}
             renderItem={({ item }) => (
               <TouchableOpacity style={styles.suggestionItem} onPress={() => handleSelect(item)}>
-                <Ionicons name="map-outline" size={18} color={Colors.light.textLight} style={{ marginRight: 10 }} />
-                <View style={{ flex: 1 }}>
+                <Ionicons name="map-outline" size={18} color={Colors.light.textLight} style={styles.suggestionIcon} />
+                <View style={styles.flex1}>
                   <Text style={styles.suggestionText} numberOfLines={1}>{item.value}</Text>
                   {item.data.city && <Text style={styles.suggestionSubtext}>{item.data.city}</Text>}
                 </View>
@@ -119,7 +122,7 @@ const styles = StyleSheet.create({
   container: { zIndex: 100 },
   inputWrapper: {
     flexDirection: 'row', alignItems: 'center',
-    backgroundColor: '#fff', minHeight: 54, borderRadius: Radius.m,
+    backgroundColor: Colors.light.card, minHeight: 54, borderRadius: Radius.m,
     paddingHorizontal: Spacing.m,
     paddingVertical: Platform.OS === 'ios' ? 8 : 4,
   },
@@ -146,13 +149,15 @@ const styles = StyleSheet.create({
   suggestionsContainer: {
     position: 'absolute', top: '100%', left: 0, right: 0,
     marginTop: 4,
-    backgroundColor: '#fff', borderRadius: Radius.m,
-    elevation: 10, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 10,
+    backgroundColor: Colors.light.card, borderRadius: Radius.m,
+    elevation: 10, shadowColor: Colors.light.text, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 10,
     maxHeight: 300, overflow: 'hidden',
   },
   suggestionItem: {
     flexDirection: 'row', alignItems: 'center', padding: Spacing.m,
   },
+  suggestionIcon: { marginRight: 10 },
   suggestionText: { fontSize: 14, color: Colors.light.text, fontWeight: '600' },
   suggestionSubtext: { fontSize: 12, color: Colors.light.textLight, marginTop: 2 },
+  flex1: { flex: 1 },
 });

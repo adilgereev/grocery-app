@@ -6,11 +6,11 @@ import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, FlatList, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const STATUSES = {
-  pending: { label: 'Новый', color: '#F59E0B' },
-  processing: { label: 'Сборка', color: '#3B82F6' },
-  shipped: { label: 'В пути', color: '#8B5CF6' },
-  delivered: { label: 'Доставлен', color: '#10B981' },
-  cancelled: { label: 'Отменен', color: '#EF4444' }
+  pending: { label: 'Новый', color: Colors.light.warning },
+  processing: { label: 'Сборка', color: Colors.light.info },
+  shipped: { label: 'В пути', color: Colors.light.secondary },
+  delivered: { label: 'Доставлен', color: Colors.light.success },
+  cancelled: { label: 'Отменен', color: Colors.light.error }
 };
 
 type OrderStatus = keyof typeof STATUSES;
@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.l,
     padding: Spacing.m,
     marginBottom: Spacing.m,
-    shadowColor: '#000',
+    shadowColor: Colors.light.text,
     shadowOpacity: 0.05,
     shadowOffset: { width: 0, height: 4 },
     shadowRadius: 10,
@@ -227,9 +227,9 @@ const styles = StyleSheet.create({
   actionButton: { paddingVertical: 12, borderRadius: Radius.m, alignItems: 'center' },
   actionButtonText: { color: Colors.light.card, fontSize: 14, fontWeight: '700' },
   empty: { textAlign: 'center', marginTop: 100, color: Colors.light.textSecondary },
-  expandButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: Spacing.s, marginBottom: Spacing.s, backgroundColor: '#EFF6FF', borderRadius: Radius.m },
+  expandButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: Spacing.s, marginBottom: Spacing.s, backgroundColor: Colors.light.infoLight, borderRadius: Radius.m },
   expandButtonText: { color: Colors.light.primary, fontSize: 13, fontWeight: '600', marginRight: 4 },
-  itemsContainer: { backgroundColor: '#F9FAFB', borderRadius: Radius.m, padding: Spacing.m, marginBottom: Spacing.m },
+  itemsContainer: { backgroundColor: Colors.light.background, borderRadius: Radius.m, padding: Spacing.m, marginBottom: Spacing.m },
   itemRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8, alignItems: 'flex-start' },
   itemName: { flex: 1, fontSize: 13, color: Colors.light.text, paddingRight: Spacing.m },
   itemQty: { fontWeight: '700', color: Colors.light.textSecondary },

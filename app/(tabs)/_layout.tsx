@@ -27,7 +27,7 @@ export default function TabLayout() {
     if (session?.user) {
       fetchFavorites(session.user.id);
     }
-  }, [session]);
+  }, [session, fetchFavorites]);
 
   return (
     <Tabs
@@ -40,10 +40,10 @@ export default function TabLayout() {
           height: Platform.OS === 'ios' ? 60 + insets.bottom : 65,
           paddingBottom: Platform.OS === 'ios' ? insets.bottom : 10,
           paddingTop: 10,
-          backgroundColor: '#fff',
+          backgroundColor: Colors.light.card,
           borderTopWidth: 0,
           elevation: 10,
-          shadowColor: '#000',
+          shadowColor: Colors.light.text,
           shadowOpacity: 0.05,
           shadowOffset: { width: 0, height: -4 },
           shadowRadius: 10,

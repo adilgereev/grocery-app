@@ -123,11 +123,11 @@ export default function AddAddressScreen() {
             <Ionicons name="arrow-back" size={24} color={Colors.light.text} />
           </TouchableOpacity>
           <Text style={styles.title}>Новый адрес</Text>
-          <View style={{ width: 40 }} />
+          <View style={styles.headerSpacer} />
         </View>
 
         <KeyboardAwareScrollView
-          style={{ flex: 1 }}
+          style={styles.scrollContainer}
           contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
@@ -137,10 +137,10 @@ export default function AddAddressScreen() {
           {/* Секция 1: Основной адрес */}
           <Animated.View
             entering={FadeInDown.duration(400)}
-            style={[styles.card, { zIndex: 10 }]}
+            style={styles.cardWithZIndex}
           >
-            <View style={[styles.fieldGroup, { zIndex: 99 }]}>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.s }}>
+            <View style={styles.fieldGroupWithZIndex}>
+              <View style={styles.labelRow}>
                 <View style={styles.labelWithIcon}>
                   <Ionicons name="location-sharp" size={18} color={Colors.light.primary} />
                   <Text style={styles.fieldLabel}>Адрес доставки*</Text>
@@ -203,7 +203,7 @@ export default function AddAddressScreen() {
               <Text style={styles.sectionSubtitle}>ДЕТАЛИ АДРЕСА</Text>
 
               <View style={styles.rowGroup}>
-                <View style={[styles.fieldGroup, { flex: 1, marginRight: Spacing.s }]}>
+                <View style={styles.rowGroupFlexMargin}>
                   <View style={styles.compactInputWrapper}>
                     <Text style={styles.compactLabel}>КВАРТИРА</Text>
                     <TextInput
@@ -216,7 +216,7 @@ export default function AddAddressScreen() {
                     />
                   </View>
                 </View>
-                <View style={[styles.fieldGroup, { flex: 1 }]}>
+                <View style={styles.rowGroupFlex}>
                   <View style={styles.compactInputWrapper}>
                     <Text style={styles.compactLabel}>ПОДЪЕЗД</Text>
                     <TextInput
@@ -232,7 +232,7 @@ export default function AddAddressScreen() {
               </View>
 
               <View style={styles.rowGroup}>
-                <View style={[styles.fieldGroup, { flex: 1, marginRight: Spacing.s }]}>
+                <View style={styles.rowGroupFlexMargin}>
                   <View style={styles.compactInputWrapper}>
                     <Text style={styles.compactLabel}>ЭТАЖ</Text>
                     <TextInput
@@ -245,7 +245,7 @@ export default function AddAddressScreen() {
                     />
                   </View>
                 </View>
-                <View style={[styles.fieldGroup, { flex: 1 }]}>
+                <View style={styles.rowGroupFlex}>
                   <View style={styles.compactInputWrapper}>
                     <Text style={styles.compactLabel}>ДОМОФОН</Text>
                     <TextInput
@@ -268,9 +268,9 @@ export default function AddAddressScreen() {
             style={styles.card}
           >
             <Text style={styles.sectionSubtitle}>КОММЕНТАРИЙ ДЛЯ КУРЬЕРА</Text>
-            <View style={[styles.inputWithIcon, { height: 100, alignItems: 'flex-start', paddingTop: 12 }]}>
+            <View style={styles.commentInputContainer}>
               <TextInput
-                style={[styles.cleanInput, { textAlignVertical: 'top' }]}
+                style={styles.commentInput}
                 placeholder="Например: код от ворот 123, оставить у двери..."
                 placeholderTextColor={Colors.light.textLight}
                 value={comment}
@@ -301,17 +301,17 @@ export default function AddAddressScreen() {
             onPress={handleAddAddress}
           >
             <LinearGradient
-              colors={(!address.trim() || isSubmitting) ? [Colors.light.textLight, Colors.light.textLight] : ['#10B981', '#059669']}
+              colors={(!address.trim() || isSubmitting) ? [Colors.light.textLight, Colors.light.textLight] : [Colors.light.primary, '#059669']}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 0 }}
               style={styles.gradientButton}
             >
               {isSubmitting || isLoading ? (
-                <ActivityIndicator color="#fff" />
+                <ActivityIndicator color={Colors.light.card} />
               ) : (
                 <>
                   <Text style={styles.submitButtonText}>Сохранить адрес</Text>
-                  <Ionicons name="checkmark-circle" size={20} color="#fff" style={{ marginLeft: 8 }} />
+                  <Ionicons name="checkmark-circle" size={20} color={Colors.light.card} style={styles.submitIcon} />
                 </>
               )}
             </LinearGradient>
@@ -347,10 +347,15 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     padding: Spacing.l,
-    backgroundColor: '#fff',
-    elevation: 4, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.05, shadowRadius: 8,
+    backgroundColor: Colors.light.card,
+    elevation: 4, 
+    shadowColor: Colors.light.text, 
+    shadowOffset: { width: 0, height: 4 }, 
+    shadowOpacity: 0.05, 
+    shadowRadius: 8,
     zIndex: 10,
   },
+  headerSpacer: { width: 40 },
   backButton: {
     padding: Spacing.s,
     backgroundColor: Colors.light.borderLight,
@@ -358,20 +363,29 @@ const styles = StyleSheet.create({
   },
   title: { fontSize: 20, fontWeight: '900', color: Colors.light.text },
 
+  scrollContainer: { flex: 1 },
   scrollContent: { padding: Spacing.l, paddingBottom: 40 },
 
-  fieldGroup: { marginBottom: Spacing.s },
+  fieldGroupWithZIndex: { marginBottom: Spacing.s, zIndex: 99 },
   fieldLabel: {
     fontSize: 13, fontWeight: '700', color: Colors.light.textSecondary,
     marginBottom: Spacing.xs, textTransform: 'uppercase', letterSpacing: 0.5,
   },
+  labelRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.s },
 
   rowGroup: { flexDirection: 'row', marginBottom: Spacing.s },
+  rowGroupFlex: { flex: 1 },
+  rowGroupFlexMargin: { flex: 1, marginRight: Spacing.s },
 
   // Карточки
   card: {
     borderRadius: Radius.xl,
     marginBottom: Spacing.l,
+  },
+  cardWithZIndex: {
+    borderRadius: Radius.xl,
+    marginBottom: Spacing.l,
+    zIndex: 10,
   },
   labelWithIcon: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   sectionSubtitle: {
@@ -405,34 +419,35 @@ const styles = StyleSheet.create({
     width: 20,
     height: 20,
     borderRadius: 10,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.light.card,
     elevation: 2,
-    shadowColor: '#000',
+    shadowColor: Colors.light.text,
     shadowOpacity: 0.2,
     shadowOffset: { width: 0, height: 1 },
     shadowRadius: 2,
   },
   switchThumbActive: { alignSelf: 'flex-end' },
 
-  // Инпуты с иконками
-  inputWithIcon: {
+  commentInputContainer: {
     flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: Colors.light.card,
     borderRadius: Radius.m,
-    height: 56,
+    height: 100,
     paddingHorizontal: Spacing.m,
+    alignItems: 'flex-start',
+    paddingTop: 12,
   },
-  cleanInput: {
+  commentInput: {
     flex: 1,
     fontSize: 16,
     color: Colors.light.text,
     height: '100%',
+    textAlignVertical: 'top',
   },
 
   // Компактные инпуты для ряда
   compactInputWrapper: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.light.card,
     borderRadius: Radius.m,
     padding: 10,
     height: 68,
@@ -454,7 +469,7 @@ const styles = StyleSheet.create({
   // Ошибка
   errorContainer: {
     flexDirection: 'row', alignItems: 'center', gap: 10,
-    padding: Spacing.m, backgroundColor: '#FEF2F2',
+    padding: Spacing.m, backgroundColor: Colors.light.errorLight,
     borderRadius: Radius.m, borderLeftWidth: 4, borderLeftColor: Colors.light.error,
     marginTop: Spacing.s,
   },
@@ -462,7 +477,7 @@ const styles = StyleSheet.create({
 
   // Футер и Кнопка
   footer: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.light.card,
     borderTopWidth: 1, borderTopColor: Colors.light.borderLight,
     paddingHorizontal: Spacing.l, paddingTop: Spacing.m,
     paddingBottom: Platform.OS === 'ios' ? 34 : 20,
@@ -471,14 +486,13 @@ const styles = StyleSheet.create({
     borderRadius: Radius.l,
     height: 56,
     elevation: 8,
-    shadowColor: '#10B981',
+    shadowColor: Colors.light.primary,
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.3,
     shadowRadius: 10,
-    backgroundColor: 'transparent',
   },
   submitButtonDisabled: {
-    shadowColor: '#000',
+    shadowColor: Colors.light.text,
     shadowOpacity: 0,
     elevation: 0,
   },
@@ -490,7 +504,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  submitButtonText: { color: '#fff', fontSize: 17, fontWeight: '800', letterSpacing: 0.3 },
+  submitButtonText: { color: Colors.light.card, fontSize: 17, fontWeight: '800', letterSpacing: 0.3 },
+  submitIcon: { marginLeft: 8 },
 
   mapLink: {
     flexDirection: 'row',

@@ -28,7 +28,7 @@ function RootLayoutNav() {
     initialize();
     loadAddresses();
     registerForPushNotificationsAsync();
-  }, []);
+  }, [initialize, loadAddresses]);
 
   useEffect(() => {
     // Ждем окончания загрузки сессии и окончания проверки хранилища
@@ -44,7 +44,7 @@ function RootLayoutNav() {
         router.replace('/(tabs)/(index)' as any);
       }
     }
-  }, [session, loading, segments, isReady]);
+  }, [session, loading, segments, isReady, router]);
 
   if (loading || !isReady) return null;
 

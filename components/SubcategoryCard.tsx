@@ -1,4 +1,4 @@
-import { Radius, Spacing } from '@/constants/theme';
+import { Radius, Spacing, Colors } from '@/constants/theme';
 import { Category } from '@/types';
 import { useRouter } from 'expo-router';
 import React from 'react';
@@ -28,7 +28,7 @@ const SubcategoryCard = React.memo(({ subcategory, index }: SubcategoryCardProps
 
   // Цвет фона: из базы (HEX) или нейтральный дефолт
   const isHex = subcategory.image_url?.startsWith('#');
-  const bgColor = isHex ? subcategory.image_url : '#F9FAFB';
+  const bgColor = isHex ? subcategory.image_url : Colors.light.background;
 
   return (
     <AnimatedTouchable
@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   categoryName: {
-    color: '#111827',
+    color: Colors.light.text,
     fontSize: 14,
     fontWeight: '800',
     padding: Spacing.s,

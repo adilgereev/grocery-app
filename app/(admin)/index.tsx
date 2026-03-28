@@ -17,7 +17,7 @@ export default function AdminDashboard() {
       <View style={styles.menuContainer}>
         <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/(admin)/add-product')}>
           <View style={[styles.menuIcon, styles.menuIconAdd]}>
-            <Ionicons name="add-circle" size={24} color="#6366F1" />
+            <Ionicons name="add-circle" size={24} color={Colors.light.info} />
           </View>
           <View style={styles.menuTextContainer}>
             <Text style={styles.menuTitle}>Добавить товар</Text>
@@ -30,7 +30,7 @@ export default function AdminDashboard() {
 
         <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/(admin)/catalog')}>
           <View style={[styles.menuIcon, styles.menuIconCatalog]}>
-            <Ionicons name="list" size={24} color="#EF4444" />
+            <Ionicons name="list" size={24} color={Colors.light.error} />
           </View>
           <View style={styles.menuTextContainer}>
             <Text style={styles.menuTitle}>Управление каталогом</Text>
@@ -43,7 +43,7 @@ export default function AdminDashboard() {
 
         <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/(admin)/orders')}>
           <View style={[styles.menuIcon, styles.menuIconOrders]}>
-            <Ionicons name="cube" size={24} color="#10B981" />
+            <Ionicons name="cube" size={24} color={Colors.light.success} />
           </View>
           <View style={styles.menuTextContainer}>
             <Text style={styles.menuTitle}>Заказы клиентов</Text>
@@ -56,7 +56,7 @@ export default function AdminDashboard() {
 
         <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/(admin)/categories')}>
           <View style={[styles.menuIcon, styles.menuIconCategories]}>
-            <Ionicons name="grid" size={24} color="#F97316" />
+            <Ionicons name="grid" size={24} color={Colors.light.warning} />
           </View>
           <View style={styles.menuTextContainer}>
             <Text style={styles.menuTitle}>Управление категориями</Text>
@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.card,
     borderRadius: Radius.xl,
     paddingVertical: Spacing.xs,
-    shadowColor: '#000',
+    shadowColor: Colors.light.text,
     shadowOpacity: 0.05,
     shadowRadius: 10,
     elevation: 2,
@@ -114,14 +114,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: Spacing.m,
   },
-  // eslint-disable-next-line react-native/no-color-literals
-  menuIconAdd: { backgroundColor: '#EEF2FF' },
-  // eslint-disable-next-line react-native/no-color-literals
-  menuIconCatalog: { backgroundColor: '#FEF2F2' },
-  // eslint-disable-next-line react-native/no-color-literals
-  menuIconOrders: { backgroundColor: '#ECFDF5' },
-  // eslint-disable-next-line react-native/no-color-literals
-  menuIconCategories: { backgroundColor: '#FFF7ED' },
+  menuIconAdd: { backgroundColor: Colors.light.infoLight },
+  menuIconCatalog: { backgroundColor: Colors.light.errorLight },
+  menuIconOrders: { backgroundColor: Colors.light.successLight },
+  menuIconCategories: { backgroundColor: Colors.light.warningLight },
   menuTextContainer: {
     flex: 1,
   },

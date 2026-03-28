@@ -1,5 +1,5 @@
 import Skeleton from '@/components/Skeleton';
-import { ErrorToast, ToastType } from '@/components/ErrorToast';
+import { ErrorToast } from '@/components/ErrorToast';
 import { logger } from '@/lib/logger';
 import { Colors, Radius, Spacing } from '@/constants/theme';
 import { supabase } from '@/lib/supabase';
@@ -8,7 +8,7 @@ import { useCartStore } from '@/store/cartStore';
 import { useFavoriteStore } from '@/store/favoriteStore';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Image, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Product } from '@/types';
@@ -29,11 +29,7 @@ export default function ProductDetailScreen() {
   const cartItem = items.find((i) => i.product.id === id);
   const isFavorite = typeof id === 'string' ? favoriteIds.includes(id) : false;
 
-  useEffect(() => {
-    fetchProductDetails();
-  }, [id]);
-
-  async function fetchProductDetails() {
+  const fetchProductDetails = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
@@ -61,7 +57,11 @@ export default function ProductDetailScreen() {
     } finally {
       setLoading(false);
     }
-  }
+  }, [id]);
+
+  useEffect(() => {
+    fetchProductDetails();
+  }, [id, fetchProductDetails]);
 
   const handleFavoritePress = () => {
     if (session?.user && product) {
@@ -76,11 +76,11 @@ export default function ProductDetailScreen() {
           <Skeleton width={40} height={40} borderRadius={20} />
         </View>
         <Skeleton width="100%" height={350} borderRadius={0} />
-        <View style={{ padding: Spacing.l }}>
-          <Skeleton width="60%" height={32} borderRadius={8} style={{ marginBottom: 12 }} />
-          <Skeleton width={100} height={20} borderRadius={8} style={{ marginBottom: Spacing.l }} />
-          <Skeleton width="100%" height={16} borderRadius={4} style={{ marginBottom: Spacing.s }} />
-          <Skeleton width="100%" height={16} borderRadius={4} style={{ marginBottom: Spacing.s }} />
+        <View style={styles.skeletonContent}>
+          <Skeleton width="60%" height={32} borderRadius={8} style={styles.skeletonTitle} />
+          <Skeleton width={100} height={20} borderRadius={8} style={styles.skeletonSubtitle} />
+          <Skeleton width="100%" height={16} borderRadius={4} style={styles.skeletonText} />
+          <Skeleton width="100%" height={16} borderRadius={4} style={styles.skeletonText} />
           <Skeleton width="80%" height={16} borderRadius={4} />
         </View>
       </View>
@@ -94,11 +94,11 @@ export default function ProductDetailScreen() {
         <Text style={styles.errorText}>{error || 'Товар не найден'}</Text>
         <TouchableOpacity style={styles.retryButton} onPress={() => fetchProductDetails()}>
           {loading ? (
-            <ActivityIndicator color="#fff" />
+            <ActivityIndicator color={Colors.light.card} />
           ) : (
             <>
-              <Ionicons name="refresh-outline" size={20} color="#fff" style={{ marginRight: 8 }} />
-              <Text style={{ color: '#fff', fontWeight: 'bold' }}>Повторить</Text>
+              <Ionicons name="refresh-outline" size={20} color={Colors.light.card} style={styles.retryIcon} />
+              <Text style={styles.retryText}>Повторить</Text>
             </>
           )}
         </TouchableOpacity>
@@ -174,7 +174,7 @@ export default function ProductDetailScreen() {
               <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{ paddingRight: Spacing.l }}
+                contentContainerStyle={styles.relatedScrollContent}
               >
                 {relatedProducts.map((item) => (
                   <TouchableOpacity
@@ -194,9 +194,9 @@ export default function ProductDetailScreen() {
                 ))}
               </ScrollView>
             ) : (
-              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingRight: Spacing.l }}>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.relatedScrollContent}>
                 {[1, 2, 3].map((i) => (
-                  <View key={i} style={{ marginRight: Spacing.m }}>
+                  <View key={i} style={styles.skeletonRelatedItem}>
                     <Skeleton width={140} height={190} borderRadius={20} />
                   </View>
                 ))}
@@ -245,7 +245,7 @@ export default function ProductDetailScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.light.card,
   },
   flex1: {
     flex: 1,
@@ -254,7 +254,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: Colors.light.card,
   },
   errorText: {
     fontSize: 18,
@@ -303,18 +303,18 @@ const styles = StyleSheet.create({
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    backgroundColor: Colors.light.whiteTransparent,
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 3,
-    shadowColor: '#000',
+    shadowColor: Colors.light.text,
     shadowOpacity: 0.08,
     shadowRadius: 10,
     shadowOffset: { width: 0, height: 4 },
   },
   contentContainer: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.light.card,
     borderTopLeftRadius: 36,
     borderTopRightRadius: 36,
     marginTop: -40,
@@ -382,7 +382,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.light.card,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -391,7 +391,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: Colors.light.borderLight,
     elevation: 10,
-    shadowColor: '#000',
+    shadowColor: Colors.light.text,
     shadowOpacity: 0.04,
     shadowRadius: 16,
     shadowOffset: { width: 0, height: -8 },
@@ -424,7 +424,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
   },
   addToCartText: {
-    color: '#fff',
+    color: Colors.light.card,
     fontSize: 17,
     fontWeight: '800',
   },
@@ -442,11 +442,11 @@ const styles = StyleSheet.create({
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.light.card,
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 3,
-    shadowColor: '#000',
+    shadowColor: Colors.light.text,
     shadowOpacity: 0.06,
     shadowRadius: 5,
     shadowOffset: { width: 0, height: 3 },
@@ -468,7 +468,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.light.borderLight,
     elevation: 2,
-    shadowColor: '#000',
+    shadowColor: Colors.light.text,
     shadowOpacity: 0.04,
     shadowRadius: 5,
     shadowOffset: { width: 0, height: 2 },
@@ -492,5 +492,13 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '900',
     color: Colors.light.text,
-  }
+  },
+  skeletonContent: { padding: Spacing.l },
+  skeletonTitle: { marginBottom: 12 },
+  skeletonSubtitle: { marginBottom: Spacing.l },
+  skeletonText: { marginBottom: Spacing.s },
+  retryIcon: { marginRight: 8 },
+  retryText: { color: Colors.light.card, fontWeight: 'bold' },
+  relatedScrollContent: { paddingRight: Spacing.l },
+  skeletonRelatedItem: { marginRight: Spacing.m },
 });

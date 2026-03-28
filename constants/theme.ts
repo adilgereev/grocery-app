@@ -21,8 +21,15 @@ export const Colors = {
     border: '#E5E7EB',
     borderLight: '#F3F4F6',
     error: '#EF4444',
+    errorLight: '#FEF2F2',
     warning: '#F59E0B',
+    warningLight: '#FFFBEB',
     info: '#3B82F6',
+    infoLight: '#EEF2FF',
+    success: '#16A34A',
+    successLight: '#F0FDF4',
+    secondary: '#8B5CF6',
+    secondaryLight: '#F5F3FF',
     tint: tintColorLight,
     icon: '#6B7280',
     tabIconDefault: '#9CA3AF',
@@ -30,6 +37,11 @@ export const Colors = {
     // Disabled/Readonly поля
     disabledBackground: '#F3F4F6',
     disabledText: '#9CA3AF',
+    // Прозрачные цвета
+    whiteTransparent: 'rgba(255,255,255,0.25)',
+    blackTransparent: 'rgba(0,0,0,0.1)',
+    white: '#ffffff',
+    black: '#000000',
   },
   dark: {
     primary: tintColorDark,
@@ -43,8 +55,15 @@ export const Colors = {
     border: '#374151',
     borderLight: '#1F2937',
     error: '#F87171',
+    errorLight: '#450A0A',
     warning: '#FBBF24',
+    warningLight: '#451A03',
     info: '#60A5FA',
+    infoLight: '#1E1B4B',
+    success: '#34D399',
+    successLight: '#064E3B',
+    secondary: '#A78BFA',
+    secondaryLight: '#2E1065',
     tint: tintColorDark,
     icon: '#9CA3AF',
     tabIconDefault: '#6B7280',
@@ -52,6 +71,9 @@ export const Colors = {
     // Disabled/Readonly поля
     disabledBackground: '#2D3748',
     disabledText: '#9CA3AF',
+    // Прозрачные цвета
+    whiteTransparent: 'rgba(255,255,255,0.15)',
+    blackTransparent: 'rgba(0,0,0,0.3)',
   },
 };
 

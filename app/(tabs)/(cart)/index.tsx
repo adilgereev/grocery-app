@@ -34,7 +34,7 @@ export default function CartScreen() {
     if (items.length === 0 && recommended.length === 0) {
       fetchRecommended();
     }
-  }, [items.length]);
+  }, [items.length, recommended.length]);
 
   const fetchRecommended = async () => {
     try {
@@ -45,7 +45,7 @@ export default function CartScreen() {
         .order('id', { ascending: false })
         .limit(6);
       if (data) setRecommended(data);
-    } catch (e) {
+    } catch {
       // Игнорируем ошибку загрузки рекомендаций в production
     }
   };
@@ -169,7 +169,7 @@ export default function CartScreen() {
         }}
         disabled={isSubmitting}
       >
-        <View style={{ flex: 1, marginRight: 12 }}>
+        <View style={styles.addressTextContainer}>
           {selectedAddress ? (
             <Text style={styles.addressSelectedText} numberOfLines={1}>{formatAddress(selectedAddress)}</Text>
           ) : (
@@ -202,7 +202,7 @@ export default function CartScreen() {
                   color={isSelected ? Colors.light.primary : Colors.light.textSecondary}
                 />
               </View>
-              <View style={{ flex: 1 }}>
+              <View style={styles.paymentMethodInfo}>
                 <Text style={[
                   styles.paymentLabelOption,
                   isSelected && styles.paymentLabelOptionSelected,
@@ -245,14 +245,14 @@ export default function CartScreen() {
       </View>
 
       {/* ОРГАНИЧНАЯ КНОПКА (Она плавно заменяет собой плавающую, когда пользователь доскроллил до конца) */}
-      <View style={{ marginTop: Spacing.l }}>
+      <View style={styles.organicButtonContainer}>
         <TouchableOpacity 
-          style={[styles.checkoutButton, isSubmitting && { opacity: 0.7 }]} 
+          style={[styles.checkoutButton, isSubmitting && styles.checkoutButtonSubmitting]} 
           onPress={handleCheckout}
           disabled={isSubmitting}
         >
           {isSubmitting ? (
-             <ActivityIndicator color="#fff" />
+             <ActivityIndicator color={Colors.light.card} />
           ) : (
              <>
                <Text style={styles.checkoutText}>Оформить заказ</Text>
@@ -326,7 +326,7 @@ export default function CartScreen() {
             style={styles.cartItem}
           >
             <TouchableOpacity 
-              style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}
+              style={styles.itemTouchRow}
               activeOpacity={0.7}
               onPress={() => router.push({
                 pathname: '/(tabs)/(index,cart,orders,profile)/product/[id]',
@@ -336,14 +336,14 @@ export default function CartScreen() {
               {item.product.image_url ? (
                 <Image source={{ uri: item.product.image_url }} style={styles.itemImage} />
               ) : (
-                <View style={[styles.itemImage, { backgroundColor: Colors.light.borderLight }]} />
+                <View style={[styles.itemImage, styles.imagePlaceholder]} />
               )}
               
               <View style={styles.itemInfo}>
                 <Text style={styles.itemName}>{item.product.name}</Text>
                 <Text style={styles.itemPrice}>{(Number(item.product.price) * item.quantity).toFixed(0)} ₽</Text>
                 {item.quantity > 1 && (
-                  <Text style={{fontSize: 12, color: Colors.light.textLight, marginTop: 2}}>
+                  <Text style={styles.itemUnitInfo}>
                     {Number(item.product.price)} ₽ / шт
                   </Text>
                 )}
@@ -352,13 +352,13 @@ export default function CartScreen() {
 
             <View style={styles.quantityControl}>
               <TouchableOpacity style={styles.circleButton} onPress={() => updateQuantity(item.product.id, item.quantity - 1)}>
-                <Ionicons name="remove" size={16} color="#374151" />
+                <Ionicons name="remove" size={16} color={Colors.light.text} />
               </TouchableOpacity>
               
               <Text style={styles.quantityText}>{item.quantity}</Text>
               
               <TouchableOpacity style={styles.circleButton} onPress={() => updateQuantity(item.product.id, item.quantity + 1)}>
-                <Ionicons name="add" size={16} color="#374151" />
+                <Ionicons name="add" size={16} color={Colors.light.text} />
               </TouchableOpacity>
             </View>
 
@@ -375,12 +375,12 @@ export default function CartScreen() {
         pointerEvents="box-none"
       >
         <TouchableOpacity 
-          style={[styles.floatingCheckoutButton, isSubmitting && { opacity: 0.7 }]} 
+          style={[styles.floatingCheckoutButton, isSubmitting && styles.floatingButtonSubmitting]} 
           onPress={handleCheckout}
           disabled={isSubmitting}
         >
           {isSubmitting ? (
-             <ActivityIndicator color="#fff" size="small" />
+             <ActivityIndicator color={Colors.light.card} size="small" />
           ) : (
              <>
                <Text style={styles.floatingCheckoutText}>Оформить заказ</Text>
@@ -415,16 +415,18 @@ const styles = StyleSheet.create({
   cartItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: Colors.light.card,
     borderRadius: Radius.xl,
     padding: 12,
     marginBottom: 12,
     elevation: 2,
-    shadowColor: '#000',
+    shadowColor: Colors.light.text,
     shadowOpacity: 0.03,
     shadowOffset: { width: 0, height: 4 },
     shadowRadius: 10,
   },
+  itemTouchRow: { flexDirection: 'row', alignItems: 'center', flex: 1 },
+  imagePlaceholder: { backgroundColor: Colors.light.borderLight },
   itemImage: {
     width: 60,
     height: 60,
@@ -445,6 +447,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: Colors.light.primary,
   },
+  itemUnitInfo: { fontSize: 12, color: Colors.light.textLight, marginTop: 2 },
   quantityControl: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -458,11 +461,11 @@ const styles = StyleSheet.create({
     width: 28,
     height: 28,
     borderRadius: 14,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.light.card,
     alignItems: 'center',
     justifyContent: 'center',
     elevation: 1,
-    shadowColor: '#000',
+    shadowColor: Colors.light.text,
     shadowOpacity: 0.06,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 4,
@@ -523,7 +526,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
   },
   goShoppingBtnText: {
-    color: '#fff',
+    color: Colors.light.card,
     fontSize: 16,
     fontWeight: '700',
   },
@@ -560,16 +563,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#fff',
+    backgroundColor: Colors.light.card,
     borderRadius: 18,
     padding: Spacing.m,
     marginBottom: Spacing.l,
     elevation: 2,
-    shadowColor: '#000',
+    shadowColor: Colors.light.text,
     shadowOpacity: 0.03,
     shadowOffset: { width: 0, height: 4 },
     shadowRadius: 10,
   },
+  addressTextContainer: { flex: 1, marginRight: 12 },
   addressSelectedText: {
     fontSize: 15,
     color: Colors.light.text,
@@ -595,13 +599,13 @@ const styles = StyleSheet.create({
   paymentOption: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: Colors.light.card,
     borderRadius: 18,
     padding: Spacing.m,
     borderWidth: 2,
-    borderColor: 'transparent',
+    borderColor: Colors.light.card,
     elevation: 2,
-    shadowColor: '#000',
+    shadowColor: Colors.light.text,
     shadowOpacity: 0.03,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 6,
@@ -625,6 +629,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginRight: Spacing.m,
   },
+  paymentMethodInfo: { flex: 1 },
   paymentLabelOption: {
     fontSize: 15,
     fontWeight: '700',
@@ -643,11 +648,11 @@ const styles = StyleSheet.create({
     marginLeft: Spacing.s,
   },
   receiptCard: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.light.card,
     borderRadius: Radius.xl,
     padding: 20,
     elevation: 2,
-    shadowColor: '#000',
+    shadowColor: Colors.light.text,
     shadowOpacity: 0.03,
     shadowOffset: { width: 0, height: 4 },
     shadowRadius: 10,
@@ -715,23 +720,25 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 4 },
   },
+  floatingButtonSubmitting: { opacity: 0.7 },
   floatingCheckoutText: {
-    color: '#fff',
+    color: Colors.light.card,
     fontSize: 15,
     fontWeight: '700',
     marginLeft: Spacing.xs,
   },
   floatingCheckoutPriceTag: {
-    backgroundColor: 'rgba(255,255,255,0.25)',
+    backgroundColor: Colors.light.whiteTransparent,
     paddingHorizontal: 10,
     paddingVertical: Spacing.xs,
     borderRadius: Radius.l,
   },
   floatingCheckoutPriceText: {
-    color: '#fff',
+    color: Colors.light.card,
     fontSize: 14,
     fontWeight: '800',
   },
+  organicButtonContainer: { marginTop: Spacing.l },
   checkoutButton: {
     flexDirection: 'row',
     backgroundColor: Colors.light.primary,
@@ -746,20 +753,21 @@ const styles = StyleSheet.create({
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 6 },
   },
+  checkoutButtonSubmitting: { opacity: 0.7 },
   checkoutText: {
-    color: '#fff',
+    color: Colors.light.card,
     fontSize: 17,
     fontWeight: '700',
     marginLeft: Spacing.s,
   },
   checkoutPriceTag: {
-    backgroundColor: 'rgba(255,255,255,0.25)',
+    backgroundColor: Colors.light.whiteTransparent,
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: Radius.xl,
   },
   checkoutPriceText: {
-    color: '#fff',
+    color: Colors.light.card,
     fontSize: 15,
     fontWeight: '800',
   }

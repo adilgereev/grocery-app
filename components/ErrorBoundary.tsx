@@ -3,7 +3,6 @@ import { logger } from '@/lib/logger';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Spacing, Radius } from '@/constants/theme';
-import { useRouter } from 'expo-router';
 
 interface ErrorBoundaryState {
   hasError: boolean;
@@ -14,12 +13,6 @@ interface ErrorBoundaryState {
 interface ErrorBoundaryProps {
   children: ReactNode;
   fallback?: ReactNode;
-}
-
-interface ErrorInfo {
-  componentStack: string[];
-  errorBoundary: string;
-  digest: string;
 }
 
 export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
@@ -85,7 +78,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
             )}
 
             <TouchableOpacity style={styles.reloadButton} onPress={this.handleReset}>
-              <Ionicons name="refresh" size={20} color="#fff" style={styles.reloadIcon} />
+              <Ionicons name="refresh" size={20} color={Colors.light.card} style={styles.reloadIcon} />
               <Text style={styles.reloadButtonText}>Перезагрузить приложение</Text>
             </TouchableOpacity>
           </ScrollView>
@@ -116,7 +109,7 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: '#FEF2F2',
+    backgroundColor: Colors.light.errorLight,
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 4,
@@ -171,7 +164,7 @@ const styles = StyleSheet.create({
     marginRight: Spacing.s,
   },
   reloadButtonText: {
-    color: '#fff',
+    color: Colors.light.card,
     fontSize: 16,
     fontWeight: '700',
   },

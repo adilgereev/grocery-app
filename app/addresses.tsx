@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList, Platform, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAddressStore, Address } from '@/store/addressStore';
@@ -21,7 +21,7 @@ export default function AddressesScreen() {
           <Ionicons name="close" size={24} color={Colors.light.text} />
         </TouchableOpacity>
         <Text style={styles.title}>Мои адреса</Text>
-        <View style={{ width: 40 }} />
+        <View style={styles.headerSpacer} />
       </View>
 
       <FlatList
@@ -32,7 +32,7 @@ export default function AddressesScreen() {
           ) : null
         }
         keyExtractor={(item) => item.id}
-        contentContainerStyle={[styles.list, { flexGrow: 1 }]}
+        contentContainerStyle={styles.listGrow}
         renderItem={({ item }) => (
           <TouchableOpacity 
             style={[styles.addressCard, selectedAddressId === item.id && styles.selectedCard]}
@@ -50,7 +50,7 @@ export default function AddressesScreen() {
               ]}>
                 {selectedAddressId === item.id && <View style={styles.radioInner} />}
               </View>
-              <View style={{ flex: 1, marginLeft: 16 }}>
+              <View style={styles.addressTextWrapper}>
                 <Text style={[styles.addressText, selectedAddressId === item.id && styles.selectedAddressText]}>
                   {displayAddress(item)}
                 </Text>
@@ -87,7 +87,7 @@ export default function AddressesScreen() {
           onPress={() => router.push('/add-address')}
           activeOpacity={0.8}
         >
-          <Ionicons name="add" size={24} color="#fff" style={{ marginRight: Spacing.s }} />
+          <Ionicons name="add" size={24} color={Colors.light.card} style={styles.addIcon} />
           <Text style={styles.addButtonText}>Добавить новый адрес</Text>
         </TouchableOpacity>
       </View>
@@ -105,10 +105,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     padding: Spacing.l,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.light.card,
     borderBottomWidth: 1,
     borderBottomColor: Colors.light.borderLight,
   },
+  headerSpacer: { width: 40 },
   closeButton: {
     padding: Spacing.xs,
   },
@@ -117,32 +118,33 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: Colors.light.text,
   },
-  list: {
+  listGrow: {
     padding: Spacing.m,
     paddingBottom: Spacing.xxl,
+    flexGrow: 1,
   },
   addressCard: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: '#fff',
+    backgroundColor: Colors.light.card,
     padding: Spacing.l,
     borderRadius: Radius.l,
     marginBottom: Spacing.m,
     borderWidth: 1.5,
-    borderColor: 'transparent',
+    borderColor: Colors.light.card,
 
     // Премиальные тени
     elevation: 3,
-    shadowColor: '#000',
+    shadowColor: Colors.light.text,
     shadowOpacity: 0.04,
     shadowOffset: { width: 0, height: 4 },
     shadowRadius: 12,
   },
   selectedCard: {
     borderColor: Colors.light.primary,
-    backgroundColor: '#F0FDF4', // Мягкий зеленый фон
-    shadowOpacity: 0.08, // Чуть сильнее тень при выборе
+    backgroundColor: Colors.light.successLight,
+    shadowOpacity: 0.08,
     shadowColor: Colors.light.primary,
   },
   addressInfo: {
@@ -150,16 +152,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flex: 1,
   },
+  addressTextWrapper: { flex: 1, marginLeft: 16 },
   // Стили кастомной радио-кнопки
   radioOuter: {
     width: 22,
     height: 22,
     borderRadius: 11,
     borderWidth: 2,
-    borderColor: '#E5E7EB',
+    borderColor: Colors.light.border,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'transparent',
   },
   radioOuterSelected: {
     borderColor: Colors.light.primary,
@@ -207,7 +209,7 @@ const styles = StyleSheet.create({
   footer: {
     padding: Spacing.l,
     paddingBottom: Platform.OS === 'ios' ? 40 : 24,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.light.card,
     borderTopWidth: 1,
     borderTopColor: Colors.light.borderLight,
   },
@@ -224,8 +226,9 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowRadius: 8,
   },
+  addIcon: { marginRight: Spacing.s },
   addButtonText: {
-    color: '#fff',
+    color: Colors.light.card,
     fontSize: FontSize.l,
     fontWeight: 'bold',
   },

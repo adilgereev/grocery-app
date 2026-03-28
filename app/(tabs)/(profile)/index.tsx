@@ -1,17 +1,15 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Platform, Alert } from 'react-native';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/providers/AuthProvider';
 import { useCartStore } from '@/store/cartStore';
-import { useAppStore } from '@/store/appStore';
 import { Ionicons } from '@expo/vector-icons';
 import { logger } from '@/lib/logger';
 import { useRouter } from 'expo-router';
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, FontSize } from '@/constants/theme';
 import { formatPhoneDisplay } from '@/lib/sms';
 import Skeleton from '@/components/Skeleton';
 import { useFocusEffect } from '@react-navigation/native';
-import { useCallback } from 'react';
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -21,15 +19,7 @@ export default function ProfileScreen() {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<{first_name: string, last_name: string, phone: string, is_admin?: boolean} | null>(null);
 
-  useFocusEffect(
-    useCallback(() => {
-      if (session?.user) {
-        fetchProfile();
-      }
-    }, [session])
-  );
-
-  const fetchProfile = async () => {
+  const fetchProfile = useCallback(async () => {
     try {
       setLoading(true);
       const { data, error } = await supabase
@@ -46,7 +36,15 @@ export default function ProfileScreen() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [session]);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (session?.user) {
+        fetchProfile();
+      }
+    }, [session, fetchProfile])
+  );
 
   const handleLogout = async () => {
     if (Platform.OS !== 'web') {
@@ -82,23 +80,23 @@ export default function ProfileScreen() {
   // --- ГОСТЕВОЙ ЭКРАН ---
   if (!session) {
     return (
-      <View style={[styles.container, { justifyContent: 'center', alignItems: 'center', paddingHorizontal: 20 }]}>
-        <View style={{ width: 80, height: 80, borderRadius: 40, backgroundColor: Colors.light.primaryLight, justifyContent: 'center', alignItems: 'center', marginBottom: Spacing.l }}>
+      <View style={styles.guestContainer}>
+        <View style={styles.guestAvatarIcon}>
           <Ionicons name="person" size={40} color={Colors.light.primary} />
         </View>
-        <Text style={{ fontSize: 24, fontWeight: '800', color: Colors.light.text, textAlign: 'center', marginBottom: Spacing.s }}>
+        <Text style={styles.guestTitle}>
           Войдите в профиль
         </Text>
-        <Text style={{ fontSize: 16, color: Colors.light.textSecondary, textAlign: 'center', marginBottom: Spacing.xl, lineHeight: 22 }}>
+        <Text style={styles.guestSubtitle}>
           Чтобы отслеживать статусы заказов, сохранять адреса доставки и копить бонусы
         </Text>
         
         <TouchableOpacity 
-          style={{ width: '100%', backgroundColor: Colors.light.primary, paddingVertical: 16, borderRadius: Radius.l, alignItems: 'center', elevation: 4, shadowColor: Colors.light.primary, shadowOpacity: 0.3, shadowOffset: { width: 0, height: 4 }, shadowRadius: 8 }}
+          style={styles.guestButton}
           activeOpacity={0.8}
           onPress={() => router.push('/(auth)/login')}
         >
-          <Text style={{ color: '#fff', fontSize: 18, fontWeight: '700' }}>Войти или зарегистрироваться</Text>
+          <Text style={styles.guestButtonText}>Войти или зарегистрироваться</Text>
         </TouchableOpacity>
       </View>
     );
@@ -111,7 +109,7 @@ export default function ProfileScreen() {
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* User Header Card */}
         {loading && !profile ? (
-          <Skeleton width="100%" height={100} borderRadius={20} style={{ marginBottom: Spacing.l }} />
+          <Skeleton width="100%" height={100} borderRadius={Radius.xl} style={{ marginBottom: Spacing.l }} />
         ) : (
           <TouchableOpacity 
             style={styles.userCard}
@@ -137,8 +135,8 @@ export default function ProfileScreen() {
             <Text style={styles.sectionTitle}>Управление Магазином</Text>
             <View style={styles.menuContainer}>
               <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/(admin)' as any)}>
-                <View style={[styles.menuIcon, { backgroundColor: '#F0FDF4' }]}>
-                  <Ionicons name="shield-checkmark" size={20} color="#16A34A" />
+                <View style={[styles.menuIcon, { backgroundColor: Colors.light.successLight }]}>
+                  <Ionicons name="shield-checkmark" size={20} color={Colors.light.success} />
                 </View>
                 <Text style={styles.menuText}>Панель Владельца</Text>
                 <Ionicons name="chevron-forward" size={20} color={Colors.light.textLight} />
@@ -151,8 +149,8 @@ export default function ProfileScreen() {
         <Text style={styles.sectionTitle}>Покупки</Text>
         <View style={styles.menuContainer}>
           <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/orders')}>
-            <View style={[styles.menuIcon, { backgroundColor: '#EEF2FF' }]}>
-              <Ionicons name="receipt" size={20} color="#6366F1" />
+            <View style={[styles.menuIcon, { backgroundColor: Colors.light.infoLight }]}>
+              <Ionicons name="receipt" size={20} color={Colors.light.info} />
             </View>
             <Text style={styles.menuText}>Мои заказы</Text>
             <Ionicons name="chevron-forward" size={20} color={Colors.light.textLight} />
@@ -160,7 +158,7 @@ export default function ProfileScreen() {
           <View style={styles.divider} />
           
           <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/addresses')}>
-            <View style={[styles.menuIcon, { backgroundColor: '#ECFDF5' }]}>
+            <View style={[styles.menuIcon, { backgroundColor: Colors.light.primaryLight }]}>
               <Ionicons name="location" size={20} color={Colors.light.primary} />
             </View>
             <Text style={styles.menuText}>Мои адреса</Text>
@@ -169,7 +167,7 @@ export default function ProfileScreen() {
           <View style={styles.divider} />
           
           <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/favorites')}>
-            <View style={[styles.menuIcon, { backgroundColor: '#FEF2F2' }]}>
+            <View style={[styles.menuIcon, { backgroundColor: Colors.light.errorLight }]}>
               <Ionicons name="heart" size={20} color={Colors.light.error} />
             </View>
             <Text style={styles.menuText}>Избранные товары</Text>
@@ -181,7 +179,7 @@ export default function ProfileScreen() {
         <Text style={styles.sectionTitle}>Приложение</Text>
         <View style={styles.menuContainer}>
           <TouchableOpacity style={styles.menuItem} onPress={() => Alert.alert('Промокоды', 'У вас пока нет активных промокодов.')}>
-            <View style={[styles.menuIcon, { backgroundColor: '#FFFBEB' }]}>
+            <View style={[styles.menuIcon, { backgroundColor: Colors.light.warningLight }]}>
               <Ionicons name="ticket" size={20} color={Colors.light.warning} />
             </View>
             <Text style={styles.menuText}>Промокоды и скидки</Text>
@@ -190,7 +188,7 @@ export default function ProfileScreen() {
           <View style={styles.divider} />
 
           <TouchableOpacity style={styles.menuItem} onPress={() => Alert.alert('Поддержка', 'Чат с поддержкой временно недоступен.')}>
-            <View style={[styles.menuIcon, { backgroundColor: '#F3F4F6' }]}>
+            <View style={[styles.menuIcon, { backgroundColor: Colors.light.borderLight }]}>
               <Ionicons name="chatbubbles" size={20} color={Colors.light.textSecondary} />
             </View>
             <Text style={styles.menuText}>Служба поддержки</Text>
@@ -199,7 +197,7 @@ export default function ProfileScreen() {
           <View style={styles.divider} />
 
           <TouchableOpacity style={styles.menuItem}>
-            <View style={[styles.menuIcon, { backgroundColor: '#F3F4F6' }]}>
+            <View style={[styles.menuIcon, { backgroundColor: Colors.light.borderLight }]}>
               <Ionicons name="information-circle" size={20} color={Colors.light.textSecondary} />
             </View>
             <Text style={styles.menuText}>О приложении</Text>
@@ -212,7 +210,7 @@ export default function ProfileScreen() {
           <Text style={styles.logoutText}>Выйти из аккаунта</Text>
         </TouchableOpacity>
 
-        <View style={{ height: 40 }} />
+        <View style={styles.footerSpacing} />
       </ScrollView>
     </View>
   );
@@ -224,8 +222,55 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.background,
     paddingTop: Platform.OS === 'ios' ? 60 : 40,
   },
+  guestContainer: {
+    flex: 1,
+    backgroundColor: Colors.light.background,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  guestAvatarIcon: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    backgroundColor: Colors.light.successLight,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: Spacing.l,
+  },
+  guestTitle: {
+    fontSize: 24,
+    fontWeight: '800',
+    color: Colors.light.text,
+    textAlign: 'center',
+    marginBottom: Spacing.s,
+  },
+  guestSubtitle: {
+    fontSize: 16,
+    color: Colors.light.textSecondary,
+    textAlign: 'center',
+    marginBottom: Spacing.xl,
+    lineHeight: 22,
+  },
+  guestButton: {
+    width: '100%',
+    backgroundColor: Colors.light.primary,
+    paddingVertical: 16,
+    borderRadius: Radius.l,
+    alignItems: 'center',
+    elevation: 4,
+    shadowColor: Colors.light.primary,
+    shadowOpacity: 0.3,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 8,
+  },
+  guestButtonText: {
+    color: Colors.light.card,
+    fontSize: 18,
+    fontWeight: '700',
+  },
   screenTitle: {
-    fontSize: 32, // Увеличенный размер как в Apple Music / App Store
+    fontSize: FontSize.big,
     fontWeight: '800',
     color: Colors.light.text,
     paddingHorizontal: 20,
@@ -238,7 +283,7 @@ const styles = StyleSheet.create({
   userCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: Colors.light.card,
     borderRadius: Radius.xl,
     padding: Spacing.m,
     marginBottom: 28,
@@ -252,7 +297,7 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 32,
-    backgroundColor: Colors.light.primaryLight,
+    backgroundColor: Colors.light.successLight,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: Spacing.m,
@@ -281,7 +326,7 @@ const styles = StyleSheet.create({
     width: 36,
     height: 36,
     borderRadius: 18,
-    backgroundColor: Colors.light.primaryLight,
+    backgroundColor: Colors.light.successLight,
     justifyContent: 'center',
     alignItems: 'center',
     marginLeft: 12,
@@ -294,12 +339,12 @@ const styles = StyleSheet.create({
     marginLeft: Spacing.xs,
   },
   menuContainer: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.light.card,
     borderRadius: Radius.xl,
     paddingVertical: Spacing.s,
     marginBottom: 28,
     elevation: 2,
-    shadowColor: '#000',
+    shadowColor: Colors.light.text,
     shadowOpacity: 0.03,
     shadowOffset: { width: 0, height: 4 },
     shadowRadius: 8,
@@ -335,17 +380,20 @@ const styles = StyleSheet.create({
     marginRight: Spacing.m,
   },
   logoutButton: {
-    backgroundColor: '#fff',
+    backgroundColor: Colors.light.card,
     borderRadius: Radius.l,
     paddingVertical: Spacing.m,
     alignItems: 'center',
     marginBottom: Spacing.m,
     borderWidth: 1,
-    borderColor: '#FEE2E2',
+    borderColor: Colors.light.errorLight,
   },
   logoutText: {
     color: Colors.light.error,
     fontSize: 16,
     fontWeight: '700',
+  },
+  footerSpacing: {
+    height: 40,
   },
 });

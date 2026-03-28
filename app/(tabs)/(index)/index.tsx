@@ -64,22 +64,7 @@ export default function HomeScreen() {
     extrapolate: 'clamp',
   });
 
-  useEffect(() => {
-    fetchFullHierarchy();
-    fetchPopularProducts();
-  }, [fetchFullHierarchy]);
-
-  // Загружаем имя и адрес при каждом фокусе на страницу
-  useFocusEffect(
-    useCallback(() => {
-      if (session?.user) {
-        fetchUserInfo();
-        loadAddresses(); // Синхронизируем адреса из стора
-      }
-    }, [session, loadAddresses])
-  );
-
-  async function fetchPopularProducts() {
+  const fetchPopularProducts = useCallback(async () => {
     try {
       if (popularProducts.length === 0) { // Silent refresh check
         setPopularLoading(true);
@@ -96,24 +81,36 @@ export default function HomeScreen() {
     } finally {
       setPopularLoading(false);
     }
-  }
+  }, [popularProducts.length]);
 
-  async function fetchUserInfo() {
+  const fetchUserInfo = useCallback(async () => {
     try {
       const userId = session!.user.id;
-
-      // Загружаем только имя профиля, так как адрес теперь в сторе
       const { data: profileData } = await supabase
         .from('profiles')
         .select('first_name')
         .eq('id', userId)
         .single();
-
       if (profileData?.first_name) setFirstName(profileData.first_name);
     } catch (error) {
       logger.error('Ошибка в fetchUserInfo:', error);
     }
-  }
+  }, [session]);
+
+  useEffect(() => {
+    fetchFullHierarchy();
+    fetchPopularProducts();
+  }, [fetchFullHierarchy, fetchPopularProducts]);
+
+  // Загружаем имя и адрес при каждом фокусе на страницу
+  useFocusEffect(
+    useCallback(() => {
+      if (session?.user) {
+        fetchUserInfo();
+        loadAddresses(); // Синхронизируем адреса из стора
+      }
+    }, [session, loadAddresses, fetchUserInfo])
+  );
 
   // Определяем приветствие по времени суток
   const getGreeting = () => {
@@ -132,7 +129,6 @@ export default function HomeScreen() {
     { useNativeDriver: false }
   );
 
-  // Секция «Популярное»
   // Секция «Популярное» (Мемоизирована)
   const popularSection = useMemo(() => {
     if (popularLoading && popularProducts.length === 0) {
@@ -160,7 +156,7 @@ export default function HomeScreen() {
               <View style={styles.imageWrapper}>
                 {product.image_url
                   ? <Image source={{ uri: product.image_url }} style={styles.popularImage} />
-                  : <View style={[styles.popularImage, { backgroundColor: Colors.light.borderLight }]} />
+                  : <View style={[styles.popularImage, styles.imagePlaceholder]} />
                 }
                 <TouchableOpacity
                   style={styles.addPopularButton}
@@ -170,7 +166,7 @@ export default function HomeScreen() {
                   }}
                   activeOpacity={0.9}
                 >
-                  <Ionicons name="add" size={20} color="#fff" />
+                  <Ionicons name="add" size={20} color={Colors.light.card} />
                 </TouchableOpacity>
               </View>
               <View style={styles.popularInfo}>
@@ -184,12 +180,12 @@ export default function HomeScreen() {
         </ScrollView>
       </View>
     );
-  }, [popularProducts, popularLoading, addItem]);
+  }, [popularProducts, popularLoading, addItem, router]);
 
   // Секция баннеров (Мемоизирована)
   const bannersSection = useMemo(() => (
     <View style={styles.bannersSection}>
-      <Text style={[styles.sectionTitle, { paddingHorizontal: Spacing.m, marginBottom: Spacing.s }]}>Акции и новинки</Text>
+      <Text style={styles.bannersTitle}>Акции и новинки</Text>
       <ScrollView
         horizontal showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.bannersScroll}
@@ -201,10 +197,10 @@ export default function HomeScreen() {
             <ImageBackground
               source={{ uri: banner.image_url }}
               style={styles.bannerImage}
-              imageStyle={{ borderRadius: Radius.xl }}
+              imageStyle={styles.bannerImageBorder}
             >
               <LinearGradient
-                colors={['rgba(0,0,0,0.7)', 'transparent']}
+                colors={[Colors.light.blackTransparent, 'transparent']}
                 start={{ x: 0, y: 1 }}
                 end={{ x: 0, y: 0.4 }}
                 style={styles.gradientOverlay}
@@ -229,7 +225,7 @@ export default function HomeScreen() {
           ))}
         </View>
       ) : (
-        <Text style={[styles.sectionTitle, { paddingHorizontal: Spacing.m }]}>Категории</Text>
+        <Text style={styles.categoryFallbackTitle}>Категории</Text>
       )}
     </>
   ), [categoriesLoading, categoriesWithSubs]);
@@ -245,11 +241,11 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
-      <SafeAreaView style={{ backgroundColor: '#fff' }} edges={['top']} />
+      <SafeAreaView style={styles.safeAreaTop} edges={['top']} />
       {/* Умная шапка: приветствие скрывается при скролле */}
       <View style={styles.header}>
         {/* Анимированная строка приветствия + адрес */}
-        <Animated.View style={{ height: greetingHeight, opacity: greetingOpacity, overflow: 'hidden' }}>
+        <Animated.View style={[styles.greetingAnimationContainer, { height: greetingHeight, opacity: greetingOpacity }]}>
           <View style={styles.greetingContainer}>
             <Text style={styles.greetingText}>
               {firstName ? `${greeting.text}, ${firstName}! ${greeting.emoji}` : `${greeting.text}! ${greeting.emoji}`}
@@ -307,16 +303,18 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: Spacing.m,
     paddingBottom: Spacing.xs,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.light.card,
     borderBottomLeftRadius: Radius.xxl,
     borderBottomRightRadius: Radius.xxl,
     elevation: 8,
-    shadowColor: '#000',
+    shadowColor: Colors.light.text,
     shadowOpacity: 0.04,
     shadowOffset: { width: 0, height: 6 },
     shadowRadius: 15,
     zIndex: 10,
   },
+  safeAreaTop: { backgroundColor: Colors.light.card },
+  greetingAnimationContainer: { overflow: 'hidden' },
 
   // Приветствие и адрес теперь в стек
   greetingContainer: {
@@ -351,15 +349,17 @@ const styles = StyleSheet.create({
   gradientOverlay: { ...StyleSheet.absoluteFillObject, borderRadius: Radius.l },
   // Баннеры
   bannersSection: { marginBottom: Spacing.xl, marginTop: Spacing.m },
+  bannersTitle: { fontSize: 22, fontWeight: '700', color: Colors.light.text, paddingHorizontal: Spacing.m, marginBottom: Spacing.s },
   bannersScroll: { paddingHorizontal: Spacing.m },
   bannerCard: {
     width: SCREEN_WIDTH * 0.8, height: 160, marginRight: Spacing.m, borderRadius: Radius.xl,
     elevation: 4, shadowColor: Colors.light.primary, shadowOpacity: 0.06, shadowOffset: { width: 0, height: 4 }, shadowRadius: 14,
   },
   bannerImage: { width: '100%', height: '100%', borderRadius: Radius.l },
+  bannerImageBorder: { borderRadius: Radius.xl },
   bannerTitle: {
-    color: '#fff', fontSize: 20, fontWeight: '900',
-    textShadowColor: 'rgba(0,0,0,0.8)', textShadowOffset: { width: 0, height: 2 },
+    color: Colors.light.card, fontSize: 20, fontWeight: '900',
+    textShadowColor: Colors.light.blackTransparent, textShadowOffset: { width: 0, height: 2 },
     position: 'absolute', bottom: Spacing.m, left: Spacing.m, right: Spacing.m,
   },
 
@@ -373,10 +373,11 @@ const styles = StyleSheet.create({
   seeAllText: { fontSize: 14, color: Colors.light.primary, fontWeight: '600' },
   popularScroll: { paddingHorizontal: Spacing.m },
   popularCard: {
-    width: 140, marginRight: Spacing.m, backgroundColor: '#fff', borderRadius: Radius.l,
-    overflow: 'hidden', elevation: 2, shadowColor: '#000', shadowOpacity: 0.04, shadowOffset: { width: 0, height: 2 }, shadowRadius: 14,
+    width: 140, marginRight: Spacing.m, backgroundColor: Colors.light.card, borderRadius: Radius.l,
+    overflow: 'hidden', elevation: 2, shadowColor: Colors.light.text, shadowOpacity: 0.04, shadowOffset: { width: 0, height: 2 }, shadowRadius: 14,
   },
   imageWrapper: { position: 'relative', width: '100%', height: 110 },
+  imagePlaceholder: { backgroundColor: Colors.light.borderLight },
   popularImage: { width: '100%', height: '100%' },
   popularInfo: { padding: Spacing.s, flex: 1, justifyContent: 'center' },
   popularName: { fontSize: 13, fontWeight: '600', color: Colors.light.textSecondary, marginBottom: 2 },
@@ -386,6 +387,7 @@ const styles = StyleSheet.create({
     position: 'absolute', bottom: 8, right: 8,
     width: 32, height: 32, borderRadius: 16, backgroundColor: Colors.light.primary,
     justifyContent: 'center', alignItems: 'center', elevation: 3,
-    shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 4, shadowOffset: { width: 0, height: 2 }
+    shadowColor: Colors.light.text, shadowOpacity: 0.1, shadowRadius: 4, shadowOffset: { width: 0, height: 2 }
   },
+  categoryFallbackTitle: { fontSize: 22, fontWeight: '700', color: Colors.light.text, paddingHorizontal: Spacing.m }
 });

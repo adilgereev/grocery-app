@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, FlatList } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { CategoryWithSubcategories } from '@/types';
 import SubcategoryCard from './SubcategoryCard';
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing } from '@/constants/theme';
 
 interface CategoryHierarchySectionProps {
   category: CategoryWithSubcategories;

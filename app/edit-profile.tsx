@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/providers/AuthProvider';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -20,13 +20,7 @@ export default function EditProfileScreen() {
   const [lastName, setLastName] = useState('');
   const [phone, setPhone] = useState(''); // Только для отображения (нередактируемый)
 
-  useEffect(() => {
-    if (session?.user) {
-      fetchProfile();
-    }
-  }, [session]);
-
-  const fetchProfile = async () => {
+  const fetchProfile = useCallback(async () => {
     try {
       setLoading(true);
       const { data, error } = await supabase
@@ -43,11 +37,17 @@ export default function EditProfileScreen() {
         setPhone(data.phone || '');
       }
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Неизвестная ошибка';
+      console.error('Ошибка в fetchProfile:', error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [session]);
+
+  useEffect(() => {
+    if (session?.user) {
+      fetchProfile();
+    }
+  }, [session, fetchProfile]);
 
   const handleSave = async () => {
     if (!firstName.trim()) {
@@ -149,12 +149,12 @@ export default function EditProfileScreen() {
 
       <View style={styles.footerInner}>
         <TouchableOpacity
-          style={[styles.saveButton, saving && { opacity: 0.7 }]}
+          style={[styles.saveButton, saving && styles.saveButtonSaving]}
           onPress={handleSave}
           disabled={saving || loading}
         >
           {saving ? (
-            <ActivityIndicator color="#fff" />
+            <ActivityIndicator color={Colors.light.card} />
           ) : (
             <Text style={styles.saveButtonText}>Сохранить</Text>
           )}
@@ -253,8 +253,11 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     elevation: 4,
   },
+  saveButtonSaving: {
+    opacity: 0.7,
+  },
   saveButtonText: {
-    color: '#fff',
+    color: Colors.light.card,
     fontSize: FontSize.xl,
     fontWeight: '700',
     fontFamily: Fonts.sans,

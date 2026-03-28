@@ -76,11 +76,11 @@ export default function ProductCard({ item, index = 0 }: { item: Product, index?
 const styles = StyleSheet.create({
   productCard: {
     flexDirection: 'column',
-    backgroundColor: '#fff',
+    backgroundColor: Colors.light.card,
     borderRadius: Radius.xxl,
     padding: Spacing.m,
     marginBottom: Spacing.m,
-    shadowColor: '#000',
+    shadowColor: Colors.light.text,
     shadowOpacity: 0.04,
     shadowOffset: { width: 0, height: 4 },
     shadowRadius: 14,
@@ -143,14 +143,14 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: Radius.s,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.light.card,
     justifyContent: 'center',
     alignItems: 'center',
   },
   controlQuantity: {
     fontSize: 16,
     fontWeight: '800',
-    color: '#fff',
+    color: Colors.light.card,
     marginHorizontal: Spacing.xs,
   },
 });
