@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, Platform, Image, ScrollView, ActivityIndicator } from 'react-native';
-import Animated, { FadeInLeft, Layout, useSharedValue, useAnimatedScrollHandler, useAnimatedStyle, withTiming } from 'react-native-reanimated';
-import { useCartStore } from '@/store/cartStore';
-import { Ionicons } from '@expo/vector-icons';
+import ProductCard from '@/components/ProductCard';
+import { Colors, Radius, Spacing } from '@/constants/theme';
 import { logger } from '@/lib/logger';
+import { schedulePushNotification } from '@/lib/NotificationService';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/providers/AuthProvider';
-import { useAddressStore, Address } from '@/store/addressStore';
-import { formatFullAddress } from '@/utils/addressFormatter';
-import { useRouter } from 'expo-router';
-import { schedulePushNotification } from '@/lib/NotificationService';
-import { Colors, Spacing, Radius } from '@/constants/theme';
-import ProductCard from '@/components/ProductCard';
+import { Address, useAddressStore } from '@/store/addressStore';
+import { useCartStore } from '@/store/cartStore';
 import { Product } from '@/types';
+import { formatFullAddress } from '@/utils/addressFormatter';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Alert, Image, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Animated, { FadeInLeft, Layout, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 
 type PaymentMethod = 'online' | 'cash';
 
@@ -67,7 +67,7 @@ export default function CartScreen() {
     if (contentHeight.value === 0 || layoutHeight.value === 0) {
       return { opacity: 0, transform: [{ translateY: 150 }] }; // Начинаем скрыто, пока не подсчитаны размеры
     }
-    
+
     // Если весь контент полностью помещается на экране (без скролла или почти без),
     // нам вообще не нужна плавающая кнопка
     if (contentHeight.value <= layoutHeight.value + 20) {
@@ -80,7 +80,7 @@ export default function CartScreen() {
     // Если мы долистали почти до конца (в пределах 120 пикселей от дна),
     // скрываем плавающую кнопку, чтобы исключить наслаивание на оригинальную
     const isAtBottom = scrollY.value + layoutHeight.value >= contentHeight.value - 120;
-    
+
     return {
       opacity: withTiming(isAtBottom ? 0 : 1, { duration: 250 }),
       transform: [{ translateY: withTiming(isAtBottom ? 150 : 0, { duration: 300 }) }],
@@ -225,12 +225,12 @@ export default function CartScreen() {
 
       <View style={styles.receiptCard}>
         <Text style={styles.receiptTitle}>Детали заказа</Text>
-        
+
         <View style={styles.receiptRow}>
           <Text style={styles.receiptText}>Товары ({items.length})</Text>
           <Text style={styles.receiptText}>{totalPrice.toFixed(0)} ₽</Text>
         </View>
-        
+
         <View style={styles.receiptRow}>
           <Text style={styles.receiptText}>Доставка</Text>
           <Text style={styles.receiptTextFree}>Бесплатно</Text>
@@ -246,20 +246,20 @@ export default function CartScreen() {
 
       {/* ОРГАНИЧНАЯ КНОПКА (Она плавно заменяет собой плавающую, когда пользователь доскроллил до конца) */}
       <View style={styles.organicButtonContainer}>
-        <TouchableOpacity 
-          style={[styles.checkoutButton, isSubmitting && styles.checkoutButtonSubmitting]} 
+        <TouchableOpacity
+          style={[styles.checkoutButton, isSubmitting && styles.checkoutButtonSubmitting]}
           onPress={handleCheckout}
           disabled={isSubmitting}
         >
           {isSubmitting ? (
-             <ActivityIndicator color={Colors.light.card} />
+            <ActivityIndicator color={Colors.light.card} />
           ) : (
-             <>
-               <Text style={styles.checkoutText}>Оформить заказ</Text>
-               <View style={styles.checkoutPriceTag}>
-                 <Text style={styles.checkoutPriceText}>{totalPrice.toFixed(0)} ₽</Text>
-               </View>
-             </>
+            <>
+              <Text style={styles.checkoutText}>Оформить заказ</Text>
+              <View style={styles.checkoutPriceTag}>
+                <Text style={styles.checkoutPriceText}>{totalPrice.toFixed(0)} ₽</Text>
+              </View>
+            </>
           )}
         </TouchableOpacity>
       </View>
@@ -277,7 +277,7 @@ export default function CartScreen() {
             </View>
             <Text style={styles.emptyTitle}>В корзине пусто</Text>
             <Text style={styles.emptySubText}>Посмотрите популярные товары или перейдите в каталог</Text>
-            
+
             <TouchableOpacity style={styles.goShoppingBtn} onPress={() => router.push('/(tabs)/(index)')}>
               <Text style={styles.goShoppingBtnText}>Перейти к покупкам</Text>
             </TouchableOpacity>
@@ -303,7 +303,7 @@ export default function CartScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Корзина</Text>
-      
+
       <Animated.FlatList
         data={items}
         keyExtractor={(item) => item.product.id}
@@ -320,12 +320,12 @@ export default function CartScreen() {
           contentHeight.value = height;
         }}
         renderItem={({ item, index }: { item: any; index: number }) => (
-          <Animated.View 
-            entering={FadeInLeft.delay(index * 50).duration(400)} 
-            layout={Layout.springify()} 
+          <Animated.View
+            entering={FadeInLeft.delay(index * 50).duration(400)}
+            layout={Layout.springify()}
             style={styles.cartItem}
           >
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.itemTouchRow}
               activeOpacity={0.7}
               onPress={() => router.push(`/product/${item.product.id}?name=${encodeURIComponent(item.product.name)}`)}
@@ -335,7 +335,7 @@ export default function CartScreen() {
               ) : (
                 <View style={[styles.itemImage, styles.imagePlaceholder]} />
               )}
-              
+
               <View style={styles.itemInfo}>
                 <Text style={styles.itemName}>{item.product.name}</Text>
                 <Text style={styles.itemPrice}>{(Number(item.product.price) * item.quantity).toFixed(0)} ₽</Text>
@@ -351,9 +351,9 @@ export default function CartScreen() {
               <TouchableOpacity style={styles.circleButton} onPress={() => updateQuantity(item.product.id, item.quantity - 1)}>
                 <Ionicons name="remove" size={16} color={Colors.light.text} />
               </TouchableOpacity>
-              
+
               <Text style={styles.quantityText}>{item.quantity}</Text>
-              
+
               <TouchableOpacity style={styles.circleButton} onPress={() => updateQuantity(item.product.id, item.quantity + 1)}>
                 <Ionicons name="add" size={16} color={Colors.light.text} />
               </TouchableOpacity>
@@ -367,24 +367,24 @@ export default function CartScreen() {
       />
 
       {/* FLOATING BUTTON (Она исчезает, когда мы доскроллили до органичной кнопки) */}
-      <Animated.View 
+      <Animated.View
         style={[styles.floatingButtonContainer, floatingButtonStyle]}
         pointerEvents="box-none"
       >
-        <TouchableOpacity 
-          style={[styles.floatingCheckoutButton, isSubmitting && styles.floatingButtonSubmitting]} 
+        <TouchableOpacity
+          style={[styles.floatingCheckoutButton, isSubmitting && styles.floatingButtonSubmitting]}
           onPress={handleCheckout}
           disabled={isSubmitting}
         >
           {isSubmitting ? (
-             <ActivityIndicator color={Colors.light.card} size="small" />
+            <ActivityIndicator color={Colors.light.card} size="small" />
           ) : (
-             <>
-               <Text style={styles.floatingCheckoutText}>Оформить заказ</Text>
-               <View style={styles.floatingCheckoutPriceTag}>
-                 <Text style={styles.floatingCheckoutPriceText}>{totalPrice.toFixed(0)} ₽</Text>
-               </View>
-             </>
+            <>
+              <Text style={styles.floatingCheckoutText}>Оформить заказ</Text>
+              <View style={styles.floatingCheckoutPriceTag}>
+                <Text style={styles.floatingCheckoutPriceText}>{totalPrice.toFixed(0)} ₽</Text>
+              </View>
+            </>
           )}
         </TouchableOpacity>
       </Animated.View>
@@ -710,7 +710,7 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: Spacing.m,
     alignItems: 'center',
-    justifyContent: 'space-between', 
+    justifyContent: 'space-between',
     elevation: 6,
     shadowColor: Colors.light.primary,
     shadowOpacity: 0.3,
@@ -743,7 +743,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.m,
     paddingHorizontal: 20,
     alignItems: 'center',
-    justifyContent: 'space-between', 
+    justifyContent: 'space-between',
     elevation: 8,
     shadowColor: Colors.light.primary,
     shadowOpacity: 0.3,

@@ -3,7 +3,8 @@ import { View, Text, StyleSheet, Animated, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Radius } from '@/constants/theme';
 
-export type ToastType = 'success' | 'error' | 'warning' | 'info';
+// Тип уведомления (используется только внутри компонента)
+type ToastType = 'success' | 'error' | 'warning' | 'info';
 
 interface ToastProps {
   type: ToastType;

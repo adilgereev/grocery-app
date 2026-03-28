@@ -3,6 +3,7 @@ import PopularProductsSkeleton from '@/components/PopularProductsSkeleton';
 import SubcategoriesSkeleton from '@/components/SubcategoriesSkeleton';
 import { Colors, Radius, Spacing } from '@/constants/theme';
 import { mockBanners } from '@/data/mockBanners';
+import { logger } from '@/lib/logger';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/providers/AuthProvider';
 import { useAddressStore } from '@/store/addressStore';
@@ -15,7 +16,6 @@ import { useFocusEffect } from '@react-navigation/native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { logger } from '@/lib/logger';
 import {
   Animated,
   Dimensions,
