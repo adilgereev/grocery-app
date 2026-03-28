@@ -14,7 +14,10 @@
     "node_modules/**",
     ".expo/**",
     "dist/**",
-    "scripts/**"
+    "scripts/**",
+    "**/*.ios.tsx",
+    "**/*.android.tsx",
+    "**/*.native.tsx"
   ],
   "rules": {
     "files": "warn",
