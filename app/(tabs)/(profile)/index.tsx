@@ -11,10 +11,12 @@ import { Colors, Spacing, Radius, FontSize } from '@/constants/theme';
 import { formatPhoneDisplay } from '@/lib/sms';
 import Skeleton from '@/components/Skeleton';
 import { useFocusEffect } from '@react-navigation/native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function ProfileScreen() {
   const router = useRouter();
   const { session } = useAuth();
+  const insets = useSafeAreaInsets();
   const clearCart = useCartStore(state => state.clearCart);
   
   const [loading, setLoading] = useState(true);
@@ -82,39 +84,48 @@ export default function ProfileScreen() {
     return session?.user.email || 'Пользователь';
   };
 
-  // --- ГОСТЕВОЙ ЭКРАН ---
   if (!session) {
     return (
-      <View style={styles.guestContainer}>
-        <View style={styles.guestAvatarIcon}>
-          <Ionicons name="person" size={40} color={Colors.light.primary} />
+      <View style={[styles.guestContainer, { paddingTop: insets.top }]}>
+        <View style={styles.guestContent}>
+          <View style={styles.guestAvatarIcon}>
+            <Ionicons name="person" size={44} color={Colors.light.primary} />
+          </View>
+          <Text style={styles.guestTitle}>
+            Ваш профиль
+          </Text>
+          <Text style={styles.guestSubtitle}>
+            Войдите, чтобы оформлять заказы,{'\n'}копить бонусы и видеть историю покупок
+          </Text>
+          
+          <TouchableOpacity 
+            style={styles.guestButton}
+            activeOpacity={0.8}
+            onPress={() => router.push('/(auth)/login')}
+          >
+            <View style={styles.guestButtonSolid}>
+              <Text style={styles.guestButtonText}>Войти или зарегистрироваться</Text>
+            </View>
+          </TouchableOpacity>
         </View>
-        <Text style={styles.guestTitle}>
-          Войдите в профиль
-        </Text>
-        <Text style={styles.guestSubtitle}>
-          Чтобы заказывать продукты, отслеживать заказы и получать бонусы с каждой покупки
-        </Text>
-        
-        <TouchableOpacity 
-          style={styles.guestButton}
-          activeOpacity={0.8}
-          onPress={() => router.push('/(auth)/login')}
-        >
-          <Text style={styles.guestButtonText}>Войти или зарегистрироваться</Text>
-        </TouchableOpacity>
       </View>
     );
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.screenTitle}>Мой Профиль</Text>
+      {/* Header Area */}
+      <View style={[styles.header, { paddingTop: insets.top + Spacing.m }]}>
+        <Text style={styles.headerTitle}>Профиль</Text>
+      </View>
       
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        {/* User Header Card */}
+      <ScrollView 
+        contentContainerStyle={styles.scrollContent} 
+        showsVerticalScrollIndicator={false}
+      >
+        {/* User Card */}
         {loading && !profile ? (
-          <Skeleton width="100%" height={100} borderRadius={Radius.xl} style={{ marginBottom: Spacing.l }} />
+          <Skeleton width="100%" height={80} borderRadius={Radius.xl} style={{ marginBottom: Spacing.l }} />
         ) : (
           <TouchableOpacity 
             style={styles.userCard}
@@ -128,91 +139,76 @@ export default function ProfileScreen() {
               <Text style={styles.userName} numberOfLines={1}>{getDisplayName()}</Text>
               <Text style={styles.userPhone}>{profile?.phone ? formatPhoneDisplay(profile.phone) : 'Телефон не указан'}</Text>
             </View>
-            <View style={styles.editIconContainer}>
-              <Ionicons name="pencil" size={18} color={Colors.light.primary} />
-            </View>
+            <Ionicons name="chevron-forward" size={18} color={Colors.light.textLight} />
           </TouchableOpacity>
         )}
 
-        {/* Admin Section (Conditional) */}
-        {profile?.is_admin && (
-          <>
-            <Text style={styles.sectionTitle}>Управление Магазином</Text>
-            <View style={styles.menuContainer}>
+        {/* Global Menu Card (Lite & Clean) */}
+        <View style={styles.menuCard}>
+          {/* Bonuses (New Lite Field) */}
+          <TouchableOpacity style={styles.menuItem} activeOpacity={0.7} onPress={() => Alert.alert('Бонусы', 'У вас 0 баллов. Делайте покупки, чтобы накопить кэшбэк.')}>
+            <Ionicons name="diamond-outline" size={22} color={Colors.light.textSecondary} style={styles.menuItemIcon} />
+            <Text style={styles.menuText}>Бонусный баланс</Text>
+            <Text style={styles.bonusValue}>0 ₽</Text>
+            <Ionicons name="chevron-forward" size={18} color={Colors.light.border} />
+          </TouchableOpacity>
+          <View style={styles.divider} />
+
+          {/* Admin Tools */}
+          {profile?.is_admin && (
+            <>
               <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/(admin)' as any)}>
-                <View style={[styles.menuIcon, { backgroundColor: Colors.light.successLight }]}>
-                  <Ionicons name="shield-checkmark" size={20} color={Colors.light.success} />
-                </View>
-                <Text style={styles.menuText}>Панель Владельца</Text>
-                <Ionicons name="chevron-forward" size={20} color={Colors.light.textLight} />
+                <Ionicons name="shield-checkmark-outline" size={22} color={Colors.light.textSecondary} style={styles.menuItemIcon} />
+                <Text style={styles.menuText}>Панель управления</Text>
+                <Ionicons name="chevron-forward" size={18} color={Colors.light.border} />
               </TouchableOpacity>
-            </View>
-          </>
-        )}
+              <View style={styles.divider} />
+            </>
+          )}
 
-        {/* Menu Section 1: Purchases */}
-        <Text style={styles.sectionTitle}>Покупки</Text>
-        <View style={styles.menuContainer}>
           <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/orders')}>
-            <View style={[styles.menuIcon, { backgroundColor: Colors.light.infoLight }]}>
-              <Ionicons name="receipt" size={20} color={Colors.light.info} />
-            </View>
-            <Text style={styles.menuText}>Мои заказы</Text>
-            <Ionicons name="chevron-forward" size={20} color={Colors.light.textLight} />
+            <Ionicons name="receipt-outline" size={22} color={Colors.light.textSecondary} style={styles.menuItemIcon} />
+            <Text style={styles.menuText}>История заказов</Text>
+            <Ionicons name="chevron-forward" size={18} color={Colors.light.border} />
           </TouchableOpacity>
           <View style={styles.divider} />
-          
+
           <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/addresses')}>
-            <View style={[styles.menuIcon, { backgroundColor: Colors.light.primaryLight }]}>
-              <Ionicons name="location" size={20} color={Colors.light.primary} />
-            </View>
+            <Ionicons name="location-outline" size={22} color={Colors.light.textSecondary} style={styles.menuItemIcon} />
             <Text style={styles.menuText}>Мои адреса</Text>
-            <Ionicons name="chevron-forward" size={20} color={Colors.light.textLight} />
+            <Ionicons name="chevron-forward" size={18} color={Colors.light.border} />
           </TouchableOpacity>
           <View style={styles.divider} />
-          
+
           <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/favorites')}>
-            <View style={[styles.menuIcon, { backgroundColor: Colors.light.errorLight }]}>
-              <Ionicons name="heart" size={20} color={Colors.light.error} />
-            </View>
-            <Text style={styles.menuText}>Избранные товары</Text>
-            <Ionicons name="chevron-forward" size={20} color={Colors.light.textLight} />
+            <Ionicons name="heart-outline" size={22} color={Colors.light.textSecondary} style={styles.menuItemIcon} />
+            <Text style={styles.menuText}>Избранное</Text>
+            <Ionicons name="chevron-forward" size={18} color={Colors.light.border} />
           </TouchableOpacity>
         </View>
 
-        {/* Menu Section 2: Settings & Info */}
-        <Text style={styles.sectionTitle}>Приложение</Text>
-        <View style={styles.menuContainer}>
-          <TouchableOpacity style={styles.menuItem} onPress={() => Alert.alert('Промокоды', 'У вас пока нет активных промокодов.')}>
-            <View style={[styles.menuIcon, { backgroundColor: Colors.light.warningLight }]}>
-              <Ionicons name="ticket" size={20} color={Colors.light.warning} />
-            </View>
-            <Text style={styles.menuText}>Промокоды и скидки</Text>
-            <Ionicons name="chevron-forward" size={20} color={Colors.light.textLight} />
-          </TouchableOpacity>
-          <View style={styles.divider} />
-
+        <View style={styles.menuCard}>
           <TouchableOpacity style={styles.menuItem} onPress={() => Alert.alert('Поддержка', 'Чат с поддержкой временно недоступен.')}>
-            <View style={[styles.menuIcon, { backgroundColor: Colors.light.borderLight }]}>
-              <Ionicons name="chatbubbles" size={20} color={Colors.light.textSecondary} />
-            </View>
-            <Text style={styles.menuText}>Служба поддержки</Text>
-            <Ionicons name="chevron-forward" size={20} color={Colors.light.textLight} />
+            <Ionicons name="chatbubbles-outline" size={22} color={Colors.light.textSecondary} style={styles.menuItemIcon} />
+            <Text style={styles.menuText}>Связаться с нами</Text>
+            <Ionicons name="chevron-forward" size={18} color={Colors.light.border} />
           </TouchableOpacity>
           <View style={styles.divider} />
 
-          <TouchableOpacity style={styles.menuItem}>
-            <View style={[styles.menuIcon, { backgroundColor: Colors.light.borderLight }]}>
-              <Ionicons name="information-circle" size={20} color={Colors.light.textSecondary} />
-            </View>
+          <View style={styles.menuItem}>
+            <Ionicons name="information-circle-outline" size={22} color={Colors.light.textSecondary} style={styles.menuItemIcon} />
             <Text style={styles.menuText}>О приложении</Text>
-            <Text style={styles.appVersion}>Версия 2.0.0</Text>
-          </TouchableOpacity>
+            <Text style={styles.appVersion}>2.0.0</Text>
+          </View>
         </View>
 
-        {/* Logout Button */}
-        <TouchableOpacity style={styles.logoutButton} onPress={handleLogout}>
-          <Text style={styles.logoutText}>Выйти из аккаунта</Text>
+        <TouchableOpacity 
+          style={styles.logoutButton} 
+          onPress={handleLogout}
+          activeOpacity={0.7}
+        >
+          <Ionicons name="log-out-outline" size={18} color={Colors.light.error} />
+          <Text style={styles.logoutText}>Выйти из профиля</Text>
         </TouchableOpacity>
 
         <View style={styles.footerSpacing} />
@@ -225,64 +221,75 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.light.background,
-    paddingTop: Platform.OS === 'ios' ? 60 : 40,
+  },
+  header: {
+    paddingHorizontal: 20,
+    backgroundColor: Colors.light.background, // Чат на фоне приложения для легкости
+    paddingBottom: Spacing.s,
+    zIndex: 10,
+  },
+  headerTitle: {
+    fontSize: FontSize.big, // Крупный заголовок по фидбеку (28px)
+    fontWeight: '800',
+    color: Colors.light.text,
   },
   guestContainer: {
     flex: 1,
     backgroundColor: Colors.light.background,
     justifyContent: 'center',
+    paddingHorizontal: 30,
+  },
+  guestContent: {
     alignItems: 'center',
-    paddingHorizontal: 20,
   },
   guestAvatarIcon: {
     width: 80,
     height: 80,
     borderRadius: 40,
-    backgroundColor: Colors.light.successLight,
+    backgroundColor: Colors.light.card,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: Spacing.l,
+    marginBottom: Spacing.xl,
+    // Легкая тень иконки
+    shadowColor: Colors.light.text,
+    shadowOpacity: 0.04,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 10,
+    elevation: 2,
   },
   guestTitle: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: '800',
     color: Colors.light.text,
-    textAlign: 'center',
     marginBottom: Spacing.s,
   },
   guestSubtitle: {
     fontSize: 16,
     color: Colors.light.textSecondary,
     textAlign: 'center',
-    marginBottom: Spacing.xl,
-    lineHeight: 22,
+    marginBottom: 40,
+    lineHeight: 24,
   },
   guestButton: {
     width: '100%',
+    height: 56,
+    borderRadius: Radius.xl,
+    overflow: 'hidden',
+  },
+  guestButtonSolid: {
+    flex: 1,
     backgroundColor: Colors.light.primary,
-    paddingVertical: 16,
-    borderRadius: Radius.l,
+    justifyContent: 'center',
     alignItems: 'center',
-    elevation: 4,
-    shadowColor: Colors.light.primary,
-    shadowOpacity: 0.3,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 8,
   },
   guestButtonText: {
     color: Colors.light.card,
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: '700',
-  },
-  screenTitle: {
-    fontSize: FontSize.big,
-    fontWeight: '800',
-    color: Colors.light.text,
-    paddingHorizontal: 20,
-    marginBottom: 20,
   },
   scrollContent: {
     paddingHorizontal: 20,
+    paddingTop: Spacing.m,
     paddingBottom: Spacing.xxl,
   },
   userCard: {
@@ -291,112 +298,96 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.card,
     borderRadius: Radius.xl,
     padding: Spacing.m,
-    marginBottom: 28,
-    elevation: 4,
-    shadowColor: Colors.light.primary,
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 6 },
-    shadowRadius: 15,
+    marginBottom: 24, // Увеличил отступ, так как убрали карту
+    // Облегченные тени
+    shadowColor: Colors.light.text,
+    shadowOpacity: 0.02,
+    shadowOffset: { width: 0, height: 4 },
+    shadowRadius: 12,
+    elevation: 2,
   },
   avatar: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
-    backgroundColor: Colors.light.successLight,
+    width: 56,
+    height: 56,
+    borderRadius: 28,
+    backgroundColor: '#F0FDF4',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: Spacing.m,
   },
   avatarText: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: '800',
     color: Colors.light.primary,
   },
   userInfo: {
     flex: 1,
-    justifyContent: 'center',
   },
   userName: {
-    fontSize: 20,
-    fontWeight: '700',
+    fontSize: 17,
+    fontWeight: '800',
     color: Colors.light.text,
-    marginBottom: Spacing.xs,
+    marginBottom: 1,
   },
   userPhone: {
-    fontSize: 14,
+    fontSize: 13,
     color: Colors.light.textSecondary,
     fontWeight: '500',
   },
-  editIconContainer: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: Colors.light.successLight,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginLeft: 12,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: Colors.light.text,
-    marginBottom: 12,
-    marginLeft: Spacing.xs,
-  },
-  menuContainer: {
+  menuCard: {
     backgroundColor: Colors.light.card,
     borderRadius: Radius.xl,
-    paddingVertical: Spacing.s,
-    marginBottom: 28,
-    elevation: 2,
+    overflow: 'hidden',
     shadowColor: Colors.light.text,
-    shadowOpacity: 0.03,
+    shadowOpacity: 0.02,
     shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 8,
+    shadowRadius: 10,
+    elevation: 2,
+    marginBottom: 24,
   },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
-    paddingHorizontal: Spacing.m,
+    padding: 16,
   },
-  menuIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: Radius.m,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: Spacing.m,
+  menuItemIcon: {
+    marginRight: 16,
+    width: 24,
+    textAlign: 'center',
   },
   menuText: {
     flex: 1,
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '600',
     color: Colors.light.text,
   },
+  bonusValue: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: Colors.light.primary, // Акцент на бонусах
+    marginRight: 8,
+  },
   appVersion: {
-    fontSize: 14,
+    fontSize: 13,
     color: Colors.light.textLight,
+    fontWeight: '700',
   },
   divider: {
     height: 1,
-    backgroundColor: Colors.light.borderLight,
-    marginLeft: 72, 
-    marginRight: Spacing.m,
+    backgroundColor: '#F8FAFC',
+    marginLeft: 56,
   },
   logoutButton: {
-    backgroundColor: Colors.light.card,
-    borderRadius: Radius.l,
-    paddingVertical: Spacing.m,
+    flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: Spacing.m,
-    borderWidth: 1,
-    borderColor: Colors.light.errorLight,
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 12,
   },
   logoutText: {
     color: Colors.light.error,
-    fontSize: 16,
-    fontWeight: '700',
+    fontSize: 15,
+    fontWeight: '600',
   },
   footerSpacing: {
     height: 40,
