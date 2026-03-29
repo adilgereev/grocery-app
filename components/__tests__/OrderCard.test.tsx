@@ -21,7 +21,7 @@ describe('OrderCard', () => {
   });
 
   it('renders order details correctly with delivered status', () => {
-    const { getByText, getByTestId } = render(
+    const { getByText } = render(
       <OrderCard order={mockOrder} onPress={mockOnPress} />
     );
 

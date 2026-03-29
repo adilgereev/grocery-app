@@ -8,7 +8,6 @@ import Skeleton from '@/components/Skeleton';
 import { ErrorToast } from '@/components/ErrorToast';
 import { logger } from '@/lib/logger';
 import { Colors, Spacing, Radius } from '@/constants/theme';
-import { cleanAddress } from '@/lib/address';
 import { Order } from '@/types';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ScreenHeader from '@/components/ScreenHeader';

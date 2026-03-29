@@ -11,10 +11,11 @@ module.exports = defineConfig([
     },
     rules: {
       'react-native/no-unused-styles': 'error',
-      'react-native/split-platform-components': 'warn',
-      'react-native/no-inline-styles': 'warn',
-      'react-native/no-color-literals': 'warn',
-      'react-native/no-raw-text': 'off', // Отключено, так как Expo Router использует текстовые узлы в Link и тп
+      'react-native/split-platform-components': 'error',
+      'react-native/no-inline-styles': 'error',
+      'react-native/no-color-literals': 'error',
+      'react-native/no-raw-text': 'off',
+      '@typescript-eslint/no-unused-vars': 'error',
     },
   },
   {

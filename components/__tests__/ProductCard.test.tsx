@@ -72,7 +72,7 @@ describe('ProductCard', () => {
       updateQuantity: mockUpdateQuantity,
     });
 
-    const { getByText, getByTestId, queryByTestId } = render(
+    const { getByTestId, queryByTestId } = render(
       <ProductCard item={mockProduct} />
     );
 

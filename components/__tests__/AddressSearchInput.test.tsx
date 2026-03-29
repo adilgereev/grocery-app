@@ -67,7 +67,7 @@ describe('AddressSearchInput', () => {
   it('handles street selection (no house): appends space and keeps searching', async () => {
     (getAddressSuggestions as jest.Mock).mockResolvedValue(mockSuggestions);
 
-    const { getByTestId, findByText } = render(
+    const { getByTestId } = render(
       <AddressSearchInput onSelect={mockOnSelect} onChangeText={mockOnChangeText} />
     );
 
@@ -75,8 +75,6 @@ describe('AddressSearchInput', () => {
     act(() => {
       fireEvent.changeText(input, 'Лени');
     });
-
-    const streetItem = await findByText('ул. Ленина');
 
     // Кликаем по подсказке, где нет дома (data.house отсутствует)
     act(() => {
@@ -91,7 +89,7 @@ describe('AddressSearchInput', () => {
   it('handles house selection: calls onSelect and clears suggestions', async () => {
     (getAddressSuggestions as jest.Mock).mockResolvedValue(mockSuggestions);
 
-    const { getByTestId, findByText, queryByTestId } = render(
+    const { getByTestId, queryByTestId } = render(
       <AddressSearchInput onSelect={mockOnSelect} />
     );
 
@@ -99,8 +97,6 @@ describe('AddressSearchInput', () => {
     act(() => {
       fireEvent.changeText(input, 'Лени');
     });
-
-    const houseItem = await findByText('ул. Ленина, д 10');
 
     // Кликаем по подсказке с домом
     act(() => {
