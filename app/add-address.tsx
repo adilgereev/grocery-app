@@ -1,12 +1,12 @@
 import AddressSearchInput from '@/components/AddressSearchInput';
 import MapPicker from '@/components/MapPicker';
 import ScreenHeader from '@/components/ScreenHeader';
-import { Colors, Radius, Spacing, FontSize, Fonts } from '@/constants/theme';
+import { Colors, FontSize, Fonts, Radius, Spacing } from '@/constants/theme';
 import { AddressFormData, addressSchema } from '@/lib/schemas';
 import { useAddressStore } from '@/store/addressStore';
 import { Ionicons } from '@expo/vector-icons';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import {
@@ -168,7 +168,7 @@ export default function AddAddressScreen() {
         // keyboardDismissMode="on-drag"
         enableOnAndroid={true}
         enableAutomaticScroll={true}
-        extraHeight={90}
+        extraHeight={85}
         extraScrollHeight={65}
       >
         {/* Секция 1: Основной адрес */}
@@ -429,9 +429,9 @@ export default function AddAddressScreen() {
                 "Вы уверены, что хотите безвозвратно удалить этот адрес доставки?",
                 [
                   { text: "Отмена", style: "cancel" },
-                  { 
-                    text: "Удалить", 
-                    style: "destructive", 
+                  {
+                    text: "Удалить",
+                    style: "destructive",
                     onPress: async () => {
                       await removeAddress(id);
                       router.back();
