@@ -65,8 +65,14 @@ export default function AddAddressScreen() {
     if (isEditMode && id) {
       const existing = addresses.find((a) => a.id === id);
       if (existing) {
+        // Формируем полный видимый адрес: улица + дом
+        let fullText = existing.text;
+        if (existing.house) {
+          fullText += `, д. ${existing.house}`;
+        }
+
         reset({
-          text: existing.text,
+          text: fullText,
           house: existing.house || '',
           entrance: existing.entrance || '',
           floor: existing.floor || '',

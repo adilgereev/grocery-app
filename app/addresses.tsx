@@ -1,15 +1,15 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, Platform, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAddressStore, Address } from '@/store/addressStore';
 import { formatFullAddress } from '@/utils/addressFormatter';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { Colors, FontSize, Spacing, Radius, Fonts } from '@/constants/theme';
+import { Colors, FontSize, Spacing, Radius } from '@/constants/theme';
 import ScreenHeader from '@/components/ScreenHeader';
 
 export default function AddressesScreen() {
-  const { addresses, selectedAddressId, removeAddress, selectAddress } = useAddressStore();
+  const { addresses, selectedAddressId, selectAddress } = useAddressStore();
   const router = useRouter();
 
   // Используем централизованное форматирование
@@ -55,7 +55,7 @@ export default function AddressesScreen() {
               <TouchableOpacity 
                 onPress={(e) => {
                   e.stopPropagation(); // Предотвращаем срабатывание выбора адреса при клике на карандаш
-                  router.push(`/add-address?id=${item.id}`);
+                  router.push(`/manage-address?id=${item.id}`);
                 }} 
                 style={styles.actionBtn}
               >
@@ -75,7 +75,7 @@ export default function AddressesScreen() {
       <View style={styles.footer}>
         <TouchableOpacity 
           style={styles.addButton} 
-          onPress={() => router.push('/add-address')}
+          onPress={() => router.push('/manage-address')}
           activeOpacity={0.8}
         >
           <Ionicons name="add" size={24} color={Colors.light.card} style={styles.addIcon} />
