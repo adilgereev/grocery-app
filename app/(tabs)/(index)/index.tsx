@@ -98,18 +98,21 @@ export default function HomeScreen() {
   }, [session]);
 
   useEffect(() => {
-    fetchFullHierarchy();
-    fetchPopularProducts();
-  }, [fetchFullHierarchy, fetchPopularProducts]);
+    // Начальная загрузка при монтировании (базовая)
+  }, []);
 
-  // Загружаем имя и адрес при каждом фокусе на страницу
+  // Загружаем данные при каждом фокусе на страницу
   useFocusEffect(
     useCallback(() => {
+      // fetchFullHierarchy проверит кеш: если он сброшен (invalidateCache), будет сетевой запрос
+      fetchFullHierarchy();
+      fetchPopularProducts();
+      
       if (session?.user) {
         fetchUserInfo();
         loadAddresses(); // Синхронизируем адреса из стора
       }
-    }, [session, loadAddresses, fetchUserInfo])
+    }, [session, loadAddresses, fetchUserInfo, fetchFullHierarchy, fetchPopularProducts])
   );
 
   // Определяем приветствие по времени суток

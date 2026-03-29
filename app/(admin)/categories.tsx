@@ -1,5 +1,6 @@
 import { Colors, Radius, Spacing } from '@/constants/theme';
 import { uploadImage } from '@/lib/storageUtils';
+import { useCategoryStore } from '@/store/categoryStore';
 import { supabase } from '@/lib/supabase';
 import { Category } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
@@ -142,7 +143,7 @@ export default function CategoriesScreen() {
     const categoryData = {
       name: name.trim(),
       slug: slug,
-      image_url: selectedParent ? (imageUrl.trim() || null) : null,
+      image_url: imageUrl.trim() || null,
       parent_id: selectedParent, // Добавляем родительскую категорию
     };
 
@@ -155,7 +156,10 @@ export default function CategoriesScreen() {
       if (error) {
         Alert.alert('Ошибка обновления', error.message);
       } else {
-        setCategories(prev => prev.map(c => c.id === currentId ? { ...c, ...categoryData } : c));
+        // Ре-фетч данных гарантирует правильную иерархию в списке
+        await fetchCategories();
+        // Сброс кеша, чтобы изменения отразились на главной
+        useCategoryStore.getState().invalidateCache();
         setModalVisible(false);
       }
     } else {
@@ -168,7 +172,8 @@ export default function CategoriesScreen() {
       if (error) {
         Alert.alert('Ошибка создания', error.message);
       } else if (data) {
-        setCategories(prev => [...prev, data as Category].sort((a, b) => a.name.localeCompare(b.name)));
+        await fetchCategories();
+        useCategoryStore.getState().invalidateCache();
         setModalVisible(false);
       }
     }
@@ -321,9 +326,11 @@ export default function CategoriesScreen() {
                   style={styles.input}
                   onPress={() => {
                     // Простой selector - показываем alert с выбором родителя
+                    // Исключаем текущую категорию, чтобы избежать цикличности
+                    const otherRoots = rootCategories.filter(c => c.id !== currentId);
                     const options = [
                       { title: 'Без родителя (корневая категория)', value: null },
-                      ...rootCategories.map(c => ({ title: c.name, value: c.id }))
+                      ...otherRoots.map(c => ({ title: c.name, value: c.id }))
                     ];
                     Alert.alert(
                       'Выберите родительскую категорию',
@@ -355,38 +362,34 @@ export default function CategoriesScreen() {
                 />
               </View>
 
-              {selectedParent !== null && (
-                <React.Fragment>
-                  <View style={styles.formGroup}>
-                    <View style={styles.labelRow}>
-                      <Text style={styles.label}>Ссылка на фото или HEX-код</Text>
-                      <TouchableOpacity onPress={pickImage} disabled={uploading}>
-                        <Text style={[styles.pickText, uploading && styles.pickTextDisabled]}>
-                          {uploading ? 'Загрузка...' : 'Выбрать файл'}
-                        </Text>
-                      </TouchableOpacity>
-                    </View>
-                    <TextInput
-                      style={styles.input}
-                      value={imageUrl}
-                      onChangeText={setImageUrl}
-                      placeholder="https://... или #FF0000"
-                      placeholderTextColor={Colors.light.textLight}
-                    />
-                  </View>
+              <View style={styles.formGroup}>
+                <View style={styles.labelRow}>
+                  <Text style={styles.label}>Ссылка на фото или HEX-код</Text>
+                  <TouchableOpacity onPress={pickImage} disabled={uploading}>
+                    <Text style={[styles.pickText, uploading && styles.pickTextDisabled]}>
+                      {uploading ? 'Загрузка...' : 'Выбрать файл'}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+                <TextInput
+                  style={styles.input}
+                  value={imageUrl}
+                  onChangeText={setImageUrl}
+                  placeholder="https://... или #FF0000"
+                  placeholderTextColor={Colors.light.textLight}
+                />
+              </View>
 
-                  {imageUrl ? (
-                    <View style={styles.previewSection}>
-                      <Text style={styles.label}>Превью в списке:</Text>
-                      {imageUrl.startsWith('#') ? (
-                        <View style={[styles.previewBox, { backgroundColor: imageUrl }]} />
-                      ) : (
-                        <Image source={{ uri: imageUrl }} style={styles.previewBox} />
-                      )}
-                    </View>
-                  ) : null}
-                </React.Fragment>
-              )}
+              {imageUrl ? (
+                <View style={styles.previewSection}>
+                  <Text style={styles.label}>Превью в списке:</Text>
+                  {imageUrl.startsWith('#') ? (
+                    <View style={[styles.previewBox, { backgroundColor: imageUrl }]} />
+                  ) : (
+                    <Image source={{ uri: imageUrl }} style={styles.previewBox} />
+                  )}
+                </View>
+              ) : null}
 
                 <TouchableOpacity
                   style={[styles.submitBtn, submitting && styles.btnDisabled]}
