@@ -1,20 +1,11 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { StyleSheet } from 'react-native';
-import SubcategoryCard from './SubcategoryCard';
+import SubcategoryCard from '../SubcategoryCard';
 import { useRouter } from 'expo-router';
 
-// Мокаем expo-router
-jest.mock('expo-router', () => ({
-  useRouter: jest.fn(),
-}));
+// Моки useRouter и Reanimated теперь в jest.setup.js
 
-// Мокаем Reanimated
-jest.mock('react-native-reanimated', () => {
-  const Reanimated = jest.requireActual('react-native-reanimated/mock');
-  Reanimated.default.call = () => {};
-  return Reanimated;
-});
 
 describe('SubcategoryCard', () => {
   const mockSubcategory = {

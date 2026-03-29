@@ -3,6 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Category, CategoryWithSubcategories, CategoryWithHierarchy } from '@/types';
 import { logger } from '@/lib/logger';
+import { fetchRootCategories, fetchFullHierarchy, fetchCategoriesWithHierarchy } from '@/lib/categoriesApi';
 
 interface CategoryState {
   // Хранилище иерархии категорий
@@ -63,9 +64,7 @@ export const useCategoryStore = create<CategoryState>()(
 
         try {
           set({ isLoading: true, error: null });
-
-          const { fetchRootCategories: apiFetch } = await import('@/lib/categoriesApi');
-          const data = await apiFetch();
+          const data = await fetchRootCategories();
 
           set({
             rootCategories: data,
@@ -92,9 +91,7 @@ export const useCategoryStore = create<CategoryState>()(
 
         try {
           set({ isLoading: true, error: null });
-
-          const { fetchFullHierarchy: apiFetch } = await import('@/lib/categoriesApi');
-          const data = await apiFetch();
+          const data = await fetchFullHierarchy();
 
           set({
             categoriesWithSubs: data,
@@ -122,9 +119,7 @@ export const useCategoryStore = create<CategoryState>()(
 
         try {
           set({ isLoading: true, error: null });
-
-          const { fetchCategoriesWithHierarchy: apiFetch } = await import('@/lib/categoriesApi');
-          const data = await apiFetch();
+          const data = await fetchCategoriesWithHierarchy();
 
           set({
             allCategories: data,

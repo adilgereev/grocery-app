@@ -25,6 +25,7 @@ export default function ProductCard({ item, index = 0 }: { item: Product, index?
       activeOpacity={0.9}
       onPress={() => router.push(`/product/${item.id}?name=${encodeURIComponent(item.name)}`)}
       entering={FadeInDown.delay(index * 50).duration(400)}
+      testID="product-card"
     >
       {item.image_url ? (
         <Image source={{ uri: item.image_url }} style={styles.productImage} />
@@ -44,7 +45,12 @@ export default function ProductCard({ item, index = 0 }: { item: Product, index?
       
       <View style={styles.actionContainer}>
         {!cartItem ? (
-          <TouchableOpacity style={styles.addButton} activeOpacity={0.7} onPress={() => addItem(item)}>
+          <TouchableOpacity 
+            style={styles.addButton} 
+            activeOpacity={0.7} 
+            onPress={() => addItem(item)}
+            testID="product-add-button"
+          >
             <Ionicons name="cart" size={22} color={Colors.light.primary} />
           </TouchableOpacity>
         ) : (
@@ -53,16 +59,18 @@ export default function ProductCard({ item, index = 0 }: { item: Product, index?
               style={styles.controlButton} 
               activeOpacity={0.7}
               onPress={() => updateQuantity(item.id, cartItem.quantity - 1)}
+              testID="product-decrease-button"
             >
               <Ionicons name="remove" size={16} color={Colors.light.primary} />
             </TouchableOpacity>
             
-            <Text style={styles.controlQuantity}>{cartItem.quantity}</Text>
+            <Text style={styles.controlQuantity} testID="product-quantity-text">{cartItem.quantity}</Text>
             
             <TouchableOpacity 
               style={styles.controlButton} 
               activeOpacity={0.7}
               onPress={() => updateQuantity(item.id, cartItem.quantity + 1)}
+              testID="product-increase-button"
             >
               <Ionicons name="add" size={16} color={Colors.light.primary} />
             </TouchableOpacity>

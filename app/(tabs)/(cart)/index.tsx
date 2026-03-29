@@ -1,3 +1,4 @@
+import CartItem from '@/components/CartItem';
 import ProductCard from '@/components/ProductCard';
 import { Colors, Radius, Spacing, FontSize } from '@/constants/theme';
 import { logger } from '@/lib/logger';
@@ -326,49 +327,12 @@ export default function CartScreen() {
           contentHeight.value = height;
         }}
         renderItem={({ item, index }: { item: any; index: number }) => (
-          <Animated.View
-            entering={FadeInLeft.delay(index * 50).duration(400)}
-            layout={Layout.springify()}
-            style={styles.cartItem}
-          >
-            <TouchableOpacity
-              style={styles.itemTouchRow}
-              activeOpacity={0.7}
-              onPress={() => router.push(`/product/${item.product.id}?name=${encodeURIComponent(item.product.name)}`)}
-            >
-              {item.product.image_url ? (
-                <Image source={{ uri: item.product.image_url }} style={styles.itemImage} />
-              ) : (
-                <View style={[styles.itemImage, styles.imagePlaceholder]} />
-              )}
-
-              <View style={styles.itemInfo}>
-                <Text style={styles.itemName}>{item.product.name}</Text>
-                <Text style={styles.itemPrice}>{(Number(item.product.price) * item.quantity).toFixed(0)} ₽</Text>
-                {item.quantity > 1 && (
-                  <Text style={styles.itemUnitInfo}>
-                    {Number(item.product.price)} ₽ / шт
-                  </Text>
-                )}
-              </View>
-            </TouchableOpacity>
-
-            <View style={styles.quantityControl}>
-              <TouchableOpacity style={styles.circleButton} onPress={() => updateQuantity(item.product.id, item.quantity - 1)}>
-                <Ionicons name="remove" size={16} color={Colors.light.text} />
-              </TouchableOpacity>
-
-              <Text style={styles.quantityText}>{item.quantity}</Text>
-
-              <TouchableOpacity style={styles.circleButton} onPress={() => updateQuantity(item.product.id, item.quantity + 1)}>
-                <Ionicons name="add" size={16} color={Colors.light.text} />
-              </TouchableOpacity>
-            </View>
-
-            <TouchableOpacity style={styles.deleteButton} onPress={() => removeItem(item.product.id)}>
-              <Ionicons name="trash-outline" size={22} color={Colors.light.error} />
-            </TouchableOpacity>
-          </Animated.View>
+          <CartItem
+            item={item}
+            index={index}
+            onUpdateQuantity={updateQuantity}
+            onRemove={removeItem}
+          />
         )}
       />
 
@@ -418,75 +382,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingBottom: Spacing.xxl, // Нам больше не нужно огромное пространство (120px), так как кнопка уезжает в конце скролла
   },
-  cartItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: Colors.light.card,
-    borderRadius: Radius.xl,
-    padding: 12,
-    marginBottom: 12,
-    elevation: 2,
-    shadowColor: Colors.light.text,
-    shadowOpacity: 0.03,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 10,
-  },
-  itemTouchRow: { flexDirection: 'row', alignItems: 'center', flex: 1 },
-  imagePlaceholder: { backgroundColor: Colors.light.borderLight },
-  itemImage: {
-    width: 60,
-    height: 60,
-    borderRadius: 14,
-    marginRight: Spacing.m,
-  },
-  itemInfo: {
-    flex: 1,
-  },
-  itemName: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: Colors.light.text,
-    marginBottom: Spacing.xs,
-  },
-  itemPrice: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: Colors.light.primary,
-  },
-  itemUnitInfo: { fontSize: 12, color: Colors.light.textLight, marginTop: 2 },
-  quantityControl: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: Colors.light.borderLight,
-    borderRadius: Radius.xxl,
-    paddingHorizontal: Spacing.xs,
-    paddingVertical: Spacing.xs,
-    marginRight: 12,
-  },
-  circleButton: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    backgroundColor: Colors.light.card,
-    alignItems: 'center',
-    justifyContent: 'center',
-    elevation: 1,
-    shadowColor: Colors.light.text,
-    shadowOpacity: 0.06,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
-  },
-  quantityText: {
-    fontSize: 16,
-    fontWeight: '700',
-    marginHorizontal: 12,
-    color: Colors.light.text,
-    minWidth: 12,
-    textAlign: 'center',
-  },
-  deleteButton: {
-    padding: Spacing.s,
-  },
+  // Cart items styles moved to CartItem.tsx
+
   emptyScrollContent: {
     paddingHorizontal: 20,
     paddingBottom: Spacing.xl,

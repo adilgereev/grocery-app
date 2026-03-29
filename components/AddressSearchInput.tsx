@@ -37,12 +37,15 @@ export default function AddressSearchInput({
   const [isLoading, setIsLoading] = useState(false);
   const [showSuggestions, setShowSuggestions] = useState(false);
 
-  // Синхронизируем внутренний запрос с внешним значением (например, после выбора на карте)
+  const prevInitialValue = React.useRef(initialValue);
+
+  // Синхронизируемся с внешним значением только если оно реально изменилось (например, выбор на карте)
   useEffect(() => {
-    if (initialValue !== undefined && initialValue !== query) {
-      setQuery(initialValue);
+    if (initialValue !== prevInitialValue.current) {
+      setQuery(initialValue || '');
+      prevInitialValue.current = initialValue;
     }
-  }, [initialValue, query]);
+  }, [initialValue]);
 
   // Уведомляем родителя об изменении видимости подсказок
   useEffect(() => {
@@ -112,6 +115,7 @@ export default function AddressSearchInput({
           blurOnSubmit={true}
           onSubmitEditing={() => Keyboard.dismiss()}
           keyboardAppearance="light"
+          testID="address-search-input"
         />
 
         {query.length === 0 && (
@@ -121,13 +125,16 @@ export default function AddressSearchInput({
           </View>
         )}
 
-        {isLoading && <ActivityIndicator size="small" color={Colors.light.primary} style={styles.loader} />}
+        {isLoading && <ActivityIndicator size="small" color={Colors.light.primary} style={styles.loader} testID="address-search-loader" />}
         {query.length > 0 && !isLoading && (
-          <TouchableOpacity onPress={() => {
-            setQuery('');
-            setSuggestions([]);
-            if (onChangeText) onChangeText('');
-          }}>
+          <TouchableOpacity 
+            onPress={() => {
+              setQuery('');
+              setSuggestions([]);
+              if (onChangeText) onChangeText('');
+            }}
+            testID="address-search-clear"
+          >
             <Ionicons name="close-circle" size={20} color={Colors.light.textLight} />
           </TouchableOpacity>
         )}
@@ -145,12 +152,14 @@ export default function AddressSearchInput({
             keyboardShouldPersistTaps="always"
             showsVerticalScrollIndicator={false}
             onScrollBeginDrag={() => Keyboard.dismiss()}
+            testID="address-suggestions-scroll"
           >
             {suggestions.map((item) => (
               <TouchableOpacity
                 key={item.unrestricted_value}
                 style={styles.suggestionItem}
                 onPress={() => handleSelect(item)}
+                testID={`suggestion-item-${item.unrestricted_value}`}
               >
                 <Ionicons name="map-outline" size={18} color={Colors.light.textLight} style={styles.suggestionIcon} />
                 <View style={styles.flex1}>
