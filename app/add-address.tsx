@@ -6,7 +6,7 @@ import { AddressFormData, addressSchema } from '@/lib/schemas';
 import { useAddressStore } from '@/store/addressStore';
 import { Ionicons } from '@expo/vector-icons';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useRouter } from 'expo-router';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import {
@@ -31,7 +31,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 
 export default function AddAddressScreen() {
-  const { addAddress, isLoading, error, clearError } = useAddressStore();
+  const { id } = useLocalSearchParams<{ id?: string }>();
+  const isEditMode = !!id;
+
+  const { addAddress, updateAddress, addresses, isLoading, error, clearError } = useAddressStore();
   const router = useRouter();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -48,6 +51,7 @@ export default function AddAddressScreen() {
     handleSubmit,
     setValue,
     watch,
+    reset,
     formState: { errors, isValid }
   } = useForm<AddressFormData>({
     resolver: zodResolver(addressSchema),
@@ -56,6 +60,26 @@ export default function AddAddressScreen() {
       is_private_house: false,
     }
   });
+
+  React.useEffect(() => {
+    if (isEditMode && id) {
+      const existing = addresses.find((a) => a.id === id);
+      if (existing) {
+        reset({
+          text: existing.text,
+          house: existing.house || '',
+          entrance: existing.entrance || '',
+          floor: existing.floor || '',
+          intercom: existing.intercom || '',
+          apartment: existing.apartment || '',
+          comment: existing.comment || '',
+          lat: existing.lat,
+          lon: existing.lon,
+          is_private_house: !existing.apartment && !!existing.house,
+        });
+      }
+    }
+  }, [id, addresses, reset, isEditMode]);
 
   const address = watch('text');
   const isPrivateHouse = watch('is_private_house');
@@ -102,7 +126,7 @@ export default function AddAddressScreen() {
 
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
-      await addAddress({
+      const payload = {
         text: cleanStreet,
         house: formData.house || houseNumberFromText,
         entrance: formData.entrance?.trim() || undefined,
@@ -112,9 +136,16 @@ export default function AddAddressScreen() {
         comment: formData.comment?.trim() || undefined,
         lat: formData.lat,
         lon: formData.lon,
-      });
+      };
 
-      showAlert('Готово', 'Адрес успешно добавлен');
+      if (isEditMode && id) {
+        await updateAddress(id, payload);
+        showAlert('Готово', 'Адрес успешно обновлен');
+      } else {
+        await addAddress(payload);
+        showAlert('Готово', 'Адрес успешно добавлен');
+      }
+
       router.back();
     } catch (e: unknown) {
       const errorMessage = e instanceof Error ? e.message : 'Не удалось добавить адрес';
@@ -127,7 +158,7 @@ export default function AddAddressScreen() {
 
   return (
     <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
-      <ScreenHeader title="Новый адрес" />
+      <ScreenHeader title={isEditMode ? "Редактирование адреса" : "Новый адрес"} />
 
       <KeyboardAwareScrollView
         style={styles.scrollContainer}
@@ -381,7 +412,7 @@ export default function AddAddressScreen() {
                 <ActivityIndicator color={Colors.light.card} />
               ) : (
                 <>
-                  <Text style={styles.submitButtonText}>Сохранить адрес</Text>
+                  <Text style={styles.submitButtonText}>{isEditMode ? "Сохранить изменения" : "Сохранить адрес"}</Text>
                 </>
               )}
             </LinearGradient>

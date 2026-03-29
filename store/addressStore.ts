@@ -32,6 +32,17 @@ interface AddressStore {
     lat?: number,
     lon?: number
   }) => Promise<void>;
+  updateAddress: (id: string, details: { 
+    text: string, 
+    house?: string, 
+    entrance?: string, 
+    floor?: string, 
+    intercom?: string, 
+    apartment?: string,
+    comment?: string,
+    lat?: number,
+    lon?: number
+  }) => Promise<void>;
   removeAddress: (id: string) => Promise<void>;
   selectAddress: (id: string) => Promise<void>;
   loadAddresses: () => Promise<void>;
@@ -121,6 +132,41 @@ export const useAddressStore = create<AddressStore>((set, get) => ({
     } catch (e) {
       logger.error('Ошибка добавления адреса:', e);
       set({ error: e instanceof Error ? e.message : 'Не удалось добавить адрес', isLoading: false });
+      throw e;
+    }
+  },
+
+  updateAddress: async (id, details) => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      const { data, error } = await supabase
+        .from('addresses')
+        .update({
+          text: details.text,
+          house: details.house,
+          entrance: details.entrance,
+          floor: details.floor,
+          intercom: details.intercom,
+          apartment: details.apartment,
+          comment: details.comment,
+          lat: details.lat,
+          lon: details.lon,
+        })
+        .eq('id', id)
+        .eq('user_id', session.user.id)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      const updated = get().addresses.map((a) => (a.id === id ? { ...a, ...data } : a));
+      set({ addresses: updated as Address[] });
+    } catch (e) {
+      logger.error('Ошибка обновления адреса:', e);
+      set({ error: e instanceof Error ? e.message : 'Не удалось обновить адрес', isLoading: false });
+      throw e;
     }
   },
 

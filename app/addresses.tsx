@@ -51,21 +51,33 @@ export default function AddressesScreen() {
                 </Text>
               </View>
             </View>
-            <TouchableOpacity 
-              onPress={() => {
-                Alert.alert(
-                  "Удалить адрес",
-                  "Вы уверены, что хотите безвозвратно удалить этот адрес доставки?",
-                  [
-                    { text: "Отмена", style: "cancel" },
-                    { text: "Удалить", style: "destructive", onPress: () => removeAddress(item.id) }
-                  ]
-                );
-              }} 
-              style={styles.deleteBtn}
-            >
-              <Ionicons name="trash-outline" size={20} color={Colors.light.error} />
-            </TouchableOpacity>
+            <View style={styles.actionsContainer}>
+              <TouchableOpacity 
+                onPress={(e) => {
+                  e.stopPropagation(); // Предотвращаем срабатывание выбора адреса при клике на карандаш
+                  router.push(`/add-address?id=${item.id}`);
+                }} 
+                style={styles.actionBtn}
+              >
+                <Ionicons name="pencil-outline" size={20} color={Colors.light.primary} />
+              </TouchableOpacity>
+              <TouchableOpacity 
+                onPress={(e) => {
+                  e.stopPropagation();
+                  Alert.alert(
+                    "Удалить адрес",
+                    "Вы уверены, что хотите безвозвратно удалить этот адрес доставки?",
+                    [
+                      { text: "Отмена", style: "cancel" },
+                      { text: "Удалить", style: "destructive", onPress: () => removeAddress(item.id) }
+                    ]
+                  );
+                }} 
+                style={[styles.actionBtn, styles.deleteBtn]}
+              >
+                <Ionicons name="trash-outline" size={20} color={Colors.light.error} />
+              </TouchableOpacity>
+            </View>
           </TouchableOpacity>
         )}
         ListEmptyComponent={
@@ -159,8 +171,20 @@ const styles = StyleSheet.create({
     color: Colors.light.primary,
     fontWeight: '700',
   },
+  actionsContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  actionBtn: {
+    padding: Spacing.s,
+    backgroundColor: Colors.light.background,
+    borderRadius: Radius.m,
+    marginLeft: Spacing.s,
+  },
   deleteBtn: {
     padding: Spacing.s,
+    backgroundColor: Colors.light.errorLight,
+    borderRadius: Radius.m,
     marginLeft: Spacing.s,
   },
   emptyContainer: {
