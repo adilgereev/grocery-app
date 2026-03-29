@@ -1,4 +1,4 @@
-﻿export type Json =
+export type Json =
   | string
   | number
   | boolean
@@ -70,6 +70,7 @@ export type Database = {
           name: string
           parent_id: string | null
           slug: string
+          sort_order: number
         }
         Insert: {
           created_at?: string
@@ -78,6 +79,7 @@ export type Database = {
           name: string
           parent_id?: string | null
           slug: string
+          sort_order?: number
         }
         Update: {
           created_at?: string
@@ -86,6 +88,7 @@ export type Database = {
           name?: string
           parent_id?: string | null
           slug?: string
+          sort_order?: number
         }
         Relationships: [
           {
@@ -348,6 +351,7 @@ export type Database = {
           parent_name: string | null
           parent_slug: string | null
           slug: string | null
+          sort_order: number | null
           subcategory_count: number | null
         }
         Relationships: [

@@ -38,7 +38,7 @@ export default function EditProductScreen() {
   const fetchData = async () => {
     setInitialLoading(true);
     
-    const { data: catData } = await supabase.from('categories').select('*').order('name');
+    const { data: catData } = await supabase.from('categories').select('*').order('sort_order', { ascending: true });
     if (catData) setCategories(catData);
 
     if (id) {

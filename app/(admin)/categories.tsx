@@ -41,33 +41,60 @@ export default function CategoriesScreen() {
     const { data, error } = await supabase
       .from('categories')
       .select('*')
-      .order('name');
+      .order('sort_order', { ascending: true });
 
     if (!error && data) {
-      // Иерархическая сортировка: Родитель -> Дети -> Родитель -> Дети...
-      const roots = data.filter((c: Category) => !c.parent_id).sort((a: Category, b: Category) => a.name.localeCompare(b.name));
-      const sorted: Category[] = [];
+      // Иерархическая сортировка: Родитель (по sort_order) -> Дети (по sort_order)
+      const roots = data.filter((c: any) => !c.parent_id);
+      const sorted: any[] = [];
       const usedIds = new Set<string>();
 
-      roots.forEach((parent: Category) => {
+      roots.forEach((parent: any) => {
         sorted.push(parent);
         usedIds.add(parent.id);
-        const children = data
-          .filter((c: Category) => c.parent_id === parent.id)
-          .sort((a: Category, b: Category) => a.name.localeCompare(b.name));
-        children.forEach((child: Category) => {
+        const children = data.filter((c: any) => c.parent_id === parent.id);
+        children.forEach((child: any) => {
           sorted.push(child);
           usedIds.add(child.id);
         });
       });
 
-      // Добавим сирот (если есть)
-      const orphans = data.filter((c: Category) => !usedIds.has(c.id));
+      const orphans = data.filter((c: any) => !usedIds.has(c.id));
       sorted.push(...orphans);
-
-      setCategories(sorted);
+      setCategories(sorted as Category[]);
     }
     setLoading(false);
+  };
+
+  const handleMove = async (category: Category, direction: 'up' | 'down') => {
+    // Находим соседа на том же уровне
+    const siblings = categories.filter(c => c.parent_id === category.parent_id);
+    const currentIndex = siblings.findIndex(c => c.id === category.id);
+    
+    if (direction === 'up' && currentIndex > 0) {
+      const prevCategory = siblings[currentIndex - 1];
+      await swapSortOrders(category, prevCategory);
+    } else if (direction === 'down' && currentIndex < siblings.length - 1) {
+      const nextCategory = siblings[currentIndex + 1];
+      await swapSortOrders(category, nextCategory);
+    }
+  };
+
+  const swapSortOrders = async (c1: Category, c2: Category) => {
+    const { error: err1 } = await supabase
+      .from('categories')
+      .update({ sort_order: c2.sort_order })
+      .eq('id', c1.id);
+    
+    const { error: err2 } = await supabase
+      .from('categories')
+      .update({ sort_order: c1.sort_order })
+      .eq('id', c2.id);
+
+    if (!err1 && !err2) {
+      await fetchCategories();
+      useCategoryStore.getState().invalidateCache();
+    }
   };
 
   // Получить только корневые категории (для выбора родителя)
@@ -140,11 +167,23 @@ export default function CategoriesScreen() {
 
     setSubmitting(true);
     const slug = slugify(name);
+    
+    // Для новых категорий вычисляем минимальный sort_order, чтобы они были в начале
+    let sortOrder = 0;
+    if (!isEditing) {
+      const sameLevel = categories.filter(c => c.parent_id === selectedParent);
+      if (sameLevel.length > 0) {
+        const minOrder = Math.min(...sameLevel.map(c => c.sort_order));
+        sortOrder = minOrder - 1;
+      }
+    }
+
     const categoryData = {
       name: name.trim(),
       slug: slug,
       image_url: imageUrl.trim() || null,
-      parent_id: selectedParent, // Добавляем родительскую категорию
+      parent_id: selectedParent,
+      ...(isEditing ? {} : { sort_order: sortOrder })
     };
 
     if (isEditing && currentId) {
@@ -248,11 +287,25 @@ export default function CategoriesScreen() {
             {isSubcategory && parentCategory && (
               <React.Fragment>
                 <Text style={styles.parentBadge}>← {parentCategory.name}</Text>
-                <Text style={styles.catUrl} numberOfLines={1}>
-                  {item.image_url || 'Без изображения'}
-                </Text>
               </React.Fragment>
             )}
+          </View>
+          
+          <View style={styles.orderActions}>
+            <TouchableOpacity 
+              style={styles.orderBtn} 
+              onPress={() => handleMove(item, 'up')}
+              activeOpacity={0.7}
+            >
+              <Ionicons name="chevron-up" size={22} color={Colors.light.primary} />
+            </TouchableOpacity>
+            <TouchableOpacity 
+              style={styles.orderBtn} 
+              onPress={() => handleMove(item, 'down')}
+              activeOpacity={0.7}
+            >
+              <Ionicons name="chevron-down" size={22} color={Colors.light.primary} />
+            </TouchableOpacity>
           </View>
         </View>
         <View style={styles.actionsRow}>
@@ -437,13 +490,24 @@ const styles = StyleSheet.create({
   infoRow: { flexDirection: 'row', alignItems: 'center', marginBottom: Spacing.m },
   imagePreview: { width: 50, height: 50, borderRadius: Radius.m, marginRight: Spacing.m },
   textContainer: { flex: 1 },
-  catName: { fontSize: 16, fontWeight: '700', color: Colors.light.text, marginBottom: 2 },
-  parentBadge: {
-    fontSize: 11, fontWeight: '600', color: Colors.light.primary,
-    backgroundColor: Colors.light.primaryLight, paddingHorizontal: 6, paddingVertical: 2,
-    borderRadius: Radius.s, marginTop: Spacing.xs, alignSelf: 'flex-start',
+  catName: { fontSize: 16, fontWeight: '700', color: Colors.light.text },
+  orderActions: {
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingLeft: Spacing.s,
+    borderLeftWidth: 1,
+    borderLeftColor: Colors.light.borderLight,
   },
-  catUrl: { fontSize: 12, color: Colors.light.textLight },
+  orderBtn: {
+    padding: 4,
+  },
+  parentBadge: {
+    fontSize: 12,
+    color: Colors.light.primary,
+    fontWeight: '600',
+    marginTop: 2,
+  },
   actionsRow: { flexDirection: 'row', borderTopWidth: 1, borderTopColor: Colors.light.borderLight, paddingTop: Spacing.s },
   actionBtn: { flex: 1, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', paddingVertical: Spacing.s },
   editText: { fontSize: 14, fontWeight: '600', marginLeft: 6, color: Colors.light.primary },

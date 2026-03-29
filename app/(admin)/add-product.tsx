@@ -32,7 +32,7 @@ export default function AddProductScreen() {
   }, []);
 
   const fetchCategories = async () => {
-    const { data } = await supabase.from('categories').select('*').order('name');
+    const { data } = await supabase.from('categories').select('*').order('sort_order', { ascending: true });
     if (data) setCategories(data);
   };
   
