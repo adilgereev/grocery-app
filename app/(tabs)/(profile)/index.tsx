@@ -1,16 +1,16 @@
-import React, { useCallback, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Platform, Alert } from 'react-native';
+import Skeleton from '@/components/Skeleton';
+import { Colors, FontSize, Radius, Spacing } from '@/constants/theme';
+import { logger } from '@/lib/logger';
+import { formatPhoneDisplay } from '@/lib/sms';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/providers/AuthProvider';
-import { Profile } from '@/types';
 import { useCartStore } from '@/store/cartStore';
+import { Profile } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
-import { logger } from '@/lib/logger';
-import { useRouter } from 'expo-router';
-import { Colors, Spacing, Radius, FontSize } from '@/constants/theme';
-import { formatPhoneDisplay } from '@/lib/sms';
-import Skeleton from '@/components/Skeleton';
 import { useFocusEffect } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
+import React, { useCallback, useState } from 'react';
+import { Alert, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function ProfileScreen() {
@@ -18,7 +18,7 @@ export default function ProfileScreen() {
   const { session } = useAuth();
   const insets = useSafeAreaInsets();
   const clearCart = useCartStore(state => state.clearCart);
-  
+
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<Profile | null>(null);
 
@@ -31,7 +31,7 @@ export default function ProfileScreen() {
         .select('*')
         .eq('id', session.user.id)
         .single();
-        
+
       if (error) throw error;
       if (data) setProfile(data as Profile);
     } catch (error: unknown) {
@@ -77,7 +77,7 @@ export default function ProfileScreen() {
     if (!profile) return session?.user.email || 'Пользователь';
     const first = profile.first_name || '';
     const last = (profile.last_name && profile.last_name !== 'null') ? profile.last_name : '';
-    
+
     if (first || last) {
       return `${first} ${last}`.trim();
     }
@@ -97,8 +97,8 @@ export default function ProfileScreen() {
           <Text style={styles.guestSubtitle}>
             Войдите, чтобы оформлять заказы,{'\n'}копить бонусы и видеть историю покупок
           </Text>
-          
-          <TouchableOpacity 
+
+          <TouchableOpacity
             style={styles.guestButton}
             activeOpacity={0.8}
             onPress={() => router.push('/(auth)/login')}
@@ -118,16 +118,16 @@ export default function ProfileScreen() {
       <View style={[styles.header, { paddingTop: insets.top + Spacing.m }]}>
         <Text style={styles.headerTitle}>Профиль</Text>
       </View>
-      
-      <ScrollView 
-        contentContainerStyle={styles.scrollContent} 
+
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
         {/* User Card */}
         {loading && !profile ? (
           <Skeleton width="100%" height={80} borderRadius={Radius.xl} style={{ marginBottom: Spacing.l }} />
         ) : (
-          <TouchableOpacity 
+          <TouchableOpacity
             style={styles.userCard}
             activeOpacity={0.8}
             onPress={() => router.push('/edit-profile')}
@@ -198,12 +198,12 @@ export default function ProfileScreen() {
           <View style={styles.menuItem}>
             <Ionicons name="information-circle-outline" size={22} color={Colors.light.textSecondary} style={styles.menuItemIcon} />
             <Text style={styles.menuText}>О приложении</Text>
-            <Text style={styles.appVersion}>2.0.0</Text>
+            <Text style={styles.appVersion}>1.0</Text>
           </View>
         </View>
 
-        <TouchableOpacity 
-          style={styles.logoutButton} 
+        <TouchableOpacity
+          style={styles.logoutButton}
           onPress={handleLogout}
           activeOpacity={0.7}
         >

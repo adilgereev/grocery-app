@@ -1,5 +1,5 @@
 import ProductCard from '@/components/ProductCard';
-import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Colors, Radius, Spacing, FontSize } from '@/constants/theme';
 import { logger } from '@/lib/logger';
 import { schedulePushNotification } from '@/lib/NotificationService';
 import { supabase } from '@/lib/supabase';
@@ -13,6 +13,7 @@ import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Image, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Animated, { FadeInLeft, Layout, useAnimatedScrollHandler, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 type PaymentMethod = 'online' | 'cash';
 
@@ -25,6 +26,7 @@ export default function CartScreen() {
   const router = useRouter();
   const { items, updateQuantity, removeItem, totalPrice, clearCart } = useCartStore();
   const { session } = useAuth();
+  const insets = useSafeAreaInsets();
   const { addresses, selectedAddressId } = useAddressStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [recommended, setRecommended] = useState<Product[]>([]);
@@ -269,7 +271,9 @@ export default function CartScreen() {
   if (items.length === 0) {
     return (
       <View style={styles.container}>
-        <Text style={styles.title}>Корзина</Text>
+        <View style={[styles.header, { paddingTop: insets.top + Spacing.m }]}>
+          <Text style={styles.headerTitle}>Корзина</Text>
+        </View>
         <ScrollView contentContainerStyle={styles.emptyScrollContent} showsVerticalScrollIndicator={false}>
           <View style={styles.emptyHeader}>
             <View style={styles.emptyIconCircle}>
@@ -302,7 +306,9 @@ export default function CartScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Корзина</Text>
+      <View style={[styles.header, { paddingTop: insets.top + Spacing.m }]}>
+        <Text style={styles.headerTitle}>Корзина</Text>
+      </View>
 
       <Animated.FlatList
         data={items}
@@ -396,14 +402,17 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Colors.light.background,
-    paddingTop: Platform.OS === 'ios' ? 60 : 40,
   },
-  title: {
-    fontSize: 32,
+  header: {
+    paddingHorizontal: 20,
+    backgroundColor: Colors.light.background,
+    paddingBottom: Spacing.s,
+    zIndex: 10,
+  },
+  headerTitle: {
+    fontSize: FontSize.big, // 28px
     fontWeight: '800',
     color: Colors.light.text,
-    paddingHorizontal: 20,
-    marginBottom: 20,
   },
   listContainer: {
     paddingHorizontal: 20,

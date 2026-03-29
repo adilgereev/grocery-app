@@ -68,7 +68,7 @@ export default function FavoritesScreen() {
 
   if (loading && products.length === 0) {
     return (
-      <SafeAreaView style={styles.loadingContainer} edges={['top', 'bottom']}>
+      <SafeAreaView style={styles.loadingContainer} edges={['bottom']}>
         <ScreenHeader title="Избранное" />
         <View style={styles.skeletonContainer}>
           {[1, 2, 3, 4, 5, 6].map((i) => (
@@ -195,6 +195,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     paddingHorizontal: Spacing.m,
+    paddingTop: Spacing.m,
   },
   skeletonItem: { marginBottom: Spacing.m },
   columnWrapper: { justifyContent: 'space-between' },
