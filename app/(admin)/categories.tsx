@@ -142,7 +142,7 @@ export default function CategoriesScreen() {
         useCategoryStore.getState().invalidateCache();
         // Можно сделать silent fetch, чтобы убедиться в синхронизации
         await fetchCategories(true);
-      } catch (err) {
+      } catch {
         Alert.alert('Ошибка', 'Не удалось сохранить порядок. Пожалуйста, потяните вниз для обновления.');
         await fetchCategories(); // Полный рефетч для отката
       }

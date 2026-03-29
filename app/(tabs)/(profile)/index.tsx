@@ -310,7 +310,7 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: '#F0FDF4',
+    backgroundColor: Colors.light.primaryLight,
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: Spacing.m,
@@ -374,7 +374,7 @@ const styles = StyleSheet.create({
   },
   divider: {
     height: 1,
-    backgroundColor: '#F8FAFC',
+    backgroundColor: Colors.light.borderLight,
     marginLeft: 56,
   },
   logoutButton: {
