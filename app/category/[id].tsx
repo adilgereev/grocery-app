@@ -88,16 +88,16 @@ export default function CategoryProductsScreen() {
       {subcategories.length > 0 && (
         <View style={styles.subcategoriesSection}>
           <Text style={styles.subcategoriesTitle}>Подкатегории</Text>
-          <FlatList
-            data={subcategories}
-            keyExtractor={(item) => item.id}
-            numColumns={2}
-            columnWrapperStyle={styles.subcategoriesRow}
-            scrollEnabled={false}
-            renderItem={({ item, index }) => (
-              <SubcategoryCard subcategory={item} index={index} />
-            )}
-          />
+          <View style={styles.subcategoriesRow}>
+            {subcategories.map((item, index) => (
+              <SubcategoryCard 
+                key={item.id} 
+                subcategory={item} 
+                index={index} 
+                totalItems={subcategories.length} 
+              />
+            ))}
+          </View>
         </View>
       )}
 
@@ -243,19 +243,19 @@ const styles = StyleSheet.create({
   skeletonItem: { marginBottom: Spacing.m },
   columnWrapper: { justifyContent: 'space-between' },
   subcategoriesSection: {
-    marginBottom: Spacing.l,
-    paddingTop: Spacing.s,
+    marginBottom: Spacing.xl,
+    paddingHorizontal: Spacing.m,
   },
   subcategoriesTitle: {
     fontSize: 22,
     fontWeight: '700',
     color: Colors.light.text,
     marginBottom: Spacing.m,
-    paddingHorizontal: Spacing.m,
   },
   subcategoriesRow: {
-    justifyContent: 'space-between',
-    paddingHorizontal: Spacing.m,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
   },
   tagsWrapper: {
     paddingBottom: Spacing.m,

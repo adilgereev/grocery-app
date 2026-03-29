@@ -20,7 +20,12 @@ const CategoryHierarchySection = React.memo(({ category }: CategoryHierarchySect
       <Text style={styles.sectionTitle}>{category.name}</Text>
       <View style={styles.mosaicContainer}>
         {subcategories.map((item, index) => (
-          <SubcategoryCard key={item.id} subcategory={item} index={index} />
+          <SubcategoryCard 
+            key={item.id} 
+            subcategory={item} 
+            index={index} 
+            totalItems={subcategories.length} 
+          />
         ))}
       </View>
     </View>

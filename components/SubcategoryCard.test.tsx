@@ -36,7 +36,7 @@ describe('SubcategoryCard', () => {
 
   it('renders subcategory name correctly', () => {
     const { getByText } = render(
-      <SubcategoryCard subcategory={mockSubcategory} index={0} />
+      <SubcategoryCard subcategory={mockSubcategory} index={0} totalItems={2} />
     );
     
     expect(getByText('Фрукты и овощи')).toBeTruthy();
@@ -44,7 +44,7 @@ describe('SubcategoryCard', () => {
 
   it('calls router.push with correct path when pressed', () => {
     const { getByText } = render(
-      <SubcategoryCard subcategory={mockSubcategory} index={0} />
+      <SubcategoryCard subcategory={mockSubcategory} index={0} totalItems={2} />
     );
     
     const card = getByText('Фрукты и овощи');
@@ -55,12 +55,12 @@ describe('SubcategoryCard', () => {
 
   it('applies correct width based on pattern index', () => {
     const { getByTestId } = render(
-      <SubcategoryCard subcategory={mockSubcategory} index={0} />
+      <SubcategoryCard subcategory={mockSubcategory} index={0} totalItems={2} />
     );
     
-    // index 0 -> patternIndex 0 -> width 58%
+    // index 0 -> rowIndex 0 -> width 60%
     const card = getByTestId('subcategory-card');
     const flattenedStyle = StyleSheet.flatten(card.props.style);
-    expect(flattenedStyle).toMatchObject({ width: '58%' });
+    expect(flattenedStyle).toMatchObject({ width: '60%' });
   });
 });

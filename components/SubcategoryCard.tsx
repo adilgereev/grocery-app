@@ -10,9 +10,10 @@ const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 interface SubcategoryCardProps {
   subcategory: Category;
   index: number;
+  totalItems: number;
 }
 
-const SubcategoryCard = React.memo(({ subcategory, index }: SubcategoryCardProps) => {
+const SubcategoryCard = React.memo(({ subcategory, index, totalItems }: SubcategoryCardProps) => {
   const router = useRouter();
 
   const handlePress = () => {
@@ -20,11 +21,26 @@ const SubcategoryCard = React.memo(({ subcategory, index }: SubcategoryCardProps
     router.push(`/category/${subcategory.id}?name=${encodeURIComponent(subcategory.name)}`);
   };
 
-  // Мозаичная сетка (5 элементов = 1 блок паттерна)
-  const patternIndex = index % 5;
-  let cardWidth: DimensionValue = '31%';
-  if (patternIndex === 0) cardWidth = '58%';
-  if (patternIndex === 1) cardWidth = '38%';
+  // Алгоритм Живой Мозаики (Лавка-стайл: Широкий-Узкий -> Узкий-Широкий)
+  const isLastItem = index === totalItems - 1;
+  const isAloneInRow = index % 2 === 0 && isLastItem; // Первый в паре, но последний в списке
+
+  let cardWidth: DimensionValue = '48.5%'; // Дефолт (две колонки)
+
+  if (isAloneInRow) {
+    cardWidth = '100%'; // Одиночка расширяется на всю строку
+  } else {
+    const rowIndex = Math.floor(index / 2);
+    const isFirstInPair = index % 2 === 0;
+
+    if (rowIndex % 2 === 0) {
+      // Строка 1, 3, 5... (Широкий-Узкий)
+      cardWidth = isFirstInPair ? '60%' : '37%';
+    } else {
+      // Строка 2, 4, 6... (Узкий-Широкий)
+      cardWidth = isFirstInPair ? '37%' : '60%';
+    }
+  }
 
   // Цвет фона: из базы (HEX) или нейтральный дефолт
   const isHex = subcategory.image_url?.startsWith('#');
