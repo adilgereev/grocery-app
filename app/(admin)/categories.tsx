@@ -1,7 +1,7 @@
 import { Colors, Radius, Spacing } from '@/constants/theme';
 import { uploadImage } from '@/lib/storageUtils';
-import { useCategoryStore } from '@/store/categoryStore';
 import { supabase } from '@/lib/supabase';
+import { useCategoryStore } from '@/store/categoryStore';
 import { Category } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
@@ -11,10 +11,16 @@ import {
   ActivityIndicator, Alert, FlatList,
   Image, KeyboardAvoidingView,
   Modal,
+  LayoutAnimation,
   Platform, ScrollView,
   StyleSheet,
-  Text, TextInput, TouchableOpacity, View
+  Text, TextInput, TouchableOpacity, UIManager, View
 } from 'react-native';
+
+// Включаем LayoutAnimation для Android
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
 export default function CategoriesScreen() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -36,8 +42,8 @@ export default function CategoriesScreen() {
     }, [])
   );
 
-  const fetchCategories = async () => {
-    setLoading(true);
+  const fetchCategories = async (silent = false) => {
+    if (!silent) setLoading(true);
     const { data, error } = await supabase
       .from('categories')
       .select('*')
@@ -67,35 +73,83 @@ export default function CategoriesScreen() {
   };
 
   const handleMove = async (category: Category, direction: 'up' | 'down') => {
-    // Находим соседа на том же уровне
+    // Находим всех сиблингов (тот же уровень иерархии)
     const siblings = categories.filter(c => c.parent_id === category.parent_id);
     const currentIndex = siblings.findIndex(c => c.id === category.id);
-    
+
+    let targetIndex = -1;
     if (direction === 'up' && currentIndex > 0) {
-      const prevCategory = siblings[currentIndex - 1];
-      await swapSortOrders(category, prevCategory);
+      targetIndex = currentIndex - 1;
     } else if (direction === 'down' && currentIndex < siblings.length - 1) {
-      const nextCategory = siblings[currentIndex + 1];
-      await swapSortOrders(category, nextCategory);
+      targetIndex = currentIndex + 1;
+    }
+
+    if (targetIndex !== -1) {
+      const targetCategory = siblings[targetIndex];
+      
+      // 1. Оптимистичное обновление локального стейта
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+      
+      // Создаем новый массив категорий с переставленными элементами
+      const newCategories = [...categories];
+      const idx1 = newCategories.findIndex(c => c.id === category.id);
+      const idx2 = newCategories.findIndex(c => c.id === targetCategory.id);
+      
+      // Меняем только sort_order в объектах
+      const tempOrder = newCategories[idx1].sort_order;
+      newCategories[idx1] = { ...newCategories[idx1], sort_order: newCategories[idx2].sort_order };
+      newCategories[idx2] = { ...newCategories[idx2], sort_order: tempOrder };
+      
+      // Пересортировываем локальный стейт, чтобы иерархия не сломалась
+      // Но проще всего просто вызвать пересчет иерархии на основе новых данных
+      const roots = newCategories.filter(c => !c.parent_id).sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+      const finalSorted: Category[] = [];
+      const usedIds = new Set<string>();
+
+      roots.forEach(root => {
+        finalSorted.push(root);
+        usedIds.add(root.id);
+        const children = newCategories
+          .filter(c => c.parent_id === root.id)
+          .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+        children.forEach(child => {
+          finalSorted.push(child);
+          usedIds.add(child.id);
+        });
+      });
+
+      // Добавляем остальных (сирот)
+      const orphans = newCategories.filter(c => !usedIds.has(c.id));
+      finalSorted.push(...orphans);
+
+      setCategories(finalSorted);
+
+      // 2. Обновление в Supabase в фоне (без лоадера)
+      try {
+        const { error: err1 } = await supabase
+          .from('categories')
+          .update({ sort_order: targetCategory.sort_order })
+          .eq('id', category.id);
+
+        const { error: err2 } = await supabase
+          .from('categories')
+          .update({ sort_order: category.sort_order })
+          .eq('id', targetCategory.id);
+
+        if (err1 || err2) throw new Error('Ошибка БД');
+        
+        // Инвалидируем кеш беззвучно
+        useCategoryStore.getState().invalidateCache();
+        // Можно сделать silent fetch, чтобы убедиться в синхронизации
+        await fetchCategories(true);
+      } catch (err) {
+        Alert.alert('Ошибка', 'Не удалось сохранить порядок. Пожалуйста, потяните вниз для обновления.');
+        await fetchCategories(); // Полный рефетч для отката
+      }
     }
   };
 
-  const swapSortOrders = async (c1: Category, c2: Category) => {
-    const { error: err1 } = await supabase
-      .from('categories')
-      .update({ sort_order: c2.sort_order })
-      .eq('id', c1.id);
-    
-    const { error: err2 } = await supabase
-      .from('categories')
-      .update({ sort_order: c1.sort_order })
-      .eq('id', c2.id);
-
-    if (!err1 && !err2) {
-      await fetchCategories();
-      useCategoryStore.getState().invalidateCache();
-    }
-  };
+  // swapSortOrders больше не нужен как отдельная async функция ожидания
 
   // Получить только корневые категории (для выбора родителя)
   const rootCategories = categories.filter(c => !c.parent_id);
@@ -167,7 +221,7 @@ export default function CategoriesScreen() {
 
     setSubmitting(true);
     const slug = slugify(name);
-    
+
     // Для новых категорий вычисляем минимальный sort_order, чтобы они были в начале
     let sortOrder = 0;
     if (!isEditing) {
@@ -196,7 +250,7 @@ export default function CategoriesScreen() {
         Alert.alert('Ошибка обновления', error.message);
       } else {
         // Ре-фетч данных гарантирует правильную иерархию в списке
-        await fetchCategories();
+        await fetchCategories(true);
         // Сброс кеша, чтобы изменения отразились на главной
         useCategoryStore.getState().invalidateCache();
         setModalVisible(false);
@@ -211,7 +265,7 @@ export default function CategoriesScreen() {
       if (error) {
         Alert.alert('Ошибка создания', error.message);
       } else if (data) {
-        await fetchCategories();
+        await fetchCategories(true);
         useCategoryStore.getState().invalidateCache();
         setModalVisible(false);
       }
@@ -290,17 +344,17 @@ export default function CategoriesScreen() {
               </React.Fragment>
             )}
           </View>
-          
+
           <View style={styles.orderActions}>
-            <TouchableOpacity 
-              style={styles.orderBtn} 
+            <TouchableOpacity
+              style={styles.orderBtn}
               onPress={() => handleMove(item, 'up')}
               activeOpacity={0.7}
             >
               <Ionicons name="chevron-up" size={22} color={Colors.light.primary} />
             </TouchableOpacity>
-            <TouchableOpacity 
-              style={styles.orderBtn} 
+            <TouchableOpacity
+              style={styles.orderBtn}
               onPress={() => handleMove(item, 'down')}
               activeOpacity={0.7}
             >
@@ -308,7 +362,7 @@ export default function CategoriesScreen() {
             </TouchableOpacity>
           </View>
         </View>
-        <View style={styles.actionsRow}>
+                <View style={styles.actionsRow}>
           <TouchableOpacity style={styles.actionBtn} onPress={() => handleOpenEdit(item)}>
             <Ionicons name="pencil" size={18} color={Colors.light.primary} />
             <Text style={styles.editText}>Изменить</Text>
@@ -444,19 +498,19 @@ export default function CategoriesScreen() {
                 </View>
               ) : null}
 
-                <TouchableOpacity
-                  style={[styles.submitBtn, submitting && styles.btnDisabled]}
-                  onPress={handleSubmit}
-                  disabled={submitting}
-                >
-                  {submitting ? (
-                    <ActivityIndicator color={Colors.light.card} />
-                  ) : (
-                    <Text style={styles.submitBtnText}>
-                      {isEditing ? 'Сохранить изменения' : 'Создать категорию'}
-                    </Text>
-                  )}
-                </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.submitBtn, submitting && styles.btnDisabled]}
+                onPress={handleSubmit}
+                disabled={submitting}
+              >
+                {submitting ? (
+                  <ActivityIndicator color={Colors.light.card} />
+                ) : (
+                  <Text style={styles.submitBtnText}>
+                    {isEditing ? 'Сохранить изменения' : 'Создать категорию'}
+                  </Text>
+                )}
+              </TouchableOpacity>
             </ScrollView>
           </View>
         </KeyboardAvoidingView>
