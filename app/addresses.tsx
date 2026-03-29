@@ -61,22 +61,6 @@ export default function AddressesScreen() {
               >
                 <Ionicons name="pencil-outline" size={20} color={Colors.light.primary} />
               </TouchableOpacity>
-              <TouchableOpacity 
-                onPress={(e) => {
-                  e.stopPropagation();
-                  Alert.alert(
-                    "Удалить адрес",
-                    "Вы уверены, что хотите безвозвратно удалить этот адрес доставки?",
-                    [
-                      { text: "Отмена", style: "cancel" },
-                      { text: "Удалить", style: "destructive", onPress: () => removeAddress(item.id) }
-                    ]
-                  );
-                }} 
-                style={[styles.actionBtn, styles.deleteBtn]}
-              >
-                <Ionicons name="trash-outline" size={20} color={Colors.light.error} />
-              </TouchableOpacity>
             </View>
           </TouchableOpacity>
         )}
@@ -178,12 +162,6 @@ const styles = StyleSheet.create({
   actionBtn: {
     padding: Spacing.s,
     backgroundColor: Colors.light.background,
-    borderRadius: Radius.m,
-    marginLeft: Spacing.s,
-  },
-  deleteBtn: {
-    padding: Spacing.s,
-    backgroundColor: Colors.light.errorLight,
     borderRadius: Radius.m,
     marginLeft: Spacing.s,
   },

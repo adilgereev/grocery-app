@@ -34,7 +34,7 @@ export default function AddAddressScreen() {
   const { id } = useLocalSearchParams<{ id?: string }>();
   const isEditMode = !!id;
 
-  const { addAddress, updateAddress, addresses, isLoading, error, clearError } = useAddressStore();
+  const { addAddress, updateAddress, removeAddress, addresses, isLoading, error, clearError } = useAddressStore();
   const router = useRouter();
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -395,30 +395,57 @@ export default function AddAddressScreen() {
           </View>
         ) : null}
 
-        {/* Кнопка сохранить перенесена внутрь скролла для идеальной работы клавиатуры */}
-        <View style={styles.footer}>
-          <TouchableOpacity
-            style={[styles.submitButton, (!isValid || isSubmitting) && styles.submitButtonDisabled]}
-            disabled={!isValid || isSubmitting}
-            onPress={handleSubmit(handleAddAddress)}
-          >
-            <LinearGradient
-              colors={(!isValid || isSubmitting) ? [Colors.light.textLight, Colors.light.textLight] : [Colors.light.primary, '#059669']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={styles.gradientButton}
-            >
-              {isSubmitting || isLoading ? (
-                <ActivityIndicator color={Colors.light.card} />
-              ) : (
-                <>
-                  <Text style={styles.submitButtonText}>{isEditMode ? "Сохранить изменения" : "Сохранить адрес"}</Text>
-                </>
-              )}
-            </LinearGradient>
-          </TouchableOpacity>
-        </View>
       </KeyboardAwareScrollView>
+
+      {/* Кнопки действий (статичный футер) */}
+      <View style={styles.footer}>
+        <TouchableOpacity
+          style={[styles.submitButton, (!isValid || isSubmitting) && styles.submitButtonDisabled]}
+          disabled={!isValid || isSubmitting}
+          onPress={handleSubmit(handleAddAddress)}
+        >
+          <LinearGradient
+            colors={(!isValid || isSubmitting) ? [Colors.light.textLight, Colors.light.textLight] : [Colors.light.primary, '#059669']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.gradientButton}
+          >
+            {isSubmitting || isLoading ? (
+              <ActivityIndicator color={Colors.light.card} />
+            ) : (
+              <>
+                <Text style={styles.submitButtonText}>{isEditMode ? "Сохранить изменения" : "Сохранить адрес"}</Text>
+              </>
+            )}
+          </LinearGradient>
+        </TouchableOpacity>
+
+        {isEditMode && id && (
+          <TouchableOpacity
+            style={styles.deleteAddressBtn}
+            onPress={() => {
+              Alert.alert(
+                "Удалить адрес",
+                "Вы уверены, что хотите безвозвратно удалить этот адрес доставки?",
+                [
+                  { text: "Отмена", style: "cancel" },
+                  { 
+                    text: "Удалить", 
+                    style: "destructive", 
+                    onPress: async () => {
+                      await removeAddress(id);
+                      router.back();
+                    }
+                  }
+                ]
+              );
+            }}
+          >
+            <Ionicons name="trash-outline" size={20} color={Colors.light.error} />
+            <Text style={styles.deleteAddressText}>Удалить адрес</Text>
+          </TouchableOpacity>
+        )}
+      </View>
 
       {/* Модалка карты */}
       <Modal visible={mapVisible} animationType="slide">
@@ -558,9 +585,12 @@ const styles = StyleSheet.create({
   errorTextInline: { color: Colors.light.error, fontSize: 12, marginTop: 4, fontWeight: '500' },
 
   footer: {
-    marginTop: 'auto',
-    paddingTop: Spacing.xl,
-    paddingBottom: Platform.OS === 'ios' ? 20 : 10,
+    paddingHorizontal: Spacing.l,
+    paddingTop: Spacing.m,
+    paddingBottom: Platform.OS === 'ios' ? 20 : Spacing.m,
+    backgroundColor: Colors.light.background,
+    borderTopWidth: 1,
+    borderTopColor: Colors.light.borderLight,
   },
   submitButton: {
     borderRadius: Radius.l,
@@ -584,7 +614,24 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  submitButtonText: { color: Colors.light.card, fontSize: 17, fontWeight: '800', letterSpacing: 0.3 },
+  submitButtonText: {
+    color: Colors.light.card, fontSize: 16, fontWeight: '700',
+    textTransform: 'uppercase', letterSpacing: 0.5,
+  },
+  deleteAddressBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: Spacing.m,
+    marginTop: Spacing.m,
+  },
+  deleteAddressText: {
+    color: Colors.light.error,
+    fontSize: FontSize.m,
+    fontWeight: '600',
+    marginLeft: Spacing.xs,
+    fontFamily: Fonts.sans,
+  },
 
   mapLink: {
     flexDirection: 'row',
