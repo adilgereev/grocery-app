@@ -163,7 +163,7 @@ export default function AddAddressScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+    <SafeAreaView style={styles.container} edges={['bottom']}>
       <ScreenHeader title={isEditMode ? "Редактирование адреса" : "Новый адрес"} />
 
       <KeyboardAwareScrollView

@@ -94,7 +94,7 @@ export default function OrdersScreen() {
   // Скелетон загрузки
   if (loading) {
     return (
-      <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+      <SafeAreaView style={styles.container} edges={['bottom']}>
         <ScreenHeader title="Мои заказы" />
         <View style={styles.listContainer}>
           {[1, 2, 3].map((i) => (
@@ -106,7 +106,7 @@ export default function OrdersScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+    <SafeAreaView style={styles.container} edges={['bottom']}>
       <ScreenHeader title="Мои заказы" />
 
       {error ? (

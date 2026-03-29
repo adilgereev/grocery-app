@@ -80,7 +80,7 @@ export default function FavoritesScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'bottom']}>
+    <SafeAreaView style={styles.container} edges={['bottom']}>
       <ScreenHeader title="Избранное" />
 
       {products.length === 0 ? (
