@@ -107,7 +107,7 @@ export default function HomeScreen() {
       // fetchFullHierarchy проверит кеш: если он сброшен (invalidateCache), будет сетевой запрос
       fetchFullHierarchy();
       fetchPopularProducts();
-      
+
       if (session?.user) {
         fetchUserInfo();
         loadAddresses(); // Синхронизируем адреса из стора
@@ -281,7 +281,7 @@ export default function HomeScreen() {
           onPress={() => router.push('/search')}
         >
           <Ionicons name="search" size={20} color={Colors.light.primary} style={styles.searchIcon} />
-          <Text style={styles.searchInputText}>Найти яблоки, молоко...</Text>
+          <Text style={styles.searchInputText}>Поиск</Text>
         </TouchableOpacity>
       </View>
 

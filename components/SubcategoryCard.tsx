@@ -22,13 +22,16 @@ const SubcategoryCard = React.memo(({ subcategory, index, totalItems }: Subcateg
   };
 
   // Алгоритм Живой Мозаики (Лавка-стайл: Широкий-Узкий -> Узкий-Широкий)
-  const isLastItem = index === totalItems - 1;
-  const isAloneInRow = index % 2 === 0 && isLastItem; // Первый в паре, но последний в списке
+  // Если элементов нечетное кол-во (и их >= 3), то последние 3 делаем узкими в один ряд
+  const hasOrphan = totalItems % 2 !== 0 && totalItems >= 3;
+  const isInLastThreeOfOdd = hasOrphan && index >= totalItems - 3;
 
   let cardWidth: DimensionValue = '48.5%'; // Дефолт (две колонки)
 
-  if (isAloneInRow) {
-    cardWidth = '100%'; // Одиночка расширяется на всю строку
+  if (isInLastThreeOfOdd) {
+    cardWidth = '32%'; // Три в ряд в конце мозаики
+  } else if (index === totalItems - 1 && totalItems === 1) {
+    cardWidth = '100%'; // Единственный элемент в списке
   } else {
     const rowIndex = Math.floor(index / 2);
     const isFirstInPair = index % 2 === 0;

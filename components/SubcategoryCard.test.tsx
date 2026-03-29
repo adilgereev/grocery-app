@@ -55,13 +55,24 @@ describe('SubcategoryCard', () => {
   });
 
   it('applies correct width based on pattern index', () => {
-    const { getByTestId } = render(
+    // 2 items: index 0 -> 60%
+    const { getByTestId, rerender } = render(
       <SubcategoryCard subcategory={mockSubcategory} index={0} totalItems={2} />
     );
-    
-    // index 0 -> rowIndex 0 -> width 60%
-    const card = getByTestId('subcategory-card');
-    const flattenedStyle = StyleSheet.flatten(card.props.style);
+    let card = getByTestId('subcategory-card');
+    let flattenedStyle = StyleSheet.flatten(card.props.style);
     expect(flattenedStyle).toMatchObject({ width: '60%' });
+
+    // 1 item: index 0 -> 100%
+    rerender(<SubcategoryCard subcategory={mockSubcategory} index={0} totalItems={1} />);
+    card = getByTestId('subcategory-card');
+    flattenedStyle = StyleSheet.flatten(card.props.style);
+    expect(flattenedStyle).toMatchObject({ width: '100%' });
+
+    // 3 items: index 2 (last of 3) -> 32%
+    rerender(<SubcategoryCard subcategory={mockSubcategory} index={2} totalItems={3} />);
+    card = getByTestId('subcategory-card');
+    flattenedStyle = StyleSheet.flatten(card.props.style);
+    expect(flattenedStyle).toMatchObject({ width: '32%' });
   });
 });
