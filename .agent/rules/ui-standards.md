@@ -1,24 +1,31 @@
 # UI Standards: Emerald Minimalism
 
-## Core Design Principles
--   **Theme Tokens**: Use `theme.ts` for all styling. No "magic numbers" (hex colors, arbitrary spacing).
--   **Emerald Accents**: Primary color is `#10B981` (Emerald).
--   **Minimalism**: Clean, premium UI with soft shadows and generous border radii.
--   **Shadows**: Subtle (`shadowOpacity: 0.04-0.08`, `shadowRadius: 10-14`).
--   **Typography**: Use system fonts with appropriate weights (400, 500, 700).
+## 1. 📈 Ориентир на Продаваемость (Marketability)
+*Приложение должно не просто работать, а ПРОДАВАТЬ.*
+- **Визуальное превосходство**: Использовать премиальные тени, мягкие градиенты и качественные изображения. Если нет фото — использовать заглушки (`Skeleton`) с приятными цветами.
+- **Акценты на главном**: Цены и кнопки «В корзину» должны быть самыми заметными элементами.
+- **Маркетинговые фишки**: Внедрять бейджи («TOP», «SALE»), динамические баннеры и персонализированные приветствия.
+- **Скорость**: Никаких лишних загрузок. Пользователь не должен ждать, пока обновится адрес или добавится товар.
 
-## Multiplatform Requirements
--   **Android Support**: Always include `elevation` when using `shadow` for iOS.
--   **Safe Areas**: Use `SafeAreaView` from `react-native-safe-area-context` for screens.
--   **Header Handling**: Use `<ScreenHeader />` component for consistent headers.
--   **Input Density**: Maximize horizontal space for input fields.
+## 2. 🎨 Дизайн-система и Токены
+- **Тема**: Использовать `theme.ts` для всех стилей. Никаких «Magic Numbers» (hex-коды, произвольные отступы).
+- **Emerald Accents**: Основной цвет — `#10B981` (Emerald).
+- **Минимализм**: Чистый, премиальный UI с мягкими тенями и большими радиусами скругления.
+- **Shadows**: Максимально мягкие тени (`shadowOpacity: 0.04-0.08`, `shadowRadius: 10-14`).
+- **Типографика**: Использовать системные шрифты (San Francisco для iOS, Roboto для Android) через токены.
 
-## Reusable Components
--   `app/(tabs)/(index)/index.tsx`: Main shop page.
--   `components/ProductCard.tsx`: Reusable product card.
--   `components/ScreenHeader.tsx`: Theme-aware header.
--   `components/ui/Skeleton.tsx`: Unified loading states.
+## 3. 📱 Мультиплатформенность (Android + iOS)
+- **Универсальные тени**: Всегда дублировать `shadow`-свойства (iOS) свойством `elevation` (Android).
+- **Безопасные зоны (Safe Areas)**: Использовать `SafeAreaView` из `react-native-safe-area-context` и избегать жестких `top`/`bottom` отступов, которые могут перекрываться статус-баром или «челкой».
+- **Работа с клавиатурой**: Использовать `KeyboardAwareScrollView` (с `enableOnAndroid`) для полей ввода.
+- **Инпуты**: Обязательно добавлять `textAlignVertical: 'top'` для многострочных полей (Android) и проверять внутренние паддинги.
 
-## Layers & Z-Index
--   Combine `zIndex` with `elevation` on Android to ensure visibility.
--   Dropdowns or overlapping elements need higher `zIndex`.
+## 4. 🛡️ Работа со слоями (Layers & Z-Index)
+- **Приоритет выпадающих списков**: Компоненты с выпадающими элементами (поиск, фильтры) должны иметь `zIndex` выше, чем у последующих элементов в JSX.
+- **Z-Index у родителей**: Помнить, что в React Native `zIndex` дочернего элемента ограничен контекстом родителя. 
+- **Elevation (Android)**: Всегда сочетать `zIndex` с `elevation`, так как `elevation` влияет на визуальный порядок слоев.
+
+## 5. 👑 Переиспользуемые UI-компоненты
+- **HeaderHandling**: Для всех stack-экранов ОБЯЗАТЕЛЬНО использовать `<ScreenHeader />` внутри `<SafeAreaView edges={['bottom']}>`. Хардкодить шапки вручную запрещено.
+- **ProductCard**: Унифицированная карточка товара.
+- **Skeleton**: Единые состояния загрузки.

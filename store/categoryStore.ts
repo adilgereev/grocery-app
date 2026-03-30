@@ -82,10 +82,11 @@ export const useCategoryStore = create<CategoryState>()(
         const state = get();
         const now = Date.now();
 
+        // Проверяем актуальность кеша
         if (!forceRefresh && state.categoriesWithSubs.length > 0 && state.lastFetch) {
           const age = now - state.lastFetch;
           if (age < state.cacheTimeout) {
-            return;
+            return; // Кеш свежий, выходим
           }
         }
 
@@ -93,13 +94,16 @@ export const useCategoryStore = create<CategoryState>()(
           set({ isLoading: true, error: null });
           const data = await fetchFullHierarchy();
 
+          // Извлекаем корни для упрощенного списка rootCategories
+          const roots = data.map(({ subcategories, ...root }) => root as Category);
+
           set({
             categoriesWithSubs: data,
-            // Обновляем список всех корневых категорий на основе загруженной иерархии
-            rootCategories: data.map(({ subcategories, ...c }) => c as Category),
+            rootCategories: roots,
             isLoading: false,
             lastFetch: now
           });
+          logger.info(`Иерархия категорий обновлена (${data.length} корней)`);
         } catch (error) {
           const errorMessage = error instanceof Error ? error.message : 'Не удалось загрузить иерархию категорий';
           logger.error('Ошибка загрузки иерархии:', error);

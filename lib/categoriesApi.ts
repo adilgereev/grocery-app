@@ -46,37 +46,35 @@ export async function fetchCategoriesWithHierarchy(): Promise<CategoryWithHierar
 }
 
 /**
- * Получение всех корневых категорий с их подкатегориями
- * Оптимизировано для домашней страницы
+ * Получение всех категорий одним запросом и сборка иерархии в памяти.
+ * Высокая производительность: всего 1 сетевой запрос вместо N+1.
  */
 export async function fetchFullHierarchy(): Promise<CategoryWithSubcategories[]> {
-  // Получаем корневые категории
-  const rootCategories = await fetchRootCategories();
-  
-  if (!rootCategories || rootCategories.length === 0) {
-    console.log('[CategoriesApi] No root categories found');
+  // Забираем вообще все категории одним махом
+  const { data: allCategories, error } = await supabase
+    .from('categories')
+    .select('*')
+    .order('sort_order', { ascending: true });
+
+  if (error) {
+    throw new Error(`Не удалось загрузить все категории: ${error.message}`);
+  }
+
+  if (!allCategories || allCategories.length === 0) {
     return [];
   }
 
-  // Для каждой корневой категории загружаем её подкатегории защищенным способом
-  const categoriesWithSubs = await Promise.all(
-    rootCategories.map(async (root) => {
-      try {
-        const subcategories = await fetchSubcategories(root.id);
-        return {
-          ...root,
-          subcategories
-        };
-      } catch (err) {
-        console.error(`[CategoriesApi] Failed to load subcategories for ${root.name}:`, err);
-        // Возвращаем корень без подкатегорий, чтобы не ломать всё дерево
-        return {
-          ...root,
-          subcategories: []
-        };
-      }
-    })
-  );
+  // 1. Фильтруем корневые (у которых нет parent_id)
+  const roots = allCategories.filter(cat => cat.parent_id === null);
 
-  return categoriesWithSubs;
+  // 2. Для каждого корня собираем его подкатегории
+  const hierarchy: CategoryWithSubcategories[] = roots.map(root => {
+    const subcategories = allCategories.filter(cat => cat.parent_id === root.id);
+    return {
+      ...root,
+      subcategories
+    };
+  });
+
+  return hierarchy;
 }

@@ -105,8 +105,8 @@ export default function HomeScreen() {
   useFocusEffect(
     useCallback(() => {
       // fetchFullHierarchy проверит кеш: если он сброшен (invalidateCache), будет сетевой запрос
-      // Важно: временно запрашиваем forceRefresh=true, чтобы сбросить закешированные пустые зависимости (ошибка Network Request Failed)
-      fetchFullHierarchy(true);
+      // Позволяем стору использовать кеш (5 минут), если не было принудительного обновления (onRefresh)
+      fetchFullHierarchy();
       fetchPopularProducts();
 
       if (session?.user) {

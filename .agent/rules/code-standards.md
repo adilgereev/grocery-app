@@ -1,20 +1,23 @@
 # Code Standards: Quality & Logic
 
-## General Rules
--   **Comments**: Write all comments in Russian.
--   **Imports**: No unused imports. Use `npm run lint` for verification.
--   **Logging**: No debug logs in production code (`console.log`, `console.warn`).
--   **Path Aliases**: Always use `@/*` for imports from project root.
+## 1. 🇷🇺 Кодекс Кода
+- **Комментарии**: Писать все комментарии к коду исключительно на **русском языке**.
+- **Чистота**: Всегда удалять неиспользуемые импорты, логи и закомментированный мусор перед коммитом.
+- **Документация**: Поддерживать `BACKLOG.md` и генерировать `walkthrough.md` после каждого внедрения.
 
-## TypeScript Style
--   **Explicit Types**: Use interfaces and types instead of `any`.
--   **Zustand Stores**: Typing is mandatory for actions and state.
+## 2. 🏗️ Технические Стандарты Качества
+- **Мемоизация и Зависимости**:
+    - Все функции внутри `useEffect` или передаваемые в дочерние компоненты **ОБЯЗАТЕЛЬНО** оборачивать в `useCallback`.
+    - Все переменные должны быть в массиве зависимостей (`exhaustive-deps`).
+- **Стриктные токены**:
+    - Запрещено использовать HEX-коды или `rgba()` напрямую в компонентах.
+    - Всегда использовать `Colors.light.*` (например, `Colors.light.card`).
 
-## Hooks & Dependencies
--   **exhaustive-deps**: Ensure all dependencies are included in `useEffect`, `useCallback`, and `useMemo`.
--   **useCallback**: Use for all functions passed as props to child components or used in `useEffect`.
+## 3. 🤖 Next-Gen AI Workflow
+- **Тесты как Контракт**: Перед изменением логики анализировать существующие тесты. Текст теста — самое точное ТЗ.
+- **AI Регрессия**: После любого изменения ОБЯЗАТЕЛЬНО запустить `npm test` или `/verify-task`. Новые фичи не должны ломать старые.
+- **Самокоррекция**: Если тест падает — исправлять код или моки самостоятельно до презентации пользователю.
+- **Тестируемость**: Сразу добавлять `testID` новым компонентам.
 
-## Path Rules
--   `utils/`: Business logic and utility functions.
--   `lib/`: Core library wrappers (e.g., Supabase, Auth).
--   `hooks/`: Reusable React Hooks.
+## 4. ⛺ Правило Бойскаута (Boy Scout Rule)
+- Оставляй код чуть чище, чем он был до твоего прихода. Мелкие правки линта, импортов или типизации в соседних строках приветствуются.
