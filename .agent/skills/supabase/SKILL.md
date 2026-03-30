@@ -1,31 +1,33 @@
 ---
 name: supabase-mastery
-description: Expert in Supabase CLI, migrations, and schema management. Use for any database changes, type generation, or sync tasks.
+description: Expert in Supabase CLI, migrations, and schema management. Use this skill for ANY database changes, SQL migrations, RLS policy updates, or TypeScript type generation. Trigger whenever the user mentions database tables, columns, auth rules, or backend synchronization.
 ---
-# Supabase Mastery Skill
+# Supabase Mastery: Database Operations
 
-This skill provides comprehensive instructions for managing the Supabase backend in the Grocery App project.
+This skill defines the high-standard workflow for managing the Supabase backend in the Grocery App project.
 
-## Directory Structure
-- `supabase/migrations/`: **Single Source of Truth**. Contains timestamped SQL migration files.
-- `supabase/seed.sql`: Initial data (products, categories) for testing.
-- `supabase/config.toml`: Local Supabase configuration.
+## 🧪 Triggering Guidelines
+- **Always use this skill** when modifying the database structure.
+- **Trigger** when creating new tables, adding columns, or updating RLS (Row Level Security).
+- **Proactively suggest** type generation (`npm run supabase:types`) after any schema change.
 
-## Key CLI Commands (Scripts)
-- `npm run supabase:types`: Update TypeScript definitions in `types/supabase.ts`.
-- `npm run supabase:pull`: Pull structural changes from the cloud to a new local migration.
-- `npm run supabase:push`: Push local migrations to the cloud DB.
-- `npm run supabase:status`: Check current DB status.
-- `npx supabase migration new <name>`: Create a new migration file.
-- `npx supabase db reset`: Reset local DB and re-apply all migrations.
+## 📁 Source of Truth
+- **`supabase/migrations/`**: The ONLY source of truth. Every change must be a timestamped SQL file.
+- **NO `schema.sql`**: We do not use a single monolithic schema file. History is managed via migrations.
+- **`supabase/seed.sql`**: Use for local testing data (products, categories).
 
-## Integration Protocols
-1.  **Dashboard Changes**: If modified via UI, run `pull` and `types` immediately.
-2.  **Manual Migrations**: Prefer writing SQL migrations manually in `migrations/`.
-3.  **No schema.sql**: Use migrations as the only source of history.
-4.  **Zustand Sync**: Ensure stores are updated if the schema changes.
+## 🛠️ Protocols & Workflows
+1. **Manual SQL First**: Prefer creating migrations manually: `npx supabase migration new <name>`.
+2. **Dashboard Sync**: If changes are made via the Supabase UI, IMMEDIATELY run `npm run supabase:pull` and then `npm run supabase:types`.
+3. **Zustand Alignment**: After any schema change, check related stores in `store/` for necessary type updates.
 
-## Best Practices
-- Never edit `types/supabase.ts` manually.
-- Always commit migration files to Git.
-- Use local Docker instance for testing (`npx supabase start`).
+## 🚀 Key Commands
+- `npm run supabase:types` - Update `types/supabase.ts` (Never edit manually).
+- `npm run supabase:pull` - Sync cloud changes to a local migration file.
+- `npm run supabase:push` - Deploy local migrations to the cloud.
+- `npx supabase db reset` - Reset local environment and re-apply all migrations.
+
+## 🛡️ Best Practices
+- **Atomic Migrations**: Keep each migration focused on a single logical change.
+- **Local Testing**: Verify migrations locally using Docker (`npx supabase start`) before pushing.
+- **Git Hygiene**: Always commit migration files.

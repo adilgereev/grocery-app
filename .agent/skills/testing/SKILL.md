@@ -1,35 +1,38 @@
 ---
 name: testing-pro
-description: Expert in Jest testing and React Native Testing Library. Use for writing units, component tests, and verifying regressions.
+description: Expert in Jest testing and React Native Testing Library. Use this skill for writing unit tests for stores, component tests for UI, and executing the AI Regression Cycle. Trigger whenever the user asks for new features, bug fixes, or code verification.
 ---
-# Testing-Pro Skill: Next-Gen AI Workflow
+# Testing-Pro: Next-Gen AI Quality Assurance
 
-This skill provides the structure and standards for high-quality automated testing in the Grocery App project.
+This skill defines the standards for ensuring code stability and reliability through automated testing.
 
-## Standards and Infrastructure
-- **Jest & React Native Testing Library**: The core testing suite.
-- **jest.setup.js**: Unified location for global mocks (`AsyncStorage`, `Reanimated`, `Expo Router`, `Supabase`).
-- **testID**: Required for all interactive elements (buttons, inputs, cards).
+## 🧪 Triggering Guidelines
+- **Always use this skill** when starting a new feature or fixing a bug.
+- **Proactively suggest** writing a test before implementation (Tests as Contracts).
+- **Trigger** during any refactoring to ensure no regressions occur.
 
-## Testable Decomposition
-- Move inline list items and complex UI blocks to `components/` before writing tests.
-- Prioritize **Unit Tests for Stores** and **Component Tests for UI**.
+## 🏗️ Testing Infrastructure
+- **Framework**: Jest + React Native Testing Library.
+- **Global Mocks**: All shared mocks are in `jest.setup.js`. DO NOT duplicate common mocks in test files.
+- **testID**: Mandatory for all interactive elements to ensure reliable selectors.
 
-## UI Test Guidelines
-- Verify interaction via `fireEvent.press`, `fireEvent.changeText`.
-- Check style properties: `StyleSheet.flatten(element.props.style)`.
+## 🔄 AI Regression Cycle (CRITICAL)
+Follow this loop for every non-trivial change:
+1. **Tests as Contracts**: Read existing tests to understand current behavior.
+2. **Implementation**: Modify the code.
+3. **Verification**: Run `npm test` immediately.
+4. **Self-Correction**: If tests fail, analyze the error and fix either the code or the test/mock.
 
-## Logic Unit Tests
-- Zustand stores must have 100% logic coverage.
-- Complex transformation functions (addresses, dates) require `.test.ts`.
+## 📐 Testable Design
+- **Decomposition**: If a component is hard to test (too many providers), decompose it into smaller functional units in `components/`.
+- **Store Coverage**: Zustand stores in `store/` must have 100% logic coverage (actions, computed states).
+- **UI Interaction**: Use `fireEvent` to simulate real user behavior, not just snapshot renders.
 
-## AI Regression Cycle
-1.  **Tests as Contracts**: Analyze existing tests before refactoring.
-2.  **AI Regression**: After every logic/UI change, run relevant tests (`npm test`).
-3.  **Self-Correction**: Iterate until tests pass.
-4.  **Test Cleanliness**: Add `testID` and basic interaction tests to all new components.
+## 🚀 Performance & Coverage
+- `npm test` - Standard test run.
+- `npm test -- --coverage` - Check for logical gaps in test coverage.
+- `expo lint` - Ensure code style consistency.
 
-## Command Reference
-- `npm test`: Run all tests.
-- `npm test -- --coverage`: Check test coverage.
-- `expo lint`: Verify code style.
+## 🛡️ Best Practices
+- Use `StyleSheet.flatten` to verify computed styles in UI tests.
+- Keep tests isolated; reset mocks between test cases.
