@@ -1,0 +1,20 @@
+{
+  "skill_name": "testing-pro",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Create a unit test for the cartStore to verify that clearing the cart works correctly.",
+      "expected_outcome": "New file in store/__tests__/cartStore.test.ts with clearCart() assertion."
+    },
+    {
+      "id": 2,
+      "prompt": "Create a component test for the ProductCard with a testId and interaction check.",
+      "expected_outcome": "New file in components/__tests__/ProductCard.test.tsx with fireEvent.press() check."
+    },
+    {
+      "id": 3,
+      "prompt": "Run tests and generate a coverage report.",
+      "expected_outcome": "Execution of 'npm test -- --coverage' and update of the console status."
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+{
+  "skill_name": "supabase-mastery",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Create a migration that adds a 'discount_percentage' column to the 'products' table.",
+      "expected_outcome": "New SQL file in supabase/migrations/ with ALTER TABLE products ADD COLUMN discount_percentage DECIMAL(5,2);"
+    },
+    {
+      "id": 2,
+      "prompt": "Update TypeScript types from the cloud database.",
+      "expected_outcome": "Execution of 'npm run supabase:types' and updating types/supabase.ts."
+    },
+    {
+      "id": 3,
+      "prompt": "Pull the current database structure into a new local migration.",
+      "expected_outcome": "Execution of 'npm run supabase:pull' and creating a timestamped migration file."
+    }
+  ]
+}
