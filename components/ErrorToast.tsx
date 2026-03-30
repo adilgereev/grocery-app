@@ -78,7 +78,7 @@ export function ErrorToast({ type, message, duration = 3000, onDismiss }: ToastP
       <Animated.View
         style={[
           styles.toast,
-          { backgroundColor: getBackgroundColor(), transform: [{ translateY: translateY.current }], opacity: opacity.current } as any
+          { backgroundColor: getBackgroundColor(), transform: [{ translateY: translateY.current }], opacity: opacity.current }
         ]}
       >
         <View style={styles.content}>

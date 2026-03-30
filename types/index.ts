@@ -35,6 +35,10 @@ export interface Product {
   stock: number;
   created_at?: string;
   tags: string[] | null;
+  calories?: number;
+  proteins?: number;
+  fats?: number;
+  carbohydrates?: number;
 }
 
 export interface Order {

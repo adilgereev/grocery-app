@@ -1,8 +1,9 @@
-import { Radius, Spacing, Colors } from '@/constants/theme';
+import { Colors, Radius, Spacing } from '@/constants/theme';
 import { Category } from '@/types';
+import { getMosaicCardWidth } from '@/utils/mosaicLayout';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity, DimensionValue } from 'react-native';
+import { Image, StyleSheet, Text, TouchableOpacity } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
@@ -22,28 +23,8 @@ const SubcategoryCard = React.memo(({ subcategory, index, totalItems }: Subcateg
   };
 
   // Алгоритм Живой Мозаики (Лавка-стайл: Широкий-Узкий -> Узкий-Широкий)
-  // Если элементов нечетное кол-во (и их >= 3), то последние 3 делаем узкими в один ряд
-  const hasOrphan = totalItems % 2 !== 0 && totalItems >= 3;
-  const isInLastThreeOfOdd = hasOrphan && index >= totalItems - 3;
-
-  let cardWidth: DimensionValue = '48.5%'; // Дефолт (две колонки)
-
-  if (isInLastThreeOfOdd) {
-    cardWidth = '32%'; // Три в ряд в конце мозаики
-  } else if (index === totalItems - 1 && totalItems === 1) {
-    cardWidth = '100%'; // Единственный элемент в списке
-  } else {
-    const rowIndex = Math.floor(index / 2);
-    const isFirstInPair = index % 2 === 0;
-
-    if (rowIndex % 2 === 0) {
-      // Строка 1, 3, 5... (Широкий-Узкий)
-      cardWidth = isFirstInPair ? '60%' : '37%';
-    } else {
-      // Строка 2, 4, 6... (Узкий-Широкий)
-      cardWidth = isFirstInPair ? '37%' : '60%';
-    }
-  }
+  // Строгая логика была вынесена в getMosaicCardWidth (utils/mosaicLayout)
+  const cardWidth = getMosaicCardWidth(index, totalItems);
 
   // Цвет фона: из базы (HEX) или нейтральный дефолт
   const isHex = subcategory.image_url?.startsWith('#');

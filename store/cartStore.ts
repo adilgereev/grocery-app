@@ -10,6 +10,8 @@ type CartItem = {
 
 interface CartState {
   items: CartItem[];
+  subtotal: number;
+  deliveryFee: number;
   totalPrice: number;
   totalItems: number;
   isLoading: boolean;
@@ -22,17 +24,31 @@ interface CartState {
   clearError: () => void;
 }
 
+const DELIVERY_THRESHOLD = 700;
+const DELIVERY_FEE = 90;
+
 // Вспомогательная функция для пересчёта после любого изменения состояния
 const calculateTotals = (items: CartItem[]) => {
-  const totalPrice = items.reduce((total, item) => total + (Number(item.product.price) || 0) * item.quantity, 0);
+  const subtotal = items.reduce((total, item) => total + (Number(item.product.price) || 0) * item.quantity, 0);
   const totalItems = items.reduce((total, item) => total + item.quantity, 0);
-  return { totalPrice, totalItems };
+  
+  let deliveryFee = 0;
+
+  if (totalItems > 0) {
+    deliveryFee = subtotal >= DELIVERY_THRESHOLD ? 0 : DELIVERY_FEE;
+  }
+
+  const totalPrice = subtotal + deliveryFee;
+
+  return { subtotal, deliveryFee, totalPrice, totalItems };
 };
 
 export const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
       items: [],
+      subtotal: 0,
+      deliveryFee: 0,
       totalPrice: 0,
       totalItems: 0,
       isLoading: false,
@@ -97,7 +113,15 @@ export const useCartStore = create<CartState>()(
         });
       },
 
-      clearCart: () => set({ items: [], totalPrice: 0, totalItems: 0, error: null, isLoading: false }),
+      clearCart: () => set({ 
+        items: [], 
+        subtotal: 0, 
+        deliveryFee: 0, 
+        totalPrice: 0, 
+        totalItems: 0, 
+        error: null, 
+        isLoading: false 
+      }),
     }),
     {
       name: 'grocery-cart-storage',

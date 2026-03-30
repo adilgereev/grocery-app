@@ -105,7 +105,8 @@ export default function HomeScreen() {
   useFocusEffect(
     useCallback(() => {
       // fetchFullHierarchy проверит кеш: если он сброшен (invalidateCache), будет сетевой запрос
-      fetchFullHierarchy();
+      // Важно: временно запрашиваем forceRefresh=true, чтобы сбросить закешированные пустые зависимости (ошибка Network Request Failed)
+      fetchFullHierarchy(true);
       fetchPopularProducts();
 
       if (session?.user) {
@@ -295,6 +296,11 @@ export default function HomeScreen() {
         scrollEventThrottle={16}
         ListHeaderComponent={listHeader}
         renderItem={() => null} // Рендер происходит в ListHeader
+        refreshing={categoriesLoading}
+        onRefresh={() => {
+          fetchFullHierarchy(true);
+          fetchPopularProducts();
+        }}
       />
     </View>
   );

@@ -52,15 +52,29 @@ export async function fetchCategoriesWithHierarchy(): Promise<CategoryWithHierar
 export async function fetchFullHierarchy(): Promise<CategoryWithSubcategories[]> {
   // Получаем корневые категории
   const rootCategories = await fetchRootCategories();
+  
+  if (!rootCategories || rootCategories.length === 0) {
+    console.log('[CategoriesApi] No root categories found');
+    return [];
+  }
 
-  // Для каждой корневой категории загружаем её подкатегории
+  // Для каждой корневой категории загружаем её подкатегории защищенным способом
   const categoriesWithSubs = await Promise.all(
     rootCategories.map(async (root) => {
-      const subcategories = await fetchSubcategories(root.id);
-      return {
-        ...root,
-        subcategories
-      };
+      try {
+        const subcategories = await fetchSubcategories(root.id);
+        return {
+          ...root,
+          subcategories
+        };
+      } catch (err) {
+        console.error(`[CategoriesApi] Failed to load subcategories for ${root.name}:`, err);
+        // Возвращаем корень без подкатегорий, чтобы не ломать всё дерево
+        return {
+          ...root,
+          subcategories: []
+        };
+      }
     })
   );
 

@@ -52,7 +52,7 @@ describe('useCartStore', () => {
     expect(state.items.length).toBe(1);
     expect(state.items[0].product.id).toBe('prod-1');
     expect(state.items[0].quantity).toBe(1);
-    expect(state.totalPrice).toBe(100);
+    expect(state.totalPrice).toBe(190); // 100 + 90 доставка
     expect(state.totalItems).toBe(1);
   });
 
@@ -63,7 +63,7 @@ describe('useCartStore', () => {
 
     expect(state.items.length).toBe(1);
     expect(state.items[0].quantity).toBe(2);
-    expect(state.totalPrice).toBe(200);
+    expect(state.totalPrice).toBe(290); // 200 + 90 доставка
     expect(state.totalItems).toBe(2);
   });
 
@@ -82,7 +82,7 @@ describe('useCartStore', () => {
     const state = useCartStore.getState();
 
     expect(state.items[0].quantity).toBe(5);
-    expect(state.totalPrice).toBe(500);
+    expect(state.totalPrice).toBe(590); // 500 + 90 доставка
     expect(state.totalItems).toBe(5);
   });
 
@@ -104,7 +104,17 @@ describe('useCartStore', () => {
 
     expect(state.items.length).toBe(2);
     expect(state.totalItems).toBe(3);
-    expect(state.totalPrice).toBe(280); // (100 * 2) + 80
+    expect(state.totalPrice).toBe(370); // (100 * 2) + 80 + 90 доставка
+  });
+
+  it('должен предоставлять бесплатную доставку от 700 ₽', () => {
+    useCartStore.getState().addItem(mockProduct);
+    useCartStore.getState().updateQuantity(mockProduct.id, 7);
+    const state = useCartStore.getState();
+
+    expect(state.subtotal).toBe(700);
+    expect(state.deliveryFee).toBe(0);
+    expect(state.totalPrice).toBe(700);
   });
 
   it('должен полностью очищать корзину', () => {

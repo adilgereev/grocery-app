@@ -76,9 +76,9 @@ describe('AddressSearchInput', () => {
       fireEvent.changeText(input, 'Лени');
     });
 
-    // Кликаем по подсказке, где нет дома (data.house отсутствует)
-    act(() => {
-        fireEvent.press(getByTestId('suggestion-item-г Буйнакск, ул Ленина'));
+    // Ждем появления подсказок и кликаем по той, где нет дома
+    await waitFor(() => {
+      fireEvent.press(getByTestId('suggestion-item-г Буйнакск, ул Ленина'));
     });
 
     expect(input.props.value).toBe('ул. Ленина ');
@@ -98,8 +98,8 @@ describe('AddressSearchInput', () => {
       fireEvent.changeText(input, 'Лени');
     });
 
-    // Кликаем по подсказке с домом
-    act(() => {
+    // Ждем появления подсказок и кликаем по подсказке с домом
+    await waitFor(() => {
         fireEvent.press(getByTestId('suggestion-item-г Буйнакск, ул Ленина, д 10'));
     });
 

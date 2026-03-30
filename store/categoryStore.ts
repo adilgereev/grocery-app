@@ -95,7 +95,8 @@ export const useCategoryStore = create<CategoryState>()(
 
           set({
             categoriesWithSubs: data,
-            rootCategories: data.map(c => ({ ...c, subcategories: undefined } as any)),
+            // Обновляем список всех корневых категорий на основе загруженной иерархии
+            rootCategories: data.map(({ subcategories, ...c }) => c as Category),
             isLoading: false,
             lastFetch: now
           });
