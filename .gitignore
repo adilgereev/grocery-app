@@ -39,8 +39,6 @@ yarn-error.*
 
 # AI & Project Meta
 .claude/
-CLAUDE.md
-PROJECT_SKILLS.md
 .gemini/
 
 app-example

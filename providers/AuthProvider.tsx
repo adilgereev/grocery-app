@@ -35,7 +35,14 @@ const savePhoneToProfile = async (userId: string, phone: string) => {
       .update({ phone })
       .eq('id', userId);
 
-    if (updateError) throw updateError;
+    if (updateError) {
+      // Телефон уже привязан к другому аккаунту (unique_violation)
+      if (updateError.code === '23505') {
+        logger.warn('Телефон уже привязан к другому аккаунту:', phone);
+        return false;
+      }
+      throw updateError;
+    }
     
     logger.log('Телефон успешно сохранён в профиль:', phone);
     return true;

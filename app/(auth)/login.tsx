@@ -193,9 +193,19 @@ export default function Login() {
         });
 
         if (signUpError) {
-          showAlert('Ошибка', signUpError.message);
-          setLoading(false);
-          return;
+          // Если аккаунт создан между нашими вызовами — повторный вход
+          if (signUpError.message?.includes('already registered') || signUpError.message?.includes('already been registered')) {
+            const { error: retryError } = await supabase.auth.signInWithPassword({ email, password });
+            if (retryError) {
+              showAlert('Ошибка', 'Не удалось войти. Попробуйте ещё раз.');
+              setLoading(false);
+              return;
+            }
+          } else {
+            showAlert('Ошибка', signUpError.message);
+            setLoading(false);
+            return;
+          }
         }
       }
 
