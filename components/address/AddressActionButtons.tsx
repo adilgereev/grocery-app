@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.l,
     height: 56,
     elevation: 0,
-    shadowColor: Colors.light.primary,
+    shadowColor: Colors.light.text,
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.05,
     shadowRadius: 10,

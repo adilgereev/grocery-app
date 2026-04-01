@@ -261,7 +261,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.xl,
     paddingVertical: Spacing.m + Spacing.s,
     alignItems: 'center',
-    shadowColor: Colors.light.primary,
+    shadowColor: Colors.light.text,
     shadowOpacity: 0.08,
     shadowRadius: 12,
     shadowOffset: { width: 0, height: 4 },

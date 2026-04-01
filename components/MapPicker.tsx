@@ -84,7 +84,7 @@ const styles = StyleSheet.create({
   confirmButton: {
     backgroundColor: Colors.light.primary, height: 56, borderRadius: Radius.l,
     alignItems: 'center', justifyContent: 'center', elevation: 0,
-    shadowColor: Colors.light.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.05, shadowRadius: 10,
+    shadowColor: Colors.light.text, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.05, shadowRadius: 10,
   },
   confirmButtonText: { color: Colors.light.card, fontSize: 16, fontWeight: '700' },
 });

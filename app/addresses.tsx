@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.light.primary,
     backgroundColor: Colors.light.successLight,
     shadowOpacity: 0.08,
-    shadowColor: Colors.light.primary,
+    shadowColor: Colors.light.text,
   },
   addressInfo: {
     flexDirection: 'row',
@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 0,
-    shadowColor: Colors.light.primary,
+    shadowColor: Colors.light.text,
     shadowOpacity: 0.05,
     shadowOffset: { width: 0, height: 4 },
     shadowRadius: 8,

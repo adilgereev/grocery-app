@@ -369,7 +369,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.primary,
     borderRadius: Radius.xxl, justifyContent: 'center', alignItems: 'center',
     marginBottom: Spacing.m,
-    shadowColor: Colors.light.primary, shadowOpacity: 0.05, shadowRadius: 12, shadowOffset: { width: 0, height: 6 },
+    shadowColor: Colors.light.text, shadowOpacity: 0.05, shadowRadius: 12, shadowOffset: { width: 0, height: 6 },
   },
   appName: {
     fontSize: 28, fontWeight: '700', color: Colors.light.text,
@@ -422,7 +422,7 @@ const styles = StyleSheet.create({
   primaryButton: {
     backgroundColor: Colors.light.primary, borderRadius: Radius.m,
     height: 54, justifyContent: 'center', alignItems: 'center',
-    shadowColor: Colors.light.primary, shadowOpacity: 0.05, shadowRadius: 6, shadowOffset: { width: 0, height: 3 },
+    shadowColor: Colors.light.text, shadowOpacity: 0.05, shadowRadius: 6, shadowOffset: { width: 0, height: 3 },
   },
   primaryButtonDisabled: { backgroundColor: Colors.light.primaryLight },
   primaryButtonText: { color: Colors.light.white, fontSize: 16, fontWeight: '700' },
