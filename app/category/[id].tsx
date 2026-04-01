@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState, useMemo } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, Platform } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, Platform, useWindowDimensions } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
@@ -11,6 +11,7 @@ import { ErrorToast } from '@/components/ErrorToast';
 import { logger } from '@/lib/logger';
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { Product } from '@/types';
+import { getMosaicCardWidth } from '@/utils/mosaicLayout';
 
 export default function CategoryProductsScreen() {
   const { id, name } = useLocalSearchParams();
@@ -24,6 +25,9 @@ export default function CategoryProductsScreen() {
   const { getCategoryById, getSubcategories, fetchAllCategories } = useCategoryStore();
   const category = getCategoryById(id as string);
   const subcategories = getSubcategories(id as string);
+  const { width: windowWidth } = useWindowDimensions();
+  const containerWidth = windowWidth - Spacing.m * 2;
+  const GAP = 8;
 
   const fetchProducts = useCallback(async (categoryId: string) => {
     setLoading(true);
@@ -89,14 +93,22 @@ export default function CategoryProductsScreen() {
         <View style={styles.subcategoriesSection}>
           <Text style={styles.subcategoriesTitle}>Подкатегории</Text>
           <View style={styles.subcategoriesRow}>
-            {subcategories.map((item, index) => (
-              <SubcategoryCard 
-                key={item.id} 
-                subcategory={item} 
-                index={index} 
-                totalItems={subcategories.length} 
-              />
-            ))}
+            {subcategories.map((item, index) => {
+              const cardWidth = getMosaicCardWidth(
+                index,
+                subcategories.length,
+                containerWidth,
+                GAP
+              );
+              return (
+                <SubcategoryCard 
+                  key={item.id} 
+                  subcategory={item} 
+                  cardWidth={cardWidth}
+                  index={index} 
+                />
+              );
+            })}
           </View>
         </View>
       )}
@@ -255,7 +267,9 @@ const styles = StyleSheet.create({
   subcategoriesRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8,
+    justifyContent: 'space-between',
+    columnGap: 8,
+    rowGap: 8,
   },
   tagsWrapper: {
     paddingBottom: Spacing.m,

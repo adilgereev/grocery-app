@@ -28,7 +28,7 @@ describe('SubcategoryCard', () => {
 
   it('renders subcategory name correctly', () => {
     const { getByText } = render(
-      <SubcategoryCard subcategory={mockSubcategory} index={0} totalItems={2} />
+      <SubcategoryCard subcategory={mockSubcategory} index={0} cardWidth={100} />
     );
     
     expect(getByText('Фрукты и овощи')).toBeTruthy();
@@ -36,7 +36,7 @@ describe('SubcategoryCard', () => {
 
   it('calls router.push with correct path when pressed', () => {
     const { getByText } = render(
-      <SubcategoryCard subcategory={mockSubcategory} index={0} totalItems={2} />
+      <SubcategoryCard subcategory={mockSubcategory} index={0} cardWidth={100} />
     );
     
     const card = getByText('Фрукты и овощи');
@@ -45,25 +45,17 @@ describe('SubcategoryCard', () => {
     expect(mockPush).toHaveBeenCalledWith('/category/cat-123?name=%D0%A4%D1%80%D1%83%D0%BA%D1%82%D1%8B%20%D0%B8%20%D0%BE%D0%B2%D0%BE%D1%89%D0%B8');
   });
 
-  it('applies correct width based on pattern index', () => {
-    // 2 items: index 0 -> 60%
+  it('applies correct width from props', () => {
     const { getByTestId, rerender } = render(
-      <SubcategoryCard subcategory={mockSubcategory} index={0} totalItems={2} />
+      <SubcategoryCard subcategory={mockSubcategory} index={0} cardWidth={208} />
     );
     let card = getByTestId('subcategory-card');
     let flattenedStyle = StyleSheet.flatten(card.props.style);
-    expect(flattenedStyle).toMatchObject({ width: '60%' });
+    expect(flattenedStyle).toMatchObject({ width: 208 });
 
-    // 1 item: index 0 -> 100%
-    rerender(<SubcategoryCard subcategory={mockSubcategory} index={0} totalItems={1} />);
+    rerender(<SubcategoryCard subcategory={mockSubcategory} index={0} cardWidth={100} />);
     card = getByTestId('subcategory-card');
     flattenedStyle = StyleSheet.flatten(card.props.style);
-    expect(flattenedStyle).toMatchObject({ width: '100%' });
-
-    // 3 items: index 2 (last of 3) -> 32%
-    rerender(<SubcategoryCard subcategory={mockSubcategory} index={2} totalItems={3} />);
-    card = getByTestId('subcategory-card');
-    flattenedStyle = StyleSheet.flatten(card.props.style);
-    expect(flattenedStyle).toMatchObject({ width: '32%' });
+    expect(flattenedStyle).toMatchObject({ width: 100 });
   });
 });

@@ -1,6 +1,5 @@
-import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Colors, Radius } from '@/constants/theme';
 import { Category } from '@/types';
-import { getMosaicCardWidth } from '@/utils/mosaicLayout';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity } from 'react-native';
@@ -10,11 +9,11 @@ const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
 interface SubcategoryCardProps {
   subcategory: Category;
+  cardWidth: number;
   index: number;
-  totalItems: number;
 }
 
-const SubcategoryCard = React.memo(({ subcategory, index, totalItems }: SubcategoryCardProps) => {
+const SubcategoryCard = React.memo(({ subcategory, cardWidth, index }: SubcategoryCardProps) => {
   const router = useRouter();
 
   const handlePress = () => {
@@ -22,9 +21,6 @@ const SubcategoryCard = React.memo(({ subcategory, index, totalItems }: Subcateg
     router.push(`/category/${subcategory.id}?name=${encodeURIComponent(subcategory.name)}`);
   };
 
-  // Алгоритм Живой Мозаики (Лавка-стайл: Широкий-Узкий -> Узкий-Широкий)
-  // Строгая логика была вынесена в getMosaicCardWidth (utils/mosaicLayout)
-  const cardWidth = getMosaicCardWidth(index, totalItems);
 
   // Цвет фона: из базы (HEX) или нейтральный дефолт
   const isHex = subcategory.image_url?.startsWith('#');
@@ -34,19 +30,21 @@ const SubcategoryCard = React.memo(({ subcategory, index, totalItems }: Subcateg
     <AnimatedTouchable
       testID="subcategory-card"
       style={[styles.card, { width: cardWidth, backgroundColor: bgColor as string }]}
-      activeOpacity={0.85}
+      activeOpacity={0.8}
       onPress={handlePress}
       entering={FadeInDown.delay((index % 5) * 50).duration(400)}
     >
-      <Text style={styles.categoryName} numberOfLines={3}>{subcategory.name}</Text>
-
       {subcategory.image_url && !isHex && (
         <Image
           source={{ uri: subcategory.image_url }}
-          style={styles.image}
-          resizeMode="contain"
+          style={StyleSheet.absoluteFill}
+          resizeMode="cover"
         />
       )}
+
+      <Text style={styles.categoryName} numberOfLines={3}>
+        {subcategory.name}
+      </Text>
     </AnimatedTouchable>
   );
 });
@@ -56,24 +54,17 @@ export default SubcategoryCard;
 
 const styles = StyleSheet.create({
   card: {
-    height: 110,
+    height: 118, // Высота по стандарту Лавки
     borderRadius: Radius.l,
     overflow: 'hidden',
   },
   categoryName: {
     color: Colors.light.text,
     fontSize: 14,
-    fontWeight: '800',
-    padding: Spacing.s,
-    lineHeight: 18,
-    maxWidth: '85%',
+    fontWeight: '700',
+    padding: 12, // Финальная настройка под Лавку
+    lineHeight: 16,
+    maxWidth: '90%',
     zIndex: 10,
-  },
-  image: {
-    position: 'absolute',
-    bottom: -5,
-    right: -10,
-    width: 65,
-    height: 65,
   },
 });

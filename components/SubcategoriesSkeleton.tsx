@@ -1,27 +1,33 @@
+import { Radius, Spacing } from '@/constants/theme';
+import { getMosaicCardWidth } from '@/utils/mosaicLayout';
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet, useWindowDimensions, View } from 'react-native';
 import Skeleton from './Skeleton';
-import { Spacing, Radius } from '@/constants/theme';
 
 interface SubcategoriesSkeletonProps {
   count?: number;
 }
 
 export default function SubcategoriesSkeleton({ count = 5 }: SubcategoriesSkeletonProps) {
+  const { width: windowWidth } = useWindowDimensions();
+  const containerWidth = windowWidth - Spacing.m * 2;
+  const GAP = 8;
+
   return (
     <View style={styles.container}>
       <Skeleton width="40%" height={24} borderRadius={8} style={styles.titleSkeleton} />
       <View style={styles.grid}>
         {Array.from({ length: count }).map((_, i) => {
-          // Мозаичная сетка (5 элементов = 1 блок паттерна)
-          const patternIndex = i % 5;
-          let cardWidth: `${number}%` = '31%';
-          if (patternIndex === 0) cardWidth = '58%';
-          if (patternIndex === 1) cardWidth = '38%';
+          const cardWidth = getMosaicCardWidth(
+            i, 
+            count, 
+            containerWidth, 
+            GAP
+          );
 
           return (
             <View key={i} style={[styles.cardContainer, { width: cardWidth }]}>
-              <Skeleton width="100%" height={110} borderRadius={Radius.l} />
+              <Skeleton width="100%" height={118} borderRadius={Radius.xxl} />
             </View>
           );
         })}
@@ -43,7 +49,8 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     paddingHorizontal: Spacing.m,
     justifyContent: 'space-between',
-    rowGap: Spacing.m,
+    columnGap: 8,
+    rowGap: 8,
   },
   cardContainer: {
     // Ширина задается динамически

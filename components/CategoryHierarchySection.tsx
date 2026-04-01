@@ -1,8 +1,9 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { CategoryWithSubcategories } from '@/types';
-import SubcategoryCard from './SubcategoryCard';
 import { Colors, Spacing } from '@/constants/theme';
+import { CategoryWithSubcategories } from '@/types';
+import { getMosaicCardWidth } from '@/utils/mosaicLayout';
+import React from 'react';
+import { StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import SubcategoryCard from './SubcategoryCard';
 
 interface CategoryHierarchySectionProps {
   category: CategoryWithSubcategories;
@@ -10,23 +11,36 @@ interface CategoryHierarchySectionProps {
 
 const CategoryHierarchySection = React.memo(({ category }: CategoryHierarchySectionProps) => {
   const { subcategories } = category;
+  const { width: windowWidth } = useWindowDimensions();
 
   if (!subcategories || subcategories.length === 0) {
     return null;
   }
 
+  const containerWidth = windowWidth - Spacing.m * 2;
+  const GAP = 8; // Фиксированный зазор по просьбе пользователя
+
   return (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>{category.name}</Text>
       <View style={styles.mosaicContainer}>
-        {subcategories.map((item, index) => (
-          <SubcategoryCard 
-            key={item.id} 
-            subcategory={item} 
-            index={index} 
-            totalItems={subcategories.length} 
-          />
-        ))}
+        {subcategories.map((item, index) => {
+          const cardWidth = getMosaicCardWidth(
+            index, 
+            subcategories.length, 
+            containerWidth, 
+            GAP
+          );
+          
+          return (
+            <SubcategoryCard
+              key={item.id}
+              subcategory={item}
+              cardWidth={cardWidth}
+              index={index}
+            />
+          );
+        })}
       </View>
     </View>
   );
@@ -51,6 +65,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     paddingHorizontal: Spacing.m,
-    rowGap: Spacing.m,
+    columnGap: 8, // Прецизионный зазоров по Лавке
+    rowGap: 8, // Прецизионный зазоров по Лавке
   },
 });
