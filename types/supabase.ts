@@ -252,40 +252,52 @@ export type Database = {
       }
       products: {
         Row: {
+          calories: number | null
+          carbohydrates: number | null
           category_id: string | null
           created_at: string
           description: string | null
+          fats: number | null
           id: string
           image_url: string | null
           is_active: boolean
           name: string
           price: number
+          proteins: number | null
           stock: number
           tags: string[] | null
           unit: string
         }
         Insert: {
+          calories?: number | null
+          carbohydrates?: number | null
           category_id?: string | null
           created_at?: string
           description?: string | null
+          fats?: number | null
           id?: string
           image_url?: string | null
           is_active?: boolean
           name: string
           price: number
+          proteins?: number | null
           stock?: number
           tags?: string[] | null
           unit: string
         }
         Update: {
+          calories?: number | null
+          carbohydrates?: number | null
           category_id?: string | null
           created_at?: string
           description?: string | null
+          fats?: number | null
           id?: string
           image_url?: string | null
           is_active?: boolean
           name?: string
           price?: number
+          proteins?: number | null
           stock?: number
           tags?: string[] | null
           unit?: string
@@ -324,7 +336,7 @@ export type Database = {
           id: string
           is_admin?: boolean | null
           last_name?: string | null
-          phone: string
+          phone?: string
         }
         Update: {
           avatar_url?: string | null

@@ -161,7 +161,17 @@ CREATE OR REPLACE VIEW public.categories_with_hierarchy AS
    FROM (categories c
      LEFT JOIN categories p ON ((c.parent_id = p.id)));
 
--- 10. ПОЛИТИКИ БЕЗОПАСНОСТИ (RLS)
+-- 10. ВКЛЮЧЕНИЕ RLS (Row Level Security)
+ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.categories ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.otp_codes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.order_items ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.favorites ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.addresses ENABLE ROW LEVEL SECURITY;
+
+-- 11. ПОЛИТИКИ БЕЗОПАСНОСТИ (RLS)
 
 -- Profiles
 CREATE POLICY "Public profiles are viewable by everyone." ON "public"."profiles" FOR SELECT TO public USING (true) ;
@@ -204,7 +214,7 @@ CREATE POLICY "Anyone can insert OTP" ON "public"."otp_codes" FOR INSERT TO publ
 CREATE POLICY "Anyone can read OTP" ON "public"."otp_codes" FOR SELECT TO public USING (true) ;
 CREATE POLICY "Anyone can update OTP" ON "public"."otp_codes" FOR UPDATE TO public USING (true) ;
 
--- 11. ФУНКЦИИ (FUNCTIONS)
+-- 12. ФУНКЦИИ (FUNCTIONS)
 
 -- Автоматическое включение RLS для новых таблиц
 CREATE OR REPLACE FUNCTION public.rls_auto_enable() RETURNS event_trigger LANGUAGE plpgsql SECURITY DEFINER AS $$ 
@@ -247,7 +257,7 @@ begin
 end;
  $$;
 
--- 12. ТРИГГЕРЫ (TRIGGERS)
+-- 13. ТРИГГЕРЫ (TRIGGERS)
 
 -- Триггер на создание нового пользователя (вызывает handle_new_user)
 CREATE TRIGGER on_auth_user_created 
@@ -255,5 +265,5 @@ CREATE TRIGGER on_auth_user_created
   FOR EACH ROW 
   EXECUTE FUNCTION handle_new_user();
 
--- 13. СОБЫТИЙНЫЕ ТРИГГЕРЫ (EVENT TRIGGERS)
+-- 14. СОБЫТИЙНЫЕ ТРИГГЕРЫ (EVENT TRIGGERS)
 CREATE EVENT TRIGGER ensure_rls ON ddl_command_end EXECUTE FUNCTION rls_auto_enable();

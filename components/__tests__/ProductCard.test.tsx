@@ -22,6 +22,10 @@ const mockProduct: Product = {
   is_active: true,
   tags: [],
   created_at: '',
+  calories: null,
+  proteins: null,
+  fats: null,
+  carbohydrates: null,
 };
 
 describe('ProductCard', () => {

@@ -16,6 +16,10 @@ const mockProduct: Product = {
   stock: 100,
   tags: [],
   created_at: '',
+  calories: null,
+  proteins: null,
+  fats: null,
+  carbohydrates: null,
 };
 
 const mockProduct2: Product = {
@@ -30,6 +34,10 @@ const mockProduct2: Product = {
   stock: 50,
   tags: [],
   created_at: '',
+  calories: null,
+  proteins: null,
+  fats: null,
+  carbohydrates: null,
 };
 
 describe('useCartStore', () => {

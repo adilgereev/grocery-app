@@ -20,6 +20,10 @@ const mockProduct: Product = {
   stock: 100,
   tags: [],
   created_at: '',
+  calories: null,
+  proteins: null,
+  fats: null,
+  carbohydrates: null,
 };
 
 describe('CartItem', () => {
