@@ -369,10 +369,10 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.primary,
     borderRadius: Radius.xxl, justifyContent: 'center', alignItems: 'center',
     marginBottom: Spacing.m,
-    shadowColor: Colors.light.primary, shadowOpacity: 0.25, shadowRadius: 12, shadowOffset: { width: 0, height: 6 },
+    shadowColor: Colors.light.primary, shadowOpacity: 0.05, shadowRadius: 12, shadowOffset: { width: 0, height: 6 },
   },
   appName: {
-    fontSize: 28, fontWeight: '900', color: Colors.light.text,
+    fontSize: 28, fontWeight: '700', color: Colors.light.text,
     letterSpacing: 0.5, marginBottom: 4,
   },
   subtitle: {
@@ -388,12 +388,12 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 12 },
     shadowOpacity: 0.08,
     shadowRadius: 24,
-    elevation: 6,
+    elevation: 0,
     borderWidth: 1.5,
     borderColor: Colors.light.glassBorder, // Используем токены для эффекта стекла
   },
   formTitle: {
-    fontSize: 24, fontWeight: 'bold', color: Colors.light.text, marginBottom: 8,
+    fontSize: 24, fontWeight: '700', color: Colors.light.text, marginBottom: 8,
   },
   formHint: {
     fontSize: 14, color: Colors.light.textSecondary, lineHeight: 20,
@@ -422,10 +422,10 @@ const styles = StyleSheet.create({
   primaryButton: {
     backgroundColor: Colors.light.primary, borderRadius: Radius.m,
     height: 54, justifyContent: 'center', alignItems: 'center',
-    shadowColor: Colors.light.primary, shadowOpacity: 0.3, shadowRadius: 6, shadowOffset: { width: 0, height: 3 },
+    shadowColor: Colors.light.primary, shadowOpacity: 0.05, shadowRadius: 6, shadowOffset: { width: 0, height: 3 },
   },
   primaryButtonDisabled: { backgroundColor: Colors.light.primaryLight },
-  primaryButtonText: { color: Colors.light.white, fontSize: 16, fontWeight: 'bold' },
+  primaryButtonText: { color: Colors.light.white, fontSize: 16, fontWeight: '700' },
 
   otpBackButton: {
     flexDirection: 'row', alignItems: 'center', marginBottom: Spacing.m,
@@ -437,7 +437,7 @@ const styles = StyleSheet.create({
   otpInput: {
     width: 60, height: 64,
     borderWidth: 2, borderColor: Colors.light.border, borderRadius: Radius.m,
-    fontSize: 24, fontWeight: '800', color: Colors.light.text,
+    fontSize: 24, fontWeight: '700', color: Colors.light.text,
     textAlign: 'center', backgroundColor: Colors.light.borderLight,
   },
   otpInputFilled: { borderColor: Colors.light.primary, backgroundColor: Colors.light.primaryLight },

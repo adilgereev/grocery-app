@@ -78,7 +78,7 @@ const styles = StyleSheet.create({
     padding: 12,
     borderWidth: 1,
     borderColor: Colors.light.borderLight,
-    elevation: 2,
+    elevation: 0,
     shadowColor: Colors.light.text,
     shadowOpacity: 0.04,
     shadowRadius: 5,
@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
   },
   relatedPrice: {
     fontSize: 18,
-    fontWeight: '900',
+    fontWeight: '700',
     color: Colors.light.text,
   },
   skeletonRelatedItem: {

@@ -85,10 +85,10 @@ const styles = StyleSheet.create({
   submitButton: {
     borderRadius: Radius.l,
     height: 56,
-    elevation: 8,
+    elevation: 0,
     shadowColor: Colors.light.primary,
     shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.05,
     shadowRadius: 10,
   },
   submitButtonDisabled: {

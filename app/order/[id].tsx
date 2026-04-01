@@ -220,35 +220,35 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     padding: Spacing.l, paddingTop: 60, backgroundColor: Colors.light.card,
     borderBottomWidth: 1, borderBottomColor: Colors.light.borderLight,
-    elevation: 4, shadowColor: Colors.light.text, shadowOpacity: 0.05, shadowOffset: { width: 0, height: 4 }, zIndex: 10,
+    elevation: 0, shadowColor: Colors.light.text, shadowOpacity: 0.02, shadowOffset: { width: 0, height: 4 }, zIndex: 10,
   },
   headerSpacer: { width: 24 },
   backButton: { padding: Spacing.s, marginRight: Spacing.s },
-  title: { fontSize: 18, fontWeight: '800', color: Colors.light.text },
+  title: { fontSize: 18, fontWeight: '700', color: Colors.light.text },
 
   scrollContent: { padding: Spacing.m },
-  sectionTitle: { fontSize: 18, fontWeight: '800', color: Colors.light.text, marginBottom: Spacing.s },
+  sectionTitle: { fontSize: 18, fontWeight: '700', color: Colors.light.text, marginBottom: Spacing.s },
 
   itemsCard: {
     backgroundColor: Colors.light.card, borderRadius: Radius.xl, padding: Spacing.m, marginBottom: Spacing.m,
-    elevation: 1, shadowColor: Colors.light.text, shadowOpacity: 0.03, shadowOffset: { width: 0, height: 2 }, shadowRadius: 6,
+    elevation: 0, shadowColor: Colors.light.text, shadowOpacity: 0.03, shadowOffset: { width: 0, height: 2 }, shadowRadius: 6,
   },
 
   totalCard: {
     backgroundColor: Colors.light.card, borderRadius: Radius.xl, padding: Spacing.l, marginBottom: Spacing.m,
-    elevation: 1, shadowColor: Colors.light.text, shadowOpacity: 0.03, shadowOffset: { width: 0, height: 2 }, shadowRadius: 6,
+    elevation: 0, shadowColor: Colors.light.text, shadowOpacity: 0.03, shadowOffset: { width: 0, height: 2 }, shadowRadius: 6,
   },
   totalRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.s },
   totalItems: { fontSize: 14, color: Colors.light.textSecondary, fontWeight: '500' },
   totalItemsPrice: { fontSize: 14, color: Colors.light.text, fontWeight: '600' },
   totalFree: { fontSize: 14, color: Colors.light.primary, fontWeight: '600' },
   totalDivider: { height: 1, backgroundColor: Colors.light.borderLight, marginVertical: Spacing.s },
-  totalLabel: { fontSize: 18, fontWeight: '800', color: Colors.light.text },
-  totalPrice: { fontSize: 20, fontWeight: '900', color: Colors.light.primary },
+  totalLabel: { fontSize: 18, fontWeight: '700', color: Colors.light.text },
+  totalPrice: { fontSize: 20, fontWeight: '700', color: Colors.light.primary },
 
   repeatButton: {
     backgroundColor: Colors.light.primary, flexDirection: 'row', justifyContent: 'center', alignItems: 'center',
-    paddingVertical: 16, borderRadius: Radius.l, marginTop: Spacing.l,
+    paddingVertical: 16, borderRadius: Radius.pill, marginTop: Spacing.l,
   },
   repeatIcon: { marginRight: 8 },
   repeatButtonText: { color: Colors.light.card, fontSize: 16, fontWeight: '700' },

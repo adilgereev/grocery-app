@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xl, paddingVertical: Spacing.m, borderRadius: Radius.xl,
   },
   retryIcon: { marginRight: 8 },
-  retryText: { color: Colors.light.card, fontWeight: 'bold' },
+  retryText: { color: Colors.light.card, fontWeight: '700' },
   backButton: { marginTop: 16 },
   backButtonText: { color: Colors.light.textSecondary, fontSize: 16 },
   headerAbsolute: {

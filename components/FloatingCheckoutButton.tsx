@@ -93,10 +93,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.m,
     alignItems: 'center',
     justifyContent: 'space-between',
-    elevation: 6,
-    shadowColor: Colors.light.primary,
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
+    shadowColor: Colors.light.text,
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
     shadowOffset: { width: 0, height: 4 },
   },
   floatingButtonSubmitting: { opacity: 0.7 },
@@ -115,6 +114,6 @@ const styles = StyleSheet.create({
   floatingCheckoutPriceText: {
     color: Colors.light.card,
     fontSize: 14,
-    fontWeight: '800',
+    fontWeight: '700', // Софт-болд
   },
 });

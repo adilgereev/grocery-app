@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.xl,
     padding: Spacing.l,
     marginBottom: Spacing.m,
-    elevation: 1,
+    elevation: 0,
     shadowColor: Colors.light.text,
     shadowOpacity: 0.03,
     shadowOffset: { width: 0, height: 2 },

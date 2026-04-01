@@ -63,11 +63,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: Colors.light.borderLight,
     
-    // Премиальная левитирующая тень (Adaptive Drop-Shadow Header)
-    elevation: 4,
     shadowColor: Colors.light.text,
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
+    shadowOpacity: 0.02,
     shadowRadius: 8,
     zIndex: 10,
   },
@@ -80,7 +78,7 @@ const styles = StyleSheet.create({
   title: {
     flex: 1,
     fontSize: FontSize.xl,
-    fontWeight: '800',
+    fontWeight: '700', // Мягкий заголовок (Soft Bold)
     color: Colors.light.text,
     fontFamily: Fonts.sans,
     textAlign: 'center',

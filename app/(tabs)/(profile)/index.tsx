@@ -230,7 +230,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: FontSize.big, // Крупный заголовок по фидбеку (28px)
-    fontWeight: '800',
+    fontWeight: '700',
     color: Colors.light.text,
   },
   guestContainer: {
@@ -255,11 +255,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.04,
     shadowOffset: { width: 0, height: 4 },
     shadowRadius: 10,
-    elevation: 2,
+    elevation: 0,
   },
   guestTitle: {
     fontSize: 26,
-    fontWeight: '800',
+    fontWeight: '700',
     color: Colors.light.text,
     marginBottom: Spacing.s,
   },
@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
   guestButton: {
     width: '100%',
     height: 56,
-    borderRadius: Radius.xl,
+    borderRadius: Radius.pill,
     overflow: 'hidden',
   },
   guestButtonSolid: {
@@ -304,7 +304,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.02,
     shadowOffset: { width: 0, height: 4 },
     shadowRadius: 12,
-    elevation: 2,
+    elevation: 0,
   },
   avatar: {
     width: 56,
@@ -317,7 +317,7 @@ const styles = StyleSheet.create({
   },
   avatarText: {
     fontSize: 20,
-    fontWeight: '800',
+    fontWeight: '700',
     color: Colors.light.primary,
   },
   userInfo: {
@@ -325,7 +325,7 @@ const styles = StyleSheet.create({
   },
   userName: {
     fontSize: 17,
-    fontWeight: '800',
+    fontWeight: '700',
     color: Colors.light.text,
     marginBottom: 1,
   },
@@ -342,7 +342,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.02,
     shadowOffset: { width: 0, height: 4 },
     shadowRadius: 10,
-    elevation: 2,
+    elevation: 0,
     marginBottom: 24,
   },
   menuItem: {

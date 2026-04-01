@@ -315,10 +315,12 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.card,
     borderBottomLeftRadius: Radius.xxl,
     borderBottomRightRadius: Radius.xxl,
-    elevation: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.light.borderLight, // Тонкое отделение вместо тяжелой тени
+    elevation: 0,
     shadowColor: Colors.light.text,
-    shadowOpacity: 0.04,
-    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.02,
+    shadowOffset: { width: 0, height: 4 },
     shadowRadius: 15,
     zIndex: 10,
   },
@@ -346,7 +348,8 @@ const styles = StyleSheet.create({
   searchContainer: {
     flexDirection: 'row', alignItems: 'center',
     backgroundColor: Colors.light.primaryLight,
-    borderRadius: Radius.l, paddingHorizontal: Spacing.m, height: 52,
+    borderRadius: Radius.pill, // Максимальное скругление в стиле Лавки
+    paddingHorizontal: Spacing.m, height: 52,
   },
   searchIcon: { marginRight: 10 },
   searchInputText: { flex: 1, fontSize: 16, color: Colors.light.textSecondary },
@@ -362,12 +365,12 @@ const styles = StyleSheet.create({
   bannersScroll: { paddingHorizontal: Spacing.m },
   bannerCard: {
     width: SCREEN_WIDTH * 0.8, height: 160, marginRight: Spacing.m, borderRadius: Radius.xl,
-    elevation: 4, shadowColor: Colors.light.primary, shadowOpacity: 0.06, shadowOffset: { width: 0, height: 4 }, shadowRadius: 14,
+    elevation: 0, shadowColor: Colors.light.text, shadowOpacity: 0.05, shadowOffset: { width: 0, height: 4 }, shadowRadius: 14,
   },
   bannerImage: { width: '100%', height: '100%', borderRadius: Radius.l },
   bannerImageBorder: { borderRadius: Radius.xl },
   bannerTitle: {
-    color: Colors.light.card, fontSize: 20, fontWeight: '900',
+    color: Colors.light.card, fontSize: 20, fontWeight: '700',
     textShadowColor: Colors.light.blackTransparent, textShadowOffset: { width: 0, height: 2 },
     position: 'absolute', bottom: Spacing.m, left: Spacing.m, right: Spacing.m,
   },
@@ -383,20 +386,20 @@ const styles = StyleSheet.create({
   popularScroll: { paddingHorizontal: Spacing.m },
   popularCard: {
     width: 140, marginRight: Spacing.m, backgroundColor: Colors.light.card, borderRadius: Radius.l,
-    overflow: 'hidden', elevation: 2, shadowColor: Colors.light.text, shadowOpacity: 0.04, shadowOffset: { width: 0, height: 2 }, shadowRadius: 14,
+    overflow: 'hidden', elevation: 0, shadowColor: Colors.light.text, shadowOpacity: 0.04, shadowOffset: { width: 0, height: 4 }, shadowRadius: 16,
   },
   imageWrapper: { position: 'relative', width: '100%', height: 110 },
   imagePlaceholder: { backgroundColor: Colors.light.borderLight },
   popularImage: { width: '100%', height: '100%' },
   popularInfo: { padding: Spacing.s, flex: 1, justifyContent: 'center' },
   popularName: { fontSize: 13, fontWeight: '600', color: Colors.light.textSecondary, marginBottom: 2 },
-  popularPrice: { fontSize: 14, fontWeight: '800', color: Colors.light.text },
+  popularPrice: { fontSize: 14, fontWeight: '700', color: Colors.light.text },
   popularUnit: { fontSize: 11, color: Colors.light.textLight, fontWeight: '600' },
   addPopularButton: {
     position: 'absolute', bottom: 8, right: 8,
-    width: 32, height: 32, borderRadius: 16, backgroundColor: Colors.light.primary,
-    justifyContent: 'center', alignItems: 'center', elevation: 3,
-    shadowColor: Colors.light.text, shadowOpacity: 0.1, shadowRadius: 4, shadowOffset: { width: 0, height: 2 }
+    width: 32, height: 32, borderRadius: Radius.pill, backgroundColor: Colors.light.primary,
+    justifyContent: 'center', alignItems: 'center', elevation: 0,
+    shadowColor: Colors.light.text, shadowOpacity: 0.05, shadowRadius: 4, shadowOffset: { width: 0, height: 2 }
   },
   categoryFallbackTitle: { fontSize: 22, fontWeight: '700', color: Colors.light.text, paddingHorizontal: Spacing.m }
 });

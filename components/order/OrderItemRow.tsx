@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
   },
   productPrice: {
     fontSize: 15,
-    fontWeight: '800',
+    fontWeight: '700',
     color: Colors.light.text,
     marginLeft: Spacing.s,
   },

@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
   },
   sectionSubtitle: {
     fontSize: 11,
-    fontWeight: '800',
+    fontWeight: '700',
     color: Colors.light.textSecondary,
     letterSpacing: 1.5,
     marginBottom: Spacing.s,

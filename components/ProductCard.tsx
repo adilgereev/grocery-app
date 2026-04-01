@@ -89,10 +89,10 @@ const styles = StyleSheet.create({
     padding: Spacing.m,
     marginBottom: Spacing.m,
     shadowColor: Colors.light.text,
-    shadowOpacity: 0.04,
+    shadowOpacity: 0.03, // Минималистичная, почти невидимая тень
     shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 14,
-    elevation: 2,
+    shadowRadius: 16,
+    elevation: 0, // Убираем жесткий Android-объем
   },
   productImage: {
     width: '100%',
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
   },
   productPrice: {
     fontSize: 18,
-    fontWeight: '800',
+    fontWeight: '700', // Облегченное начертание (Soft Bold)
     color: Colors.light.text,
   },
   productUnit: {
@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
   addButton: {
     width: '100%',
     height: 40,
-    borderRadius: Radius.m,
+    borderRadius: Radius.pill, // "Пухлая" кнопка
     backgroundColor: Colors.light.primaryLight,
     justifyContent: 'center',
     alignItems: 'center',
@@ -143,21 +143,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: Colors.light.primary,
-    borderRadius: Radius.m,
+    borderRadius: Radius.pill, // Синхронизируем с кнопкой
     height: 40,
     paddingHorizontal: Spacing.xs,
   },
   controlButton: {
     width: 32,
     height: 32,
-    borderRadius: Radius.s,
+    borderRadius: Radius.pill, // Круглые кнопки "+" и "-"
     backgroundColor: Colors.light.card,
     justifyContent: 'center',
     alignItems: 'center',
   },
   controlQuantity: {
     fontSize: 16,
-    fontWeight: '800',
+    fontWeight: '700',
     color: Colors.light.card,
     marginHorizontal: Spacing.xs,
   },

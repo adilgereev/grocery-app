@@ -94,7 +94,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.xl,
     padding: 12,
     marginBottom: 12,
-    elevation: 2,
+    elevation: 0,
     shadowColor: Colors.light.text,
     shadowOpacity: 0.03,
     shadowOffset: { width: 0, height: 4 },
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
   itemImage: {
     width: 60,
     height: 60,
-    borderRadius: 14,
+    borderRadius: 20, // Экстремальное скругление по-Лавке
     marginRight: Spacing.m,
   },
   itemInfo: {
@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
   },
   itemPrice: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '700',
     color: Colors.light.primary,
   },
   itemUnitInfo: { 
@@ -149,9 +149,9 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.card,
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 1,
+    elevation: 0,
     shadowColor: Colors.light.text,
-    shadowOpacity: 0.06,
+    shadowOpacity: 0.04,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 4,
   },

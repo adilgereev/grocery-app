@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
     position: 'absolute', top: '100%', left: 0, right: 0,
     marginTop: 4,
     backgroundColor: Colors.light.card, borderRadius: Radius.m,
-    elevation: 10, shadowColor: Colors.light.text, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 10,
+    shadowColor: Colors.light.text, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.05, shadowRadius: 10,
     maxHeight: 400, overflow: 'hidden',
   },
   suggestionsScroll: {

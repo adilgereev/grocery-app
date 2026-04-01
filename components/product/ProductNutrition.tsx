@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
   },
   nutritionValue: {
     fontSize: 18,
-    fontWeight: '800',
+    fontWeight: '700',
     color: Colors.light.text,
     marginBottom: Spacing.xs,
   },

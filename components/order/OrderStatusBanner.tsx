@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
   },
   statusLabel: {
     fontSize: 20,
-    fontWeight: '800',
+    fontWeight: '700',
     marginBottom: 4,
   },
   statusDate: {

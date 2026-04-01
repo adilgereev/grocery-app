@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: 28,
-    fontWeight: '800',
+    fontWeight: '700',
     color: Colors.light.text,
   },
   emptyScrollContent: {
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
   },
   emptyTitle: {
     fontSize: 22,
-    fontWeight: '800',
+    fontWeight: '700',
     color: Colors.light.text,
     marginBottom: Spacing.s,
   },
@@ -103,9 +103,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xl,
     paddingVertical: 14,
     borderRadius: Radius.xl,
-    elevation: 4,
+    elevation: 0,
     shadowColor: Colors.light.primary,
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.05,
     shadowRadius: 8,
     shadowOffset: { width: 0, height: 4 },
   },

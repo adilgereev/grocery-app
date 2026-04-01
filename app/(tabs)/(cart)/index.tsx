@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontSize: FontSize.big, 
-    fontWeight: '800',
+    fontWeight: '700',
     color: Colors.light.text,
   },
   listContainer: {

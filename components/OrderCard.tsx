@@ -75,7 +75,6 @@ const styles = StyleSheet.create({
     borderRadius: Radius.xl, 
     padding: Spacing.m, 
     marginBottom: Spacing.m,
-    elevation: 1, 
     shadowColor: Colors.light.text, 
     shadowOpacity: 0.03, 
     shadowOffset: { width: 0, height: 2 }, 
@@ -123,7 +122,7 @@ const styles = StyleSheet.create({
   },
   totalText: { 
     fontSize: 18, 
-    fontWeight: '800', 
+    fontWeight: '700', 
     color: Colors.light.text 
   },
 });

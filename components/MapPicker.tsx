@@ -69,8 +69,8 @@ const styles = StyleSheet.create({
     top: Platform.OS === 'ios' ? 60 : 30 + (Platform.OS === 'android' ? 10 : 0),
     left: 20, right: 20,
     backgroundColor: Colors.light.card, padding: 15, borderRadius: Radius.m,
-    flexDirection: 'row', alignItems: 'center', elevation: 10,
-    shadowColor: Colors.light.text, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.1, shadowRadius: 10,
+    flexDirection: 'row', alignItems: 'center', elevation: 0,
+    shadowColor: Colors.light.text, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.05, shadowRadius: 10,
   },
   closeButton: { marginRight: 15 },
   title: { fontSize: 16, fontWeight: '700', color: Colors.light.text },
@@ -83,8 +83,8 @@ const styles = StyleSheet.create({
   },
   confirmButton: {
     backgroundColor: Colors.light.primary, height: 56, borderRadius: Radius.l,
-    alignItems: 'center', justifyContent: 'center', elevation: 8,
-    shadowColor: Colors.light.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 10,
+    alignItems: 'center', justifyContent: 'center', elevation: 0,
+    shadowColor: Colors.light.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.05, shadowRadius: 10,
   },
   confirmButtonText: { color: Colors.light.card, fontSize: 16, fontWeight: '700' },
 });

@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
     borderColor: Colors.light.card,
 
     // Премиальные тени
-    elevation: 3,
+    elevation: 0,
     shadowColor: Colors.light.text,
     shadowOpacity: 0.04,
     shadowOffset: { width: 0, height: 4 },
@@ -199,9 +199,9 @@ const styles = StyleSheet.create({
     height: 56,
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 4,
+    elevation: 0,
     shadowColor: Colors.light.primary,
-    shadowOpacity: 0.3,
+    shadowOpacity: 0.05,
     shadowOffset: { width: 0, height: 4 },
     shadowRadius: 8,
   },
@@ -209,6 +209,6 @@ const styles = StyleSheet.create({
   addButtonText: {
     color: Colors.light.card,
     fontSize: FontSize.l,
-    fontWeight: 'bold',
+    fontWeight: '700',
   },
 });

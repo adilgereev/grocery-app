@@ -150,7 +150,7 @@ const styles = StyleSheet.create({
   },
   compactLabel: {
     fontSize: 9,
-    fontWeight: '800',
+    fontWeight: '700',
     color: Colors.light.textSecondary,
     marginBottom: 2,
   },
