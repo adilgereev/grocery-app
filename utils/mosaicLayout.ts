@@ -8,7 +8,11 @@ export function getMosaicCardWidth(
   containerWidth: number, 
   gap: number = 8
 ): number {
-  const unitWidth = (containerWidth - gap * 2) / 3;
+  // Вычисляем точную ширину и округляем вниз до десятых долей.
+  // Это компенсирует погрешности вычислений с плавающей запятой в React Native,
+  // предотвращая нежелательный перенос последней плитки в ряду (баг на больших экранах).
+  const exactUnitWidth = (containerWidth - gap * 2) / 3;
+  const unitWidth = Math.floor(exactUnitWidth * 10) / 10;
 
   const hasOrphan = totalItems % 2 !== 0 && totalItems >= 3;
   const isInLastThreeOfOdd = hasOrphan && index >= totalItems - 3;
