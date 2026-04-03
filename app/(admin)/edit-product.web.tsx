@@ -34,23 +34,28 @@ export default function EditProductScreenWeb() {
 
   const fetchData = async () => {
     setInitialLoading(true);
-    
-    const { data: catData } = await supabase.from('categories').select('*').order('sort_order', { ascending: true });
-    if (catData) setCategories(catData);
+    try {
+      const { data: catData, error: catError } = await supabase.from('categories').select('*').order('sort_order', { ascending: true });
+      if (catError) throw catError;
+      if (catData) setCategories(catData);
 
-    if (id) {
-      const { data: productData, error } = await supabase.from('products').select('*').eq('id', id).single();
-      if (!error && productData) {
-        setName(productData.name || '');
-        setDescription(productData.description || '');
-        setPrice(productData.price ? productData.price.toString() : '');
-        setUnit(productData.unit || '');
-        setImageUrl(productData.image_url || '');
-        setCategoryId(productData.category_id || '');
+      if (id) {
+        const { data: productData, error } = await supabase.from('products').select('*').eq('id', id).single();
+        if (error) throw error;
+        if (productData) {
+          setName(productData.name || '');
+          setDescription(productData.description || '');
+          setPrice(productData.price ? productData.price.toString() : '');
+          setUnit(productData.unit || '');
+          setImageUrl(productData.image_url || '');
+          setCategoryId(productData.category_id || '');
+        }
       }
+    } catch (error: any) {
+      alert(`Ошибка загрузки данных: ${error.message}`);
+    } finally {
+      setInitialLoading(false);
     }
-    
-    setInitialLoading(false);
   };
 
   const handleSave = async () => {
@@ -60,22 +65,22 @@ export default function EditProductScreenWeb() {
     }
 
     setLoading(true);
-    const { error } = await supabase.from('products').update({
-      name,
-      description,
-      price: parseFloat(price),
-      unit,
-      image_url: imageUrl,
-      category_id: categoryId,
-    }).eq('id', id);
+    try {
+      const { error } = await supabase.from('products').update({
+        name,
+        description,
+        price: parseFloat(price),
+        unit,
+        image_url: imageUrl,
+        category_id: categoryId,
+      }).eq('id', id);
 
-    setLoading(false);
-
-    if (error) {
-      alert(`Ошибка при сохранении: ${error.message}`);
-    } else {
-      alert('Товар успешно обновлен!');
+      if (error) throw error;
       router.back();
+    } catch (error: any) {
+      alert(`Ошибка при сохранении: ${error.message}`);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -167,7 +172,7 @@ export default function EditProductScreenWeb() {
         disabled={loading}
       >
         {loading ? (
-          <ActivityIndicator color="#fff" />
+          <ActivityIndicator color={Colors.light.card} />
         ) : (
           <Text style={styles.saveButtonText}>Сохранить изменения</Text>
         )}
@@ -210,8 +215,8 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     alignItems: 'center',
     marginTop: Spacing.xl,
-    shadowColor: Colors.light.primary,
-    shadowOpacity: 0.3,
+    shadowColor: Colors.light.text,
+    shadowOpacity: 0.05,
     shadowOffset: { width: 0, height: 4 },
     shadowRadius: 8,
     elevation: 4,

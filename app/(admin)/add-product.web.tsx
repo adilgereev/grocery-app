@@ -29,8 +29,13 @@ export default function AddProductScreenWeb() {
   }, []);
 
   const fetchCategories = async () => {
-    const { data } = await supabase.from('categories').select('*').order('sort_order', { ascending: true });
-    if (data) setCategories(data);
+    try {
+      const { data, error } = await supabase.from('categories').select('*').order('sort_order', { ascending: true });
+      if (error) throw error;
+      if (data) setCategories(data);
+    } catch (error: any) {
+      alert(`Ошибка загрузки категорий: ${error.message}`);
+    }
   };
 
   const handleSave = async () => {
@@ -40,25 +45,26 @@ export default function AddProductScreenWeb() {
     }
 
     setLoading(true);
-    const { error } = await supabase.from('products').insert({
-      name,
-      description,
-      price: parseFloat(price),
-      unit,
-      image_url: imageUrl,
-      category_id: categoryId,
-      is_active: true,
-      stock: 100, // Default stock for MVP
-      tags: [] // Default tags
-    });
+    try {
+      const { error } = await supabase.from('products').insert({
+        name,
+        description,
+        price: parseFloat(price),
+        unit,
+        image_url: imageUrl,
+        category_id: categoryId,
+        is_active: true,
+        stock: 100, // Default stock for MVP
+        tags: [] // Default tags
+      });
 
-    setLoading(false);
-
-    if (error) {
-      alert(`Ошибка при сохранении: ${error.message}`);
-    } else {
+      if (error) throw error;
       alert('Товар успешно добавлен в каталог!');
       router.back();
+    } catch (error: any) {
+      alert(`Ошибка при сохранении: ${error.message}`);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -142,7 +148,7 @@ export default function AddProductScreenWeb() {
         disabled={loading}
       >
         {loading ? (
-          <ActivityIndicator color="#fff" />
+          <ActivityIndicator color={Colors.light.card} />
         ) : (
           <Text style={styles.saveButtonText}>Сохранить товар</Text>
         )}
@@ -184,8 +190,8 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     alignItems: 'center',
     marginTop: Spacing.xl,
-    shadowColor: Colors.light.primary,
-    shadowOpacity: 0.3,
+    shadowColor: Colors.light.text,
+    shadowOpacity: 0.05,
     shadowOffset: { width: 0, height: 4 },
     shadowRadius: 8,
     elevation: 4,
