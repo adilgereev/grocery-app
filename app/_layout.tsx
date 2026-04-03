@@ -1,3 +1,5 @@
+import 'react-native-get-random-values';
+import { Buffer } from 'buffer';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -10,6 +12,12 @@ import { useAppStore } from '@/store/appStore';
 import { useAddressStore } from '@/store/addressStore';
 import { registerForPushNotificationsAsync } from '@/lib/NotificationService';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+
+// Полифилл для Buffer (нужен для AWS SDK / R2)
+if (typeof global.Buffer === 'undefined') {
+  global.Buffer = Buffer;
+}
+
 
 export const unstable_settings = {
   anchor: '(tabs)',

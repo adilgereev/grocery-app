@@ -1,10 +1,12 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, Image, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import Animated, { FadeInLeft, Layout } from 'react-native-reanimated';
 import { Product } from '@/types';
 import { useRouter } from 'expo-router';
+import { getOptimizedImage, getPlaceholderUrl } from '@/utils/imageKit';
 
 interface CartItemProps {
   item: {
@@ -37,7 +39,13 @@ const CartItem: React.FC<CartItemProps> = ({ item, index, onUpdateQuantity, onRe
         testID="cart-item-touchable"
       >
         {item.product.image_url ? (
-          <Image source={{ uri: item.product.image_url }} style={styles.itemImage} />
+          <Image 
+            source={getOptimizedImage(item.product.image_url, { width: 150, height: 150 })} 
+            placeholder={getPlaceholderUrl(item.product.image_url)}
+            style={styles.itemImage} 
+            contentFit="cover"
+            transition={300}
+          />
         ) : (
           <View style={[styles.itemImage, styles.imagePlaceholder]} />
         )}

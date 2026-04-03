@@ -11,15 +11,17 @@ import { useCartStore } from '@/store/cartStore';
 import { useCategoryStore } from '@/store/categoryStore';
 import { Category } from '@/types';
 import { formatShortAddress } from '@/utils/addressFormatter';
+import { getOptimizedImage, getPlaceholderUrl } from '@/utils/imageKit';
 import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
+import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Animated,
   Dimensions,
-  FlatList, Image, ImageBackground,
+  FlatList,
   ScrollView, StyleSheet, Text, TouchableOpacity, View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -159,8 +161,15 @@ export default function HomeScreen() {
             >
               <View style={styles.imageWrapper}>
                 {product.image_url
-                  ? <Image source={{ uri: product.image_url }} style={styles.popularImage} />
-                  : <View style={[styles.popularImage, styles.imagePlaceholder]} />
+                  ? (
+                    <Image
+                      source={getOptimizedImage(product.image_url, { width: 300, height: 300 })}
+                      placeholder={getPlaceholderUrl(product.image_url)}
+                      style={styles.popularImage}
+                      contentFit="cover"
+                      transition={300}
+                    />
+                  ) : <View style={[styles.popularImage, styles.imagePlaceholder]} />
                 }
                 <TouchableOpacity
                   style={styles.addPopularButton}
@@ -198,11 +207,14 @@ export default function HomeScreen() {
       >
         {mockBanners.map((banner) => (
           <TouchableOpacity key={banner.id} style={styles.bannerCard} activeOpacity={0.9}>
-            <ImageBackground
-              source={{ uri: banner.image_url }}
-              style={styles.bannerImage}
-              imageStyle={styles.bannerImageBorder}
-            >
+            <View style={styles.bannerImageContainer}>
+              <Image
+                source={getOptimizedImage(banner.image_url, { width: 800, height: 400 })}
+                placeholder={getPlaceholderUrl(banner.image_url)}
+                style={styles.bannerImage}
+                contentFit="cover"
+                transition={500}
+              />
               <LinearGradient
                 colors={[Colors.light.blackTransparent, 'transparent']}
                 start={{ x: 0, y: 1 }}
@@ -210,7 +222,7 @@ export default function HomeScreen() {
                 style={styles.gradientOverlay}
               />
               <Text style={styles.bannerTitle}>{banner.title}</Text>
-            </ImageBackground>
+            </View>
           </TouchableOpacity>
         ))}
       </ScrollView>
@@ -298,6 +310,7 @@ export default function HomeScreen() {
         renderItem={() => null} // Рендер происходит в ListHeader
         refreshing={categoriesLoading}
         onRefresh={() => {
+          console.log('🔄 [DEBUG] onRefresh triggered on HomeScreen');
           fetchFullHierarchy(true);
           fetchPopularProducts();
         }}
@@ -367,8 +380,13 @@ const styles = StyleSheet.create({
     width: SCREEN_WIDTH * 0.8, height: 160, marginRight: Spacing.m, borderRadius: Radius.xl,
     elevation: 0, shadowColor: Colors.light.text, shadowOpacity: 0.05, shadowOffset: { width: 0, height: 4 }, shadowRadius: 14,
   },
-  bannerImage: { width: '100%', height: '100%', borderRadius: Radius.l },
-  bannerImageBorder: { borderRadius: Radius.xl },
+  bannerImageContainer: {
+    width: '100%',
+    height: '100%',
+    borderRadius: Radius.xl,
+    overflow: 'hidden',
+  },
+  bannerImage: { width: '100%', height: '100%' },
   bannerTitle: {
     color: Colors.light.card, fontSize: 20, fontWeight: '700',
     textShadowColor: Colors.light.blackTransparent, textShadowOffset: { width: 0, height: 2 },

@@ -29,7 +29,7 @@ interface CategoryState {
   invalidateCache: () => void;
 }
 
-const CACHE_TIMEOUT = 5 * 60 * 1000; // 5 минут
+const CACHE_TIMEOUT = 1 * 60 * 1000; // 1 минута в режиме активной настройки (было 5)
 
 export const useCategoryStore = create<CategoryState>()(
   persist(
@@ -89,8 +89,14 @@ export const useCategoryStore = create<CategoryState>()(
             return; // Кеш свежий, выходим
           }
         }
+        
+        // Если принудительно — сбрасываем время сразу (до запроса), чтобы не было гонки
+        if (forceRefresh) {
+          set({ lastFetch: null });
+        }
 
         try {
+          console.log('📦 [DEBUG] fetchFullHierarchy start. Force:', forceRefresh);
           set({ isLoading: true, error: null });
           const data = await fetchFullHierarchy();
 

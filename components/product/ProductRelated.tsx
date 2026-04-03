@@ -1,9 +1,11 @@
-import Skeleton from '@/components/Skeleton';
+import React from 'react';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Image } from 'expo-image';
+import { useRouter } from 'expo-router';
 import { Colors, Radius, Spacing } from '@/constants/theme';
 import { Product } from '@/types';
-import { useRouter } from 'expo-router';
-import React from 'react';
-import { Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Skeleton from '@/components/Skeleton';
+import { getOptimizedImage, getPlaceholderUrl } from '@/utils/imageKit';
 
 interface ProductRelatedProps {
   products: Product[];
@@ -33,7 +35,13 @@ export const ProductRelated: React.FC<ProductRelatedProps> = ({ products, isLoad
               onPress={() => router.push(`/product/${item.id}?name=${encodeURIComponent(item.name)}` as any)}
             >
               {item.image_url ? (
-                <Image source={{ uri: item.image_url }} style={styles.relatedImage} />
+                <Image 
+                  source={getOptimizedImage(item.image_url, { width: 250, height: 250 })} 
+                  placeholder={getPlaceholderUrl(item.image_url)}
+                  style={styles.relatedImage} 
+                  contentFit="cover"
+                  transition={300}
+                />
               ) : (
                 <View style={[styles.relatedImage, { backgroundColor: Colors.light.borderLight }]} />
               )}

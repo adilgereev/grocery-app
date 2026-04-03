@@ -1,20 +1,22 @@
-import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, Dimensions } from 'react-native';
+import React, { useMemo } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, useWindowDimensions } from 'react-native';
+import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { useCartStore } from '@/store/cartStore';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { Product } from '@/types';
-
-// Вычисляем половину ширины экрана минус отступы по краям (32) и между колонками (16)
-const { width } = Dimensions.get('window');
-const cardWidth = (width - 32 - 16) / 2; 
+import { getOptimizedImage, getPlaceholderUrl } from '@/utils/imageKit';
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
 export default function ProductCard({ item, index = 0 }: { item: Product, index?: number }) {
   const router = useRouter();
+  const { width } = useWindowDimensions();
+  
+  const cardWidth = useMemo(() => (width - 32 - 16) / 2, [width]);
+
   const { items, addItem, updateQuantity } = useCartStore();
 
   const cartItem = items.find((i) => i.product.id === item.id);
@@ -28,7 +30,13 @@ export default function ProductCard({ item, index = 0 }: { item: Product, index?
       testID="product-card"
     >
       {item.image_url ? (
-        <Image source={{ uri: item.image_url }} style={styles.productImage} />
+        <Image 
+          source={getOptimizedImage(item.image_url, { width: 400, height: 400 })} 
+          placeholder={getPlaceholderUrl(item.image_url)}
+          style={styles.productImage} 
+          contentFit="cover"
+          transition={400}
+        />
       ) : (
         <View style={[styles.productImage, { backgroundColor: Colors.light.border }]} />
       )}

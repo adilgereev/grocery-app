@@ -3,7 +3,9 @@ import { Product } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { Image, Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Image } from 'expo-image';
+import { getOptimizedImage, getPlaceholderUrl } from '@/utils/imageKit';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface ProductHeaderProps {
@@ -25,7 +27,13 @@ export const ProductHeader: React.FC<ProductHeaderProps> = ({
   return (
     <View style={styles.imageContainer}>
       {product.image_url ? (
-        <Image source={{ uri: product.image_url }} style={styles.image} resizeMode="cover" />
+        <Image 
+          source={getOptimizedImage(product.image_url, { width: 800, height: 800 })} 
+          placeholder={getPlaceholderUrl(product.image_url)}
+          style={styles.image} 
+          contentFit="cover"
+          transition={500}
+        />
       ) : (
         <View style={[styles.image, styles.placeholderImage]} />
       )}

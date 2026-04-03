@@ -1,8 +1,11 @@
 import { Colors, Radius } from '@/constants/theme';
+import { useCategoryStore } from '@/store/categoryStore';
 import { Category } from '@/types';
+import { getOptimizedImage, getPlaceholderUrl } from '@/utils/imageKit';
+import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { Image, StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
@@ -15,6 +18,7 @@ interface SubcategoryCardProps {
 
 const SubcategoryCard = React.memo(({ subcategory, cardWidth, index }: SubcategoryCardProps) => {
   const router = useRouter();
+  const lastFetch = useCategoryStore((state) => state.lastFetch);
 
   const handlePress = () => {
     // Навигация на страницу продуктов подкатегории
@@ -36,9 +40,17 @@ const SubcategoryCard = React.memo(({ subcategory, cardWidth, index }: Subcatego
     >
       {subcategory.image_url && !isHex && (
         <Image
-          source={{ uri: subcategory.image_url }}
+          source={getOptimizedImage(subcategory.image_url, {
+            width: 300,
+            height: 300,
+            customTransformations: subcategory.image_transformations ?? undefined,
+            v: lastFetch ?? undefined
+          })}
+          placeholder={getPlaceholderUrl(subcategory.image_url)}
           style={StyleSheet.absoluteFill}
-          resizeMode="cover"
+          contentFit="cover"
+          placeholderContentFit="cover"
+          transition={400}
         />
       )}
 
@@ -60,10 +72,10 @@ const styles = StyleSheet.create({
   },
   categoryName: {
     color: Colors.light.text,
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '700',
     padding: 12, // Финальная настройка под Лавку
-    lineHeight: 16,
+    lineHeight: 15,
     maxWidth: '90%',
     zIndex: 10,
   },

@@ -5,6 +5,7 @@ export interface Category {
   image_url: string | null;
   parent_id: string | null;
   sort_order: number;
+  image_transformations?: string | null;
   created_at?: string;
 }
 

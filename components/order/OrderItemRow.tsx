@@ -1,7 +1,9 @@
 import React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
+import { Image } from 'expo-image';
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { Product } from '@/types';
+import { getOptimizedImage, getPlaceholderUrl } from '@/utils/imageKit';
 
 interface OrderItemRowProps {
   item: {
@@ -12,6 +14,7 @@ interface OrderItemRowProps {
   };
   isLast: boolean;
 }
+
 
 /**
  * Строка товара в списке заказа.
@@ -26,7 +29,13 @@ const OrderItemRow = ({ item, isLast }: OrderItemRowProps) => {
     <View>
       <View style={styles.productRow}>
         {imageUrl ? (
-          <Image source={{ uri: imageUrl }} style={styles.productImage} />
+          <Image 
+            source={getOptimizedImage(imageUrl, { width: 150, height: 150 })} 
+            placeholder={getPlaceholderUrl(imageUrl)}
+            style={styles.productImage} 
+            contentFit="cover"
+            transition={200}
+          />
         ) : (
           <View style={styles.productImagePlaceholder} />
         )}
