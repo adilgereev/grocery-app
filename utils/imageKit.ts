@@ -17,7 +17,6 @@ interface ImageOptions {
   padding?: number; // отступы (p-X)
   customTransformations?: string; // ручные параметры из базы (напр. fo-bottom)
   v?: number | string; // версия для сброса кеша
-  isPlaceholder?: boolean; // флаг для подавления отладочных логов
 }
 
 /**
@@ -43,7 +42,6 @@ export function getOptimizedImage(url: string | null | undefined, options: Image
     padding,
     customTransformations,
     v,
-    isPlaceholder
   } = options;
 
   const transforms: string[] = [];
@@ -81,11 +79,6 @@ export function getOptimizedImage(url: string | null | undefined, options: Image
   // Добавляем версию для сброса кеша
   if (v) {
     finalUrl = `${finalUrl}&v=${v}`;
-  }
-
-  // Логируем только основное изображение
-  if (!isPlaceholder) {
-    console.log('🖼️ [Main Image] URL:', finalUrl);
   }
 
   return finalUrl;
