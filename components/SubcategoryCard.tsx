@@ -5,7 +5,7 @@ import { getOptimizedImage, getPlaceholderUrl } from '@/utils/imageKit';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity, useWindowDimensions } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
@@ -19,6 +19,7 @@ interface SubcategoryCardProps {
 const SubcategoryCard = React.memo(({ subcategory, cardWidth, index }: SubcategoryCardProps) => {
   const router = useRouter();
   const lastFetch = useCategoryStore((state) => state.lastFetch);
+  const { width: windowWidth } = useWindowDimensions();
 
   const handlePress = () => {
     // Навигация на страницу продуктов подкатегории
@@ -29,6 +30,15 @@ const SubcategoryCard = React.memo(({ subcategory, cardWidth, index }: Subcatego
   // Цвет фона: из базы (HEX) или нейтральный дефолт
   const isHex = subcategory.image_url?.startsWith('#');
   const bgColor = isHex ? subcategory.image_url : Colors.light.background;
+
+  // Если карточка занимает больше 40% экрана, считаем её "широкой"
+  const isWide = cardWidth > windowWidth * 0.4;
+  let mergedTransformations = subcategory.image_transformations || '';
+  if (isWide && !mergedTransformations.includes('cm-pad_resize')) {
+    mergedTransformations = mergedTransformations 
+      ? `${mergedTransformations},cm-pad_resize` 
+      : 'cm-pad_resize';
+  }
 
   return (
     <AnimatedTouchable
@@ -43,7 +53,7 @@ const SubcategoryCard = React.memo(({ subcategory, cardWidth, index }: Subcatego
           source={getOptimizedImage(subcategory.image_url, {
             width: 300,
             height: 300,
-            customTransformations: subcategory.image_transformations ?? undefined,
+            customTransformations: mergedTransformations || undefined,
             v: lastFetch ?? undefined
           })}
           placeholder={getPlaceholderUrl(subcategory.image_url)}
