@@ -1,4 +1,4 @@
-import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Colors, Radius, Spacing, Shadows } from '@/constants/theme';
 import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -139,11 +139,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.l,
     padding: Spacing.m,
     marginBottom: Spacing.m,
-    elevation: 2,
-    shadowColor: Colors.light.text,
-    shadowOpacity: 0.05,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 8,
+    ...Shadows.md,
   },
   infoRow: { flexDirection: 'row', alignItems: 'center', marginBottom: Spacing.m },
   image: { width: 60, height: 60, borderRadius: Radius.m, marginRight: Spacing.m },

@@ -1,4 +1,4 @@
-import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Colors, Radius, Spacing, Shadows } from '@/constants/theme';
 import { Product } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
@@ -68,11 +68,7 @@ const styles = StyleSheet.create({
     paddingVertical: 20,
     borderTopWidth: 1,
     borderTopColor: Colors.light.borderLight,
-    elevation: 0,
-    shadowColor: Colors.light.text,
-    shadowOpacity: 0.03,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: -8 },
+    ...Shadows.md,
     paddingBottom: Platform.OS === 'ios' ? 40 : 20,
   },
   priceLabel: {
@@ -95,11 +91,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.pill,
     paddingHorizontal: 36,
     paddingVertical: 18,
-    elevation: 0,
-    shadowColor: Colors.light.text,
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 4 },
+    ...Shadows.lg,
   },
   addToCartText: {
     color: Colors.light.card,
@@ -123,11 +115,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.card,
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 0,
-    shadowColor: Colors.light.text,
-    shadowOpacity: 0.04,
-    shadowRadius: 5,
-    shadowOffset: { width: 0, height: 3 },
+    ...Shadows.sm,
   },
   quantityText: {
     fontSize: 20,

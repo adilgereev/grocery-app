@@ -1,4 +1,4 @@
-import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Colors, Radius, Spacing, Shadows } from '@/constants/theme';
 import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
 import { cleanAddress } from '@/lib/address';
@@ -223,11 +223,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.l,
     padding: Spacing.m,
     marginBottom: Spacing.m,
-    shadowColor: Colors.light.text,
-    shadowOpacity: 0.05,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 10,
-    elevation: 2,
+    ...Shadows.md,
   },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.m },
   orderId: { fontSize: 16, fontWeight: '700', color: Colors.light.text },

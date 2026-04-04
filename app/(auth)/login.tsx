@@ -1,4 +1,4 @@
-import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Colors, Radius, Spacing, Shadows } from '@/constants/theme';
 import { logger } from '@/lib/logger';
 import { generateOTP, generatePasswordFromPhone, normalizePhone, phoneToEmail, sendSMS } from '@/lib/sms';
 import { supabase } from '@/lib/supabase';
@@ -370,7 +370,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.primary,
     borderRadius: Radius.xxl, justifyContent: 'center', alignItems: 'center',
     marginBottom: Spacing.m,
-    shadowColor: Colors.light.text, shadowOpacity: 0.05, shadowRadius: 12, shadowOffset: { width: 0, height: 6 },
+    ...Shadows.md,
   },
   appName: {
     fontSize: 28, fontWeight: '700', color: Colors.light.text,
@@ -385,11 +385,7 @@ const styles = StyleSheet.create({
     marginHorizontal: Spacing.m,
     borderRadius: Radius.xxl + 4,
     padding: Spacing.xl,
-    shadowColor: Colors.light.text,
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.08,
-    shadowRadius: 24,
-    elevation: 0,
+    ...Shadows.lg,
     borderWidth: 1.5,
     borderColor: Colors.light.glassBorder, // Используем токены для эффекта стекла
   },
@@ -423,7 +419,7 @@ const styles = StyleSheet.create({
   primaryButton: {
     backgroundColor: Colors.light.primary, borderRadius: Radius.m,
     height: 54, justifyContent: 'center', alignItems: 'center',
-    shadowColor: Colors.light.text, shadowOpacity: 0.05, shadowRadius: 6, shadowOffset: { width: 0, height: 3 },
+    ...Shadows.sm,
   },
   primaryButtonDisabled: { backgroundColor: Colors.light.primaryLight },
   primaryButtonText: { color: Colors.light.white, fontSize: 16, fontWeight: '700' },

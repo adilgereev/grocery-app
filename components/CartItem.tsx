@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Duration, Shadows } from '@/constants/theme';
 import Animated, { FadeInLeft, Layout } from 'react-native-reanimated';
 import { Product } from '@/types';
 import { useRouter } from 'expo-router';
@@ -28,7 +28,7 @@ const CartItem: React.FC<CartItemProps> = ({ item, index, onUpdateQuantity, onRe
 
   return (
     <Animated.View
-      entering={FadeInLeft.delay(index * 50).duration(400)}
+      entering={FadeInLeft.delay(index * 50).duration(Duration.default)}
       layout={Layout.springify()}
       style={styles.container}
       testID="cart-item"
@@ -102,11 +102,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.xl,
     padding: 12,
     marginBottom: 12,
-    elevation: 0,
-    shadowColor: Colors.light.text,
-    shadowOpacity: 0.03,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 10,
+    ...Shadows.md,
   },
   itemTouchRow: { 
     flexDirection: 'row', 
@@ -157,11 +153,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.card,
     alignItems: 'center',
     justifyContent: 'center',
-    elevation: 0,
-    shadowColor: Colors.light.text,
-    shadowOpacity: 0.04,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 4,
+    ...Shadows.sm,
   },
   quantityText: {
     fontSize: 16,

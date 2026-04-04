@@ -9,7 +9,7 @@ import SubcategoryCard from '@/components/SubcategoryCard';
 import Skeleton from '@/components/Skeleton';
 import { ErrorToast } from '@/components/ErrorToast';
 import { logger } from '@/lib/logger';
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Shadows } from '@/constants/theme';
 import { Product } from '@/types';
 import { getMosaicCardWidth } from '@/utils/mosaicLayout';
 
@@ -189,11 +189,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.card,
     borderBottomWidth: 1,
     borderBottomColor: Colors.light.borderLight,
-    elevation: 0,
-    shadowColor: Colors.light.text,
-    shadowOpacity: 0.02,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 14,
+    ...Shadows.sm,
     marginBottom: Spacing.s,
     zIndex: 10,
   },

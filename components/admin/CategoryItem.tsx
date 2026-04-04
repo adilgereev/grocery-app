@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Colors, Radius, Spacing, Shadows } from '@/constants/theme';
 import { Category } from '@/types';
 
 interface CategoryItemProps {
@@ -105,11 +105,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.l,
     padding: Spacing.m,
     marginBottom: Spacing.m,
-    shadowColor: Colors.light.text,
-    shadowOpacity: 0.05,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 8,
-    elevation: 2,
+    ...Shadows.md,
   },
   subcategoryCard: {
     marginLeft: Spacing.xl,

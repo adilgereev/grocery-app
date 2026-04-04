@@ -1,6 +1,6 @@
 import Skeleton from '@/components/Skeleton';
 import ScreenHeader from '@/components/ScreenHeader';
-import { Colors, FontSize, Fonts, Radius, Spacing } from '@/constants/theme';
+import { Colors, FontSize, Fonts, Radius, Spacing, Shadows } from '@/constants/theme';
 import { formatPhoneDisplay } from '@/lib/sms';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/providers/AuthProvider';
@@ -261,11 +261,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.xl,
     paddingVertical: Spacing.m + Spacing.s,
     alignItems: 'center',
-    shadowColor: Colors.light.text,
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 0,
+    ...Shadows.lg,
   },
   saveButtonSaving: {
     opacity: 0.7,

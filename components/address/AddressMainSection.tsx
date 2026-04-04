@@ -1,5 +1,5 @@
 import AddressSearchInput from '@/components/AddressSearchInput';
-import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Colors, Radius, Spacing, Shadows } from '@/constants/theme';
 import { formatAddressString } from '@/lib/addressUtils';
 import { DaDataSuggestion } from '@/lib/dadataApi';
 import { Ionicons } from '@expo/vector-icons';
@@ -155,11 +155,7 @@ const styles = StyleSheet.create({
     height: 20,
     borderRadius: 10,
     backgroundColor: Colors.light.card,
-    elevation: 0,
-    shadowColor: Colors.light.text,
-    shadowOpacity: 0.05,
-    shadowOffset: { width: 0, height: 1 },
-    shadowRadius: 2,
+    ...Shadows.sm,
   },
   switchThumbActive: { alignSelf: 'flex-end' },
 });

@@ -7,7 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import ProductCard from '@/components/ProductCard';
 import { useRouter } from 'expo-router';
 import Skeleton from '@/components/Skeleton';
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Shadows } from '@/constants/theme';
 import { Product } from '@/types';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ScreenHeader from '@/components/ScreenHeader';
@@ -179,11 +179,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xl,
     paddingVertical: 14,
     borderRadius: Radius.xl,
-    elevation: 0,
-    shadowColor: Colors.light.text,
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 4 },
+    ...Shadows.md,
   },
   goShoppingBtnText: {
     color: Colors.light.card,

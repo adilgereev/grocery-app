@@ -5,7 +5,7 @@ import { useAddressStore, Address } from '@/store/addressStore';
 import { formatFullAddress } from '@/utils/addressFormatter';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { Colors, FontSize, Spacing, Radius } from '@/constants/theme';
+import { Colors, FontSize, Spacing, Radius, Shadows } from '@/constants/theme';
 import ScreenHeader from '@/components/ScreenHeader';
 
 export default function AddressesScreen() {
@@ -108,17 +108,11 @@ const styles = StyleSheet.create({
     borderColor: Colors.light.card,
 
     // Премиальные тени
-    elevation: 0,
-    shadowColor: Colors.light.text,
-    shadowOpacity: 0.04,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 12,
+    ...Shadows.md,
   },
   selectedCard: {
     borderColor: Colors.light.primary,
     backgroundColor: Colors.light.successLight,
-    shadowOpacity: 0.08,
-    shadowColor: Colors.light.text,
   },
   addressInfo: {
     flexDirection: 'row',
@@ -199,11 +193,7 @@ const styles = StyleSheet.create({
     height: 56,
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 0,
-    shadowColor: Colors.light.text,
-    shadowOpacity: 0.05,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 8,
+    ...Shadows.md,
   },
   addIcon: { marginRight: Spacing.s },
   addButtonText: {

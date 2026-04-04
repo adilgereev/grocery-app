@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Shadows } from '@/constants/theme';
 
 interface OrderSectionProps {
   title: string;
@@ -37,11 +37,7 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.l,
     flexDirection: 'row',
     alignItems: 'center',
-    elevation: 0,
-    shadowColor: Colors.light.text,
-    shadowOpacity: 0.03,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 6,
+    ...Shadows.sm,
   },
   iconContainer: {
     width: 40,

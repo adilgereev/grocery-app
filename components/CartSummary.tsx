@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Colors, Radius, Spacing, Shadows } from '@/constants/theme';
 import { Address } from '@/store/addressStore';
 
 export type PaymentMethod = 'online' | 'cash';
@@ -179,11 +179,7 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     padding: Spacing.m,
     marginBottom: Spacing.l,
-    elevation: 0,
-    shadowColor: Colors.light.text,
-    shadowOpacity: 0.03,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 10,
+    ...Shadows.md,
   },
   addressTextContainer: { flex: 1, marginRight: 12 },
   addressSelectedText: {
@@ -215,21 +211,13 @@ const styles = StyleSheet.create({
     padding: Spacing.m,
     borderWidth: 2,
     borderColor: Colors.light.card,
-    elevation: 0,
-    shadowColor: Colors.light.text,
-    shadowOpacity: 0.03,
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 6,
+    ...Shadows.sm,
   },
   paymentOptionSelected: {
     backgroundColor: Colors.light.primaryLight,
     borderColor: Colors.light.primaryBorder,
     borderWidth: 2,
-    elevation: 0,
-    shadowColor: Colors.light.text,
-    shadowOpacity: 0.04,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 8,
+    ...Shadows.md,
   },
   paymentIconContainer: {
     width: 44,
@@ -262,11 +250,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.card,
     borderRadius: Radius.xl,
     padding: 20,
-    elevation: 0,
-    shadowColor: Colors.light.text,
-    shadowOpacity: 0.03,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 10,
+    ...Shadows.md,
   },
   receiptTitle: {
     fontSize: 18,
@@ -319,11 +303,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     alignItems: 'center',
     justifyContent: 'space-between',
-    elevation: 0,
-    shadowColor: Colors.light.text,
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 4 },
+    ...Shadows.md,
   },
   checkoutButtonSubmitting: { opacity: 0.7 },
   checkoutText: {

@@ -2,7 +2,7 @@ import React from 'react';
 import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View, Platform } from 'react-native';
 import Animated, { useAnimatedStyle, withTiming, SharedValue } from 'react-native-reanimated';
 
-import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Colors, Radius, Spacing, Duration, Shadows } from '@/constants/theme';
 
 interface FloatingCheckoutButtonProps {
   totalPrice: number;
@@ -36,8 +36,8 @@ export default function FloatingCheckoutButton({
     // Если всё содержимое влезает на экран, плавающая кнопка не нужна
     if (contentHeight.value <= layoutHeight.value + 20) {
       return {
-        opacity: withTiming(0, { duration: 250 }),
-        transform: [{ translateY: withTiming(150, { duration: 300 }) }],
+        opacity: withTiming(0, { duration: Duration.fast }),
+        transform: [{ translateY: withTiming(150, { duration: Duration.default }) }],
       };
     }
 
@@ -45,8 +45,8 @@ export default function FloatingCheckoutButton({
     const isAtBottom = scrollY.value + layoutHeight.value >= contentHeight.value - 120;
 
     return {
-      opacity: withTiming(isAtBottom ? 0 : 1, { duration: 250 }),
-      transform: [{ translateY: withTiming(isAtBottom ? 150 : 0, { duration: 300 }) }],
+      opacity: withTiming(isAtBottom ? 0 : 1, { duration: Duration.fast }),
+      transform: [{ translateY: withTiming(isAtBottom ? 150 : 0, { duration: Duration.default }) }],
     };
   });
 
@@ -93,10 +93,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.m,
     alignItems: 'center',
     justifyContent: 'space-between',
-    shadowColor: Colors.light.text,
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 4 },
+    ...Shadows.md,
   },
   floatingButtonSubmitting: { opacity: 0.7 },
   floatingCheckoutText: {

@@ -1,5 +1,5 @@
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Colors } from '@/constants/theme';
+import { Colors, Shadows } from '@/constants/theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useAuth } from '@/providers/AuthProvider';
 import { useCartStore } from '@/store/cartStore';
@@ -43,11 +43,7 @@ export default function TabLayout() {
           backgroundColor: Colors.light.card,
           borderTopWidth: 1,
           borderTopColor: Colors.light.borderLight,
-          elevation: 0,
-          shadowColor: Colors.light.text,
-          shadowOpacity: 0.02,
-          shadowOffset: { width: 0, height: -4 },
-          shadowRadius: 10,
+          ...Shadows.sm,
         },
       }}>
       <Tabs.Screen

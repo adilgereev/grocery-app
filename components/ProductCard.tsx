@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useCartStore } from '@/store/cartStore';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Duration, Shadows } from '@/constants/theme';
 import { Product } from '@/types';
 import { useImageKit } from '@/hooks/useImageKit';
 
@@ -18,7 +18,7 @@ export default function ProductCard({ item, index = 0 }: { item: Product, index?
   const cardWidth = useMemo(() => Math.round((width - 32 - 16) / 2), [width]);
   const { source, placeholder, hasImage, imageProps } = useImageKit(
     item.image_url,
-    { width: cardWidth, height: cardWidth, transition: 400 },
+    { width: cardWidth, height: cardWidth, transition: Duration.default },
   );
 
   const { items, addItem, updateQuantity } = useCartStore();
@@ -30,7 +30,7 @@ export default function ProductCard({ item, index = 0 }: { item: Product, index?
       style={[styles.productCard, { width: cardWidth }]}
       activeOpacity={0.9}
       onPress={() => router.push(`/product/${item.id}?name=${encodeURIComponent(item.name)}`)}
-      entering={FadeInDown.delay(index * 50).duration(400)}
+      entering={FadeInDown.delay(index * 50).duration(Duration.default)}
       testID="product-card"
     >
       {hasImage ? (
@@ -99,11 +99,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.xxl,
     padding: Spacing.m,
     marginBottom: Spacing.m,
-    shadowColor: Colors.light.text,
-    shadowOpacity: 0.03, // Минималистичная, почти невидимая тень
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 16,
-    elevation: 0, // Убираем жесткий Android-объем
+    ...Shadows.md,
   },
   productImage: {
     width: '100%',

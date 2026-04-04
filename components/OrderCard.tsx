@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Shadows } from '@/constants/theme';
 import { Order } from '@/types';
 import { cleanAddress } from '@/lib/address';
 
@@ -75,10 +75,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.xl, 
     padding: Spacing.m, 
     marginBottom: Spacing.m,
-    shadowColor: Colors.light.text, 
-    shadowOpacity: 0.03, 
-    shadowOffset: { width: 0, height: 2 }, 
-    shadowRadius: 6,
+    ...Shadows.sm,
   },
   topRow: {
     flexDirection: 'row', 

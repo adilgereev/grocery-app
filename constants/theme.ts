@@ -102,7 +102,38 @@ export const Radius = {
   l: 16,
   xl: 20,
   xxl: 24,
-  pill: 999,
+  pill: 100,
+};
+
+export const Duration = {
+  fast: 150,      // микро-анимации (hover, press)
+  default: 300,   // карточки, переходы, toast
+  slow: 500,      // полноэкранные переходы
+  pulse: 800,     // skeleton shimmer
+};
+
+export const Shadows = {
+  sm: {
+    shadowColor: '#111827',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.03,
+    shadowRadius: 6,
+    elevation: 0,
+  },
+  md: {
+    shadowColor: '#111827',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 12,
+    elevation: 0,
+  },
+  lg: {
+    shadowColor: '#111827',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.06,
+    shadowRadius: 16,
+    elevation: 0,
+  },
 };
 
 export const FontSize = {

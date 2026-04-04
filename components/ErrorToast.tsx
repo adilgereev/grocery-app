@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors, Radius } from '@/constants/theme';
+import { Colors, Radius, Duration, Shadows } from '@/constants/theme';
 
 // Тип уведомления (используется только внутри компонента)
 type ToastType = 'success' | 'error' | 'warning' | 'info';
@@ -21,8 +21,8 @@ export function ErrorToast({ type, message, duration = 3000, onDismiss }: ToastP
 
   const hideToast = useCallback(() => {
     Animated.parallel([
-      Animated.timing(opacity.current, { toValue: 0, duration: 250, useNativeDriver: false }),
-      Animated.timing(translateY.current, { toValue: 100, duration: 250, useNativeDriver: false })
+      Animated.timing(opacity.current, { toValue: 0, duration: Duration.default, useNativeDriver: false }),
+      Animated.timing(translateY.current, { toValue: 100, duration: Duration.default, useNativeDriver: false })
     ]).start(() => {
       onDismiss?.();
     });
@@ -30,8 +30,8 @@ export function ErrorToast({ type, message, duration = 3000, onDismiss }: ToastP
 
   const showToast = useCallback(() => {
     Animated.parallel([
-      Animated.timing(opacity.current, { toValue: 1, duration: 300, useNativeDriver: false }),
-      Animated.timing(translateY.current, { toValue: 0, duration: 300, useNativeDriver: false })
+      Animated.timing(opacity.current, { toValue: 1, duration: Duration.default, useNativeDriver: false }),
+      Animated.timing(translateY.current, { toValue: 0, duration: Duration.default, useNativeDriver: false })
     ]).start();
 
     setTimeout(() => {
@@ -105,11 +105,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 16,
     borderRadius: Radius.xl,
-    shadowColor: Colors.light.text,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 0,
+    ...Shadows.md,
     minWidth: 200,
     maxWidth: '90%',
   },

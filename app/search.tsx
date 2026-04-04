@@ -1,7 +1,7 @@
 import ProductCard from '@/components/ProductCard';
 import { ErrorToast } from '@/components/ErrorToast';
 import { logger } from '@/lib/logger';
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Shadows } from '@/constants/theme';
 import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -212,10 +212,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.card,
     borderBottomWidth: 1,
     borderBottomColor: Colors.light.borderLight,
-    elevation: 0,
-    shadowColor: Colors.light.text,
-    shadowOpacity: 0.02,
-    shadowOffset: { width: 0, height: 4 },
+    ...Shadows.sm,
     zIndex: 10,
   },
   backButton: {

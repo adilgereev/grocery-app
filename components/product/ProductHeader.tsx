@@ -1,4 +1,4 @@
-import { Colors, Spacing } from '@/constants/theme';
+import { Colors, Spacing, Duration, Shadows } from '@/constants/theme';
 import { Product } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -24,7 +24,7 @@ export const ProductHeader: React.FC<ProductHeaderProps> = ({
 }) => {
   const router = useRouter();
   const { width: screenWidth } = useWindowDimensions();
-  const { source, placeholder, hasImage, imageProps } = useImageKit(product.image_url, { width: screenWidth, height: 380, transition: 500 });
+  const { source, placeholder, hasImage, imageProps } = useImageKit(product.image_url, { width: screenWidth, height: 380, transition: Duration.slow });
 
   return (
     <View style={styles.imageContainer}>
@@ -86,10 +86,6 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.whiteTransparent,
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 0,
-    shadowColor: Colors.light.text,
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 4 },
+    ...Shadows.md,
   },
 });

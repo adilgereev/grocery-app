@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { StyleSheet, DimensionValue, StyleProp, ViewStyle } from 'react-native';
-import { Colors } from '@/constants/theme';
+import { Colors, Duration } from '@/constants/theme';
 import Animated, { 
   useSharedValue, 
   useAnimatedStyle, 
@@ -22,8 +22,8 @@ export default function Skeleton({ width, height, borderRadius = 8, style }: Ske
   useEffect(() => {
     opacity.value = withRepeat(
       withSequence(
-        withTiming(1, { duration: 800 }),
-        withTiming(0.4, { duration: 800 })
+        withTiming(1, { duration: Duration.pulse }),
+        withTiming(0.4, { duration: Duration.pulse })
       ),
       -1, // бесконечное повторение
       true // revert (туда-обратно)

@@ -2,7 +2,7 @@ import React, { Component, ReactNode } from 'react';
 import { logger } from '@/lib/logger';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors, Spacing, Radius } from '@/constants/theme';
+import { Colors, Spacing, Radius, Shadows } from '@/constants/theme';
 
 interface ErrorBoundaryState {
   hasError: boolean;
@@ -112,11 +112,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.errorLight,
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 0,
-    shadowColor: Colors.light.text,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 12,
-    shadowOpacity: 0.05,
+    ...Shadows.md,
   },
   title: {
     fontSize: 24,
@@ -154,11 +150,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingVertical: 16,
     borderRadius: Radius.xl,
-    elevation: 0,
-    shadowColor: Colors.light.text,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 12,
-    shadowOpacity: 0.05,
+    ...Shadows.md,
   },
   reloadIcon: {
     marginRight: Spacing.s,

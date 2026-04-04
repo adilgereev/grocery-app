@@ -1,7 +1,7 @@
 import CategoryHierarchySection from '@/components/CategoryHierarchySection';
 import PopularProductsSkeleton from '@/components/PopularProductsSkeleton';
 import SubcategoriesSkeleton from '@/components/SubcategoriesSkeleton';
-import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Colors, Radius, Spacing, Duration, Shadows } from '@/constants/theme';
 import { mockBanners } from '@/data/mockBanners';
 import { logger } from '@/lib/logger';
 import { supabase } from '@/lib/supabase';
@@ -167,7 +167,7 @@ export default function HomeScreen() {
                       placeholder={getPlaceholderUrl(product.image_url)}
                       style={styles.popularImage}
                       contentFit="cover"
-                      transition={300}
+                      transition={Duration.default}
                     />
                   ) : <View style={[styles.popularImage, styles.imagePlaceholder]} />
                 }
@@ -213,7 +213,7 @@ export default function HomeScreen() {
                 placeholder={getPlaceholderUrl(banner.image_url)}
                 style={styles.bannerImage}
                 contentFit="cover"
-                transition={500}
+                transition={Duration.slow}
               />
               <LinearGradient
                 colors={[Colors.light.blackTransparent, 'transparent']}
@@ -328,12 +328,8 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius: Radius.xxl,
     borderBottomRightRadius: Radius.xxl,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.light.borderLight, // Тонкое отделение вместо тяжелой тени
-    elevation: 0,
-    shadowColor: Colors.light.text,
-    shadowOpacity: 0.02,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 15,
+    borderBottomColor: Colors.light.borderLight,
+    ...Shadows.sm,
     zIndex: 10,
   },
   safeAreaTop: { backgroundColor: Colors.light.card },
@@ -377,7 +373,7 @@ const styles = StyleSheet.create({
   bannersScroll: { paddingHorizontal: Spacing.m },
   bannerCard: {
     width: SCREEN_WIDTH * 0.8, height: 160, marginRight: Spacing.m, borderRadius: Radius.xl,
-    elevation: 0, shadowColor: Colors.light.text, shadowOpacity: 0.05, shadowOffset: { width: 0, height: 4 }, shadowRadius: 14,
+    ...Shadows.md,
   },
   bannerImageContainer: {
     width: '100%',
@@ -403,7 +399,8 @@ const styles = StyleSheet.create({
   popularScroll: { paddingHorizontal: Spacing.m },
   popularCard: {
     width: 140, marginRight: Spacing.m, backgroundColor: Colors.light.card, borderRadius: Radius.l,
-    overflow: 'hidden', elevation: 0, shadowColor: Colors.light.text, shadowOpacity: 0.04, shadowOffset: { width: 0, height: 4 }, shadowRadius: 16,
+    overflow: 'hidden',
+    ...Shadows.md,
   },
   imageWrapper: { position: 'relative', width: '100%', height: 110 },
   imagePlaceholder: { backgroundColor: Colors.light.borderLight },
@@ -415,8 +412,8 @@ const styles = StyleSheet.create({
   addPopularButton: {
     position: 'absolute', bottom: 8, right: 8,
     width: 32, height: 32, borderRadius: Radius.pill, backgroundColor: Colors.light.primary,
-    justifyContent: 'center', alignItems: 'center', elevation: 0,
-    shadowColor: Colors.light.text, shadowOpacity: 0.05, shadowRadius: 4, shadowOffset: { width: 0, height: 2 }
+    justifyContent: 'center', alignItems: 'center',
+    ...Shadows.sm,
   },
   categoryFallbackTitle: { fontSize: 22, fontWeight: '700', color: Colors.light.text, paddingHorizontal: Spacing.m }
 });

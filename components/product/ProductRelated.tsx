@@ -2,7 +2,7 @@ import React from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
-import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Colors, Radius, Spacing, Shadows } from '@/constants/theme';
 import { Product } from '@/types';
 import Skeleton from '@/components/Skeleton';
 import { useImageKit } from '@/hooks/useImageKit';
@@ -92,11 +92,7 @@ const styles = StyleSheet.create({
     padding: 12,
     borderWidth: 1,
     borderColor: Colors.light.borderLight,
-    elevation: 0,
-    shadowColor: Colors.light.text,
-    shadowOpacity: 0.04,
-    shadowRadius: 5,
-    shadowOffset: { width: 0, height: 2 },
+    ...Shadows.sm,
   },
   relatedImage: {
     width: '100%',

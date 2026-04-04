@@ -1,4 +1,5 @@
 import { getOptimizedImage, getPlaceholderUrl, ImageOptions } from '@/utils/imageKit';
+import { Duration } from '@/constants/theme';
 import { useMemo } from 'react';
 
 interface UseImageKitOptions {
@@ -27,7 +28,7 @@ export function useImageKit(
   url: string | null | undefined,
   options: UseImageKitOptions,
 ): UseImageKitReturn {
-  const { width, height, transition = 300, imageOptions } = options;
+  const { width, height, transition = Duration.default, imageOptions } = options;
 
   return useMemo(() => {
     const source = getOptimizedImage(url, { width, height, ...imageOptions });

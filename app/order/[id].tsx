@@ -3,7 +3,7 @@ import OrderSection from '@/components/order/OrderSection';
 import OrderStatusBanner from '@/components/order/OrderStatusBanner';
 import OrderTracker from '@/components/order/OrderTracker';
 import Skeleton from '@/components/Skeleton';
-import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Colors, Radius, Spacing, Shadows } from '@/constants/theme';
 import { cleanAddress } from '@/lib/address';
 import { logger } from '@/lib/logger';
 import { supabase } from '@/lib/supabase';
@@ -220,7 +220,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
     padding: Spacing.l, paddingTop: 60, backgroundColor: Colors.light.card,
     borderBottomWidth: 1, borderBottomColor: Colors.light.borderLight,
-    elevation: 0, shadowColor: Colors.light.text, shadowOpacity: 0.02, shadowOffset: { width: 0, height: 4 }, zIndex: 10,
+    ...Shadows.sm, zIndex: 10,
   },
   headerSpacer: { width: 24 },
   backButton: { padding: Spacing.s, marginRight: Spacing.s },
@@ -231,12 +231,12 @@ const styles = StyleSheet.create({
 
   itemsCard: {
     backgroundColor: Colors.light.card, borderRadius: Radius.xl, padding: Spacing.m, marginBottom: Spacing.m,
-    elevation: 0, shadowColor: Colors.light.text, shadowOpacity: 0.03, shadowOffset: { width: 0, height: 2 }, shadowRadius: 6,
+    ...Shadows.sm,
   },
 
   totalCard: {
     backgroundColor: Colors.light.card, borderRadius: Radius.xl, padding: Spacing.l, marginBottom: Spacing.m,
-    elevation: 0, shadowColor: Colors.light.text, shadowOpacity: 0.03, shadowOffset: { width: 0, height: 2 }, shadowRadius: 6,
+    ...Shadows.sm,
   },
   totalRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.s },
   totalItems: { fontSize: 14, color: Colors.light.textSecondary, fontWeight: '500' },

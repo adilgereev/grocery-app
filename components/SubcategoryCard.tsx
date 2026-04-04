@@ -1,11 +1,11 @@
-import { Colors, Radius } from '@/constants/theme';
+import { Colors, Radius, Duration } from '@/constants/theme';
 import { useCategoryStore } from '@/store/categoryStore';
 import { Category } from '@/types';
 import { getOptimizedImage, getPlaceholderUrl } from '@/utils/imageKit';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, useWindowDimensions } from 'react-native';
+import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
@@ -22,7 +22,6 @@ interface SubcategoryCardProps {
 const SubcategoryCard = React.memo(({ subcategory, cardWidth, index }: SubcategoryCardProps) => {
   const router = useRouter();
   const lastFetch = useCategoryStore((state) => state.lastFetch);
-  const { width: windowWidth } = useWindowDimensions();
 
   const handlePress = () => {
     // Навигация на страницу продуктов подкатегории
@@ -33,36 +32,27 @@ const SubcategoryCard = React.memo(({ subcategory, cardWidth, index }: Subcatego
   const isHex = subcategory.image_url?.startsWith('#');
   const bgColor = isHex ? subcategory.image_url : Colors.light.background;
 
-  // Если карточка занимает больше 40% экрана, считаем её "широкой"
-  const isWide = cardWidth > windowWidth * 0.4;
-  let mergedTransformations = subcategory.image_transformations || '';
-  if (isWide && !mergedTransformations.includes('cm-pad_resize')) {
-    mergedTransformations = mergedTransformations
-      ? `${mergedTransformations},cm-pad_resize`
-      : 'cm-pad_resize';
-  }
-
   return (
     <AnimatedTouchable
       testID="subcategory-card"
       style={[styles.card, { width: cardWidth, backgroundColor: bgColor as string }]}
       activeOpacity={0.8}
       onPress={handlePress}
-      entering={FadeInDown.delay((index % 5) * 50).duration(400)}
+      entering={FadeInDown.delay((index % 5) * 50).duration(Duration.default)}
     >
       {subcategory.image_url && !isHex && (
         <Image
           source={getOptimizedImage(subcategory.image_url, {
             width: Math.round(cardWidth),
             height: SUBCATEGORY_CARD_HEIGHT,
-            customTransformations: mergedTransformations || undefined,
+            customTransformations: subcategory.image_transformations || undefined,
             v: lastFetch ?? undefined
           })}
           placeholder={getPlaceholderUrl(subcategory.image_url)}
           style={StyleSheet.absoluteFill}
           contentFit="cover"
           placeholderContentFit="cover"
-          transition={400}
+          transition={Duration.default}
         />
       )}
 

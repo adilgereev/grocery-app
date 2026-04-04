@@ -1,4 +1,4 @@
-import { Colors, FontSize, Fonts, Radius, Spacing } from '@/constants/theme';
+import { Colors, FontSize, Fonts, Radius, Spacing, Shadows } from '@/constants/theme';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
@@ -85,14 +85,9 @@ const styles = StyleSheet.create({
   submitButton: {
     borderRadius: Radius.l,
     height: 56,
-    elevation: 0,
-    shadowColor: Colors.light.text,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
+    ...Shadows.md,
   },
   submitButtonDisabled: {
-    shadowColor: Colors.light.text,
     shadowOpacity: 0,
     elevation: 0,
   },

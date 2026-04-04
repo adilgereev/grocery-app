@@ -1,4 +1,4 @@
-import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Colors, Radius, Spacing, Shadows } from '@/constants/theme';
 import { DaDataSuggestion, getAddressSuggestions } from '@/lib/dadataApi';
 import { Ionicons } from '@expo/vector-icons';
 import debounce from 'lodash.debounce';
@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
     position: 'absolute', top: '100%', left: 0, right: 0,
     marginTop: 4,
     backgroundColor: Colors.light.card, borderRadius: Radius.m,
-    shadowColor: Colors.light.text, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.05, shadowRadius: 10,
+    ...Shadows.md,
     maxHeight: 400, overflow: 'hidden',
   },
   suggestionsScroll: {

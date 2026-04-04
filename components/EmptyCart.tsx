@@ -4,7 +4,7 @@ import React from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import CartRecommendations from '@/components/cart/CartRecommendations';
-import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Colors, Radius, Spacing, Shadows } from '@/constants/theme';
 
 interface EmptyCartProps {
   insetsTop: number;
@@ -103,11 +103,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xl,
     paddingVertical: 14,
     borderRadius: Radius.xl,
-    elevation: 0,
-    shadowColor: Colors.light.text,
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    shadowOffset: { width: 0, height: 4 },
+    ...Shadows.md,
   },
   goShoppingBtnText: {
     color: Colors.light.card,

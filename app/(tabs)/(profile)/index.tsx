@@ -1,5 +1,5 @@
 import Skeleton from '@/components/Skeleton';
-import { Colors, FontSize, Radius, Spacing } from '@/constants/theme';
+import { Colors, FontSize, Radius, Spacing, Shadows } from '@/constants/theme';
 import { logger } from '@/lib/logger';
 import { formatPhoneDisplay } from '@/lib/sms';
 import { supabase } from '@/lib/supabase';
@@ -251,11 +251,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: Spacing.xl,
     // Легкая тень иконки
-    shadowColor: Colors.light.text,
-    shadowOpacity: 0.04,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 10,
-    elevation: 0,
+    ...Shadows.md,
   },
   guestTitle: {
     fontSize: 26,
@@ -298,13 +294,9 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.card,
     borderRadius: Radius.xl,
     padding: Spacing.m,
-    marginBottom: 24, // Увеличил отступ, так как убрали карту
+    marginBottom: 24,
     // Облегченные тени
-    shadowColor: Colors.light.text,
-    shadowOpacity: 0.02,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 12,
-    elevation: 0,
+    ...Shadows.sm,
   },
   avatar: {
     width: 56,
@@ -338,11 +330,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.card,
     borderRadius: Radius.xl,
     overflow: 'hidden',
-    shadowColor: Colors.light.text,
-    shadowOpacity: 0.02,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 10,
-    elevation: 0,
+    ...Shadows.sm,
     marginBottom: 24,
   },
   menuItem: {
