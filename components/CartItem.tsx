@@ -6,7 +6,7 @@ import { Colors, Spacing, Radius } from '@/constants/theme';
 import Animated, { FadeInLeft, Layout } from 'react-native-reanimated';
 import { Product } from '@/types';
 import { useRouter } from 'expo-router';
-import { getOptimizedImage, getPlaceholderUrl } from '@/utils/imageKit';
+import { useImageKit } from '@/hooks/useImageKit';
 
 interface CartItemProps {
   item: {
@@ -20,6 +20,7 @@ interface CartItemProps {
 
 const CartItem: React.FC<CartItemProps> = ({ item, index, onUpdateQuantity, onRemove }) => {
   const router = useRouter();
+  const { source, placeholder, hasImage, imageProps } = useImageKit(item.product.image_url, { width: 60, height: 60 });
 
   const handleProductPress = () => {
     router.push(`/product/${item.product.id}?name=${encodeURIComponent(item.product.name)}`);
@@ -38,13 +39,12 @@ const CartItem: React.FC<CartItemProps> = ({ item, index, onUpdateQuantity, onRe
         onPress={handleProductPress}
         testID="cart-item-touchable"
       >
-        {item.product.image_url ? (
-          <Image 
-            source={getOptimizedImage(item.product.image_url, { width: 150, height: 150 })} 
-            placeholder={getPlaceholderUrl(item.product.image_url)}
-            style={styles.itemImage} 
-            contentFit="cover"
-            transition={300}
+        {hasImage ? (
+          <Image
+            source={source}
+            placeholder={placeholder}
+            style={styles.itemImage}
+            {...imageProps}
           />
         ) : (
           <View style={[styles.itemImage, styles.imagePlaceholder]} />

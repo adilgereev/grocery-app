@@ -10,6 +10,9 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
+// Высота карточки подкатегории
+const SUBCATEGORY_CARD_HEIGHT = 118;
+
 interface SubcategoryCardProps {
   subcategory: Category;
   cardWidth: number;
@@ -26,7 +29,6 @@ const SubcategoryCard = React.memo(({ subcategory, cardWidth, index }: Subcatego
     router.push(`/category/${subcategory.id}?name=${encodeURIComponent(subcategory.name)}`);
   };
 
-
   // Цвет фона: из базы (HEX) или нейтральный дефолт
   const isHex = subcategory.image_url?.startsWith('#');
   const bgColor = isHex ? subcategory.image_url : Colors.light.background;
@@ -35,8 +37,8 @@ const SubcategoryCard = React.memo(({ subcategory, cardWidth, index }: Subcatego
   const isWide = cardWidth > windowWidth * 0.4;
   let mergedTransformations = subcategory.image_transformations || '';
   if (isWide && !mergedTransformations.includes('cm-pad_resize')) {
-    mergedTransformations = mergedTransformations 
-      ? `${mergedTransformations},cm-pad_resize` 
+    mergedTransformations = mergedTransformations
+      ? `${mergedTransformations},cm-pad_resize`
       : 'cm-pad_resize';
   }
 
@@ -51,8 +53,8 @@ const SubcategoryCard = React.memo(({ subcategory, cardWidth, index }: Subcatego
       {subcategory.image_url && !isHex && (
         <Image
           source={getOptimizedImage(subcategory.image_url, {
-            width: 300,
-            height: 300,
+            width: Math.round(cardWidth),
+            height: SUBCATEGORY_CARD_HEIGHT,
             customTransformations: mergedTransformations || undefined,
             v: lastFetch ?? undefined
           })}
@@ -76,7 +78,7 @@ export default SubcategoryCard;
 
 const styles = StyleSheet.create({
   card: {
-    height: 118, // Высота по стандарту Лавки
+    height: SUBCATEGORY_CARD_HEIGHT,
     borderRadius: Radius.l,
     overflow: 'hidden',
   },

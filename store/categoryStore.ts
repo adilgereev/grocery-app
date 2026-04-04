@@ -96,7 +96,6 @@ export const useCategoryStore = create<CategoryState>()(
         }
 
         try {
-          console.log('📦 [DEBUG] fetchFullHierarchy start. Force:', forceRefresh);
           set({ isLoading: true, error: null });
           const data = await fetchFullHierarchy();
 

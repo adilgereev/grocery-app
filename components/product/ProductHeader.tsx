@@ -3,9 +3,9 @@ import { Product } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Platform, StyleSheet, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import { Image } from 'expo-image';
-import { getOptimizedImage, getPlaceholderUrl } from '@/utils/imageKit';
+import { useImageKit } from '@/hooks/useImageKit';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface ProductHeaderProps {
@@ -23,16 +23,17 @@ export const ProductHeader: React.FC<ProductHeaderProps> = ({
   onFavoritePress,
 }) => {
   const router = useRouter();
+  const { width: screenWidth } = useWindowDimensions();
+  const { source, placeholder, hasImage, imageProps } = useImageKit(product.image_url, { width: screenWidth, height: 380, transition: 500 });
 
   return (
     <View style={styles.imageContainer}>
-      {product.image_url ? (
-        <Image 
-          source={getOptimizedImage(product.image_url, { width: 800, height: 800 })} 
-          placeholder={getPlaceholderUrl(product.image_url)}
-          style={styles.image} 
-          contentFit="cover"
-          transition={500}
+      {hasImage ? (
+        <Image
+          source={source}
+          placeholder={placeholder}
+          style={styles.image}
+          {...imageProps}
         />
       ) : (
         <View style={[styles.image, styles.placeholderImage]} />

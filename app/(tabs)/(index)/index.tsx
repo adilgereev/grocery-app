@@ -163,7 +163,7 @@ export default function HomeScreen() {
                 {product.image_url
                   ? (
                     <Image
-                      source={getOptimizedImage(product.image_url, { width: 300, height: 300 })}
+                      source={getOptimizedImage(product.image_url, { width: 140, height: 110 })}
                       placeholder={getPlaceholderUrl(product.image_url)}
                       style={styles.popularImage}
                       contentFit="cover"
@@ -209,7 +209,7 @@ export default function HomeScreen() {
           <TouchableOpacity key={banner.id} style={styles.bannerCard} activeOpacity={0.9}>
             <View style={styles.bannerImageContainer}>
               <Image
-                source={getOptimizedImage(banner.image_url, { width: 800, height: 400 })}
+                source={getOptimizedImage(banner.image_url, { width: Math.round(SCREEN_WIDTH * 0.8), height: 160 })}
                 placeholder={getPlaceholderUrl(banner.image_url)}
                 style={styles.bannerImage}
                 contentFit="cover"
@@ -310,7 +310,6 @@ export default function HomeScreen() {
         renderItem={() => null} // Рендер происходит в ListHeader
         refreshing={categoriesLoading}
         onRefresh={() => {
-          console.log('🔄 [DEBUG] onRefresh triggered on HomeScreen');
           fetchFullHierarchy(true);
           fetchPopularProducts();
         }}

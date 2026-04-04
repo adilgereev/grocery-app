@@ -1,4 +1,5 @@
 import { Colors, Radius, Spacing } from '@/constants/theme';
+import { logger } from '@/lib/logger';
 import { generateOTP, generatePasswordFromPhone, normalizePhone, phoneToEmail, sendSMS } from '@/lib/sms';
 import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
@@ -127,7 +128,7 @@ export default function Login() {
         const smsResult = await sendSMS(normalized, `Вкусная Доставка: ваш код ${code}`);
         result = { success: smsResult.success, error: smsResult.error || null };
       } else {
-        console.log(`[DEV MODE] SMS bypass for ${normalized}. Your code is: ${code}`);
+        logger.log(`[DEV MODE] SMS bypass for ${normalized}. Your code is: ${code}`);
       }
 
       // [DEBUG] Показываем код в алерте для тестирования

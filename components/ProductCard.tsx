@@ -7,7 +7,7 @@ import Animated, { FadeInDown } from 'react-native-reanimated';
 import { useRouter } from 'expo-router';
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { Product } from '@/types';
-import { getOptimizedImage, getPlaceholderUrl } from '@/utils/imageKit';
+import { useImageKit } from '@/hooks/useImageKit';
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
@@ -15,7 +15,11 @@ export default function ProductCard({ item, index = 0 }: { item: Product, index?
   const router = useRouter();
   const { width } = useWindowDimensions();
   
-  const cardWidth = useMemo(() => (width - 32 - 16) / 2, [width]);
+  const cardWidth = useMemo(() => Math.round((width - 32 - 16) / 2), [width]);
+  const { source, placeholder, hasImage, imageProps } = useImageKit(
+    item.image_url,
+    { width: cardWidth, height: cardWidth, transition: 400 },
+  );
 
   const { items, addItem, updateQuantity } = useCartStore();
 
@@ -29,13 +33,12 @@ export default function ProductCard({ item, index = 0 }: { item: Product, index?
       entering={FadeInDown.delay(index * 50).duration(400)}
       testID="product-card"
     >
-      {item.image_url ? (
-        <Image 
-          source={getOptimizedImage(item.image_url, { width: 400, height: 400 })} 
-          placeholder={getPlaceholderUrl(item.image_url)}
-          style={styles.productImage} 
-          contentFit="cover"
-          transition={400}
+      {hasImage ? (
+        <Image
+          source={source}
+          placeholder={placeholder}
+          style={styles.productImage}
+          {...imageProps}
         />
       ) : (
         <View style={[styles.productImage, { backgroundColor: Colors.light.border }]} />

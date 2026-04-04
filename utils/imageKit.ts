@@ -5,7 +5,7 @@ import { PixelRatio } from 'react-native';
  * Документация: https://imagekit.io/docs/image-transformation
  */
 
-interface ImageOptions {
+export interface ImageOptions {
   width?: number;
   height?: number;
   quality?: number;

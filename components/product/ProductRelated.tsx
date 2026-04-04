@@ -5,7 +5,36 @@ import { useRouter } from 'expo-router';
 import { Colors, Radius, Spacing } from '@/constants/theme';
 import { Product } from '@/types';
 import Skeleton from '@/components/Skeleton';
-import { getOptimizedImage, getPlaceholderUrl } from '@/utils/imageKit';
+import { useImageKit } from '@/hooks/useImageKit';
+
+/** Карточка одного рекомендуемого товара */
+const RelatedProductCard = ({ item }: { item: Product }) => {
+  const router = useRouter();
+  const { source, placeholder, hasImage, imageProps } = useImageKit(item.image_url, { width: 140, height: 110 });
+
+  return (
+    <TouchableOpacity
+      style={styles.relatedCard}
+      activeOpacity={0.8}
+      onPress={() => router.push(`/product/${item.id}?name=${encodeURIComponent(item.name)}` as any)}
+    >
+      {hasImage ? (
+        <Image
+          source={source}
+          placeholder={placeholder}
+          style={styles.relatedImage}
+          {...imageProps}
+        />
+      ) : (
+        <View style={[styles.relatedImage, { backgroundColor: Colors.light.borderLight }]} />
+      )}
+      <View style={styles.infoContainer}>
+        <Text style={styles.relatedName} numberOfLines={2}>{item.name}</Text>
+        <Text style={styles.relatedPrice}>{Number(item.price).toFixed(0)} ₽</Text>
+      </View>
+    </TouchableOpacity>
+  );
+};
 
 interface ProductRelatedProps {
   products: Product[];
@@ -16,8 +45,6 @@ interface ProductRelatedProps {
  * Секция с похожими/рекомендуемыми товарами
  */
 export const ProductRelated: React.FC<ProductRelatedProps> = ({ products, isLoading }) => {
-  const router = useRouter();
-
   return (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>С этим покупают</Text>
@@ -28,28 +55,7 @@ export const ProductRelated: React.FC<ProductRelatedProps> = ({ products, isLoad
           contentContainerStyle={styles.relatedScrollContent}
         >
           {products.map((item) => (
-            <TouchableOpacity
-              key={item.id}
-              style={styles.relatedCard}
-              activeOpacity={0.8}
-              onPress={() => router.push(`/product/${item.id}?name=${encodeURIComponent(item.name)}` as any)}
-            >
-              {item.image_url ? (
-                <Image 
-                  source={getOptimizedImage(item.image_url, { width: 250, height: 250 })} 
-                  placeholder={getPlaceholderUrl(item.image_url)}
-                  style={styles.relatedImage} 
-                  contentFit="cover"
-                  transition={300}
-                />
-              ) : (
-                <View style={[styles.relatedImage, { backgroundColor: Colors.light.borderLight }]} />
-              )}
-              <View style={styles.infoContainer}>
-                <Text style={styles.relatedName} numberOfLines={2}>{item.name}</Text>
-                <Text style={styles.relatedPrice}>{Number(item.price).toFixed(0)} ₽</Text>
-              </View>
-            </TouchableOpacity>
+            <RelatedProductCard key={item.id} item={item} />
           ))}
         </ScrollView>
       ) : (

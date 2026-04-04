@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { Product } from '@/types';
-import { getOptimizedImage, getPlaceholderUrl } from '@/utils/imageKit';
+import { useImageKit } from '@/hooks/useImageKit';
 
 interface OrderItemRowProps {
   item: {
@@ -24,17 +24,17 @@ const OrderItemRow = ({ item, isLast }: OrderItemRowProps) => {
   const productName = item.product?.name || 'Товар';
   const imageUrl = (item.product as Product)?.image_url || (item.product as any)?.image_url;
   const totalPrice = Number(item.quantity * item.price_at_time).toFixed(0);
+  const { source, placeholder, hasImage, imageProps } = useImageKit(imageUrl, { width: 56, height: 56, transition: 200 });
 
   return (
     <View>
       <View style={styles.productRow}>
-        {imageUrl ? (
-          <Image 
-            source={getOptimizedImage(imageUrl, { width: 150, height: 150 })} 
-            placeholder={getPlaceholderUrl(imageUrl)}
-            style={styles.productImage} 
-            contentFit="cover"
-            transition={200}
+        {hasImage ? (
+          <Image
+            source={source}
+            placeholder={placeholder}
+            style={styles.productImage}
+            {...imageProps}
           />
         ) : (
           <View style={styles.productImagePlaceholder} />
