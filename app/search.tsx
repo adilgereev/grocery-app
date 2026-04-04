@@ -2,7 +2,7 @@ import ProductCard from '@/components/ProductCard';
 import { ErrorToast } from '@/components/ErrorToast';
 import { logger } from '@/lib/logger';
 import { Colors, Spacing, Radius, Shadows } from '@/constants/theme';
-import { supabase } from '@/lib/supabase';
+import { searchProducts, fetchRecommendedProducts } from '@/lib/productsApi';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -25,14 +25,8 @@ export default function SearchScreen() {
 
   const fetchRecommended = useCallback(async () => {
     try {
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .eq('is_active', true)
-        .limit(6);
-
-      if (error) throw error;
-      if (data) setRecommended(data);
+      const data = await fetchRecommendedProducts(6);
+      setRecommended(data);
     } catch (e: unknown) {
       const errorMessage = e instanceof Error ? e.message : 'Не удалось загрузить рекомендации';
       logger.error('Ошибка загрузки рекомендаций:', e);
@@ -40,19 +34,12 @@ export default function SearchScreen() {
     }
   }, []);
 
-  const searchProducts = useCallback(async (searchQuery: string) => {
+  const performSearch = useCallback(async (searchQuery: string) => {
     setLoading(true);
     setError(null);
     try {
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .ilike('name', `%${searchQuery}%`)
-        .eq('is_active', true)
-        .limit(30);
-
-      if (error) throw error;
-      setResults(data || []);
+      const data = await searchProducts(searchQuery, 30);
+      setResults(data);
     } catch (e: unknown) {
       const errorMessage = e instanceof Error ? e.message : 'Не удалось выполнить поиск';
       logger.error('Ошибка поиска:', e);
@@ -72,7 +59,7 @@ export default function SearchScreen() {
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
       if (query.trim()) {
-        searchProducts(query);
+        performSearch(query);
       } else {
         setResults([]);
         setHasSearched(false);
@@ -80,12 +67,12 @@ export default function SearchScreen() {
     }, 500);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [query, searchProducts]);
+  }, [query, performSearch]);
 
   const handleSearchSubmit = (text: string) => {
     const trimmed = text.trim();
     if (trimmed) {
-      searchProducts(trimmed);
+      performSearch(trimmed);
     }
   };
 
@@ -166,7 +153,7 @@ export default function SearchScreen() {
             <Text style={styles.emptyText}>{error || 'Ничего не найдено'}</Text>
             <Text style={styles.emptySubText}>{error ? 'Нажмите "Повторить" для повторной попытки' : 'Попробуйте изменить запрос'}</Text>
             {error && (
-              <TouchableOpacity style={styles.retryButton} onPress={() => query && searchProducts(query)}>
+              <TouchableOpacity style={styles.retryButton} onPress={() => query && performSearch(query)}>
                 {loading ? (
                   <ActivityIndicator color={Colors.light.card} />
                 ) : (

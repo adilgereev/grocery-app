@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { supabase } from '@/lib/supabase';
+import { fetchFavoriteIds, addToFavorites, removeFromFavorites } from '@/lib/favoriteApi';
 import { Product } from '@/types';
 import { logger } from '@/lib/logger';
 
@@ -25,16 +26,8 @@ export const useFavoriteStore = create<FavoriteStore>((set, get) => ({
   fetchFavorites: async (userId) => {
     try {
       set({ isLoading: true });
-      const { data, error } = await supabase
-        .from('favorites')
-        .select('product_id')
-        .eq('user_id', userId);
-
-      if (!error && data) {
-        set({ favoriteIds: data.map(f => f.product_id), isLoading: false });
-      } else {
-        set({ error: error?.message || 'Не удалось загрузить избранное', isLoading: false });
-      }
+      const ids = await fetchFavoriteIds(userId);
+      set({ favoriteIds: ids, isLoading: false });
     } catch (e: unknown) {
       const errorMessage = e instanceof Error ? e.message : 'Не удалось загрузить избранное';
       logger.error('Ошибка загрузки избранного:', e);
@@ -47,13 +40,13 @@ export const useFavoriteStore = create<FavoriteStore>((set, get) => ({
       const { favoriteIds } = get();
       const isFavorite = favoriteIds.includes(product.id);
 
-      // Оптимистичное обновление UI: мгновенно перерисовываем сердечки, не дожидаясь базы
+      // Оптимистичное обновление UI
       if (isFavorite) {
         set({ favoriteIds: favoriteIds.filter(id => id !== product.id) });
-        await supabase.from('favorites').delete().eq('user_id', userId).eq('product_id', product.id);
+        await removeFromFavorites(userId, product.id);
       } else {
         set({ favoriteIds: [...favoriteIds, product.id] });
-        await supabase.from('favorites').insert({ user_id: userId, product_id: product.id });
+        await addToFavorites(userId, product.id);
       }
     } catch (e: unknown) {
       const errorMessage = e instanceof Error ? e.message : 'Не удалось обновить избранное';

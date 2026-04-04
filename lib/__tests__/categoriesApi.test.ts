@@ -69,16 +69,11 @@ describe('categoriesApi', () => {
   });
 
   describe('fetchFullHierarchy', () => {
-    it('should build recursive hierarchy using subcategory fetches', async () => {
-      // Моки для первого вызова (корневые)
-      mockSupabase.then
-        .mockImplementationOnce((onFulfilled: any) => 
-          Promise.resolve({ data: [mockCategory], error: null }).then(onFulfilled)
-        )
-        // Мок для второго вызова (подкатегории для cat-1)
-        .mockImplementationOnce((onFulfilled: any) => 
-          Promise.resolve({ data: [mockSubcategory], error: null }).then(onFulfilled)
-        );
+    it('should build recursive hierarchy using a single query and memory filtering', async () => {
+      // Мок возвращает все категории (и корни, и вложенные) за один раз
+      mockSupabase.then.mockImplementationOnce((onFulfilled: any) => 
+        Promise.resolve({ data: [mockCategory, mockSubcategory], error: null }).then(onFulfilled)
+      );
 
       const result = await fetchFullHierarchy();
 

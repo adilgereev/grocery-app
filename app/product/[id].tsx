@@ -2,7 +2,7 @@ import Skeleton from '@/components/Skeleton';
 import { ErrorToast } from '@/components/ErrorToast';
 import { logger } from '@/lib/logger';
 import { Colors, Radius, Spacing } from '@/constants/theme';
-import { supabase } from '@/lib/supabase';
+import { fetchProductById, fetchRelatedProducts } from '@/lib/productsApi';
 import { useAuth } from '@/providers/AuthProvider';
 import { useCartStore } from '@/store/cartStore';
 import { useFavoriteStore } from '@/store/favoriteStore';
@@ -38,24 +38,16 @@ export default function ProductDetailScreen() {
     setLoading(true);
     setError(null);
     try {
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .eq('id', id)
-        .single();
-
-      if (error) throw error;
+      const data = await fetchProductById(id as string);
+      if (!data) {
+        setError('Товар не найден');
+        return;
+      }
       setProduct(data);
 
       if (data.category_id) {
-        // Загрузка рекомендованных товаров из той же категории
-        const { data: related } = await supabase
-          .from('products')
-          .select('*')
-          .eq('category_id', data.category_id)
-          .neq('id', data.id)
-          .limit(6);
-        if (related) setRelatedProducts(related as Product[]);
+        const related = await fetchRelatedProducts(data.category_id, data.id, 6);
+        setRelatedProducts(related);
       }
     } catch (e: unknown) {
       const errorMessage = e instanceof Error ? e.message : 'Не удалось загрузить товар';

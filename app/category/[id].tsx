@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, Platform, useWindowDimensions } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { supabase } from '@/lib/supabase';
+import { fetchProductsByCategoryId } from '@/lib/productsApi';
 import { Ionicons } from '@expo/vector-icons';
 import { useCategoryStore } from '@/store/categoryStore';
 import ProductCard from '@/components/ProductCard';
@@ -33,18 +33,8 @@ export default function CategoryProductsScreen() {
     setLoading(true);
     setError(null);
     try {
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .eq('category_id', categoryId)
-        .eq('is_active', true)
-        .order('name');
-
-      if (error) {
-        throw error;
-      }
-
-      setProducts(data || []);
+      const data = await fetchProductsByCategoryId(categoryId);
+      setProducts(data);
       setActiveTag(null); // Reset tag when category changes
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Не удалось загрузить товары';

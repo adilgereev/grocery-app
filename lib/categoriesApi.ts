@@ -54,8 +54,7 @@ export async function fetchFullHierarchy(): Promise<CategoryWithSubcategories[]>
   const { data: allCategories, error } = await supabase
     .from('categories')
     .select('*')
-    .order('sort_order', { ascending: true })
-    .setHeader('Cache-Control', 'no-cache');
+    .order('sort_order', { ascending: true });
 
   if (error) {
     throw new Error(`Не удалось загрузить все категории: ${error.message}`);

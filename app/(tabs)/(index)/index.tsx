@@ -4,7 +4,8 @@ import SubcategoriesSkeleton from '@/components/SubcategoriesSkeleton';
 import { Colors, Radius, Spacing, Duration, Shadows } from '@/constants/theme';
 import { mockBanners } from '@/data/mockBanners';
 import { logger } from '@/lib/logger';
-import { supabase } from '@/lib/supabase';
+import { fetchPopularProducts } from '@/lib/productsApi';
+import { fetchUserProfile } from '@/lib/authApi';
 import { useAuth } from '@/providers/AuthProvider';
 import { useAddressStore } from '@/store/addressStore';
 import { useCartStore } from '@/store/cartStore';
@@ -66,36 +67,29 @@ export default function HomeScreen() {
     extrapolate: 'clamp',
   });
 
-  const fetchPopularProducts = useCallback(async () => {
+  const loadPopularProducts = useCallback(async () => {
     try {
       if (popularProducts.length === 0) { // Silent refresh check
         setPopularLoading(true);
       }
-      const { data, error } = await supabase
-        .from('products')
-        .select('id, name, price, image_url, unit')
-        .order('price', { ascending: false })
-        .limit(10);
-      if (error) {
-        logger.error('Ошибка загрузки популярных:', error.message);
-      }
+      const data = await fetchPopularProducts(10);
       setPopularProducts(data || []);
+    } catch (error: any) {
+      logger.error('Ошибка загрузки популярных:', error.message);
     } finally {
       setPopularLoading(false);
     }
   }, [popularProducts.length]);
 
-  const fetchUserInfo = useCallback(async () => {
+  const loadUserInfo = useCallback(async () => {
     try {
       const userId = session!.user.id;
-      const { data: profileData } = await supabase
-        .from('profiles')
-        .select('first_name')
-        .eq('id', userId)
-        .single();
-      if (profileData?.first_name) setFirstName(profileData.first_name);
+      const profileData = await fetchUserProfile(userId);
+      if (profileData && 'first_name' in profileData) {
+        setFirstName(profileData.first_name as string);
+      }
     } catch (error) {
-      logger.error('Ошибка в fetchUserInfo:', error);
+      logger.error('Ошибка в loadUserInfo:', error);
     }
   }, [session]);
 
@@ -109,13 +103,13 @@ export default function HomeScreen() {
       // fetchFullHierarchy проверит кеш: если он сброшен (invalidateCache), будет сетевой запрос
       // Позволяем стору использовать кеш (5 минут), если не было принудительного обновления (onRefresh)
       fetchFullHierarchy();
-      fetchPopularProducts();
+      loadPopularProducts();
 
       if (session?.user) {
-        fetchUserInfo();
+        loadUserInfo();
         loadAddresses(); // Синхронизируем адреса из стора
       }
-    }, [session, loadAddresses, fetchUserInfo, fetchFullHierarchy, fetchPopularProducts])
+    }, [session, loadAddresses, loadUserInfo, fetchFullHierarchy, loadPopularProducts])
   );
 
   // Определяем приветствие по времени суток
@@ -311,7 +305,7 @@ export default function HomeScreen() {
         refreshing={categoriesLoading}
         onRefresh={() => {
           fetchFullHierarchy(true);
-          fetchPopularProducts();
+          loadPopularProducts();
         }}
       />
     </View>

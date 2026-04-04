@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { Alert, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
-import { supabase } from '@/lib/supabase';
+import { fetchAddresses, createAddress, updateAddress, deleteAddress, markAddressAsSelected } from '@/lib/addressApi';
+import { createOrder, createOrderItems } from '@/lib/orderApi';
 import { useAuth } from '@/providers/AuthProvider';
 import { useCartStore } from '@/store/cartStore';
 import { useAddressStore, Address } from '@/store/addressStore';
@@ -39,22 +40,15 @@ export function useCheckout() {
     setIsSubmitting(true);
 
     try {
-      // 1. Создаем основной заказ
-      const { data: orderData, error: orderError } = await supabase
-        .from('orders')
-        .insert({
-          user_id: session.user.id,
-          total_amount: totalPrice,
-          delivery_address: formatFullAddress(selectedAddress),
-          status: 'pending',
-          payment_method: paymentMethod,
-        })
-        .select()
-        .single();
+      // 1. Создаем основной заказ через API
+      const orderData = await createOrder(
+        session.user.id,
+        totalPrice,
+        formatFullAddress(selectedAddress),
+        paymentMethod
+      );
 
-      if (orderError) throw orderError;
-
-      // 2. Создаем позиции заказа (связанные товары)
+      // 2. Создаем позиции заказа через API
       const orderItems = items.map((item) => ({
         order_id: orderData.id,
         product_id: item.product.id,
@@ -62,11 +56,7 @@ export function useCheckout() {
         price_at_time: Number(item.product.price),
       }));
 
-      const { error: itemsError } = await supabase
-        .from('order_items')
-        .insert(orderItems);
-
-      if (itemsError) throw itemsError;
+      await createOrderItems(orderItems);
 
       // 3. Обработка успеха: уведомления и редирект
       const paymentText = paymentMethod === 'cash' ? 'Наличными' : 'Онлайн';
