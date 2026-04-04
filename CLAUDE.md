@@ -1,7 +1,8 @@
 # CLAUDE.md
 > [!IMPORTANT]
 
-> **ВНИМАНИЕ:** Основная конфигурация проекта для ИИ перенесена в директорию `.agent/rules/project-overview.md`.
+> **ВНИМАНИЕ:** Основная конфигурация проекта для ИИ перенесена в директорию `.agent/`.
+> **При начале КАЖДОГО разговора** — обязательно прочитать ВСЕ файлы в `.agent/rules/` и `.agent/skills/*/SKILL.md` для полной загрузки контекста проекта.
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project
