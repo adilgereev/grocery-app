@@ -4,11 +4,11 @@ import { useRouter } from 'expo-router';
 import { createOrder, createOrderItems } from '@/lib/orderApi';
 import { useAuth } from '@/providers/AuthProvider';
 import { useCartStore } from '@/store/cartStore';
-import { useAddressStore, Address } from '@/store/addressStore';
+import { useAddressStore } from '@/store/addressStore';
 import { formatFullAddress } from '@/utils/addressFormatter';
 import { schedulePushNotification } from '@/lib/NotificationService';
 import { logger } from '@/lib/logger';
-import { PaymentMethod } from '@/components/CartSummary';
+import { Address, PaymentMethod } from '@/types';
 
 /**
  * Хук для управления процессом оформления заказа.

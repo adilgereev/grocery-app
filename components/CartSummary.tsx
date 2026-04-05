@@ -3,9 +3,7 @@ import React from 'react';
 import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 import { Colors, Radius, Spacing, Shadows } from '@/constants/theme';
-import { Address } from '@/store/addressStore';
-
-export type PaymentMethod = 'online' | 'cash';
+import { Address, PaymentMethod } from '@/types';
 
 const PAYMENT_METHODS: Record<PaymentMethod, { label: string; icon: string; description: string }> = {
   cash: { label: 'Наличными курьеру', icon: 'cash-outline', description: 'Оплата при получении' },

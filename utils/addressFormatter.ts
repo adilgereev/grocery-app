@@ -1,4 +1,4 @@
-import { Address } from '@/store/addressStore';
+import { Address } from '@/types';
 import { cleanAddress } from '@/lib/addressUtils';
 
 /**

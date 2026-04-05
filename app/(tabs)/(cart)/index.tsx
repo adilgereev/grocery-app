@@ -1,11 +1,11 @@
 import CartItem from '@/components/CartItem';
-import CartSummary, { PaymentMethod } from '@/components/CartSummary';
+import CartSummary from '@/components/CartSummary';
 import EmptyCart from '@/components/EmptyCart';
 import FloatingCheckoutButton from '@/components/FloatingCheckoutButton';
 import { Colors, Spacing, FontSize } from '@/constants/theme';
 import { useCheckout } from '@/hooks/useCheckout';
 import { useCartStore } from '@/store/cartStore';
-import { Address } from '@/store/addressStore';
+import { Address, PaymentMethod } from '@/types';
 import { formatFullAddress } from '@/utils/addressFormatter';
 import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';

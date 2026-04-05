@@ -1,7 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, FlatList, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useAddressStore, Address } from '@/store/addressStore';
+import { useAddressStore } from '@/store/addressStore';
+import { Address } from '@/types';
 import { formatFullAddress } from '@/utils/addressFormatter';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';

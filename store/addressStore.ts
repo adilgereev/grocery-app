@@ -3,20 +3,8 @@ import { supabase } from '@/lib/supabase';
 import { fetchAddresses, createAddress, updateAddress, deleteAddress, markAddressAsSelected } from '@/lib/addressApi';
 import { getSession } from '@/lib/authApi';
 import { logger } from '@/lib/logger';
+import { Address } from '@/types';
 
-export interface Address {
-  id: string; // uuid from supabase
-  text: string;
-  house?: string;
-  entrance?: string;
-  floor?: string;
-  intercom?: string;
-  apartment?: string;
-  comment?: string;
-  is_selected: boolean;
-  lat?: number;
-  lon?: number;
-}
 
 interface AddressStore {
   addresses: Address[];

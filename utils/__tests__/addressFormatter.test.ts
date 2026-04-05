@@ -1,5 +1,5 @@
 import { formatShortAddress, formatFullAddress } from '../addressFormatter';
-import { Address } from '@/store/addressStore';
+import { Address } from '@/types';
 
 describe('addressFormatter', () => {
   const mockAddress: Address = {

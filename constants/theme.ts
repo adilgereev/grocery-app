@@ -1,6 +1,6 @@
 /**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
+ * Ниже приведены цвета, используемые в приложении. Цвета определены для светлой и темной тем.
+ * Существует множество других способов стилизации приложения. Например, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app) и т.д.
  */
 
 import { Platform } from 'react-native';
@@ -106,10 +106,10 @@ export const Radius = {
 };
 
 export const Duration = {
-  fast: 150,      // микро-анимации (hover, press)
-  default: 300,   // карточки, переходы, toast
+  fast: 150,      // микро-анимации (наведение, нажатие)
+  default: 300,   // карточки, переходы, всплывающие уведомления
   slow: 500,      // полноэкранные переходы
-  pulse: 800,     // skeleton shimmer
+  pulse: 800,     // мерцание скелетона (shimmer)
 };
 
 export const Shadows = {

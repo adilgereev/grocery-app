@@ -18,7 +18,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
 import {
   Animated,
   Dimensions,
@@ -92,10 +92,6 @@ export default function HomeScreen() {
       logger.error('Ошибка в loadUserInfo:', error);
     }
   }, [session]);
-
-  useEffect(() => {
-    // Начальная загрузка при монтировании (базовая)
-  }, []);
 
   // Загружаем данные при каждом фокусе на страницу
   useFocusEffect(

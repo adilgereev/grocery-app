@@ -88,7 +88,7 @@ export async function uploadImage(uri: string, folder: 'products' | 'categories'
     // Возвращаем URL через ImageKit для автоматической оптимизации
     return `${IMAGEKIT_BASE_URL}/${filePath}`;
   } catch (error) {
-    logger.error('Error uploading image to R2:', error);
+    logger.error('Ошибка при загрузке изображения в R2:', error);
     throw error;
   }
 }

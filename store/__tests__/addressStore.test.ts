@@ -91,17 +91,10 @@ describe('useAddressStore', () => {
   });
 
   describe('selectAddress', () => {
-    it('should update selection locally and on backend in two stages', async () => {
+    it('should update selection locally and on backend using RPC', async () => {
       useAddressStore.setState({ addresses: [mockAddress, mockAddress2], selectedAddressId: 'addr-2' });
 
-      mockSupabase.from.mockReturnThis();
-      mockSupabase.update.mockReturnThis();
-      mockSupabase.eq.mockReturnThis();
-      
-      // Имитируем успешные апдейты
-      mockSupabase.then.mockImplementation((onFulfilled: any) => 
-        Promise.resolve({ error: null }).then(onFulfilled)
-      );
+      mockSupabase.rpc.mockResolvedValue({ error: null });
 
       await useAddressStore.getState().selectAddress('addr-1');
 
@@ -110,9 +103,11 @@ describe('useAddressStore', () => {
       expect(state.addresses.find(a => a.id === 'addr-1')?.is_selected).toBe(true);
       expect(state.addresses.find(a => a.id === 'addr-2')?.is_selected).toBe(false);
 
-      // Проверяем 2 вызова update: сброс всех и установка нового
-      expect(mockSupabase.update).toHaveBeenCalledWith({ is_selected: false });
-      expect(mockSupabase.update).toHaveBeenCalledWith({ is_selected: true });
+      // Проверяем вызов RPC вместо update
+      expect(mockSupabase.rpc).toHaveBeenCalledWith('select_delivery_address', {
+        p_user_id: 'test-user-id',
+        p_address_id: 'addr-1'
+      });
     });
   });
 

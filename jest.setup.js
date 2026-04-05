@@ -62,6 +62,7 @@ const createSupabaseMock = () => {
     contains: jest.fn().mockReturnThis(),
     order: jest.fn().mockReturnThis(),
     limit: jest.fn().mockReturnThis(),
+    rpc: jest.fn().mockReturnThis(),
     single: jest.fn().mockImplementation(() => Promise.resolve(mockSupabaseResponse())),
     maybeSingle: jest.fn().mockImplementation(() => Promise.resolve(mockSupabaseResponse())),
     then: jest.fn().mockImplementation((onFulfilled) => {

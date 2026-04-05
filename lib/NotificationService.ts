@@ -13,9 +13,7 @@ Notifications.setNotificationHandler({
   }),
 });
 
-export async function registerForPushNotificationsAsync() {
-  let token;
-
+export async function registerForPushNotificationsAsync(): Promise<void> {
   if (Platform.OS === 'android') {
     await Notifications.setNotificationChannelAsync('default', {
       name: 'default',
@@ -38,10 +36,7 @@ export async function registerForPushNotificationsAsync() {
     // Для ЛОКАЛЬНЫХ уведомлений (срабатывающих по таймеру внутри приложения)
     // нам не нужен Expo Push Token от серверов Expo.
     // Функция getExpoPushTokenAsync не поддерживается в Expo Go 53+ и нужна только для удаленных пушей.
-  } else {
   }
-
-  return token;
 }
 
 export async function schedulePushNotification(title: string, body: string, seconds: number) {

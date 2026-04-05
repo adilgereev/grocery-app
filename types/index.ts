@@ -1,5 +1,21 @@
 import { Enums } from './supabase';
 
+export type PaymentMethod = Enums<'payment_method'>;
+
+export interface Address {
+  id: string; // uuid from supabase
+  text: string;
+  house?: string;
+  entrance?: string;
+  floor?: string;
+  intercom?: string;
+  apartment?: string;
+  comment?: string;
+  is_selected: boolean;
+  lat?: number;
+  lon?: number;
+}
+
 export interface Category {
   id: string;
   name: string;

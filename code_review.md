@@ -146,46 +146,23 @@
 
 ---
 
-## 🟢 Незначительные (P2) — Код-стиль и мелочи
+### ~~18. Комментарии на английском~~ ✅ FIXED
 
-### 18. Комментарии на английском
-
-Правило: *«Писать все комментарии к коду исключительно на русском языке»* (code-standards.md).
-
-| Файл | Строка | Комментарий |
-|---|---|---|
-| [theme.ts](file:///d:/Dev/JS%20projects/grocery-app/constants/theme.ts#L1-L4) | 1-4 | `Below are the colors that are used...` |
-| [storageUtils.ts](file:///d:/Dev/JS%20projects/grocery-app/lib/storageUtils.ts#L92) | 92 | `Error uploading image to R2:` |
-| [NotificationService.ts](file:///d:/Dev/JS%20projects/grocery-app/lib/NotificationService.ts) | множ. | Английские комментарии |
+**Исправлено**: Все комментарии в `theme.ts`, `storageUtils.ts` и `NotificationService.ts` переведены на русский язык. Технические термины (hover, toast) заменены на русские аналоги.
 
 ---
 
-### 19. Пустой `useEffect` без тела
+### ~~19. Пустой `useEffect` без тела~~ ✅ FIXED
 
-**Файл**: [index.tsx (home)](file:///d:/Dev/JS%20projects/grocery-app/app/%28tabs%29/%28index%29/index.tsx#L96-L98)
-
-```typescript
-useEffect(() => {
-  // Начальная загрузка при монтировании (базовая)
-}, []);
-```
-
-Пустой эффект ничего не делает. Удалить.
+**Исправлено**: Удален бесполезный хук в `app/(tabs)/(index)/index.tsx`, который не выполнял никакой логики.
 
 ---
 
-### 20. `fetchRecommended` в favorites.tsx зависит от `recommended.length`
+### ~~20. `fetchRecommended` в favorites.tsx зависит от `recommended.length`~~ ✅ FIXED
 
 **Файл**: [favorites.tsx](file:///d:/Dev/JS%20projects/grocery-app/app/favorites.tsx#L26)
 
-```typescript
-const fetchRecommended = useCallback(async () => {
-  if (recommended.length > 0) return; // ← зависимость от стейта в useCallback
-  ...
-}, [recommended.length]);
-```
-
-Зависимость от `recommended.length` приводит к пересозданию колбэка при каждом обновлении. Лучше использовать ref.
+**Исправлено**: Использован `useRef (isRecommendedFetched)`, чтобы отвязать функцию от стейта и предотвратить циклическое пересоздание `useCallback`. Стейт используется только для отображения.
 
 ---
 
@@ -197,23 +174,15 @@ const fetchRecommended = useCallback(async () => {
 
 ---
 
-### 22. `NotificationService.ts` — `token` всегда `undefined`
+### ~~22. `NotificationService.ts` — `token` всегда `undefined`~~ ✅ FIXED
 
-**Файл**: [NotificationService.ts](file:///d:/Dev/JS%20projects/grocery-app/lib/NotificationService.ts#L17-L44)
-
-```typescript
-let token; // ← никогда не присваивается
-// ...
-return token; // ← всегда undefined
-```
-
-Переменная `token` объявлена, но нигде не заполняется после удаления `getExpoPushTokenAsync`. Функция всегда возвращает `undefined`.
+**Исправлено**: Удалена неиспользуемая переменная `token`, возвращаемый тип функции изменен на `Promise<void>`, так как приложение использует только локальные уведомления и токены не требуются.
 
 ---
 
-### 23. `CartSummary` экспортирует тип `PaymentMethod`, но определение не видно
+### ~~23. `CartSummary` экспортирует тип `PaymentMethod`, но определение не видно~~ ✅ FIXED
 
-Тип `PaymentMethod` используется в [cart/index.tsx](file:///d:/Dev/JS%20projects/grocery-app/app/%28tabs%29/%28cart%29/index.tsx#L2) и [useCheckout.ts](file:///d:/Dev/JS%20projects/grocery-app/hooks/useCheckout.ts#L12). Лучше перенести в `types/index.ts`.
+**Исправлено**: Типы `PaymentMethod` и `Address` перенесены в централизованный файл `types/index.ts`. Все зависимые компоненты и хуки обновлены для импорта из `@/types`.
 
 ---
 
@@ -223,15 +192,19 @@ return token; // ← всегда undefined
 
 ---
 
-### 25. Отсутствует обработка ошибки `Haptics` на Web
+### ~~25. Отсутствует обработка ошибки `Haptics` на Web~~ ✅ FIXED
 
-**Файл**: [manage-address.tsx](file:///d:/Dev/JS%20projects/grocery-app/app/manage-address.tsx#L116)
+**Исправлено**: Вызовы `Haptics` обернуты в проверку `Platform.OS !== 'web'`, чтобы предотвратить ошибки в браузерах.
 
-```typescript
-Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-```
+---
 
-На Web `expo-haptics` может выбросить ошибку. Нет `.web.tsx` версии для `manage-address`.
+### 26. `CartSummary.tsx` — файл на ~330 строк (нужна декомпозиция)
+
+**Файл**: [CartSummary.tsx](file:///d:/Dev/JS%20projects/grocery-app/components/CartSummary.tsx)
+
+Превышает лимит в 200 строк. Стоит вынести:
+- Стили в отдельный файл
+- Отдельные секции (выбор оплаты или детали заказа) в подкомпоненты
 
 ---
 
@@ -241,7 +214,7 @@ Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 |---|---|---|---|
 | 🔴 **P0 — Критические** | 7 | ✅ 7 (#1, #2, #3, #4, #5, #6, #7) | ❌ 0 |
 | 🟡 **P1 — Серьёзные** | 10 | ✅ 10 (#8, #9, #10, #11, #12, #13, #14, #15, #16, #17) | ❌ 0 |
-| 🟢 **P2 — Незначительные** | 8 | — | ❌ 8 |
+| 🟢 **P2 — Незначительные** | 9 | ✅ 6 (#18, #19, #20, #22, #23, #25) | ❌ 3 |
 
 ## ✅ Что сделано хорошо
 
@@ -262,7 +235,7 @@ Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 3. ~~**`deleteAddress` без user_id** → добавить фильтр (2 мин)~~ ✅  
 4. ~~**`favoriteStore` — откат оптимистичного апдейта** (10 мин)~~ ✅  
 5. ~~**`markAddressAsSelected` — гонка** → RPC-функция в Supabase (~15 мин)~~ ✅  
-6. **Предсказуемый пароль** → HMAC с секретом из env (~30 мин)  
+6. ~~**Предсказуемый пароль** → HMAC с секретом из env (~30 мин)~~ ✅  
 7. ~~**`any` → типизация** в orderApi, authApi, logger (~30 мин)~~ ✅  
 8. ~~**Return types & Type Sync** (#9, #12)~~ ✅  
 9. ~~**Прямые Supabase-вызовы** → мигрировать на lib/\*Api.ts (~1-2 часа)~~ ✅  

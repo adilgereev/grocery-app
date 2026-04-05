@@ -1,5 +1,5 @@
 import { supabase } from './supabase';
-import { Address } from '@/store/addressStore';
+import { Address } from '@/types';
 
 /**
  * Получение списка адресов пользователя

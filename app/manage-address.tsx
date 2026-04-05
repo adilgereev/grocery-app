@@ -113,7 +113,9 @@ export default function AddAddressScreen() {
       // Очищаем адрес перед сохранением (убираем город и номер дома из основной строки)
       const cleanStreet = cleanAddress(rawAddress, { removeHouse: true });
 
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      if (Platform.OS !== 'web') {
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      }
 
       const payload = {
         text: cleanStreet,

@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, RefreshControl, TouchableOpacity, ScrollView } from 'react-native';
 import { fetchFavoriteProducts as fetchFavoriteProductsByIds } from '@/lib/favoriteApi';
 import { fetchRecommendedProducts } from '@/lib/productsApi';
+import { logger } from '@/lib/logger';
 import { useAuth } from '@/providers/AuthProvider';
 import { useFavoriteStore } from '@/store/favoriteStore';
 import { Ionicons } from '@expo/vector-icons';
@@ -20,14 +21,22 @@ export default function FavoritesScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [recommended, setRecommended] = useState<Product[]>([]);
+  const isRecommendedFetched = React.useRef(false);
+
   
   const { favoriteIds } = useFavoriteStore();
 
   const fetchRecommended = useCallback(async () => {
-    if (recommended.length > 0) return;
-    const data = await fetchRecommendedProducts(6);
-    setRecommended(data);
-  }, [recommended.length]);
+    if (isRecommendedFetched.current) return;
+    isRecommendedFetched.current = true;
+    try {
+      const data = await fetchRecommendedProducts(6);
+      setRecommended(data);
+    } catch (error) {
+      isRecommendedFetched.current = false;
+      logger.error('Ошибка в fetchRecommended:', error);
+    }
+  }, []);
 
   const fetchFavoriteProducts = useCallback(async () => {
     if (favoriteIds.length === 0) {

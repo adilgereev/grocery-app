@@ -9,7 +9,7 @@ import { logger } from '@/lib/logger';
 import { fetchOrderDetails as fetchOrderDetailsApi, OrderItem } from '@/lib/orderApi';
 import { supabase } from '@/lib/supabase';
 import { useCartStore } from '@/store/cartStore';
-import { Product, Order } from '@/types';
+import { Product, Order, PaymentMethod } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -34,7 +34,6 @@ const PAYMENT_CONFIG: Record<PaymentMethod, { label: string; icon: string }> = {
 const TRACKER_STEPS = ['processing', 'shipped', 'delivered'];
 
 
-type PaymentMethod = 'online' | 'cash';
 
 /**
  * Страница деталей заказа.
