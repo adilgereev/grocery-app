@@ -45,10 +45,20 @@ interface ProductRelatedProps {
  * Секция с похожими/рекомендуемыми товарами
  */
 export const ProductRelated: React.FC<ProductRelatedProps> = ({ products, isLoading }) => {
+  if (!isLoading && products.length === 0) return null;
+
   return (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>С этим покупают</Text>
-      {!isLoading && products.length > 0 ? (
+      {isLoading ? (
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.relatedScrollContent}>
+          {[1, 2, 3].map((i) => (
+            <View key={i} style={styles.skeletonRelatedItem}>
+              <Skeleton width={140} height={190} borderRadius={20} />
+            </View>
+          ))}
+        </ScrollView>
+      ) : (
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
@@ -56,14 +66,6 @@ export const ProductRelated: React.FC<ProductRelatedProps> = ({ products, isLoad
         >
           {products.map((item) => (
             <RelatedProductCard key={item.id} item={item} />
-          ))}
-        </ScrollView>
-      ) : (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.relatedScrollContent}>
-          {[1, 2, 3].map((i) => (
-            <View key={i} style={styles.skeletonRelatedItem}>
-              <Skeleton width={140} height={190} borderRadius={20} />
-            </View>
           ))}
         </ScrollView>
       )}
