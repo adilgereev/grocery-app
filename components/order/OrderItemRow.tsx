@@ -2,16 +2,11 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
 import { Colors, Spacing, Radius, Duration } from '@/constants/theme';
-import { Product } from '@/types';
 import { useImageKit } from '@/hooks/useImageKit';
+import { OrderItem } from '@/lib/orderApi';
 
 interface OrderItemRowProps {
-  item: {
-    id: string;
-    quantity: number;
-    price_at_time: number;
-    product?: Product | { name: string; image_url?: string };
-  };
+  item: OrderItem;
   isLast: boolean;
 }
 
@@ -22,7 +17,7 @@ interface OrderItemRowProps {
  */
 const OrderItemRow = ({ item, isLast }: OrderItemRowProps) => {
   const productName = item.product?.name || 'Товар';
-  const imageUrl = (item.product as Product)?.image_url || (item.product as any)?.image_url;
+  const imageUrl = item.product?.image_url ?? undefined;
   const totalPrice = Number(item.quantity * item.price_at_time).toFixed(0);
   const { source, placeholder, hasImage, imageProps } = useImageKit(imageUrl, { width: 56, height: 56, transition: Duration.fast });
 

@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, RefreshControl, TouchableOpacity, ScrollView } from 'react-native';
-import { supabase } from '@/lib/supabase';
+import { fetchFavoriteProducts as fetchFavoriteProductsByIds } from '@/lib/favoriteApi';
+import { fetchRecommendedProducts } from '@/lib/productsApi';
 import { useAuth } from '@/providers/AuthProvider';
 import { useFavoriteStore } from '@/store/favoriteStore';
 import { Ionicons } from '@expo/vector-icons';
@@ -24,13 +25,8 @@ export default function FavoritesScreen() {
 
   const fetchRecommended = useCallback(async () => {
     if (recommended.length > 0) return;
-    const { data } = await supabase
-      .from('products')
-      .select('*')
-      .eq('is_active', true)
-      .order('id', { ascending: false })
-      .limit(6);
-    if (data) setRecommended(data);
+    const data = await fetchRecommendedProducts(6);
+    setRecommended(data);
   }, [recommended.length]);
 
   const fetchFavoriteProducts = useCallback(async () => {
@@ -42,15 +38,8 @@ export default function FavoritesScreen() {
       return;
     }
 
-    const { data, error } = await supabase
-      .from('products')
-      .select('*')
-      .in('id', favoriteIds)
-      .eq('is_active', true);
-
-    if (!error) {
-      setProducts(data || []);
-    }
+    const data = await fetchFavoriteProductsByIds(favoriteIds);
+    setProducts(data);
     setLoading(false);
     setRefreshing(false);
   }, [favoriteIds, fetchRecommended]);

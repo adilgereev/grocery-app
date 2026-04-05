@@ -2,6 +2,7 @@ import Skeleton from '@/components/Skeleton';
 import { Colors, FontSize, Radius, Spacing, Shadows } from '@/constants/theme';
 import { logger } from '@/lib/logger';
 import { formatPhoneDisplay } from '@/lib/sms';
+import { fetchUserProfile } from '@/lib/authApi';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/providers/AuthProvider';
 import { useCartStore } from '@/store/cartStore';
@@ -26,14 +27,8 @@ export default function ProfileScreen() {
     try {
       if (!session?.user?.id) return;
       setLoading(true);
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', session.user.id)
-        .single();
-
-      if (error) throw error;
-      if (data) setProfile(data as Profile);
+      const data = await fetchUserProfile(session.user.id);
+      if (data) setProfile(data);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Неизвестная ошибка';
       logger.error('Ошибка загрузки профиля:', errorMessage);

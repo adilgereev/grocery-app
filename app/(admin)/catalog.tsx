@@ -1,5 +1,5 @@
 import { Colors, Radius, Spacing, Shadows } from '@/constants/theme';
-import { supabase } from '@/lib/supabase';
+import { fetchAllProductsWithCategory, deleteProduct } from '@/lib/adminApi';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -17,12 +17,8 @@ export default function CatalogScreen() {
 
   const fetchProducts = async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from('products')
-      .select('*, category:category_id(name)')
-      .order('id', { ascending: false });
-
-    if (!error && data) {
+    try {
+      const data = await fetchAllProductsWithCategory();
       const grouped = data.reduce((acc: Record<string, ProductWithCategory[]>, current: ProductWithCategory) => {
         const catName = current.category?.name || 'Без категории';
         if (!acc[catName]) acc[catName] = [];
@@ -37,6 +33,8 @@ export default function CatalogScreen() {
       
       sectionData.sort((a, b) => a.title.localeCompare(b.title));
       setSections(sectionData);
+    } catch {
+      // Ошибка загрузки товаров
     }
     setLoading(false);
   };
@@ -55,14 +53,15 @@ export default function CatalogScreen() {
           text: 'Удалить', 
           style: 'destructive',
           onPress: async () => {
-            const { error } = await supabase.from('products').delete().eq('id', id);
-            if (error) {
-              Alert.alert('Ошибка', error.message);
-            } else {
+            try {
+              await deleteProduct(id);
               setSections(prevSections => prevSections.map(section => ({
                 ...section,
                 data: section.data.filter((p) => p.id !== id)
               })).filter(section => section.data.length > 0));
+            } catch (error: unknown) {
+              const msg = error instanceof Error ? error.message : 'Неизвестная ошибка';
+              Alert.alert('Ошибка', msg);
             }
           }
         }

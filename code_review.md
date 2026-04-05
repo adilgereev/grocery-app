@@ -68,16 +68,9 @@ await supabase.from('addresses').update({ is_selected: true }).eq('id', id);
 
 ---
 
-### 6. `addressStore` обращается к `supabase` напрямую
+### ~~6. `addressStore` обращается к `supabase` напрямую~~ ✅ FIXED
 
-**Файл**: [addressStore.ts](file:///d:/Dev/JS%20projects/grocery-app/store/addressStore.ts#L75-L76)
-
-```typescript
-const { data: { session } } = await supabase.auth.getSession();
-```
-
-> [!IMPORTANT]
-> Стор вызывает `supabase.auth.getSession()` напрямую в 5 местах вместо использования `AuthProvider` / `useAuth`. Нарушает `architecture.md` (п. 2: backend-логика через сервисный слой). Аналогичная проблема в [favoriteStore.ts](file:///d:/Dev/JS%20projects/grocery-app/store/favoriteStore.ts).
+**Исправлено**: Вызовы `supabase.auth.getSession()` в `addressStore.ts` заменены на использованеие `getSession()` из слоя `authApi.ts`. `favoriteStore.ts` тоже больше не использует Supabase напрямую.
 
 ---
 
@@ -91,79 +84,39 @@ const { data: { session } } = await supabase.auth.getSession();
 
 ## 🟡 Серьёзные (P1) — Типизация и архитектура
 
-### 8. `any` в продакшен-коде (нарушение Strict Typing)
+### ~~8. `any` в продакшен-коде (нарушение Strict Typing)~~ ✅ FIXED
 
-Правило: *«Никогда не использовать `any`»* (GEMINI.md, code-standards.md).
-
-| Файл | Строка | Контекст |
-|---|---|---|
-| [orderApi.ts](file:///d:/Dev/JS%20projects/grocery-app/lib/orderApi.ts#L6) | 6 | `Promise<any>` в `createOrder` |
-| [orderApi.ts](file:///d:/Dev/JS%20projects/grocery-app/lib/orderApi.ts#L37) | 37 | `Promise<any[]>` в `fetchOrders` |
-| [orderApi.ts](file:///d:/Dev/JS%20projects/grocery-app/lib/orderApi.ts#L51) | 51 | `Promise<any>` в `fetchOrderDetails` |
-| [authApi.ts](file:///d:/Dev/JS%20projects/grocery-app/lib/authApi.ts#L20) | 20 | `updates: any` в `updateUserProfile` |
-| [logger.ts](file:///d:/Dev/JS%20projects/grocery-app/lib/logger.ts#L7) | 7-24 | `...args: any[]` ×4 |
-| [index.tsx (home)](file:///d:/Dev/JS%20projects/grocery-app/app/%28tabs%29/%28index%29/index.tsx#L45) | 45 | `useState<any[]>([])` для `popularProducts` |
-| [index.tsx (home)](file:///d:/Dev/JS%20projects/grocery-app/app/%28tabs%29/%28index%29/index.tsx#L77) | 77 | `catch (error: any)` |
-| [cart/index.tsx](file:///d:/Dev/JS%20projects/grocery-app/app/%28tabs%29/%28cart%29/index.tsx#L49) | 49 | `(addr: any)` в `formatAddress` |
-| [admin/\*.web.tsx](file:///d:/Dev/JS%20projects/grocery-app/app/%28admin%29) | разные | `catch (error: any)` ×5 |
-
-**Итого: ~15 случаев `any` в продакшен-коде.**
+**Исправлено**: Все упоминания `any` в `orderApi`, `authApi`, `logger`, а также на экранах `index.tsx` и `cart/index.tsx` заменены на строгие интерфейсы или `unknown` (для логгера и ошибок). Проверка `tsc --noEmit` проходит без ошибок.
 
 ---
 
-### 9. `authApi.fetchUserProfile` — нет return type
+---
 
-**Файл**: [authApi.ts](file:///d:/Dev/JS%20projects/grocery-app/lib/authApi.ts#L6)
+### ~~9. `authApi.fetchUserProfile` — нет return type~~ ✅ FIXED
 
-```typescript
-export async function fetchUserProfile(userId: string) { // ← нет return type
-```
-
-Правило: *«Всегда указывать типы возвращаемых значений для функций и хуков»* (GEMINI.md).
-
-Затронуты также: `updateUserProfile`, `getSession` в том же файле.
+**Исправлено**: Добавлены явные типы возвращаемых значений (`Promise<Profile | null>`, `Promise<Session | null>`) для всех функций в `authApi.ts`.
 
 ---
 
-### 10. Прямые вызовы Supabase из экранов (минуя сервисный слой)
+---
 
-Правило: `architecture.md` — *«Хранилище как Источник Правды»*, логика через lib/.
+### ~~10. Прямые вызовы Supabase из экранов (минуя сервисный слой)~~ ✅ FIXED
 
-| Экран | Что делает напрямую |
-|---|---|
-| [orders.tsx](file:///d:/Dev/JS%20projects/grocery-app/app/orders.tsx#L30-L34) | `supabase.from('orders').select(...)` |
-| [order/[id].tsx](file:///d:/Dev/JS%20projects/grocery-app/app/order/%5Bid%5D.tsx) | `supabase.from('orders')`, `supabase.from('order_items')` |
-| [favorites.tsx](file:///d:/Dev/JS%20projects/grocery-app/app/favorites.tsx#L27-L49) | `supabase.from('products').select(...)` ×2 |
-| [edit-profile.tsx](file:///d:/Dev/JS%20projects/grocery-app/app/edit-profile.tsx#L42-L80) | `supabase.from('profiles')` ×2 |
-| [(tabs)/(profile)/index.tsx](file:///d:/Dev/JS%20projects/grocery-app/app/%28tabs%29/%28profile%29/index.tsx#L30) | `supabase.from('profiles')` |
-| [(admin)/\*](file:///d:/Dev/JS%20projects/grocery-app/app/%28admin%29) | **Все** экраны admin обращаются напрямую |
-
-> [!IMPORTANT]
-> Уже есть `lib/orderApi.ts`, `lib/authApi.ts`, но они **не используются** в соответствующих экранах. API-слой создан, но экраны его игнорируют.
+**Исправлено**: Все 13 экранов мигрированы на сервисный слой. Создан `lib/adminApi.ts` (12 функций для admin-операций), добавлен `fetchProductsByIds` в `productsApi.ts`. Экраны больше не содержат прямых `supabase.from(...)` вызовов (кроме Realtime-подписок и `auth.signOut`).
 
 ---
 
-### 11. `console.error` вместо `logger.error`
+### ~~11. `console.error` вместо `logger.error`~~ ✅ FIXED
 
-**Файл**: [edit-profile.tsx](file:///d:/Dev/JS%20projects/grocery-app/app/edit-profile.tsx#L58)
-
-```typescript
-console.error('Ошибка в fetchProfile:', error);
-```
-
-Правило: `code-standards.md` — *«Чистота: всегда удалять логи»*. Есть `logger` — нужно использовать его.
+**Исправлено**: `console.error` в `edit-profile.tsx` заменён на `logger.error`.
 
 ---
 
-### 12. `types/index.ts` vs `types/supabase.ts` — рассинхрон
+### ~~12. `types/index.ts` vs `types/supabase.ts` — рассинхрон~~ ✅ FIXED
 
-**Файл**: [types/index.ts](file:///d:/Dev/JS%20projects/grocery-app/types/index.ts)
+**Исправлено**: Типы в `types/index.ts` теперь импортируют Enum-типы из `supabase.ts`. Добавлен `avatar_url` в профиль. Скрипт `supabase:types` запущен для актуализации схемы.
 
-- `Category` в `types/index.ts` содержит поле `image_transformations` (строка 8), которого **нет** в `types/supabase.ts`
-- `Profile` в `types/index.ts` **не содержит** `avatar_url`, но в `types/supabase.ts` оно есть
-
-> [!IMPORTANT]
-> Ручные типы в `types/index.ts` разошлись с автогенерированными Supabase-типами. Согласно `architecture.md`, после изменения схемы нужно обновлять типы через `npm run supabase:types`.
+---
 
 ---
 
@@ -326,8 +279,8 @@ Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
 | Уровень | Всего | Закрыто | Осталось |
 |---|---|---|---|
-| 🔴 **P0 — Критические** | 7 | ✅ 4 (#1, #2, #4, #7) | ❌ 3 (#3, #5, #6) |
-| 🟡 **P1 — Серьёзные** | 10 | — | ❌ 10 |
+| 🔴 **P0 — Критические** | 7 | ✅ 5 (#1, #2, #4, #6, #7) | ❌ 2 (#3, #5) |
+| 🟡 **P1 — Серьёзные** | 10 | ✅ 5 (#8, #9, #10, #11, #12) | ❌ 5 |
 | 🟢 **P2 — Незначительные** | 8 | — | ❌ 8 |
 
 ## ✅ Что сделано хорошо
@@ -350,7 +303,8 @@ Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 4. ~~**`favoriteStore` — откат оптимистичного апдейта** (10 мин)~~ ✅  
 5. **`markAddressAsSelected` — гонка** → RPC-функция в Supabase (~15 мин)  
 6. **Предсказуемый пароль** → HMAC с секретом из env (~30 мин)  
-7. **`any` → типизация** в orderApi, authApi, logger (~30 мин)  
-8. **Прямые Supabase-вызовы** → мигрировать на lib/\*Api.ts (~1-2 часа)  
-9. **Декомпозиция login.tsx** → компоненты (~30 мин)  
-10. **Остальные P2** → по ходу работы (Boy Scout Rule)
+7. ~~**`any` → типизация** в orderApi, authApi, logger (~30 мин)~~ ✅  
+8. ~~**Return types & Type Sync** (#9, #12)~~ ✅  
+9. ~~**Прямые Supabase-вызовы** → мигрировать на lib/\*Api.ts (~1-2 часа)~~ ✅  
+10. **Декомпозиция login.tsx** → компоненты (~30 мин)  
+11. **Остальные P2** → по ходу работы (Boy Scout Rule)

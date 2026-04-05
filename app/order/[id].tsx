@@ -6,9 +6,10 @@ import Skeleton from '@/components/Skeleton';
 import { Colors, Radius, Spacing, Shadows } from '@/constants/theme';
 import { cleanAddress } from '@/lib/address';
 import { logger } from '@/lib/logger';
+import { fetchOrderDetails as fetchOrderDetailsApi, OrderItem } from '@/lib/orderApi';
 import { supabase } from '@/lib/supabase';
 import { useCartStore } from '@/store/cartStore';
-import { Product } from '@/types';
+import { Product, Order } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -32,24 +33,8 @@ const PAYMENT_CONFIG: Record<PaymentMethod, { label: string; icon: string }> = {
 
 const TRACKER_STEPS = ['processing', 'shipped', 'delivered'];
 
-type OrderStatus = 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+
 type PaymentMethod = 'online' | 'cash';
-
-interface Order {
-  id: string;
-  status: OrderStatus;
-  total_amount: number;
-  delivery_address: string;
-  created_at: string;
-  payment_method?: PaymentMethod;
-}
-
-interface OrderItem {
-  id: string;
-  quantity: number;
-  price_at_time: number;
-  product?: Product | { name: string; image_url?: string };
-}
 
 /**
  * Страница деталей заказа.
@@ -70,16 +55,9 @@ export default function OrderDetailsScreen() {
     setLoading(true);
     setError(null);
     try {
-      const [orderRes, itemsRes] = await Promise.all([
-        supabase.from('orders').select('*').eq('id', id).single(),
-        supabase.from('order_items').select('*, product:product_id(*)').eq('order_id', id)
-      ]);
-
-      if (orderRes.error) throw orderRes.error;
-      if (itemsRes.error) throw itemsRes.error;
-
-      setOrder(orderRes.data);
-      setOrderItems(itemsRes.data || []);
+      const result = await fetchOrderDetailsApi(id);
+      setOrder(result.order);
+      setOrderItems(result.items || []);
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Не удалось загрузить детали заказа';
       logger.error('Ошибка загрузки деталей заказа:', err);
@@ -157,7 +135,7 @@ export default function OrderDetailsScreen() {
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         {/* Баннер статуса */}
-        <OrderStatusBanner status={status} config={config} date={formatDate(order.created_at)} />
+        <OrderStatusBanner status={status} config={config} date={formatDate(order.created_at ?? '')} />
 
         {/* Трекер (если не отменен) */}
         {!isCancelled && (

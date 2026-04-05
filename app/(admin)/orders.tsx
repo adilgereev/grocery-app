@@ -1,5 +1,6 @@
 import { Colors, Radius, Spacing, Shadows } from '@/constants/theme';
 import { supabase } from '@/lib/supabase';
+import { fetchAllOrdersWithDetails, updateOrderStatus, AdminOrderWithDetails } from '@/lib/adminApi';
 import { Ionicons } from '@expo/vector-icons';
 import { cleanAddress } from '@/lib/address';
 import React, { useEffect, useState } from 'react';
@@ -15,23 +16,8 @@ const STATUSES = {
 
 type OrderStatus = keyof typeof STATUSES;
 
-interface OrderWithDetails {
-  id: string;
-  status: OrderStatus;
-  total_amount: number;
-  delivery_address: string;
-  created_at: string;
-  profiles: { first_name: string | null; last_name: string | null; phone: string } | { first_name: string | null; last_name: string | null; phone: string }[];
-  items?: {
-    id: string;
-    quantity: number;
-    price_at_time: number;
-    product?: { name: string };
-  }[];
-}
-
 export default function ManageOrdersScreen() {
-  const [orders, setOrders] = useState<OrderWithDetails[]>([]);
+  const [orders, setOrders] = useState<AdminOrderWithDetails[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedOrders, setExpandedOrders] = useState<string[]>([]);
 
@@ -56,41 +42,35 @@ export default function ManageOrdersScreen() {
 
   const fetchOrders = async () => {
     setLoading(true);
-    // Join with profiles to get user info 
-    const { data, error } = await supabase
-      .from('orders')
-      .select('*, profiles:user_id (first_name, last_name, phone), items:order_items(*, product:products(*))')
-      .order('created_at', { ascending: false });
-
-    if (!error && data) {
+    try {
+      const data = await fetchAllOrdersWithDetails();
       setOrders(data);
+    } catch {
+      // Ошибка загрузки заказов
     }
     setLoading(false);
   };
 
-  const updateStatus = async (orderId: string, newStatus: OrderStatus) => {
-    const { error } = await supabase
-      .from('orders')
-      .update({ status: newStatus })
-      .eq('id', orderId);
-
-    if (error) {
-      Alert.alert('Ошибка', error.message);
-    } else {
-      // Optimistic update
+  const handleUpdateStatus = async (orderId: string, newStatus: OrderStatus) => {
+    try {
+      await updateOrderStatus(orderId, newStatus);
+      // Оптимистичное обновление
       setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Неизвестная ошибка';
+      Alert.alert('Ошибка', errorMessage);
     }
   };
 
-  const showStatusOptions = (orderId: string, currentStatus: string) => {
+  const showStatusOptions = (orderId: string, _currentStatus: string) => {
     Alert.alert(
       'Изменить статус',
       'Выберите новый статус для заказа',
       [
-        { text: 'Сборка', onPress: () => updateStatus(orderId, 'processing') },
-        { text: 'В пути', onPress: () => updateStatus(orderId, 'shipped') },
-        { text: 'Доставлен', onPress: () => updateStatus(orderId, 'delivered') },
-        { text: 'Отмена', onPress: () => updateStatus(orderId, 'cancelled'), style: 'destructive' },
+        { text: 'Сборка', onPress: () => handleUpdateStatus(orderId, 'processing') },
+        { text: 'В пути', onPress: () => handleUpdateStatus(orderId, 'shipped') },
+        { text: 'Доставлен', onPress: () => handleUpdateStatus(orderId, 'delivered') },
+        { text: 'Отмена', onPress: () => handleUpdateStatus(orderId, 'cancelled'), style: 'destructive' },
         { text: 'Назад', style: 'cancel' }
       ]
     );
@@ -104,7 +84,7 @@ export default function ManageOrdersScreen() {
     }
   };
 
-  const renderOrder = ({ item }: { item: OrderWithDetails }) => {
+  const renderOrder = ({ item }: { item: AdminOrderWithDetails }) => {
     const statusInfo = STATUSES[item.status] || STATUSES.pending;
     const profile = Array.isArray(item.profiles) ? item.profiles[0] : item.profiles;
     const customerName = profile?.first_name ? `${profile.first_name} ${profile.last_name || ''}` : 'Клиент';

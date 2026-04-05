@@ -13,7 +13,7 @@ import {
 import CategoryFormModal from '@/components/admin/CategoryFormModal';
 import CategoryItem from '@/components/admin/CategoryItem';
 import { Colors, Radius, Spacing } from '@/constants/theme';
-import { supabase } from '@/lib/supabase';
+import { fetchAllCategories, createCategory, updateCategory, deleteCategory, swapCategorySortOrder } from '@/lib/adminApi';
 import { useCategoryStore } from '@/store/categoryStore';
 import { Category } from '@/types';
 
@@ -33,31 +33,24 @@ export default function CategoriesScreenWeb() {
   const fetchCategories = async (silent = false) => {
     if (!silent) setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('categories')
-        .select('*')
-        .order('sort_order', { ascending: true });
+      const allCategories = await fetchAllCategories();
+      const roots = allCategories.filter((c) => !c.parent_id);
+      const sorted: Category[] = [];
+      const usedIds = new Set<string>();
 
-      if (!error && data) {
-        const allCategories = data as Category[];
-        const roots = allCategories.filter((c) => !c.parent_id);
-        const sorted: Category[] = [];
-        const usedIds = new Set<string>();
-
-        roots.forEach((parent) => {
-          sorted.push(parent);
-          usedIds.add(parent.id);
-          const children = allCategories.filter((c) => c.parent_id === parent.id);
-          children.forEach((child) => {
-            sorted.push(child);
-            usedIds.add(child.id);
-          });
+      roots.forEach((parent) => {
+        sorted.push(parent);
+        usedIds.add(parent.id);
+        const children = allCategories.filter((c) => c.parent_id === parent.id);
+        children.forEach((child) => {
+          sorted.push(child);
+          usedIds.add(child.id);
         });
+      });
 
-        const orphans = allCategories.filter((c) => !usedIds.has(c.id));
-        sorted.push(...orphans);
-        setCategories(sorted);
-      }
+      const orphans = allCategories.filter((c) => !usedIds.has(c.id));
+      sorted.push(...orphans);
+      setCategories(sorted);
     } finally {
       setLoading(false);
     }
@@ -77,8 +70,10 @@ export default function CategoriesScreenWeb() {
     if (targetIndex !== -1) {
       const targetCategory = siblings[targetIndex];
       try {
-        await supabase.from('categories').update({ sort_order: targetCategory.sort_order }).eq('id', category.id);
-        await supabase.from('categories').update({ sort_order: category.sort_order }).eq('id', targetCategory.id);
+        await swapCategorySortOrder(
+          category.id, targetCategory.sort_order,
+          targetCategory.id, category.sort_order
+        );
         
         useCategoryStore.getState().invalidateCache();
         await fetchCategories(true);
@@ -102,11 +97,7 @@ export default function CategoriesScreenWeb() {
     setSubmitting(true);
     try {
       if (editingCategory) {
-        const { error } = await supabase
-          .from('categories')
-          .update(data)
-          .eq('id', editingCategory.id);
-        if (error) throw error;
+        await updateCategory(editingCategory.id, data);
       } else {
         const sameLevel = categories.filter(c => c.parent_id === (data.parent_id || null));
         let sortOrder = 0;
@@ -115,16 +106,13 @@ export default function CategoriesScreenWeb() {
           sortOrder = minOrder - 1;
         }
 
-        const { error } = await supabase
-          .from('categories')
-          .insert({
-            name: data.name!,
-            slug: data.slug!,
-            image_url: data.image_url,
-            parent_id: data.parent_id,
-            sort_order: sortOrder
-          });
-        if (error) throw error;
+        await createCategory({
+          name: data.name!,
+          slug: data.slug!,
+          image_url: data.image_url,
+          parent_id: data.parent_id,
+          sort_order: sortOrder
+        });
       }
       await fetchCategories(true);
       useCategoryStore.getState().invalidateCache();
@@ -141,8 +129,7 @@ export default function CategoriesScreenWeb() {
       (async () => {
         try {
           const allIds = [id, ...categories.filter(c => c.parent_id === id).map(c => c.id)];
-          await supabase.from('products').update({ category_id: null }).in('category_id', allIds);
-          await supabase.from('categories').delete().eq('id', id);
+          await deleteCategory(id, allIds);
           await fetchCategories(true);
           useCategoryStore.getState().invalidateCache();
         } catch {

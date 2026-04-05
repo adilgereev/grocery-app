@@ -1,5 +1,5 @@
 import { Colors, Radius, Spacing } from '@/constants/theme';
-import { supabase } from '@/lib/supabase';
+import { fetchAllCategories, fetchProductForEdit, updateProduct } from '@/lib/adminApi';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
@@ -38,18 +38,26 @@ export default function EditProductScreen() {
   const fetchData = async () => {
     setInitialLoading(true);
     
-    const { data: catData } = await supabase.from('categories').select('*').order('sort_order', { ascending: true });
-    if (catData) setCategories(catData);
+    try {
+      const catData = await fetchAllCategories();
+      setCategories(catData);
+    } catch {
+      // Ошибка загрузки категорий
+    }
 
     if (id) {
-      const { data: productData, error } = await supabase.from('products').select('*').eq('id', id).single();
-      if (!error && productData) {
-        setName(productData.name || '');
-        setDescription(productData.description || '');
-        setPrice(productData.price ? productData.price.toString() : '');
-        setUnit(productData.unit || '');
-        setImageUrl(productData.image_url || '');
-        setCategoryId(productData.category_id || '');
+      try {
+        const productData = await fetchProductForEdit(id);
+        if (productData) {
+          setName(productData.name || '');
+          setDescription(productData.description || '');
+          setPrice(productData.price ? productData.price.toString() : '');
+          setUnit(productData.unit || '');
+          setImageUrl(productData.image_url || '');
+          setCategoryId(productData.category_id || '');
+        }
+      } catch {
+        Alert.alert('Ошибка', 'Не удалось загрузить товар');
       }
     }
     
@@ -84,23 +92,23 @@ export default function EditProductScreen() {
     }
 
     setLoading(true);
-    const { error } = await supabase.from('products').update({
-      name,
-      description,
-      price: parseFloat(price),
-      unit,
-      image_url: imageUrl,
-      category_id: categoryId,
-    }).eq('id', id);
-
-    setLoading(false);
-
-    if (error) {
-      Alert.alert('Ошибка при сохранении', error.message);
-    } else {
+    try {
+      await updateProduct(id!, {
+        name,
+        description,
+        price: parseFloat(price),
+        unit,
+        image_url: imageUrl,
+        category_id: categoryId,
+      });
       Alert.alert('Успех', 'Товар успешно обновлен!', [
         { text: 'ОК', onPress: () => router.back() }
       ]);
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : 'Неизвестная ошибка';
+      Alert.alert('Ошибка при сохранении', msg);
+    } finally {
+      setLoading(false);
     }
   };
 

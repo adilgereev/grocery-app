@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { supabase } from '@/lib/supabase';
 import { fetchAddresses, createAddress, updateAddress, deleteAddress, markAddressAsSelected } from '@/lib/addressApi';
+import { getSession } from '@/lib/authApi';
 import { logger } from '@/lib/logger';
 
 export interface Address {
@@ -72,7 +73,7 @@ export const useAddressStore = create<AddressStore>((set, get) => ({
 
   loadAddresses: async () => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const session = await getSession();
       if (!session) return;
 
       const data = await fetchAddresses(session.user.id);
@@ -93,7 +94,7 @@ export const useAddressStore = create<AddressStore>((set, get) => ({
 
   addAddress: async (details) => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const session = await getSession();
       if (!session) return;
 
       // Если это первый адрес для пользователя, то сделаем его сразу "Выбранным" автоматически
@@ -126,7 +127,7 @@ export const useAddressStore = create<AddressStore>((set, get) => ({
 
   updateAddress: async (id, details) => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const session = await getSession();
       if (!session) return;
 
       const data = await updateAddress(session.user.id, id, {
@@ -152,7 +153,7 @@ export const useAddressStore = create<AddressStore>((set, get) => ({
 
   removeAddress: async (id) => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const session = await getSession();
       if (!session) return;
 
       await deleteAddress(session.user.id, id);
@@ -178,7 +179,7 @@ export const useAddressStore = create<AddressStore>((set, get) => ({
 
   selectAddress: async (id) => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const session = await getSession();
       if (!session) return;
 
       // Быстрое локальное обновление стейта

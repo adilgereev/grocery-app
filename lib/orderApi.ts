@@ -18,7 +18,7 @@ export interface OrderItem {
   product_id: string;
   quantity: number;
   price_at_time: number;
-  product: {
+  product?: {
     id: string;
     name: string;
     image_url: string | null;

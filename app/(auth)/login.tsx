@@ -1,7 +1,7 @@
 import { Colors, Radius, Spacing, Shadows } from '@/constants/theme';
 import { logger } from '@/lib/logger';
-import { generateOTP, generatePasswordFromPhone, normalizePhone, phoneToEmail, sendSMS } from '@/lib/sms';
-import { supabase } from '@/lib/supabase';
+import { createOtpCode, verifyActiveOtp, markOtpAsUsed, authenticateWithPhone } from '@/lib/authApi';
+import { generateOTP, normalizePhone, sendSMS } from '@/lib/sms';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
@@ -114,13 +114,7 @@ export default function Login() {
       const code = generateOTP();
 
       // Сохраняем код в базу
-      const { error: insertError } = await supabase.from('otp_codes').insert({
-        phone: normalized,
-        code,
-        expires_at: new Date(Date.now() + 5 * 60 * 1000).toISOString(),
-      });
-
-      if (insertError) throw insertError;
+      await createOtpCode(normalized, code);
 
       // Отправляем SMS (только в продакшене, чтобы не тратить баланс при тестах)
       let result = { success: true, error: null as string | null };
@@ -161,18 +155,9 @@ export default function Login() {
 
     try {
       // Ищем актуальный код в базе
-      const { data: otpData, error: otpError } = await supabase
-        .from('otp_codes')
-        .select('*')
-        .eq('phone', normalized)
-        .eq('code', code)
-        .eq('used', false)
-        .gte('expires_at', new Date().toISOString())
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .single();
+      const otpId = await verifyActiveOtp(normalized, code);
 
-      if (otpError || !otpData) {
+      if (!otpId) {
         showAlert('Неверный код', 'Код истёк или введён неверно. Попробуйте ещё раз.');
         setOtp(['', '', '', '']);
         otpRefs.current[0]?.focus();
@@ -181,39 +166,10 @@ export default function Login() {
       }
 
       // Помечаем код как использованный
-      await supabase.from('otp_codes').update({ used: true }).eq('id', otpData.id);
+      await markOtpAsUsed(otpId);
 
-      // Авторизуем пользователя в Supabase
-      const email = phoneToEmail(normalized);
-      const password = generatePasswordFromPhone(normalized);
-
-      // Пробуем войти
-      const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
-
-      if (signInError) {
-        // Пользователь не существует — регистрируем
-        const { error: signUpError } = await supabase.auth.signUp({
-          email,
-          password,
-          options: { data: { phone: normalized } }
-        });
-
-        if (signUpError) {
-          // Если аккаунт создан между нашими вызовами — повторный вход
-          if (signUpError.message?.includes('already registered') || signUpError.message?.includes('already been registered')) {
-            const { error: retryError } = await supabase.auth.signInWithPassword({ email, password });
-            if (retryError) {
-              showAlert('Ошибка', 'Не удалось войти. Попробуйте ещё раз.');
-              setLoading(false);
-              return;
-            }
-          } else {
-            showAlert('Ошибка', signUpError.message);
-            setLoading(false);
-            return;
-          }
-        }
-      }
+      // Авторизуем пользователя
+      await authenticateWithPhone(normalized);
 
       // Успех! AuthProvider подхватит сессию автоматически
     } catch (err: unknown) {

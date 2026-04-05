@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, RefreshControl, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
 import { supabase } from '@/lib/supabase';
+import { fetchOrders as fetchOrdersApi } from '@/lib/orderApi';
 import { useAuth } from '@/providers/AuthProvider';
 import { Ionicons } from '@expo/vector-icons';
 import Skeleton from '@/components/Skeleton';
@@ -27,14 +28,8 @@ export default function OrdersScreen() {
   const fetchOrders = useCallback(async () => {
     try {
       if (!session?.user?.id) return;
-      const { data, error } = await supabase
-        .from('orders')
-        .select('*')
-        .eq('user_id', session.user.id)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      setOrders(data || []);
+      const data = await fetchOrdersApi(session.user.id);
+      setOrders(data);
       setError(null);
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Не удалось загрузить заказы';

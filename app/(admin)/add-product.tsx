@@ -1,5 +1,5 @@
 import { Colors, Radius, Spacing } from '@/constants/theme';
-import { supabase } from '@/lib/supabase';
+import { fetchAllCategories, createProduct } from '@/lib/adminApi';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
@@ -32,8 +32,12 @@ export default function AddProductScreen() {
   }, []);
 
   const fetchCategories = async () => {
-    const { data } = await supabase.from('categories').select('*').order('sort_order', { ascending: true });
-    if (data) setCategories(data);
+    try {
+      const data = await fetchAllCategories();
+      setCategories(data);
+    } catch {
+      // Ошибка загрузки категорий
+    }
   };
   
   const pickImage = async () => {
@@ -64,26 +68,26 @@ export default function AddProductScreen() {
     }
 
     setLoading(true);
-    const { error } = await supabase.from('products').insert({
-      name,
-      description,
-      price: parseFloat(price),
-      unit,
-      image_url: imageUrl,
-      category_id: categoryId,
-      is_active: true,
-      stock: 100, // Default stock for MVP
-      tags: [] // Default tags
-    });
-
-    setLoading(false);
-
-    if (error) {
-      Alert.alert('Ошибка при сохранении', error.message);
-    } else {
+    try {
+      await createProduct({
+        name,
+        description,
+        price: parseFloat(price),
+        unit,
+        image_url: imageUrl,
+        category_id: categoryId,
+        is_active: true,
+        stock: 100,
+        tags: []
+      });
       Alert.alert('Успех', 'Товар успешно добавлен в каталог!', [
         { text: 'ОК', onPress: () => router.back() }
       ]);
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : 'Неизвестная ошибка';
+      Alert.alert('Ошибка при сохранении', msg);
+    } finally {
+      setLoading(false);
     }
   };
 

@@ -17,7 +17,7 @@ import {
 import CategoryFormModal from '@/components/admin/CategoryFormModal';
 import CategoryItem from '@/components/admin/CategoryItem';
 import { Colors, Radius, Spacing } from '@/constants/theme';
-import { supabase } from '@/lib/supabase';
+import { fetchAllCategories, createCategory, updateCategory, deleteCategory, swapCategorySortOrder } from '@/lib/adminApi';
 import { useCategoryStore } from '@/store/categoryStore';
 import { Category } from '@/types';
 
@@ -41,13 +41,8 @@ export default function CategoriesScreen() {
 
   const fetchCategories = async (silent = false) => {
     if (!silent) setLoading(true);
-    const { data, error } = await supabase
-      .from('categories')
-      .select('*')
-      .order('sort_order', { ascending: true });
-
-    if (!error && data) {
-      const allCategories = data as Category[];
+    try {
+      const allCategories = await fetchAllCategories();
       // Иерархическая сортировка: Родитель (по sort_order) -> Дети (по sort_order)
       const roots = allCategories.filter((c) => !c.parent_id);
       const sorted: Category[] = [];
@@ -66,6 +61,8 @@ export default function CategoriesScreen() {
       const orphans = allCategories.filter((c) => !usedIds.has(c.id));
       sorted.push(...orphans);
       setCategories(sorted);
+    } catch {
+      // Ошибка загрузки категорий
     }
     setLoading(false);
   };
@@ -124,25 +121,17 @@ export default function CategoriesScreen() {
 
       // 2. Обновление в Supabase в фоне (без лоадера)
       try {
-        const { error: err1 } = await supabase
-          .from('categories')
-          .update({ sort_order: targetCategory.sort_order })
-          .eq('id', category.id);
-
-        const { error: err2 } = await supabase
-          .from('categories')
-          .update({ sort_order: category.sort_order })
-          .eq('id', targetCategory.id);
-
-        if (err1 || err2) throw new Error('Ошибка БД');
+        await swapCategorySortOrder(
+          category.id, targetCategory.sort_order,
+          targetCategory.id, category.sort_order
+        );
         
         // Инвалидируем кеш беззвучно
         useCategoryStore.getState().invalidateCache();
-        // Можно сделать silent fetch, чтобы убедиться в синхронизации
         await fetchCategories(true);
       } catch {
         Alert.alert('Ошибка', 'Не удалось сохранить порядок. Пожалуйста, потяните вниз для обновления.');
-        await fetchCategories(); // Полный рефетч для отката
+        await fetchCategories();
       }
     }
   };
@@ -167,12 +156,7 @@ export default function CategoriesScreen() {
     
     try {
       if (editingCategory) {
-        const { error } = await supabase
-          .from('categories')
-          .update(data)
-          .eq('id', editingCategory.id);
-
-        if (error) throw error;
+        await updateCategory(editingCategory.id, data);
       } else {
         // Для новых категорий вычисляем минимальный sort_order
         const sameLevel = categories.filter(c => c.parent_id === (data.parent_id || null));
@@ -182,24 +166,21 @@ export default function CategoriesScreen() {
           sortOrder = minOrder - 1;
         }
 
-        const { error } = await supabase
-          .from('categories')
-          .insert({
-            name: data.name!,
-            slug: data.slug!,
-            image_url: data.image_url,
-            parent_id: data.parent_id,
-            sort_order: sortOrder
-          });
-
-        if (error) throw error;
+        await createCategory({
+          name: data.name!,
+          slug: data.slug!,
+          image_url: data.image_url,
+          parent_id: data.parent_id,
+          sort_order: sortOrder
+        });
       }
 
       await fetchCategories(true);
       useCategoryStore.getState().invalidateCache();
       setModalVisible(false);
-    } catch (error: any) {
-      Alert.alert('Ошибка', error.message || 'Не удалось сохранить категорию');
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : 'Не удалось сохранить категорию';
+      Alert.alert('Ошибка', msg);
     } finally {
       setSubmitting(false);
     }
@@ -220,17 +201,14 @@ export default function CategoriesScreen() {
           style: 'destructive',
           onPress: async () => {
             try {
-              // Отвязываем товары
               const allIds = [id, ...categories.filter(c => c.parent_id === id).map(c => c.id)];
-              await supabase.from('products').update({ category_id: null }).in('category_id', allIds);
-
-              const { error } = await supabase.from('categories').delete().eq('id', id);
-              if (error) throw error;
+              await deleteCategory(id, allIds);
 
               await fetchCategories(true);
               useCategoryStore.getState().invalidateCache();
-            } catch (error: any) {
-              Alert.alert('Ошибка', error.message || 'Не удалось удалить категорию');
+            } catch (error: unknown) {
+              const msg = error instanceof Error ? error.message : 'Не удалось удалить категорию';
+              Alert.alert('Ошибка', msg);
             }
           }
         }

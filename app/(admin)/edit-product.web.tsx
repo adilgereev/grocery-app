@@ -1,5 +1,5 @@
 import { Colors, Radius, Spacing, Shadows } from '@/constants/theme';
-import { supabase } from '@/lib/supabase';
+import { fetchAllCategories, fetchProductForEdit, updateProduct } from '@/lib/adminApi';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
@@ -35,13 +35,11 @@ export default function EditProductScreenWeb() {
   const fetchData = async () => {
     setInitialLoading(true);
     try {
-      const { data: catData, error: catError } = await supabase.from('categories').select('*').order('sort_order', { ascending: true });
-      if (catError) throw catError;
-      if (catData) setCategories(catData);
+      const catData = await fetchAllCategories();
+      setCategories(catData);
 
       if (id) {
-        const { data: productData, error } = await supabase.from('products').select('*').eq('id', id).single();
-        if (error) throw error;
+        const productData = await fetchProductForEdit(id);
         if (productData) {
           setName(productData.name || '');
           setDescription(productData.description || '');
@@ -66,16 +64,14 @@ export default function EditProductScreenWeb() {
 
     setLoading(true);
     try {
-      const { error } = await supabase.from('products').update({
+      await updateProduct(id!, {
         name,
         description,
         price: parseFloat(price),
         unit,
         image_url: imageUrl,
         category_id: categoryId,
-      }).eq('id', id);
-
-      if (error) throw error;
+      });
       router.back();
     } catch (error: unknown) {
       alert(`Ошибка при сохранении: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`);

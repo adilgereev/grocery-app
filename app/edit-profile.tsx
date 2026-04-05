@@ -2,7 +2,8 @@ import Skeleton from '@/components/Skeleton';
 import ScreenHeader from '@/components/ScreenHeader';
 import { Colors, FontSize, Fonts, Radius, Spacing, Shadows } from '@/constants/theme';
 import { formatPhoneDisplay } from '@/lib/sms';
-import { supabase } from '@/lib/supabase';
+import { fetchUserProfile, updateUserProfile } from '@/lib/authApi';
+import { logger } from '@/lib/logger';
 import { useAuth } from '@/providers/AuthProvider';
 
 import { useRouter } from 'expo-router';
@@ -39,13 +40,7 @@ export default function EditProfileScreen() {
     try {
       if (!session?.user?.id) return;
       setLoading(true);
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('first_name, last_name, phone')
-        .eq('id', session.user.id)
-        .single();
-
-      if (error) throw error;
+      const data = await fetchUserProfile(session.user.id);
 
       if (data) {
         reset({
@@ -55,7 +50,7 @@ export default function EditProfileScreen() {
         setPhone(data.phone || '');
       }
     } catch (error: unknown) {
-      console.error('Ошибка в fetchProfile:', error);
+      logger.error('Ошибка в fetchProfile:', error);
     } finally {
       setLoading(false);
     }
@@ -71,15 +66,10 @@ export default function EditProfileScreen() {
     if (!session?.user?.id) return;
     try {
       setSaving(true);
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          first_name: formData.first_name,
-          last_name: formData.last_name || null,
-        })
-        .eq('id', session.user.id);
-
-      if (error) throw error;
+      await updateUserProfile(session.user.id, {
+        first_name: formData.first_name,
+        last_name: formData.last_name || null,
+      });
 
       if (Platform.OS === 'web') {
         window.alert('Профиль успешно обновлен!');
