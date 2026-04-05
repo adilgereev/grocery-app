@@ -20,7 +20,7 @@ const savePhoneToProfile = async (userId: string, phone: string) => {
       .from('profiles')
       .select('phone')
       .eq('id', userId)
-      .single();
+      .maybeSingle();
 
     // Если телефон в профиле совпадает с текущим — не сохраняем (избежать дубликатов)
     if (existingProfile?.phone === phone) {
@@ -58,9 +58,21 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
   const phoneSynced = useRef(false); // Флаг синхронизации за сессию
 
   useEffect(() => {
+    // Сначала быстро берем локальную сессию для мгновенного UI
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setLoading(false);
+
+      if (session) {
+        // Асинхронно сверяем с сервером (вдруг юзер удален из базы, как в вашем случае)
+        supabase.auth.getUser().then(({ error, data: { user } }) => {
+          if (error || !user) {
+            logger.warn('Токен невалиден или юзер удалён в БД. Разлогиниваем...');
+            supabase.auth.signOut(); // Это выбросит событие SIGNED_OUT
+            setSession(null);
+          }
+        });
+      }
     });
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {

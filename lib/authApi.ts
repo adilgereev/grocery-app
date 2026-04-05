@@ -12,7 +12,7 @@ export async function fetchUserProfile(userId: string): Promise<Profile | null> 
     .from('profiles')
     .select('*')
     .eq('id', userId)
-    .single();
+    .maybeSingle();
 
   if (error) throw error;
   return data;
@@ -67,7 +67,7 @@ export async function verifyActiveOtp(phone: string, code: string): Promise<stri
     .gte('expires_at', new Date().toISOString())
     .order('created_at', { ascending: false })
     .limit(1)
-    .single();
+    .maybeSingle();
 
   if (otpError || !otpData) return null;
   return otpData.id;

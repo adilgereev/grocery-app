@@ -123,28 +123,19 @@
 
 ---
 
-### 15. `appStore.ts` — мёртвый импорт
+### ~~15. `appStore.ts` — мёртвый импорт~~ ✅ FIXED
 
-**Файл**: [appStore.ts](file:///d:/Dev/JS%20projects/grocery-app/store/appStore.ts#L2)
+**Файл**: [appStore.ts](file:///d:/Dev/JS%20projects/grocery-app/store/appStore.ts)
 
-```typescript
-import AsyncStorage from '@react-native-async-storage/async-storage';
-```
-
-> [!NOTE]
-> `AsyncStorage` импортирован, но не используется. Правило Boy Scout Rule — удалить.
+**Исправлено**: Удален неиспользуемый импорт `AsyncStorage`.
 
 ---
 
-### 16. `useCheckout` — неиспользуемые импорты
+### ~~16. `useCheckout` — неиспользуемые импорты~~ ✅ FIXED
 
-**Файл**: [useCheckout.ts](file:///d:/Dev/JS%20projects/grocery-app/hooks/useCheckout.ts#L4)
+**Файл**: [useCheckout.ts](file:///d:/Dev/JS%20projects/grocery-app/hooks/useCheckout.ts)
 
-```typescript
-import { fetchAddresses, createAddress, updateAddress, deleteAddress, markAddressAsSelected } from '@/lib/addressApi';
-```
-
-Из 5 импортированных функций **ни одна не используется** в хуке. Это мёртвый код.
+**Исправлено**: Удален неиспользуемый импорт `addressApi`.
 
 ---
 
@@ -253,7 +244,7 @@ Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 | Уровень | Всего | Закрыто | Осталось |
 |---|---|---|---|
 | 🔴 **P0 — Критические** | 7 | ✅ 7 (#1, #2, #3, #4, #5, #6, #7) | ❌ 0 |
-| 🟡 **P1 — Серьёзные** | 10 | ✅ 6 (#8, #9, #10, #11, #12, #13) | ❌ 4 |
+| 🟡 **P1 — Серьёзные** | 10 | ✅ 8 (#8, #9, #10, #11, #12, #13, #15, #16) | ❌ 2 |
 | 🟢 **P2 — Незначительные** | 8 | — | ❌ 8 |
 
 ## ✅ Что сделано хорошо
