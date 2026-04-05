@@ -1,4 +1,4 @@
-import { Colors, Radius, Spacing, Shadows } from '@/constants/theme';
+import { Colors } from '@/constants/theme';
 import { DaDataSuggestion, getAddressSuggestions } from '@/lib/dadataApi';
 import { Ionicons } from '@expo/vector-icons';
 import debounce from 'lodash.debounce';
@@ -6,14 +6,13 @@ import React, { useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
   Keyboard,
-  Platform,
   ScrollView,
-  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View
 } from 'react-native';
+import { addressSearchStyles as s } from './AddressSearchInput.styles';
 
 interface AddressSearchInputProps {
   onSelect: (suggestion: DaDataSuggestion) => void;
@@ -102,10 +101,10 @@ export default function AddressSearchInput({
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.inputWrapper}>
+    <View style={s.container}>
+      <View style={s.inputWrapper}>
         <TextInput
-          style={styles.input}
+          style={s.input}
           placeholder=""
           placeholderTextColor={Colors.light.textLight}
           value={query}
@@ -119,15 +118,15 @@ export default function AddressSearchInput({
         />
 
         {query.length === 0 && (
-          <View style={styles.placeholderContainer} pointerEvents="none">
-            <Ionicons name="location-outline" size={20} color={Colors.light.textLight} style={styles.icon} />
-            <Text style={styles.placeholderText}>{placeholder || "Начните вводить адрес..."}</Text>
+          <View style={s.placeholderContainer} pointerEvents="none">
+            <Ionicons name="location-outline" size={20} color={Colors.light.textLight} style={s.icon} />
+            <Text style={s.placeholderText}>{placeholder || "Начните вводить адрес..."}</Text>
           </View>
         )}
 
-        {isLoading && <ActivityIndicator size="small" color={Colors.light.primary} style={styles.loader} testID="address-search-loader" />}
+        {isLoading && <ActivityIndicator size="small" color={Colors.light.primary} style={s.loader} testID="address-search-loader" />}
         {query.length > 0 && !isLoading && (
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={() => {
               setQuery('');
               setSuggestions([]);
@@ -141,13 +140,13 @@ export default function AddressSearchInput({
       </View>
 
       {query.length > 0 && query.length < 2 && !isLoading && (
-        <Text style={styles.hintText}>Минимум 2 символа для поиска</Text>
+        <Text style={s.hintText}>Минимум 2 символа для поиска</Text>
       )}
 
       {showSuggestions && suggestions.length > 0 && (
-        <View style={styles.suggestionsContainer}>
+        <View style={s.suggestionsContainer}>
           <ScrollView
-            style={styles.suggestionsScroll}
+            style={s.suggestionsScroll}
             nestedScrollEnabled={true}
             keyboardShouldPersistTaps="always"
             showsVerticalScrollIndicator={false}
@@ -157,14 +156,14 @@ export default function AddressSearchInput({
             {suggestions.map((item) => (
               <TouchableOpacity
                 key={item.unrestricted_value}
-                style={styles.suggestionItem}
+                style={s.suggestionItem}
                 onPress={() => handleSelect(item)}
                 testID={`suggestion-item-${item.unrestricted_value}`}
               >
-                <Ionicons name="map-outline" size={18} color={Colors.light.textLight} style={styles.suggestionIcon} />
-                <View style={styles.flex1}>
-                  <Text style={styles.suggestionText} numberOfLines={1}>{item.value}</Text>
-                  {item.data.city && <Text style={styles.suggestionSubtext}>{item.data.city}</Text>}
+                <Ionicons name="map-outline" size={18} color={Colors.light.textLight} style={s.suggestionIcon} />
+                <View style={s.flex1}>
+                  <Text style={s.suggestionText} numberOfLines={1}>{item.value}</Text>
+                  {item.data.city && <Text style={s.suggestionSubtext}>{item.data.city}</Text>}
                 </View>
               </TouchableOpacity>
             ))}
@@ -174,56 +173,3 @@ export default function AddressSearchInput({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { zIndex: 100 },
-  inputWrapper: {
-    flexDirection: 'row', alignItems: 'center',
-    backgroundColor: Colors.light.card, minHeight: 54, borderRadius: Radius.m,
-    paddingHorizontal: Spacing.m,
-    paddingVertical: Platform.OS === 'ios' ? 8 : 4,
-  },
-  icon: { marginRight: Spacing.s },
-  input: {
-    flex: 1,
-    fontSize: 16,
-    color: Colors.light.text,
-    paddingTop: Platform.OS === 'ios' ? 4 : 0,
-    paddingBottom: Platform.OS === 'ios' ? 4 : 0,
-  },
-  hintText: {
-    fontSize: 12,
-    color: Colors.light.textLight,
-    marginTop: 4,
-    marginLeft: Spacing.m,
-  },
-  loader: { marginRight: Spacing.s },
-  placeholderContainer: {
-    position: 'absolute',
-    left: Spacing.m,
-    flexDirection: 'row',
-    alignItems: 'center',
-    height: '100%',
-  },
-  placeholderText: {
-    fontSize: 16,
-    color: Colors.light.textLight,
-  },
-  suggestionsContainer: {
-    position: 'absolute', top: '100%', left: 0, right: 0,
-    marginTop: 4,
-    backgroundColor: Colors.light.card, borderRadius: Radius.m,
-    ...Shadows.md,
-    maxHeight: 400, overflow: 'hidden',
-  },
-  suggestionsScroll: {
-    maxHeight: 400,
-  },
-  suggestionItem: {
-    flexDirection: 'row', alignItems: 'center', padding: Spacing.m,
-  },
-  suggestionIcon: { marginRight: 10 },
-  suggestionText: { fontSize: 14, color: Colors.light.text, fontWeight: '600' },
-  suggestionSubtext: { fontSize: 12, color: Colors.light.textLight, marginTop: 2 },
-  flex1: { flex: 1 },
-});
