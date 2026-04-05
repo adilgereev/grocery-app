@@ -14,13 +14,23 @@ export const formatAddressString = (suggestion: DaDataSuggestion): string => {
 };
 
 /**
- * Очищает строку адреса от лишних префиксов города и региона
+ * Очищает строку адреса от лишних префиксов города, региона и (опционально) номера дома.
  */
-export const cleanAddressStreet = (rawAddress: string): string => {
-  return rawAddress
+export const cleanAddress = (raw: string, options: { removeHouse?: boolean } = {}): string => {
+  if (!raw) return '';
+  
+  let clean = raw
     .replace(/^г\. Буйнакск,?\s*/i, '')
     .replace(/,?\s*Республика Дагестан$/i, '')
-    .replace(/,?\s*Респ\. Дагестан$/i, '')
-    .replace(/,?\s*д\.\s*\d+.*$/i, '')
-    .trim();
+    .replace(/,?\s*Респ\. Дагестан$/i, '');
+    
+  if (options.removeHouse) {
+    // Полностью убираем «д. N» и всё что за ним
+    clean = clean.replace(/,?\s*д\.\s*\d+.*$/i, '');
+  } else {
+    // Убираем дубликат «д. N» если встречается дважды (из старого address.ts)
+    clean = clean.replace(/(д\.\s*\d+[^,]*),.*?\1/i, '$1');
+  }
+    
+  return clean.trim();
 };

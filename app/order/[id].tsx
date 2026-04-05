@@ -4,7 +4,7 @@ import OrderStatusBanner from '@/components/order/OrderStatusBanner';
 import OrderTracker from '@/components/order/OrderTracker';
 import Skeleton from '@/components/Skeleton';
 import { Colors, Radius, Spacing, Shadows } from '@/constants/theme';
-import { cleanAddress } from '@/lib/address';
+import { cleanAddress } from '@/lib/addressUtils';
 import { logger } from '@/lib/logger';
 import { fetchOrderDetails as fetchOrderDetailsApi, OrderItem } from '@/lib/orderApi';
 import { supabase } from '@/lib/supabase';

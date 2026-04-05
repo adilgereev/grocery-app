@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Spacing, Radius, Shadows } from '@/constants/theme';
 import { Order } from '@/types';
-import { cleanAddress } from '@/lib/address';
+import { cleanAddress } from '@/lib/addressUtils';
 
 interface OrderCardProps {
   order: Order;

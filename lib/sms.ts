@@ -79,22 +79,3 @@ export async function sendSMS(phone: string, message: string): Promise<{ success
   }
 }
 
-/**
- * Генерация детерминированного пароля из номера телефона
- * (Используется для создания/входа в Supabase Auth)
- */
-export function generatePasswordFromPhone(phone: string): string {
-  const normalized = normalizePhone(phone);
-  // Соль + телефон + соль для формирования уникального пароля
-  return `grc_${normalized}_s4lt_2026_pr0d`;
-}
-
-/**
- * Генерация email-заглушки из номера телефона
- * (Supabase Auth требует email, мы создаём виртуальный)
- */
-export function phoneToEmail(phone: string): string {
-  const normalized = normalizePhone(phone);
-  // example.com — зарезервированный RFC 2606 домен, Supabase его принимает
-  return `phone${normalized}@example.com`;
-}

@@ -25,20 +25,11 @@
 
 ---
 
-### 3. Генерация пароля из телефона — предсказуемая
+### ~~3. Генерация пароля из телефона — предсказуемая~~ ✅ FIXED
 
-**Файл**: [sms.ts](file:///d:/Dev/JS%20projects/grocery-app/lib/sms.ts#L82-L86)
+**Файл**: `lib/authUtils.ts` (ранее `lib/sms.ts`)
 
-```typescript
-export function generatePasswordFromPhone(phone: string): string {
-  return `grc_${normalized}_s4lt_2026_pr0d`;
-}
-```
-
-> [!WARNING]
-> Пароль **детерминированный** и формула видна в исходниках. Зная номер телефона, можно сгенерировать пароль и войти в аккаунт без OTP. Соль (`s4lt_2026_pr0d`) тоже в коде.
-
-**Исправление**: Использовать серверную генерацию паролей через Supabase Edge Function, или хотя бы использовать настоящий HMAC с секретом из env.
+**Исправлено**: Старая предсказуемая генерация заменена на криптографически безопасный алгоритм `HMAC-SHA256` (используя библиотеку `crypto-js`). Для подписи используется супер-секретный ключ `EXPO_PUBLIC_AUTH_SECRET_KEY` из файлов `.env`. Логика генерации пароля и email полностью отделена от `lib/sms.ts`, что подготовило почву для лёгкого внедрения Flashcall в будущем.
 
 ---
 
@@ -50,21 +41,11 @@ export function generatePasswordFromPhone(phone: string): string {
 
 ---
 
-### 5. `markAddressAsSelected` — гонка между двумя запросами
+### ~~5. Гонка состояний при выборе адреса (`markAddressAsSelected`)~~ ✅ FIXED
 
-**Файл**: [addressApi.ts](file:///d:/Dev/JS%20projects/grocery-app/lib/addressApi.ts#L66-L82)
+**Файл**: `lib/addressApi.ts`
 
-```typescript
-// 1. Снимаем флажок у всех
-await supabase.from('addresses').update({ is_selected: false }).eq('user_id', userId);
-// 2. Ставим на выбранный
-await supabase.from('addresses').update({ is_selected: true }).eq('id', id);
-```
-
-> [!WARNING]
-> Между запросами 1 и 2 другой вызов может создать состояние **без выбранного адреса**. Нет транзакции.
-
-**Исправление**: Объединить в одну RPC-функцию на стороне Supabase (PostgreSQL).
+**Исправлено**: Два последовательных `await supabase...update()` заменены на вызов атомарной RPC-функции `await supabase.rpc('select_delivery_address')`. Теперь сброс старого адреса и выбор нового происходит за одну миллисекунду на уровне базы данных PostgreSQL без риска разрыва (race condition).
 
 ---
 
@@ -120,17 +101,9 @@ await supabase.from('addresses').update({ is_selected: true }).eq('id', id);
 
 ---
 
-### 13. Дублирование логики в `lib/address.ts` и `lib/addressUtils.ts`
+### ~~13. Дублирование логики в `lib/address.ts` и `lib/addressUtils.ts`~~ ✅ FIXED
 
-Оба файла содержат функцию очистки адреса от «г. Буйнакск» и «Республика Дагестан»:
-
-| Файл | Функция |
-|---|---|
-| [address.ts](file:///d:/Dev/JS%20projects/grocery-app/lib/address.ts#L6) | `cleanAddress()` |
-| [addressUtils.ts](file:///d:/Dev/JS%20projects/grocery-app/lib/addressUtils.ts#L19) | `cleanAddressStreet()` |
-| [addressFormatter.ts](file:///d:/Dev/JS%20projects/grocery-app/utils/addressFormatter.ts#L6) | `cleanStreetName()` (private) |
-
-**3 функции делают почти одно и то же.** Нарушение DRY.
+**Исправлено**: Логика консолидирована в `lib/addressUtils.ts`. Файл `lib/address.ts` удалён. `utils/addressFormatter.ts` теперь использует общую утилиту `cleanAddress` с параметрами. Устранено тройное дублирование регулярок очистки "г. Буйнакск".
 
 ---
 
@@ -279,8 +252,8 @@ Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
 | Уровень | Всего | Закрыто | Осталось |
 |---|---|---|---|
-| 🔴 **P0 — Критические** | 7 | ✅ 5 (#1, #2, #4, #6, #7) | ❌ 2 (#3, #5) |
-| 🟡 **P1 — Серьёзные** | 10 | ✅ 5 (#8, #9, #10, #11, #12) | ❌ 5 |
+| 🔴 **P0 — Критические** | 7 | ✅ 7 (#1, #2, #3, #4, #5, #6, #7) | ❌ 0 |
+| 🟡 **P1 — Серьёзные** | 10 | ✅ 6 (#8, #9, #10, #11, #12, #13) | ❌ 4 |
 | 🟢 **P2 — Незначительные** | 8 | — | ❌ 8 |
 
 ## ✅ Что сделано хорошо

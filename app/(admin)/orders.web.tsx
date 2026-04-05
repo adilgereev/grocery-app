@@ -1,7 +1,7 @@
 import { Colors, Radius, Spacing, Shadows } from '@/constants/theme';
 import { supabase } from '@/lib/supabase';
 import { Ionicons } from '@expo/vector-icons';
-import { cleanAddress } from '@/lib/address';
+import { cleanAddress } from '@/lib/addressUtils';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity, View, Linking } from 'react-native';
 

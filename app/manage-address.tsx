@@ -5,7 +5,7 @@ import { AddressCommentSection } from '@/components/address/AddressCommentSectio
 import { AddressDetailsSection } from '@/components/address/AddressDetailsSection';
 import { AddressMainSection } from '@/components/address/AddressMainSection';
 import { Colors, Radius, Spacing } from '@/constants/theme';
-import { cleanAddressStreet, formatAddressString } from '@/lib/addressUtils';
+import { cleanAddress, formatAddressString } from '@/lib/addressUtils';
 import { getAddressByCoords } from '@/lib/dadataApi';
 import { logger } from '@/lib/logger';
 import { AddressFormData, addressSchema } from '@/lib/schemas';
@@ -110,8 +110,8 @@ export default function AddAddressScreen() {
       const houseMatch = rawAddress.match(/д\.\s*(\d+)/);
       const houseNumberFromText = houseMatch ? houseMatch[1] : undefined;
 
-      // Очищаем адрес перед сохранением
-      const cleanStreet = cleanAddressStreet(rawAddress);
+      // Очищаем адрес перед сохранением (убираем город и номер дома из основной строки)
+      const cleanStreet = cleanAddress(rawAddress, { removeHouse: true });
 
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 

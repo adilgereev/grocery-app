@@ -385,7 +385,10 @@ export type Database = {
       }
     }
     Functions: {
-      [_ in never]: never
+      select_delivery_address: {
+        Args: { p_address_id: string; p_user_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       order_status:

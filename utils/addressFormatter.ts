@@ -1,15 +1,5 @@
 import { Address } from '@/store/addressStore';
-
-/**
- * Очищает название улицы от города Буйнакск и системных префиксов
- */
-const cleanStreetName = (text: string): string => {
-  if (!text) return '';
-  return text
-    .replace(/^г\. Буйнакск, /, '')
-    .replace(/, Республика Дагестан$/, '')
-    .trim();
-};
+import { cleanAddress } from '@/lib/addressUtils';
 
 /**
  * Короткий формат: Улица + Дом (для Шапки главной)
@@ -18,7 +8,7 @@ const cleanStreetName = (text: string): string => {
 export const formatShortAddress = (addr: Address | null | undefined): string => {
   if (!addr) return 'Выберите адрес';
   
-  const street = cleanStreetName(addr.text);
+  const street = cleanAddress(addr.text, { removeHouse: true });
   const parts = [street];
   
   if (addr.house) {
@@ -35,7 +25,7 @@ export const formatShortAddress = (addr: Address | null | undefined): string => 
 export const formatFullAddress = (addr: Address | null | undefined): string => {
   if (!addr) return '';
   
-  const street = cleanStreetName(addr.text);
+  const street = cleanAddress(addr.text, { removeHouse: true });
   const parts = [street];
   
   if (addr.house) parts.push(`д. ${addr.house}`);

@@ -65,19 +65,10 @@ export async function deleteAddress(userId: string, id: string): Promise<void> {
  * Установка адреса как выбранного (в БД через 2 этапа)
  */
 export async function markAddressAsSelected(userId: string, id: string): Promise<void> {
-  // 1. Снимаем флажок у всех адресов пользователя
-  const { error: resetError } = await supabase
-    .from('addresses')
-    .update({ is_selected: false })
-    .eq('user_id', userId);
-  
-  if (resetError) throw resetError;
+  const { error } = await supabase.rpc('select_delivery_address', {
+    p_user_id: userId,
+    p_address_id: id,
+  });
 
-  // 2. Ставим флажок на выбранный адрес
-  const { error: selectError } = await supabase
-    .from('addresses')
-    .update({ is_selected: true })
-    .eq('id', id);
-
-  if (selectError) throw selectError;
+  if (error) throw error;
 }
