@@ -265,7 +265,7 @@ Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 2. ~~**OTP в алерте** → показывать код только в `__DEV__` (2 мин)~~ ✅  
 3. ~~**`deleteAddress` без user_id** → добавить фильтр (2 мин)~~ ✅  
 4. ~~**`favoriteStore` — откат оптимистичного апдейта** (10 мин)~~ ✅  
-5. **`markAddressAsSelected` — гонка** → RPC-функция в Supabase (~15 мин)  
+5. ~~**`markAddressAsSelected` — гонка** → RPC-функция в Supabase (~15 мин)~~ ✅  
 6. **Предсказуемый пароль** → HMAC с секретом из env (~30 мин)  
 7. ~~**`any` → типизация** в orderApi, authApi, logger (~30 мин)~~ ✅  
 8. ~~**Return types & Type Sync** (#9, #12)~~ ✅  
