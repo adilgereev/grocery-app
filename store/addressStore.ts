@@ -152,7 +152,10 @@ export const useAddressStore = create<AddressStore>((set, get) => ({
 
   removeAddress: async (id) => {
     try {
-      await deleteAddress(id);
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+
+      await deleteAddress(session.user.id, id);
 
       // Обновляем UI локально
       const updated = get().addresses.filter(a => a.id !== id);

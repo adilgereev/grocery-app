@@ -49,13 +49,14 @@ export async function updateAddress(userId: string, id: string, details: Partial
 }
 
 /**
- * Удаление адреса
+ * Удаление адреса с проверкой принадлежности пользователю
  */
-export async function deleteAddress(id: string): Promise<void> {
+export async function deleteAddress(userId: string, id: string): Promise<void> {
   const { error } = await supabase
     .from('addresses')
     .delete()
-    .eq('id', id);
+    .eq('id', id)
+    .eq('user_id', userId);
 
   if (error) throw error;
 }

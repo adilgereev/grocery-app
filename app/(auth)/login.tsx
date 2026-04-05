@@ -131,9 +131,14 @@ export default function Login() {
         logger.log(`[DEV MODE] SMS bypass for ${normalized}. Your code is: ${code}`);
       }
 
-      // [DEBUG] Показываем код в алерте для тестирования
-      // TODO: Убрать перед релизом!
-      showAlert('Код отправлен', `Ваш код (для теста): ${code}\n\nSMS статус: ${__DEV__ ? 'Bypassed (DEV)' : (result.success ? 'Отправлено' : result.error)}`);
+      // В DEV-режиме показываем код для отладки, в продакшене — только факт отправки
+      if (__DEV__) {
+        showAlert('Код отправлен', `[DEV] Ваш код: ${code}`);
+      } else if (!result.success) {
+        showAlert('Ошибка', result.error || 'Не удалось отправить SMS. Попробуйте ещё раз.');
+      } else {
+        showAlert('Код отправлен', `SMS с кодом отправлено на ${phone}`);
+      }
 
       // Переходим на экран ввода кода независимо от результата SMS
       // (пользователь может получить SMS с задержкой)

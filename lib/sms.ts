@@ -1,5 +1,5 @@
 // Сервис отправки SMS через SMS.ru API
-const SMS_RU_API_ID = '61C438BC-6E6D-8014-5139-D7DFE4B6A8CA';
+const SMS_RU_API_ID = process.env.EXPO_PUBLIC_SMS_RU_API_ID;
 
 /**
  * Генерация случайного 4-значного OTP кода
@@ -39,6 +39,10 @@ export function formatPhoneDisplay(phone: string): string {
  * Возвращает объект с результатом и деталями ошибки
  */
 export async function sendSMS(phone: string, message: string): Promise<{ success: boolean; error?: string }> {
+  if (!SMS_RU_API_ID) {
+    return { success: false, error: 'EXPO_PUBLIC_SMS_RU_API_ID не задан в .env' };
+  }
+
   try {
     const normalizedPhone = normalizePhone(phone);
     const url = `https://sms.ru/sms/send?api_id=${SMS_RU_API_ID}&to=${normalizedPhone}&msg=${encodeURIComponent(message)}&json=1`;
