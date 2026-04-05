@@ -36,19 +36,26 @@ export const useFavoriteStore = create<FavoriteStore>((set, get) => ({
   },
 
   toggleFavorite: async (product: Product, userId: string) => {
-    try {
-      const { favoriteIds } = get();
-      const isFavorite = favoriteIds.includes(product.id);
+    const { favoriteIds } = get();
+    const previousIds = [...favoriteIds];
+    const isFavorite = favoriteIds.includes(product.id);
 
-      // Оптимистичное обновление UI
+    // Оптимистичное обновление UI
+    if (isFavorite) {
+      set({ favoriteIds: favoriteIds.filter(id => id !== product.id) });
+    } else {
+      set({ favoriteIds: [...favoriteIds, product.id] });
+    }
+
+    try {
       if (isFavorite) {
-        set({ favoriteIds: favoriteIds.filter(id => id !== product.id) });
         await removeFromFavorites(userId, product.id);
       } else {
-        set({ favoriteIds: [...favoriteIds, product.id] });
         await addToFavorites(userId, product.id);
       }
     } catch (e: unknown) {
+      // Откат к предыдущему состоянию при ошибке API
+      set({ favoriteIds: previousIds });
       const errorMessage = e instanceof Error ? e.message : 'Не удалось обновить избранное';
       logger.error('Ошибка обновления избранного:', e);
       set({ error: errorMessage });
