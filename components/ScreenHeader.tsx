@@ -32,7 +32,7 @@ export default function ScreenHeader({
   return (
     <View style={[styles.header, { paddingTop: insets.top + Spacing.m }]}>
       {showBackBtn ? (
-        <TouchableOpacity onPress={handleBack} style={styles.backButton}>
+        <TouchableOpacity testID="header-back-button" onPress={handleBack} style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color={Colors.light.text} />
         </TouchableOpacity>
       ) : (

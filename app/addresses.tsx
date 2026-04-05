@@ -30,6 +30,7 @@ export default function AddressesScreen() {
         contentContainerStyle={styles.listGrow}
         renderItem={({ item }) => (
           <TouchableOpacity 
+            testID={`address-card-${item.id}`}
             style={[styles.addressCard, selectedAddressId === item.id && styles.selectedCard]}
             onPress={async () => {
               await selectAddress(item.id);
@@ -58,6 +59,7 @@ export default function AddressesScreen() {
                   router.push(`/manage-address?id=${item.id}`);
                 }} 
                 style={styles.actionBtn}
+                testID={`address-edit-btn-${item.id}`}
               >
                 <Ionicons name="pencil-outline" size={20} color={Colors.light.primary} />
               </TouchableOpacity>
@@ -74,6 +76,7 @@ export default function AddressesScreen() {
 
       <View style={styles.footer}>
         <TouchableOpacity 
+          testID="address-add-button"
           style={styles.addButton} 
           onPress={() => router.push('/manage-address')}
           activeOpacity={0.8}

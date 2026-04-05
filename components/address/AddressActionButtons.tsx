@@ -27,6 +27,7 @@ export const AddressActionButtons: React.FC<AddressActionButtonsProps> = ({
   return (
     <View style={styles.footer}>
       <TouchableOpacity
+        testID="manage-address-save-btn"
         style={[styles.submitButton, (!isValid || isSubmitting) && styles.submitButtonDisabled]}
         disabled={!isValid || isSubmitting}
         onPress={onSubmit}
@@ -49,6 +50,7 @@ export const AddressActionButtons: React.FC<AddressActionButtonsProps> = ({
 
       {isEditMode && onDelete && (
         <TouchableOpacity
+          testID="manage-address-delete-btn"
           style={styles.deleteAddressBtn}
           onPress={() => {
             Alert.alert(

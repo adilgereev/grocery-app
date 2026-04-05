@@ -107,19 +107,18 @@
 
 ---
 
-### 14. Компоненты без `testID` на интерактивных элементах
+### ~~14. Компоненты без `testID` на интерактивных элементах~~ ✅ FIXED
 
 Правило: `code-standards.md` — *«Сразу добавлять testID новым компонентам»*.
 
 Компоненты **с** testID (✅): `AddressSearchInput`, `CartItem`, `CartSummary`, `ProductCard`, `SubcategoryCard`, `OrderCard`, `EmptyCart`, `FloatingCheckoutButton`, `CategoryItem`, `CategoryFormModal`.
 
-Компоненты/экраны **без** testID (❌) на ключевых элементах:
-- `login.tsx` — кнопки «Продолжить», OTP-поля
-- `edit-profile.tsx` — кнопка «Сохранить», инпуты
-- `addresses.tsx` — карточки адресов, кнопка «Добавить»
-- `manage-address.tsx` — кнопки действий  
-- [ScreenHeader.tsx](file:///d:/Dev/JS%20projects/grocery-app/components/ScreenHeader.tsx) — кнопка «Назад»
-- Навигационные элементы в [_layout.tsx](file:///d:/Dev/JS%20projects/grocery-app/app/%28tabs%29/_layout.tsx)
+Компоненты/экраны **c** встроенными testID (исправлено):
+- `login.tsx` (внутри PhoneStep и OtpStep)
+- `edit-profile.tsx`
+- `addresses.tsx`
+- `manage-address.tsx`
+- `ScreenHeader.tsx`
 
 ---
 
@@ -139,14 +138,11 @@
 
 ---
 
-### 17. `login.tsx` — файл на 447 строк
+### ~~17. `login.tsx` — файл на ~450 строк~~ ✅ FIXED
 
 Правило: *«Если файл или компонент превышает 200 строк, предлагать его декомпозицию»* (GEMINI.md).
 
-**447 строк** — более чем в 2 раза превышает лимит. Стоит вынести:
-- Phone input + маску в отдельный компонент
-- OTP input + логику автоперехода в отдельный компонент
-- Стили в отдельный файл
+**Исправлено**: Логика декомпозирована в `PhoneStep` и `OtpStep`. Стили вынесены в `login.styles.ts`. Файл сокращён почти в 3 раза.
 
 ---
 
@@ -244,7 +240,7 @@ Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 | Уровень | Всего | Закрыто | Осталось |
 |---|---|---|---|
 | 🔴 **P0 — Критические** | 7 | ✅ 7 (#1, #2, #3, #4, #5, #6, #7) | ❌ 0 |
-| 🟡 **P1 — Серьёзные** | 10 | ✅ 8 (#8, #9, #10, #11, #12, #13, #15, #16) | ❌ 2 |
+| 🟡 **P1 — Серьёзные** | 10 | ✅ 10 (#8, #9, #10, #11, #12, #13, #14, #15, #16, #17) | ❌ 0 |
 | 🟢 **P2 — Незначительные** | 8 | — | ❌ 8 |
 
 ## ✅ Что сделано хорошо
@@ -270,5 +266,5 @@ Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 7. ~~**`any` → типизация** в orderApi, authApi, logger (~30 мин)~~ ✅  
 8. ~~**Return types & Type Sync** (#9, #12)~~ ✅  
 9. ~~**Прямые Supabase-вызовы** → мигрировать на lib/\*Api.ts (~1-2 часа)~~ ✅  
-10. **Декомпозиция login.tsx** → компоненты (~30 мин)  
+10. ~~**Декомпозиция login.tsx** → компоненты (~30 мин)~~ ✅  
 11. **Остальные P2** → по ходу работы (Boy Scout Rule)

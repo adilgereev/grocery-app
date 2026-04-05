@@ -59,7 +59,7 @@ export default function TabLayout() {
           title: 'Корзина',
           tabBarIcon: ({ color }) => <IconSymbol size={28} name="cart.fill" color={color} />,
           tabBarBadge: cartItemsCount > 0 ? cartItemsCount : undefined,
-          tabBarBadgeStyle: { backgroundColor: Colors.light.primary }
+          tabBarBadgeStyle: { backgroundColor: Colors.light.primary },
         }}
       />
       <Tabs.Screen

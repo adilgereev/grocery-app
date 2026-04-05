@@ -125,6 +125,7 @@ export default function EditProfileScreen() {
                 name="first_name"
                 render={({ field: { onChange, onBlur, value } }) => (
                   <TextInput
+                    testID="profile-firstname-input"
                     style={[styles.input, errors.first_name && styles.inputError]}
                     placeholder="Например, Иван"
                     placeholderTextColor={Colors.light.textLight}
@@ -146,6 +147,7 @@ export default function EditProfileScreen() {
                 name="last_name"
                 render={({ field: { onChange, onBlur, value } }) => (
                   <TextInput
+                    testID="profile-lastname-input"
                     style={[styles.input, errors.last_name && styles.inputError]}
                     placeholder="Например, Иванов"
                     placeholderTextColor={Colors.light.textLight}
@@ -166,6 +168,7 @@ export default function EditProfileScreen() {
 
       <View style={styles.footerInner}>
         <TouchableOpacity
+          testID="profile-save-button"
           style={[styles.saveButton, saving && styles.saveButtonSaving]}
           onPress={handleSubmit(onSave)}
           disabled={saving || loading}
