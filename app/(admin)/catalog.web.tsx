@@ -47,7 +47,7 @@ export default function CatalogScreenWeb() {
   };
 
   const handleEdit = (id: string) => {
-    router.push({ pathname: '/(admin)/edit-product' as any, params: { id } });
+    router.push({ pathname: '/(admin)/edit-product', params: { id } });
   };
 
   const handleDelete = (id: string, name: string) => {

@@ -51,8 +51,8 @@ export default function EditProductScreenWeb() {
           setCategoryId(productData.category_id || '');
         }
       }
-    } catch (error: any) {
-      alert(`Ошибка загрузки данных: ${error.message}`);
+    } catch (error: unknown) {
+      alert(`Ошибка загрузки данных: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`);
     } finally {
       setInitialLoading(false);
     }
@@ -77,8 +77,8 @@ export default function EditProductScreenWeb() {
 
       if (error) throw error;
       router.back();
-    } catch (error: any) {
-      alert(`Ошибка при сохранении: ${error.message}`);
+    } catch (error: unknown) {
+      alert(`Ошибка при сохранении: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`);
     } finally {
       setLoading(false);
     }

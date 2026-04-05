@@ -33,8 +33,8 @@ export default function AddProductScreenWeb() {
       const { data, error } = await supabase.from('categories').select('*').order('sort_order', { ascending: true });
       if (error) throw error;
       if (data) setCategories(data);
-    } catch (error: any) {
-      alert(`Ошибка загрузки категорий: ${error.message}`);
+    } catch (error: unknown) {
+      alert(`Ошибка загрузки категорий: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`);
     }
   };
 
@@ -54,15 +54,15 @@ export default function AddProductScreenWeb() {
         image_url: imageUrl,
         category_id: categoryId,
         is_active: true,
-        stock: 100, // Default stock for MVP
-        tags: [] // Default tags
+        stock: 100, // Стандартный запас для MVP
+        tags: [] // Теги по умолчанию
       });
 
       if (error) throw error;
       alert('Товар успешно добавлен в каталог!');
       router.back();
-    } catch (error: any) {
-      alert(`Ошибка при сохранении: ${error.message}`);
+    } catch (error: unknown) {
+      alert(`Ошибка при сохранении: ${error instanceof Error ? error.message : 'Неизвестная ошибка'}`);
     } finally {
       setLoading(false);
     }

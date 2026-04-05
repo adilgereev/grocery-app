@@ -1,9 +1,35 @@
 import { supabase } from './supabase';
+import { Order } from '@/types';
+
+/**
+ * Тип заказа с его позициями для экрана деталей
+ */
+export interface OrderWithItems {
+  order: Order;
+  items: OrderItem[];
+}
+
+/**
+ * Позиция заказа с данными продукта
+ */
+export interface OrderItem {
+  id: string;
+  order_id: string;
+  product_id: string;
+  quantity: number;
+  price_at_time: number;
+  product: {
+    id: string;
+    name: string;
+    image_url: string | null;
+    unit: string;
+  } | null;
+}
 
 /**
  * Создание нового заказа
  */
-export async function createOrder(userId: string, totalAmount: number, address: string, paymentMethod: 'online' | 'cash'): Promise<any> {
+export async function createOrder(userId: string, totalAmount: number, address: string, paymentMethod: 'online' | 'cash'): Promise<Order> {
   const { data, error } = await supabase
     .from('orders')
     .insert({
@@ -17,7 +43,7 @@ export async function createOrder(userId: string, totalAmount: number, address: 
     .single();
 
   if (error) throw error;
-  return data;
+  return data as Order;
 }
 
 /**
@@ -34,7 +60,7 @@ export async function createOrderItems(items: { order_id: string, product_id: st
 /**
  * Получение истории заказов пользователя
  */
-export async function fetchOrders(userId: string): Promise<any[]> {
+export async function fetchOrders(userId: string): Promise<Order[]> {
   const { data, error } = await supabase
     .from('orders')
     .select('*')
@@ -42,13 +68,13 @@ export async function fetchOrders(userId: string): Promise<any[]> {
     .order('created_at', { ascending: false });
 
   if (error) throw error;
-  return data || [];
+  return (data || []) as Order[];
 }
 
 /**
  * Получение деталей заказа и его позиций
  */
-export async function fetchOrderDetails(orderId: string): Promise<any> {
+export async function fetchOrderDetails(orderId: string): Promise<OrderWithItems> {
   const [orderQuery, itemsQuery] = await Promise.all([
     supabase.from('orders').select('*').eq('id', orderId).single(),
     supabase.from('order_items').select('*, product:product_id(*)').eq('order_id', orderId)

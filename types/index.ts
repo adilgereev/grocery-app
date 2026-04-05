@@ -1,3 +1,5 @@
+import { Enums } from './supabase';
+
 export interface Category {
   id: string;
   name: string;
@@ -45,10 +47,10 @@ export interface Product {
 export interface Order {
   id: string;
   user_id: string;
-  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
+  status: Enums<'order_status'>;
   total_amount: number;
   delivery_address: string;
-  payment_method: 'online' | 'cash';
+  payment_method: Enums<'payment_method'>;
   created_at?: string;
 }
 
@@ -61,6 +63,7 @@ export interface Profile {
   first_name: string | null;
   last_name: string | null;
   phone: string;
+  avatar_url: string | null;
   is_admin: boolean | null;
   created_at?: string;
 }

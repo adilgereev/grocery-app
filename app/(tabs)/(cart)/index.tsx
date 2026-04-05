@@ -5,6 +5,7 @@ import FloatingCheckoutButton from '@/components/FloatingCheckoutButton';
 import { Colors, Spacing, FontSize } from '@/constants/theme';
 import { useCheckout } from '@/hooks/useCheckout';
 import { useCartStore } from '@/store/cartStore';
+import { Address } from '@/store/addressStore';
 import { formatFullAddress } from '@/utils/addressFormatter';
 import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
@@ -46,7 +47,7 @@ export default function CartScreen() {
     },
   });
 
-  const formatAddress = (addr: any) => formatFullAddress(addr);
+  const formatAddress = (addr: Address | null | undefined) => formatFullAddress(addr);
 
   // Состояние пустой корзины с рекомендациями
   if (items.length === 0) {

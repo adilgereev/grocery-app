@@ -10,7 +10,7 @@ import { useAuth } from '@/providers/AuthProvider';
 import { useAddressStore } from '@/store/addressStore';
 import { useCartStore } from '@/store/cartStore';
 import { useCategoryStore } from '@/store/categoryStore';
-import { Category } from '@/types';
+import { Category, Product } from '@/types';
 import { formatShortAddress } from '@/utils/addressFormatter';
 import { getOptimizedImage, getPlaceholderUrl } from '@/utils/imageKit';
 import { Ionicons } from '@expo/vector-icons';
@@ -42,7 +42,7 @@ export default function HomeScreen() {
   const { categoriesWithSubs, fetchFullHierarchy, isLoading: categoriesLoading } = useCategoryStore();
   const { addItem } = useCartStore();
 
-  const [popularProducts, setPopularProducts] = useState<any[]>([]);
+  const [popularProducts, setPopularProducts] = useState<Product[]>([]);
   const [popularLoading, setPopularLoading] = useState(true);
   const [firstName, setFirstName] = useState<string>('');
 
@@ -74,8 +74,8 @@ export default function HomeScreen() {
       }
       const data = await fetchPopularProducts(10);
       setPopularProducts(data || []);
-    } catch (error: any) {
-      logger.error('Ошибка загрузки популярных:', error.message);
+    } catch (error: unknown) {
+      logger.error('Ошибка загрузки популярных:', error instanceof Error ? error.message : error);
     } finally {
       setPopularLoading(false);
     }

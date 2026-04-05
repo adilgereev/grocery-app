@@ -129,8 +129,8 @@ export default function CategoriesScreenWeb() {
       await fetchCategories(true);
       useCategoryStore.getState().invalidateCache();
       setModalVisible(false);
-    } catch (error: any) {
-      alert(error.message || 'Ошибка сохранения');
+    } catch (error: unknown) {
+      alert(error instanceof Error ? error.message : 'Ошибка сохранения');
     } finally {
       setSubmitting(false);
     }

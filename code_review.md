@@ -9,33 +9,19 @@
 
 ## 🔴 Критические (P0) — Безопасность и баги
 
-### 1. SMS.ru API-ключ захардкожен в исходном коде
+### ~~1. SMS.ru API-ключ захардкожен в исходном коде~~ ✅ FIXED
 
 **Файл**: [sms.ts](file:///d:/Dev/JS%20projects/grocery-app/lib/sms.ts#L2)
 
-```typescript
-const SMS_RU_API_ID = '61C438BC-6E6D-8014-5139-D7DFE4B6A8CA';
-```
-
-> [!CAUTION]
-> API-ключ SMS.ru **жёстко вшит в код** и попадает в git-историю. Любой с доступом к репозиторию может отправлять SMS от вашего имени и тратить ваш баланс. Это классическая утечка секретов.
-
-**Исправление**: Перенести в `.env` как `EXPO_PUBLIC_SMS_RU_API_ID` (аналогично DaData).
+**Исправлено**: Ключ перенесён в `.env` как `EXPO_PUBLIC_SMS_RU_API_ID`. В `sendSMS()` добавлена ленивая проверка — приложение не крашнется при импорте, ошибка возвращается в контексте вызова.
 
 ---
 
-### 2. OTP-код показывается пользователю в алерте (даже в продакшене)
+### ~~2. OTP-код показывается пользователю в алерте (даже в продакшене)~~ ✅ FIXED
 
 **Файл**: [login.tsx](file:///d:/Dev/JS%20projects/grocery-app/app/%28auth%29/login.tsx#L136)
 
-```typescript
-showAlert('Код отправлен', `Ваш код (для теста): ${code}\n\nSMS статус: ...`);
-```
-
-> [!CAUTION]
-> Комментарий `// TODO: Убрать перед релизом!` на строке 135 — нарушение правила **No Placeholders** (`code-standards.md`). OTP-код отображается в UI, что полностью обнуляет безопасность SMS-авторизации.
-
-**Исправление**: В продакшене показывать только «Код отправлен на +7 (XXX) XXX-XX-XX». Код показывать только если `__DEV__`.
+**Исправлено**: В `__DEV__` показывается код для отладки. В продакшене — сообщение «SMS отправлено на {phone}» или текст ошибки SMS. TODO-комментарий удалён.
 
 ---
 
@@ -56,23 +42,11 @@ export function generatePasswordFromPhone(phone: string): string {
 
 ---
 
-### 4. `deleteAddress` не проверяет `user_id`
+### ~~4. `deleteAddress` не проверяет `user_id`~~ ✅ FIXED
 
-**Файл**: [addressApi.ts](file:///d:/Dev/JS%20projects/grocery-app/lib/addressApi.ts#L54-L61)
+**Файл**: [addressApi.ts](file:///d:/Dev/JS%20projects/grocery-app/lib/addressApi.ts#L54)
 
-```typescript
-export async function deleteAddress(id: string): Promise<void> {
-  const { error } = await supabase
-    .from('addresses')
-    .delete()
-    .eq('id', id); // ← нет фильтра по user_id!
-}
-```
-
-> [!WARNING]
-> Если RLS-политика на `addresses` пропущена или сломана, любой пользователь может удалить чужой адрес, зная его UUID. В отличие от `updateAddress`, где `user_id` проверяется, здесь проверка отсутствует.
-
-**Исправление**: Добавить `.eq('user_id', userId)` (как в `updateAddress`).
+**Исправлено**: Сигнатура изменена на `deleteAddress(userId, id)`. Добавлен `.eq('user_id', userId)`. Вызов в `addressStore.removeAddress` обновлён с получением сессии.
 
 ---
 
@@ -107,19 +81,11 @@ const { data: { session } } = await supabase.auth.getSession();
 
 ---
 
-### 7. `favoriteStore.toggleFavorite` — оптимистичное обновление без отката
+### ~~7. `favoriteStore.toggleFavorite` — оптимистичное обновление без отката~~ ✅ FIXED
 
-**Файл**: [favoriteStore.ts](file:///d:/Dev/JS%20projects/grocery-app/store/favoriteStore.ts#L38-L55)
+**Файл**: [favoriteStore.ts](file:///d:/Dev/JS%20projects/grocery-app/store/favoriteStore.ts#L38)
 
-```typescript
-// Оптимистичное обновление UI
-set({ favoriteIds: favoriteIds.filter(id => id !== product.id) });
-await removeFromFavorites(userId, product.id);
-// ← Если removeFromFavorites упадёт, UI расходится с БД
-```
-
-> [!WARNING]
-> При ошибке API UI показывает некорректное состояние. Нет `try/catch` с откатом к предыдущему `favoriteIds`.
+**Исправлено**: Перед оптимистичным апдейтом сохраняется `previousIds = [...favoriteIds]`. В `catch` — `set({ favoriteIds: previousIds })` откатывает UI к предыдущему состоянию.
 
 ---
 
@@ -358,11 +324,11 @@ Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
 ## 📊 Сводка
 
-| Уровень | Кол-во | Описание |
-|---|---|---|
-| 🔴 **P0 — Критические** | 7 | Безопасность, утечки ключей, баги с данными |
-| 🟡 **P1 — Серьёзные** | 10 | Нарушения типизации, архитектуры, dead code |
-| 🟢 **P2 — Незначительные** | 8 | Код-стиль, мелкие рефакторинги |
+| Уровень | Всего | Закрыто | Осталось |
+|---|---|---|---|
+| 🔴 **P0 — Критические** | 7 | ✅ 4 (#1, #2, #4, #7) | ❌ 3 (#3, #5, #6) |
+| 🟡 **P1 — Серьёзные** | 10 | — | ❌ 10 |
+| 🟢 **P2 — Незначительные** | 8 | — | ❌ 8 |
 
 ## ✅ Что сделано хорошо
 
@@ -378,10 +344,13 @@ Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
 ## 🎯 Рекомендуемый порядок исправлений
 
-1. **SMS API ключ** → перенести в `.env` (5 мин)  
-2. **OTP в алерте** → показывать код только в `__DEV__` (2 мин)  
-3. **`deleteAddress` без user_id** → добавить фильтр (2 мин)  
-4. **`any` → типизация** в orderApi, authApi, logger (30 мин)  
-5. **Прямые Supabase-вызовы** → мигрировать на lib/\*Api.ts (1-2 часа)  
-6. **Декомпозиция login.tsx** → 3 компонента (30 мин)  
-7. **Остальные P2** → по ходу работы (Boy Scout Rule)
+1. ~~**SMS API ключ** → перенести в `.env` (5 мин)~~ ✅  
+2. ~~**OTP в алерте** → показывать код только в `__DEV__` (2 мин)~~ ✅  
+3. ~~**`deleteAddress` без user_id** → добавить фильтр (2 мин)~~ ✅  
+4. ~~**`favoriteStore` — откат оптимистичного апдейта** (10 мин)~~ ✅  
+5. **`markAddressAsSelected` — гонка** → RPC-функция в Supabase (~15 мин)  
+6. **Предсказуемый пароль** → HMAC с секретом из env (~30 мин)  
+7. **`any` → типизация** в orderApi, authApi, logger (~30 мин)  
+8. **Прямые Supabase-вызовы** → мигрировать на lib/\*Api.ts (~1-2 часа)  
+9. **Декомпозиция login.tsx** → компоненты (~30 мин)  
+10. **Остальные P2** → по ходу работы (Boy Scout Rule)
