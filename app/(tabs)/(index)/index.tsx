@@ -5,7 +5,6 @@ import PopularSection from '@/components/home/PopularSection';
 import SubcategoriesSkeleton from '@/components/SubcategoriesSkeleton';
 import { logger } from '@/lib/logger';
 import { fetchPopularProducts } from '@/lib/productsApi';
-import { fetchUserProfile } from '@/lib/authApi';
 import { useAuth } from '@/providers/AuthProvider';
 import { useAddressStore } from '@/store/addressStore';
 import { useCartStore } from '@/store/cartStore';
@@ -23,7 +22,7 @@ import { homeStyles as s } from '@/components/home/index.styles';
 const GREETING_HEIGHT = 52;
 
 export default function HomeScreen() {
-  const { session } = useAuth();
+  const { session, profile } = useAuth();
   const router = useRouter();
 
   const { categoriesWithSubs, fetchFullHierarchy, isLoading: categoriesLoading } = useCategoryStore();
@@ -31,7 +30,8 @@ export default function HomeScreen() {
 
   const [popularProducts, setPopularProducts] = useState<Product[]>([]);
   const [popularLoading, setPopularLoading] = useState(true);
-  const [firstName, setFirstName] = useState<string>('');
+  // Имя из контекста (сбрасывается при выходе)
+  const firstName = profile?.first_name || '';
 
   const { addresses, selectedAddressId, loadAddresses } = useAddressStore();
   const selectedAddress = addresses.find(a => a.id === selectedAddressId);
@@ -64,18 +64,6 @@ export default function HomeScreen() {
     }
   }, [popularProducts.length]);
 
-  const loadUserInfo = useCallback(async () => {
-    try {
-      const userId = session!.user.id;
-      const profileData = await fetchUserProfile(userId);
-      if (profileData && 'first_name' in profileData) {
-        setFirstName(profileData.first_name as string);
-      }
-    } catch (error) {
-      logger.error('Ошибка в loadUserInfo:', error);
-    }
-  }, [session]);
-
   // Загружаем данные при каждом фокусе на страницу
   useFocusEffect(
     useCallback(() => {
@@ -83,10 +71,9 @@ export default function HomeScreen() {
       loadPopularProducts();
 
       if (session?.user) {
-        loadUserInfo();
         loadAddresses();
       }
-    }, [session, loadAddresses, loadUserInfo, fetchFullHierarchy, loadPopularProducts])
+    }, [session, loadAddresses, fetchFullHierarchy, loadPopularProducts])
   );
 
   // Определяем приветствие по времени суток

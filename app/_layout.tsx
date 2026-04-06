@@ -25,10 +25,10 @@ export const unstable_settings = {
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
-  const { session, loading } = useAuth();
+  const { session, loading, needsProfileSetup, profileLoading } = useAuth();
   const segments = useSegments();
   const router = useRouter();
-  
+
   const { isReady, initialize } = useAppStore();
   const loadAddresses = useAddressStore(state => state.loadAddresses);
 
@@ -39,28 +39,37 @@ function RootLayoutNav() {
   }, [initialize, loadAddresses]);
 
   useEffect(() => {
-    // Ждем окончания загрузки сессии и окончания проверки хранилища
-    if (loading || !isReady) return;
+    // Ждем окончания загрузки сессии, профиля и проверки хранилища
+    if (loading || !isReady || (session && profileLoading)) return;
 
     const inAuthGroup = segments[0] === '(auth)';
+    const inSetupProfile = segments[0] === 'setup-profile';
 
-    // Если пользователь уже авторизован, но находится на экране логина
-    if (session && inAuthGroup) {
-      if (router.canGoBack()) {
-        router.back();
-      } else {
-        router.replace('/(tabs)/(index)' as any);
+    if (session) {
+      // Первый вход — нужно заполнить имя
+      if (needsProfileSetup) {
+        if (!inSetupProfile) {
+          router.replace('/setup-profile' as any);
+        }
+      } else if (inAuthGroup || inSetupProfile) {
+        // Авторизованный пользователь с заполненным профилем на экране авторизации/setup
+        if (router.canGoBack()) {
+          router.back();
+        } else {
+          router.replace('/(tabs)/(index)' as any);
+        }
       }
     }
-  }, [session, loading, segments, isReady, router]);
+  }, [session, loading, segments, isReady, router, needsProfileSetup, profileLoading]);
 
-  if (loading || !isReady) return null;
+  if (loading || !isReady || (session && profileLoading)) return null;
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Stack screenOptions={{ headerShown: false }}>
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="(auth)" />
+        <Stack.Screen name="setup-profile" />
         <Stack.Screen name="addresses" />
       </Stack>
       <StatusBar style="dark" />
