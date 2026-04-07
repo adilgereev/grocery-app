@@ -8,7 +8,7 @@ import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Alert, Keyboard, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 
-import { loginStyles as styles } from './login.styles';
+import { loginStyles as styles } from './_login.styles';
 import { PhoneStep } from '@/components/auth/PhoneStep';
 import { OtpStep } from '@/components/auth/OtpStep';
 
