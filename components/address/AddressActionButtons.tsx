@@ -33,13 +33,13 @@ export const AddressActionButtons: React.FC<AddressActionButtonsProps> = ({
         onPress={onSubmit}
       >
         <LinearGradient
-          colors={(!isValid || isSubmitting) ? [Colors.light.textLight, Colors.light.textLight] : [Colors.light.primary, '#059669']}
+          colors={(!isValid || isSubmitting) ? [Colors.light.textLight, Colors.light.textLight] : [Colors.light.primary, Colors.light.primaryDark]}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={styles.gradientButton}
         >
           {isSubmitting || isLoading ? (
-            <ActivityIndicator color={Colors.light.card} />
+            <ActivityIndicator color={Colors.light.white} />
           ) : (
             <Text style={styles.submitButtonText}>
               {isEditMode ? "Сохранить изменения" : "Сохранить адрес"}
@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   submitButtonText: {
-    color: Colors.light.card,
+    color: Colors.light.white,
     fontSize: 16,
     fontWeight: '700',
     textTransform: 'uppercase',

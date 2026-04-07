@@ -24,7 +24,7 @@ export default function CheckoutButton({
         testID="cart-checkout-btn"
       >
         {isSubmitting ? (
-          <ActivityIndicator color={Colors.light.card} />
+          <ActivityIndicator color={Colors.light.white} />
         ) : (
           <>
             <Text style={s.checkoutText}>Оформить заказ</Text>

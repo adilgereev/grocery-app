@@ -82,7 +82,7 @@ export default function AddressesScreen() {
           onPress={() => router.push('/manage-address')}
           activeOpacity={0.8}
         >
-          <Ionicons name="add" size={24} color={Colors.light.card} style={styles.addIcon} />
+          <Ionicons name="add" size={24} color={Colors.light.white} style={styles.addIcon} />
           <Text style={styles.addButtonText}>Добавить новый адрес</Text>
         </TouchableOpacity>
       </View>
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
   },
   selectedCard: {
     borderColor: Colors.light.primary,
-    backgroundColor: Colors.light.successLight,
+    backgroundColor: Colors.light.primaryLight,
   },
   addressInfo: {
     flexDirection: 'row',
@@ -201,7 +201,7 @@ const styles = StyleSheet.create({
   },
   addIcon: { marginRight: Spacing.s },
   addButtonText: {
-    color: Colors.light.card,
+    color: Colors.light.white,
     fontSize: FontSize.l,
     fontWeight: '700',
   },

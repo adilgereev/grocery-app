@@ -145,7 +145,7 @@ export default function AddProductScreenWeb() {
         disabled={loading}
       >
         {loading ? (
-          <ActivityIndicator color={Colors.light.card} />
+          <ActivityIndicator color={Colors.light.white} />
         ) : (
           <Text style={styles.saveButtonText}>Сохранить товар</Text>
         )}
@@ -190,5 +190,5 @@ const styles = StyleSheet.create({
     ...Shadows.md,
   },
   saveButtonDisabled: { opacity: 0.7 },
-  saveButtonText: { color: Colors.light.card, fontSize: 16, fontWeight: '700' }
+  saveButtonText: { color: Colors.light.white, fontSize: 16, fontWeight: '700' }
 });

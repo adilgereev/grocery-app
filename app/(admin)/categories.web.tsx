@@ -183,7 +183,7 @@ export default function CategoriesScreenWeb() {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Все категории ({categories.length})</Text>
         <TouchableOpacity style={styles.addBtn} onPress={handleAdd}>
-          <Ionicons name="add" size={24} color={Colors.light.card} />
+          <Ionicons name="add" size={24} color={Colors.light.white} />
           <Text style={styles.addBtnText}>Добавить</Text>
         </TouchableOpacity>
       </View>
@@ -229,6 +229,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.light.primary,
     paddingHorizontal: 12, paddingVertical: 8, borderRadius: Radius.m,
   },
-  addBtnText: { color: Colors.light.card, fontWeight: '700', marginLeft: 4, fontSize: 14 },
+  addBtnText: { color: Colors.light.white, fontWeight: '700', marginLeft: 4, fontSize: 14 },
   list: { padding: Spacing.m },
 });

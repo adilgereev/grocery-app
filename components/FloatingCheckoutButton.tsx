@@ -63,7 +63,7 @@ export default function FloatingCheckoutButton({
         testID="cart-floating-checkout-btn"
       >
         {isSubmitting ? (
-          <ActivityIndicator color={Colors.light.card} size="small" />
+          <ActivityIndicator color={Colors.light.white} size="small" />
         ) : (
           <>
             <Text style={styles.floatingCheckoutText}>Оформить заказ</Text>
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
   },
   floatingCheckoutButton: {
     flexDirection: 'row',
-    backgroundColor: Colors.light.primary,
+    backgroundColor: Colors.light.cta,
     borderRadius: 100,
     paddingVertical: 12,
     paddingHorizontal: Spacing.m,
@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
   },
   floatingButtonSubmitting: { opacity: 0.7 },
   floatingCheckoutText: {
-    color: Colors.light.card,
+    color: Colors.light.white,
     fontSize: 15,
     fontWeight: '700',
     marginLeft: Spacing.xs,
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.l,
   },
   floatingCheckoutPriceText: {
-    color: Colors.light.card,
+    color: Colors.light.white,
     fontSize: 14,
     fontWeight: '700', // Софт-болд
   },

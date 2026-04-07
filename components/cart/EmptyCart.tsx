@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
     ...Shadows.md,
   },
   goShoppingBtnText: {
-    color: Colors.light.card,
+    color: Colors.light.white,
     fontSize: 16,
     fontWeight: '700',
   },

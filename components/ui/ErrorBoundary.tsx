@@ -78,7 +78,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
             )}
 
             <TouchableOpacity style={styles.reloadButton} onPress={this.handleReset}>
-              <Ionicons name="refresh" size={20} color={Colors.light.card} style={styles.reloadIcon} />
+              <Ionicons name="refresh" size={20} color={Colors.light.white} style={styles.reloadIcon} />
               <Text style={styles.reloadButtonText}>Перезагрузить приложение</Text>
             </TouchableOpacity>
           </ScrollView>
@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
     marginRight: Spacing.s,
   },
   reloadButtonText: {
-    color: Colors.light.card,
+    color: Colors.light.white,
     fontSize: 16,
     fontWeight: '700',
   },

@@ -56,13 +56,13 @@ export default function ProductCard({ item, index = 0 }: { item: Product, index?
       
       <View style={styles.actionContainer}>
         {!cartItem ? (
-          <TouchableOpacity 
-            style={styles.addButton} 
-            activeOpacity={0.7} 
+          <TouchableOpacity
+            style={styles.addButton}
+            activeOpacity={0.7}
             onPress={() => addItem(item)}
             testID="product-add-button"
           >
-            <Ionicons name="cart" size={22} color={Colors.light.primary} />
+            <Ionicons name="cart" size={22} color={Colors.light.cta} />
           </TouchableOpacity>
         ) : (
           <View style={styles.activeControlContainer}>
@@ -72,7 +72,7 @@ export default function ProductCard({ item, index = 0 }: { item: Product, index?
               onPress={() => updateQuantity(item.id, cartItem.quantity - 1)}
               testID="product-decrease-button"
             >
-              <Ionicons name="remove" size={16} color={Colors.light.primary} />
+              <Ionicons name="remove" size={16} color={Colors.light.cta} />
             </TouchableOpacity>
             
             <Text style={styles.controlQuantity} testID="product-quantity-text">{cartItem.quantity}</Text>
@@ -83,7 +83,7 @@ export default function ProductCard({ item, index = 0 }: { item: Product, index?
               onPress={() => updateQuantity(item.id, cartItem.quantity + 1)}
               testID="product-increase-button"
             >
-              <Ionicons name="add" size={16} color={Colors.light.primary} />
+              <Ionicons name="add" size={16} color={Colors.light.cta} />
             </TouchableOpacity>
           </View>
         )}
@@ -141,15 +141,15 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 40,
     borderRadius: Radius.pill, // "Пухлая" кнопка
-    backgroundColor: Colors.light.primaryLight,
+    backgroundColor: Colors.light.ctaLight,
     justifyContent: 'center',
     alignItems: 'center',
   },
   activeControlContainer: {
-    flexDirection: 'row', 
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    backgroundColor: Colors.light.primary,
+    backgroundColor: Colors.light.cta,
     borderRadius: Radius.pill, // Синхронизируем с кнопкой
     height: 40,
     paddingHorizontal: Spacing.xs,
@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
   controlQuantity: {
     fontSize: 16,
     fontWeight: '700',
-    color: Colors.light.card,
+    color: Colors.light.white,
     marginHorizontal: Spacing.xs,
   },
 });

@@ -85,7 +85,7 @@ export default function FavoritesScreen() {
         <ScrollView contentContainerStyle={styles.emptyScrollContent} showsVerticalScrollIndicator={false}>
           <View style={styles.emptyHeader}>
             <View style={styles.emptyIconCircle}>
-              <Ionicons name="heart-outline" size={48} color={Colors.light.error} />
+              <Ionicons name="heart-outline" size={48} color={Colors.light.primary} />
             </View>
             <Text style={styles.emptyTitle}>Тут пока пусто</Text>
             <Text style={styles.emptySubText}>Сохраняйте товары в Избранное, чтобы покупать их быстрее</Text>
@@ -180,7 +180,7 @@ const styles = StyleSheet.create({
     ...Shadows.md,
   },
   goShoppingBtnText: {
-    color: Colors.light.card,
+    color: Colors.light.white,
     fontSize: 16,
     fontWeight: '700',
   },

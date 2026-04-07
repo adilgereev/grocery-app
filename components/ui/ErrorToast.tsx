@@ -46,15 +46,15 @@ export function ErrorToast({ type, message, duration = 3000, onDismiss }: ToastP
   const getIcon = () => {
     switch (type) {
       case 'success':
-        return <Ionicons name="checkmark-circle" size={24} color={Colors.light.card} />;
+        return <Ionicons name="checkmark-circle" size={24} color={Colors.light.white} />;
       case 'error':
-        return <Ionicons name="close-circle" size={24} color={Colors.light.card} />;
+        return <Ionicons name="close-circle" size={24} color={Colors.light.white} />;
       case 'warning':
-        return <Ionicons name="warning" size={24} color={Colors.light.card} />;
+        return <Ionicons name="warning" size={24} color={Colors.light.white} />;
       case 'info':
-        return <Ionicons name="information-circle" size={24} color={Colors.light.card} />;
+        return <Ionicons name="information-circle" size={24} color={Colors.light.white} />;
       default:
-        return <Ionicons name="information-circle" size={24} color={Colors.light.card} />;
+        return <Ionicons name="information-circle" size={24} color={Colors.light.white} />;
     }
   };
 
@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 15,
     fontWeight: '600',
-    color: Colors.light.card,
+    color: Colors.light.white,
     lineHeight: 20,
   },
 });

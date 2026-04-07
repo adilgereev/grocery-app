@@ -155,10 +155,10 @@ export default function SearchScreen() {
             {error && (
               <TouchableOpacity style={styles.retryButton} onPress={() => query && performSearch(query)}>
                 {loading ? (
-                  <ActivityIndicator color={Colors.light.card} />
+                  <ActivityIndicator color={Colors.light.white} />
                 ) : (
                   <>
-                    <Ionicons name="refresh-outline" size={20} color={Colors.light.card} style={styles.retryIcon} />
+                    <Ionicons name="refresh-outline" size={20} color={Colors.light.white} style={styles.retryIcon} />
                     <Text style={styles.retryButtonText}>Повторить</Text>
                   </>
                 )}
@@ -252,7 +252,7 @@ const styles = StyleSheet.create({
     marginTop: Spacing.m,
   },
   retryButtonText: {
-    color: Colors.light.card,
+    color: Colors.light.white,
     fontSize: 16,
     fontWeight: '600',
   },

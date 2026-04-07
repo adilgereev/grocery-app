@@ -99,10 +99,10 @@ export default function OrdersScreen() {
           <Text style={styles.errorMessage}>{error}</Text>
           <TouchableOpacity style={styles.retryButton} onPress={() => fetchOrders()}>
             {loading ? (
-              <ActivityIndicator color={Colors.light.card} />
+              <ActivityIndicator color={Colors.light.white} />
             ) : (
               <>
-                <Ionicons name="refresh-outline" size={20} color={Colors.light.card} style={styles.retryIcon} />
+                <Ionicons name="refresh-outline" size={20} color={Colors.light.white} style={styles.retryIcon} />
                 <Text style={styles.retryButtonText}>Повторить</Text>
               </>
             )}
@@ -143,7 +143,7 @@ const styles = StyleSheet.create({
   errorTitle: { fontSize: 20, fontWeight: '700', color: Colors.light.text, marginTop: Spacing.m, marginBottom: Spacing.s },
   errorMessage: { fontSize: 14, color: Colors.light.textSecondary, textAlign: 'center', marginBottom: Spacing.l },
   retryButton: { backgroundColor: Colors.light.primary, flexDirection: 'row', alignItems: 'center', paddingHorizontal: Spacing.xl, paddingVertical: Spacing.m, borderRadius: Radius.l },
-  retryButtonText: { color: Colors.light.card, fontSize: 16, fontWeight: '600' },
+  retryButtonText: { color: Colors.light.white, fontSize: 16, fontWeight: '600' },
   retryIcon: { marginRight: 8 },
   skeletonItem: { marginBottom: 12 },
 

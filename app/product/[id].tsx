@@ -94,10 +94,10 @@ export default function ProductDetailScreen() {
         <Text style={styles.errorText}>{error || 'Товар не найден'}</Text>
         <TouchableOpacity style={styles.retryButton} onPress={() => fetchProductDetails()}>
           {loading ? (
-            <ActivityIndicator color={Colors.light.card} />
+            <ActivityIndicator color={Colors.light.white} />
           ) : (
             <>
-              <Ionicons name="refresh-outline" size={20} color={Colors.light.card} style={styles.retryIcon} />
+              <Ionicons name="refresh-outline" size={20} color={Colors.light.white} style={styles.retryIcon} />
               <Text style={styles.retryText}>Повторить</Text>
             </>
           )}
@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.xl, paddingVertical: Spacing.m, borderRadius: Radius.xl,
   },
   retryIcon: { marginRight: 8 },
-  retryText: { color: Colors.light.card, fontWeight: '700' },
+  retryText: { color: Colors.light.white, fontWeight: '700' },
   backButton: { marginTop: 16 },
   backButtonText: { color: Colors.light.textSecondary, fontSize: 16 },
   headerAbsolute: {

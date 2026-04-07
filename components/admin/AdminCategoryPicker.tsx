@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
   },
   childIcon: { marginRight: Spacing.s },
   childName: { flex: 1, fontSize: 15, fontWeight: '500', color: Colors.light.text },
-  selectedRow: { backgroundColor: Colors.light.successLight }, 
+  selectedRow: { backgroundColor: Colors.light.primaryLight },
   selectedText: { color: Colors.light.primary, fontWeight: '700' },
   emptyText: { textAlign: 'center', marginTop: 40, color: Colors.light.textSecondary }
 });

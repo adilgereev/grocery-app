@@ -48,7 +48,7 @@ export const ProductHeader: React.FC<ProductHeaderProps> = ({
           <Ionicons
             name={isFavorite ? "heart" : "heart-outline"}
             size={24}
-            color={isFavorite ? Colors.light.error : Colors.light.text}
+            color={isFavorite ? Colors.light.primary : Colors.light.text}
           />
         </TouchableOpacity>
       </SafeAreaView>

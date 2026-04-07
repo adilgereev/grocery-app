@@ -1,6 +1,6 @@
 import { IconSymbol } from '@/components/ui/icon-symbol';
 import { Colors, Shadows } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+
 import { useAuth } from '@/providers/AuthProvider';
 import { useCartStore } from '@/store/cartStore';
 import { useFavoriteStore } from '@/store/favoriteStore';
@@ -17,7 +17,7 @@ export const unstable_settings = {
 };
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+
   const cartItemsCount = useCartStore((state) => state.totalItems);
   const insets = useSafeAreaInsets();
   const { session } = useAuth();
@@ -33,7 +33,7 @@ export default function TabLayout() {
     <Tabs
       initialRouteName="(index)"
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        tabBarActiveTintColor: Colors.light.tabIconSelected,
         tabBarInactiveTintColor: Colors.light.textLight,
         headerShown: false,
         tabBarStyle: {

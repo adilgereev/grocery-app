@@ -139,7 +139,7 @@ export const cartSummaryStyles = StyleSheet.create({
   organicButtonContainer: { marginTop: Spacing.l },
   checkoutButton: {
     flexDirection: 'row',
-    backgroundColor: Colors.light.primary,
+    backgroundColor: Colors.light.cta,
     borderRadius: 100,
     paddingVertical: Spacing.m,
     paddingHorizontal: 20,
@@ -149,7 +149,7 @@ export const cartSummaryStyles = StyleSheet.create({
   },
   checkoutButtonSubmitting: { opacity: 0.7 },
   checkoutText: {
-    color: Colors.light.card,
+    color: Colors.light.white,
     fontSize: 17,
     fontWeight: '700',
     marginLeft: Spacing.s,
@@ -161,7 +161,7 @@ export const cartSummaryStyles = StyleSheet.create({
     borderRadius: Radius.xl,
   },
   checkoutPriceText: {
-    color: Colors.light.card,
+    color: Colors.light.white,
     fontSize: 15,
     fontWeight: '700',
   },

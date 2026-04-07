@@ -38,14 +38,14 @@ export const ProductBottomBar: React.FC<ProductBottomBarProps> = ({
               style={styles.quantityButton}
               onPress={() => onUpdateQuantity(quantity - 1)}
             >
-              <Ionicons name="remove" size={20} color={Colors.light.primary} />
+              <Ionicons name="remove" size={20} color={Colors.light.cta} />
             </TouchableOpacity>
             <Text style={styles.quantityText}>{quantity}</Text>
             <TouchableOpacity
               style={styles.quantityButton}
               onPress={() => onUpdateQuantity(quantity + 1)}
             >
-              <Ionicons name="add" size={20} color={Colors.light.primary} />
+              <Ionicons name="add" size={20} color={Colors.light.cta} />
             </TouchableOpacity>
           </View>
         )}
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   addToCartButton: {
-    backgroundColor: Colors.light.primary,
+    backgroundColor: Colors.light.cta,
     borderRadius: Radius.pill,
     paddingHorizontal: 36,
     paddingVertical: 18,

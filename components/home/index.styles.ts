@@ -68,7 +68,7 @@ export const homeStyles = StyleSheet.create({
   },
   bannerImage: { width: '100%', height: '100%' },
   bannerTitle: {
-    color: Colors.light.card, fontSize: 20, fontWeight: '700',
+    color: Colors.light.white, fontSize: 20, fontWeight: '700',
     textShadowColor: Colors.light.blackTransparent, textShadowOffset: { width: 0, height: 2 },
     position: 'absolute', bottom: Spacing.m, left: Spacing.m, right: Spacing.m,
   },
@@ -97,7 +97,7 @@ export const homeStyles = StyleSheet.create({
   popularUnit: { fontSize: 11, color: Colors.light.textLight, fontWeight: '600' },
   addPopularButton: {
     position: 'absolute', bottom: 8, right: 8,
-    width: 32, height: 32, borderRadius: Radius.pill, backgroundColor: Colors.light.primary,
+    width: 32, height: 32, borderRadius: Radius.pill, backgroundColor: Colors.light.cta,
     justifyContent: 'center', alignItems: 'center',
     ...Shadows.sm,
   },

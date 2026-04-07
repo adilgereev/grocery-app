@@ -66,7 +66,7 @@ export default function PopularSection({
                 activeOpacity={0.9}
                 testID={`home-popular-add-${product.id}`}
               >
-                <Ionicons name="add" size={20} color={Colors.light.card} />
+                <Ionicons name="add" size={20} color={Colors.light.white} />
               </TouchableOpacity>
             </View>
             <View style={s.popularInfo}>

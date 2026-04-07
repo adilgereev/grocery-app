@@ -9,7 +9,7 @@ import { ActivityIndicator, Alert, FlatList, Linking, StyleSheet, Text, Touchabl
 const STATUSES = {
   pending: { label: 'Новый', color: Colors.light.warning },
   processing: { label: 'Сборка', color: Colors.light.info },
-  shipped: { label: 'В пути', color: Colors.light.secondary },
+  shipped: { label: 'В пути', color: Colors.light.info },
   delivered: { label: 'Доставлен', color: Colors.light.success },
   cancelled: { label: 'Отменен', color: Colors.light.error }
 };
@@ -201,9 +201,9 @@ const styles = StyleSheet.create({
   price: { fontSize: 18, fontWeight: '800', color: Colors.light.text },
   date: { fontSize: 12, color: Colors.light.textLight },
   actionButton: { paddingVertical: 12, borderRadius: Radius.m, alignItems: 'center' },
-  actionButtonText: { color: Colors.light.card, fontSize: 14, fontWeight: '700' },
+  actionButtonText: { color: Colors.light.white, fontSize: 14, fontWeight: '700' },
   empty: { textAlign: 'center', marginTop: 100, color: Colors.light.textSecondary },
-  expandButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: Spacing.s, marginBottom: Spacing.s, backgroundColor: Colors.light.infoLight, borderRadius: Radius.m },
+  expandButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: Spacing.s, marginBottom: Spacing.s, backgroundColor: Colors.light.primaryLight, borderRadius: Radius.m },
   expandButtonText: { color: Colors.light.primary, fontSize: 13, fontWeight: '600', marginRight: 4 },
   itemsContainer: { backgroundColor: Colors.light.background, borderRadius: Radius.m, padding: Spacing.m, marginBottom: Spacing.m },
   itemRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8, alignItems: 'flex-start' },

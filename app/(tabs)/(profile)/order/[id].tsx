@@ -109,7 +109,7 @@ export default function OrderDetailsScreen() {
         <Ionicons name="alert-circle-outline" size={64} color={Colors.light.error} />
         <Text style={styles.errorText}>{error || 'Заказ не найден'}</Text>
         <TouchableOpacity style={styles.retryButtonCenter} onPress={fetchOrderDetails}>
-          <Ionicons name="refresh-outline" size={20} color={Colors.light.card} style={styles.retryIcon} />
+          <Ionicons name="refresh-outline" size={20} color={Colors.light.white} style={styles.retryIcon} />
           <Text style={styles.retryButtonText}>Повторить</Text>
         </TouchableOpacity>
       </View>
@@ -176,7 +176,7 @@ export default function OrderDetailsScreen() {
           <View style={styles.totalDivider} />
           <View style={styles.totalRow}><Text style={styles.totalLabel}>Итого</Text><Text style={styles.totalPrice}>{Number(order.total_amount).toFixed(0)} ₽</Text></View>
           <TouchableOpacity style={styles.repeatButton} onPress={handleRepeatOrder}>
-            <Ionicons name="bag-handle-outline" size={20} color={Colors.light.card} style={styles.repeatIcon} />
+            <Ionicons name="bag-handle-outline" size={20} color={Colors.light.white} style={styles.repeatIcon} />
             <Text style={styles.repeatButtonText}>Повторить покупку</Text>
           </TouchableOpacity>
         </View>
@@ -224,15 +224,15 @@ const styles = StyleSheet.create({
   totalPrice: { fontSize: 20, fontWeight: '700', color: Colors.light.primary },
 
   repeatButton: {
-    backgroundColor: Colors.light.primary, flexDirection: 'row', justifyContent: 'center', alignItems: 'center',
+    backgroundColor: Colors.light.cta, flexDirection: 'row', justifyContent: 'center', alignItems: 'center',
     paddingVertical: 16, borderRadius: Radius.pill, marginTop: Spacing.l,
   },
   repeatIcon: { marginRight: 8 },
-  repeatButtonText: { color: Colors.light.card, fontSize: 16, fontWeight: '700' },
+  repeatButtonText: { color: Colors.light.white, fontSize: 16, fontWeight: '700' },
 
   footerSpacer: { height: Spacing.xl },
   errorText: { fontSize: 18, color: Colors.light.textSecondary, marginTop: Spacing.m, marginBottom: 20, fontWeight: '500', textAlign: 'center' },
   retryButtonCenter: { backgroundColor: Colors.light.primary, flexDirection: 'row', alignItems: 'center', paddingHorizontal: Spacing.xl, paddingVertical: Spacing.m, borderRadius: Radius.l },
   retryIcon: { marginRight: 8 },
-  retryButtonText: { color: Colors.light.card, fontSize: 16, fontWeight: '600' },
+  retryButtonText: { color: Colors.light.white, fontSize: 16, fontWeight: '600' },
 });

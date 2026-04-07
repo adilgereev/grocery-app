@@ -16,8 +16,8 @@ export default function AdminDashboard() {
 
       <View style={styles.menuContainer}>
         <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/(admin)/add-product')}>
-          <View style={[styles.menuIcon, styles.menuIconAdd]}>
-            <Ionicons name="add-circle" size={24} color={Colors.light.info} />
+          <View style={styles.menuIcon}>
+            <Ionicons name="add-circle" size={24} color={Colors.light.primary} />
           </View>
           <View style={styles.menuTextContainer}>
             <Text style={styles.menuTitle}>Добавить товар</Text>
@@ -29,8 +29,8 @@ export default function AdminDashboard() {
         <View style={styles.divider} />
 
         <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/(admin)/catalog')}>
-          <View style={[styles.menuIcon, styles.menuIconCatalog]}>
-            <Ionicons name="list" size={24} color={Colors.light.error} />
+          <View style={styles.menuIcon}>
+            <Ionicons name="list" size={24} color={Colors.light.primary} />
           </View>
           <View style={styles.menuTextContainer}>
             <Text style={styles.menuTitle}>Управление каталогом</Text>
@@ -42,8 +42,8 @@ export default function AdminDashboard() {
         <View style={styles.divider} />
 
         <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/(admin)/orders')}>
-          <View style={[styles.menuIcon, styles.menuIconOrders]}>
-            <Ionicons name="cube" size={24} color={Colors.light.success} />
+          <View style={styles.menuIcon}>
+            <Ionicons name="cube" size={24} color={Colors.light.primary} />
           </View>
           <View style={styles.menuTextContainer}>
             <Text style={styles.menuTitle}>Заказы клиентов</Text>
@@ -55,8 +55,8 @@ export default function AdminDashboard() {
         <View style={styles.divider} />
 
         <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/(admin)/categories')}>
-          <View style={[styles.menuIcon, styles.menuIconCategories]}>
-            <Ionicons name="grid" size={24} color={Colors.light.warning} />
+          <View style={styles.menuIcon}>
+            <Ionicons name="grid" size={24} color={Colors.light.primary} />
           </View>
           <View style={styles.menuTextContainer}>
             <Text style={styles.menuTitle}>Управление категориями</Text>
@@ -110,11 +110,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: Spacing.m,
+    backgroundColor: Colors.light.primaryLight,
   },
-  menuIconAdd: { backgroundColor: Colors.light.infoLight },
-  menuIconCatalog: { backgroundColor: Colors.light.errorLight },
-  menuIconOrders: { backgroundColor: Colors.light.successLight },
-  menuIconCategories: { backgroundColor: Colors.light.warningLight },
   menuTextContainer: {
     flex: 1,
   },

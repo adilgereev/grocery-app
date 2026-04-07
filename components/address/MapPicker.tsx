@@ -86,5 +86,5 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
     ...Shadows.md,
   },
-  confirmButtonText: { color: Colors.light.card, fontSize: 16, fontWeight: '700' },
+  confirmButtonText: { color: Colors.light.white, fontSize: 16, fontWeight: '700' },
 });

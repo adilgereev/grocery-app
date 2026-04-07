@@ -35,7 +35,7 @@ const OrderTracker = ({ steps, currentStepIndex, statusConfigs, accentColor }: O
                   <Ionicons
                     name={stepConfig.icon as any}
                     size={16}
-                    color={isActive ? Colors.light.card : Colors.light.textLight}
+                    color={isActive ? Colors.light.white : Colors.light.textLight}
                   />
                 </View>
                 <Text style={[

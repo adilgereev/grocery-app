@@ -201,7 +201,7 @@ export default function CategoryFormModal({
               testID="submit-category-btn"
             >
               {isSubmitting ? (
-                <ActivityIndicator color={Colors.light.card} />
+                <ActivityIndicator color={Colors.light.white} />
               ) : (
                 <Text style={styles.submitBtnText}>
                   {initialData ? 'Сохранить изменения' : 'Создать категорию'}
@@ -296,10 +296,10 @@ const styles = StyleSheet.create({
     marginTop: Spacing.m, 
     marginBottom: Spacing.xl,
   },
-  submitBtnText: { 
-    color: Colors.light.card, 
-    fontSize: 16, 
-    fontWeight: '700' 
+  submitBtnText: {
+    color: Colors.light.white,
+    fontSize: 16,
+    fontWeight: '700'
   },
   btnDisabled: { 
     opacity: 0.6 

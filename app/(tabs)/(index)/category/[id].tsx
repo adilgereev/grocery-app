@@ -116,7 +116,7 @@ export default function CategoryProductsScreen() {
           <Text style={styles.errorMessage}>{error}</Text>
           <TouchableOpacity style={styles.retryButton} onPress={() => id && fetchProducts(id as string)}>
             {loading ? (
-              <ActivityIndicator color={Colors.light.card} />
+              <ActivityIndicator color={Colors.light.white} />
             ) : (
               <Text style={styles.retryButtonText}>Повторить</Text>
             )}
@@ -230,7 +230,7 @@ const styles = StyleSheet.create({
     borderRadius: Spacing.l,
   },
   retryButtonText: {
-    color: Colors.light.card,
+    color: Colors.light.white,
     fontSize: 16,
     fontWeight: '600',
   },
@@ -287,6 +287,6 @@ const styles = StyleSheet.create({
     color: Colors.light.textSecondary,
   },
   tagTextActive: {
-    color: Colors.light.card,
+    color: Colors.light.white,
   }
 });

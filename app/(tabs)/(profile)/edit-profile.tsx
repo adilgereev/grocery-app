@@ -174,7 +174,7 @@ export default function EditProfileScreen() {
           disabled={saving || loading}
         >
           {saving ? (
-            <ActivityIndicator color={Colors.light.card} />
+            <ActivityIndicator color={Colors.light.white} />
           ) : (
             <Text style={styles.saveButtonText}>Сохранить</Text>
           )}
@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   saveButtonText: {
-    color: Colors.light.card,
+    color: Colors.light.white,
     fontSize: FontSize.xl,
     fontWeight: '700',
     fontFamily: Fonts.sans,
