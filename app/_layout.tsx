@@ -70,7 +70,6 @@ function RootLayoutNav() {
         <Stack.Screen name="(tabs)" />
         <Stack.Screen name="(auth)" />
         <Stack.Screen name="setup-profile" />
-        <Stack.Screen name="addresses" />
       </Stack>
       <StatusBar style="dark" />
     </ThemeProvider>
