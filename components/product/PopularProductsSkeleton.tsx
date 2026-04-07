@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import Skeleton from './Skeleton';
+import Skeleton from '@/components/ui/Skeleton';
 import { Spacing, Radius, Colors } from '@/constants/theme';
 
 interface PopularProductsSkeletonProps {

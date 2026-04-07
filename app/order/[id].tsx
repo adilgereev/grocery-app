@@ -2,7 +2,7 @@ import OrderItemRow from '@/components/order/OrderItemRow';
 import OrderSection from '@/components/order/OrderSection';
 import OrderStatusBanner from '@/components/order/OrderStatusBanner';
 import OrderTracker from '@/components/order/OrderTracker';
-import Skeleton from '@/components/Skeleton';
+import Skeleton from '@/components/ui/Skeleton';
 import { Colors, Radius, Spacing, Shadows } from '@/constants/theme';
 import { cleanAddress } from '@/lib/addressUtils';
 import { logger } from '@/lib/logger';

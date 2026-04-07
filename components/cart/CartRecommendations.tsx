@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, FlatList, ActivityIndicator } from 'react-nativ
 import { supabase } from '@/lib/supabase';
 import { Product } from '@/types';
 import { logger } from '@/lib/logger';
-import ProductCard from '@/components/ProductCard';
+import ProductCard from '@/components/product/ProductCard';
 import { Spacing, FontSize, Colors } from '@/constants/theme';
 
 /**

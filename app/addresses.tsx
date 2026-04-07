@@ -7,7 +7,7 @@ import { formatFullAddress } from '@/utils/addressFormatter';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Colors, FontSize, Spacing, Radius, Shadows } from '@/constants/theme';
-import ScreenHeader from '@/components/ScreenHeader';
+import ScreenHeader from '@/components/ui/ScreenHeader';
 
 export default function AddressesScreen() {
   const { addresses, selectedAddressId, selectAddress } = useAddressStore();

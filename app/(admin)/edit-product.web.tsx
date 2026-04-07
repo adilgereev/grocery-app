@@ -4,7 +4,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Category } from '@/types';
-import AdminCategoryPicker from '@/components/AdminCategoryPicker';
+import AdminCategoryPicker from '@/components/admin/AdminCategoryPicker';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function EditProductScreenWeb() {

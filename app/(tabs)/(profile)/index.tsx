@@ -1,4 +1,4 @@
-import Skeleton from '@/components/Skeleton';
+import Skeleton from '@/components/ui/Skeleton';
 import { Colors, FontSize, Radius, Spacing, Shadows } from '@/constants/theme';
 import { logger } from '@/lib/logger';
 import { formatPhoneDisplay } from '@/lib/sms';

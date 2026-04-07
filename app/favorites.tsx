@@ -6,13 +6,13 @@ import { logger } from '@/lib/logger';
 import { useAuth } from '@/providers/AuthProvider';
 import { useFavoriteStore } from '@/store/favoriteStore';
 import { Ionicons } from '@expo/vector-icons';
-import ProductCard from '@/components/ProductCard';
+import ProductCard from '@/components/product/ProductCard';
 import { useRouter } from 'expo-router';
-import Skeleton from '@/components/Skeleton';
+import Skeleton from '@/components/ui/Skeleton';
 import { Colors, Spacing, Radius, Shadows } from '@/constants/theme';
 import { Product } from '@/types';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import ScreenHeader from '@/components/ScreenHeader';
+import ScreenHeader from '@/components/ui/ScreenHeader';
 
 export default function FavoritesScreen() {
   const router = useRouter();

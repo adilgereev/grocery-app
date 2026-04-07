@@ -11,7 +11,7 @@ import AuthProvider, { useAuth } from '@/providers/AuthProvider';
 import { useAppStore } from '@/store/appStore';
 import { useAddressStore } from '@/store/addressStore';
 import { registerForPushNotificationsAsync } from '@/lib/NotificationService';
-import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 
 // Полифилл для Buffer (нужен для AWS SDK / R2)
 if (typeof global.Buffer === 'undefined') {

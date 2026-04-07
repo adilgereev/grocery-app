@@ -5,7 +5,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import React from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
-import PopularProductsSkeleton from '@/components/PopularProductsSkeleton';
+import PopularProductsSkeleton from '@/components/product/PopularProductsSkeleton';
 import { homeStyles as s } from './index.styles';
 
 interface PopularSectionProps {

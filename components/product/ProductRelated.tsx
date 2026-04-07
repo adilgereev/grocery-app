@@ -4,7 +4,7 @@ import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import { Colors, Radius, Spacing, Shadows } from '@/constants/theme';
 import { Product } from '@/types';
-import Skeleton from '@/components/Skeleton';
+import Skeleton from '@/components/ui/Skeleton';
 import { useImageKit } from '@/hooks/useImageKit';
 
 /** Карточка одного рекомендуемого товара */

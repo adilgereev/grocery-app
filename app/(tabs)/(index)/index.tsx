@@ -1,8 +1,8 @@
-import CategoryHierarchySection from '@/components/CategoryHierarchySection';
+import CategoryHierarchySection from '@/components/home/CategoryHierarchySection';
 import BannersSection from '@/components/home/BannersSection';
 import HomeHeader from '@/components/home/HomeHeader';
 import PopularSection from '@/components/home/PopularSection';
-import SubcategoriesSkeleton from '@/components/SubcategoriesSkeleton';
+import SubcategoriesSkeleton from '@/components/category/SubcategoriesSkeleton';
 import { logger } from '@/lib/logger';
 import { fetchPopularProducts } from '@/lib/productsApi';
 import { useAuth } from '@/providers/AuthProvider';

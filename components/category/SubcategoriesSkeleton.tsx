@@ -2,7 +2,7 @@ import { Radius, Spacing } from '@/constants/theme';
 import { getMosaicCardWidth } from '@/utils/mosaicLayout';
 import React from 'react';
 import { StyleSheet, useWindowDimensions, View } from 'react-native';
-import Skeleton from './Skeleton';
+import Skeleton from '@/components/ui/Skeleton';
 
 interface SubcategoriesSkeletonProps {
   count?: number;

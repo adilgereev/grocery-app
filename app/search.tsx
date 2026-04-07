@@ -1,5 +1,5 @@
-import ProductCard from '@/components/ProductCard';
-import { ErrorToast } from '@/components/ErrorToast';
+import ProductCard from '@/components/product/ProductCard';
+import { ErrorToast } from '@/components/ui/ErrorToast';
 import { logger } from '@/lib/logger';
 import { Colors, Spacing, Radius, Shadows } from '@/constants/theme';
 import { searchProducts, fetchRecommendedProducts } from '@/lib/productsApi';

@@ -6,7 +6,7 @@ import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, ScrollView, S
 import { Category } from '@/types';
 import * as ImagePicker from 'expo-image-picker';
 import { uploadImage } from '@/lib/storageUtils';
-import AdminCategoryPicker from '@/components/AdminCategoryPicker';
+import AdminCategoryPicker from '@/components/admin/AdminCategoryPicker';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function EditProductScreen() {

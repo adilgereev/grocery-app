@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
-import ProductCard from '../ProductCard';
+import ProductCard from '@/components/product/ProductCard';
 import { Product } from '@/types';
 import { useCartStore } from '@/store/cartStore';
 import { useRouter } from 'expo-router';

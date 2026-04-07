@@ -1,5 +1,5 @@
-import MapPicker from '@/components/MapPicker';
-import ScreenHeader from '@/components/ScreenHeader';
+import MapPicker from '@/components/address/MapPicker';
+import ScreenHeader from '@/components/ui/ScreenHeader';
 import { AddressActionButtons } from '@/components/address/AddressActionButtons';
 import { AddressCommentSection } from '@/components/address/AddressCommentSection';
 import { AddressDetailsSection } from '@/components/address/AddressDetailsSection';

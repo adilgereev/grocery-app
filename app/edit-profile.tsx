@@ -1,5 +1,5 @@
-import Skeleton from '@/components/Skeleton';
-import ScreenHeader from '@/components/ScreenHeader';
+import Skeleton from '@/components/ui/Skeleton';
+import ScreenHeader from '@/components/ui/ScreenHeader';
 import { Colors, FontSize, Fonts, Radius, Spacing, Shadows } from '@/constants/theme';
 import { formatPhoneDisplay } from '@/lib/sms';
 import { fetchUserProfile, updateUserProfile } from '@/lib/authApi';

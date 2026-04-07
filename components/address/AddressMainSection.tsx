@@ -1,4 +1,4 @@
-import AddressSearchInput from '@/components/AddressSearchInput';
+import AddressSearchInput from '@/components/address/AddressSearchInput';
 import { Colors, Radius, Spacing, Shadows } from '@/constants/theme';
 import { formatAddressString } from '@/lib/addressUtils';
 import { DaDataSuggestion } from '@/lib/dadataApi';

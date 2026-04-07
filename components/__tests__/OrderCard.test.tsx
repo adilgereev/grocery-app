@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
-import OrderCard from '../OrderCard';
+import OrderCard from '@/components/order/OrderCard';
 import { Order } from '@/types';
 
 const mockOrder: Order = {

@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
-import AddressSearchInput from '../AddressSearchInput';
+import AddressSearchInput from '@/components/address/AddressSearchInput';
 import { getAddressSuggestions } from '@/lib/dadataApi';
 
 // Мокаем debounce, чтобы он выполнялся мгновенно

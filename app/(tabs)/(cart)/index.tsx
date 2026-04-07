@@ -1,6 +1,6 @@
-import CartItem from '@/components/CartItem';
-import CartSummary from '@/components/CartSummary';
-import EmptyCart from '@/components/EmptyCart';
+import CartItem from '@/components/cart/CartItem';
+import CartSummary from '@/components/cart/CartSummary';
+import EmptyCart from '@/components/cart/EmptyCart';
 import FloatingCheckoutButton from '@/components/FloatingCheckoutButton';
 import { Colors, Spacing, FontSize } from '@/constants/theme';
 import { useCheckout } from '@/hooks/useCheckout';

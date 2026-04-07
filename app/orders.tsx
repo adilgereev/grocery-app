@@ -5,14 +5,14 @@ import { supabase } from '@/lib/supabase';
 import { fetchOrders as fetchOrdersApi } from '@/lib/orderApi';
 import { useAuth } from '@/providers/AuthProvider';
 import { Ionicons } from '@expo/vector-icons';
-import Skeleton from '@/components/Skeleton';
-import { ErrorToast } from '@/components/ErrorToast';
+import Skeleton from '@/components/ui/Skeleton';
+import { ErrorToast } from '@/components/ui/ErrorToast';
 import { logger } from '@/lib/logger';
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { Order } from '@/types';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import ScreenHeader from '@/components/ScreenHeader';
-import OrderCard from '@/components/OrderCard';
+import ScreenHeader from '@/components/ui/ScreenHeader';
+import OrderCard from '@/components/order/OrderCard';
 
 // Конфигурация статусов теперь в OrderCard.tsx
 

@@ -1,5 +1,5 @@
-import Skeleton from '@/components/Skeleton';
-import { ErrorToast } from '@/components/ErrorToast';
+import Skeleton from '@/components/ui/Skeleton';
+import { ErrorToast } from '@/components/ui/ErrorToast';
 import { logger } from '@/lib/logger';
 import { Colors, Radius, Spacing } from '@/constants/theme';
 import { fetchProductById, fetchRelatedProducts } from '@/lib/productsApi';

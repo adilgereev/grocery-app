@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import { StyleSheet } from 'react-native';
-import SubcategoryCard from '../SubcategoryCard';
+import SubcategoryCard from '@/components/category/SubcategoryCard';
 import { useRouter } from 'expo-router';
 
 // Моки useRouter и Reanimated теперь в jest.setup.js
