@@ -13,7 +13,7 @@ import {
 import CategoryFormModal from '@/components/admin/CategoryFormModal';
 import CategoryItem from '@/components/admin/CategoryItem';
 import { Colors, Radius, Spacing } from '@/constants/theme';
-import { fetchAllCategories, createCategory, updateCategory, deleteCategory, swapCategorySortOrder } from '@/lib/adminApi';
+import { fetchAllCategories, createCategory, updateCategory, deleteCategory, updateCategorySortOrders } from '@/lib/adminApi';
 import { useCategoryStore } from '@/store/categoryStore';
 import { Category } from '@/types';
 
@@ -26,7 +26,7 @@ export default function CategoriesScreenWeb() {
 
   useFocusEffect(
     useCallback(() => {
-      fetchCategories();
+      fetchCategories(true);
     }, [])
   );
 
@@ -57,7 +57,9 @@ export default function CategoriesScreenWeb() {
   };
 
   const handleMove = async (category: Category, direction: 'up' | 'down') => {
-    const siblings = categories.filter(c => c.parent_id === category.parent_id);
+    const siblings = categories
+      .filter(c => c.parent_id === category.parent_id)
+      .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
     const currentIndex = siblings.findIndex(c => c.id === category.id);
 
     let targetIndex = -1;
@@ -68,17 +70,46 @@ export default function CategoriesScreenWeb() {
     }
 
     if (targetIndex !== -1) {
-      const targetCategory = siblings[targetIndex];
+      const newSiblings = [...siblings];
+      const temp = newSiblings[currentIndex];
+      newSiblings[currentIndex] = newSiblings[targetIndex];
+      newSiblings[targetIndex] = temp;
+      
+      const updates = newSiblings.map((sibling, index) => ({
+        id: sibling.id,
+        sort_order: index + 1
+      }));
+
+      const updatesMap = new Map(updates.map(u => [u.id, u.sort_order]));
+      const newCategories = categories.map(c => 
+        updatesMap.has(c.id) ? { ...c, sort_order: updatesMap.get(c.id)! } : c
+      );
+      
+      const roots = newCategories.filter(c => !c.parent_id).sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+      const finalSorted: Category[] = [];
+      const usedIds = new Set<string>();
+
+      roots.forEach(root => {
+        finalSorted.push(root);
+        usedIds.add(root.id);
+        const children = newCategories
+          .filter(c => c.parent_id === root.id)
+          .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+        children.forEach(child => {
+          finalSorted.push(child);
+          usedIds.add(child.id);
+        });
+      });
+
+      finalSorted.push(...newCategories.filter(c => !usedIds.has(c.id)));
+      setCategories(finalSorted);
+
       try {
-        await swapCategorySortOrder(
-          category.id, targetCategory.sort_order,
-          targetCategory.id, category.sort_order
-        );
-        
+        await updateCategorySortOrders(updates);
         useCategoryStore.getState().invalidateCache();
-        await fetchCategories(true);
       } catch {
         alert('Не удалось изменить порядок');
+        await fetchCategories();
       }
     }
   };
@@ -100,10 +131,10 @@ export default function CategoriesScreenWeb() {
         await updateCategory(editingCategory.id, data);
       } else {
         const sameLevel = categories.filter(c => c.parent_id === (data.parent_id || null));
-        let sortOrder = 0;
+        let sortOrder = 1;
         if (sameLevel.length > 0) {
-          const minOrder = Math.min(...sameLevel.map(c => c.sort_order));
-          sortOrder = minOrder - 1;
+          const maxOrder = Math.max(...sameLevel.map(c => c.sort_order || 0));
+          sortOrder = maxOrder + 1;
         }
 
         await createCategory({

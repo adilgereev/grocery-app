@@ -17,7 +17,7 @@ import {
 import CategoryFormModal from '@/components/admin/CategoryFormModal';
 import CategoryItem from '@/components/admin/CategoryItem';
 import { Colors, Radius, Spacing } from '@/constants/theme';
-import { fetchAllCategories, createCategory, updateCategory, deleteCategory, swapCategorySortOrder } from '@/lib/adminApi';
+import { fetchAllCategories, createCategory, updateCategory, deleteCategory, updateCategorySortOrders } from '@/lib/adminApi';
 import { useCategoryStore } from '@/store/categoryStore';
 import { Category } from '@/types';
 
@@ -35,7 +35,7 @@ export default function CategoriesScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      fetchCategories();
+      fetchCategories(true);
     }, [])
   );
 
@@ -68,8 +68,10 @@ export default function CategoriesScreen() {
   };
 
   const handleMove = async (category: Category, direction: 'up' | 'down') => {
-    // Находим всех сиблингов (тот же уровень иерархии)
-    const siblings = categories.filter(c => c.parent_id === category.parent_id);
+    // Находим всех сиблингов (тот же уровень иерархии) и сортируем по sort_order
+    const siblings = categories
+      .filter(c => c.parent_id === category.parent_id)
+      .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
     const currentIndex = siblings.findIndex(c => c.id === category.id);
 
     let targetIndex = -1;
@@ -80,23 +82,28 @@ export default function CategoriesScreen() {
     }
 
     if (targetIndex !== -1) {
-      const targetCategory = siblings[targetIndex];
-      
       // 1. Оптимистичное обновление локального стейта
       LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
       
-      // Создаем новый массив категорий с переставленными элементами
-      const newCategories = [...categories];
-      const idx1 = newCategories.findIndex(c => c.id === category.id);
-      const idx2 = newCategories.findIndex(c => c.id === targetCategory.id);
+      // Меняем элементы местами в массиве сиблингов
+      const newSiblings = [...siblings];
+      const temp = newSiblings[currentIndex];
+      newSiblings[currentIndex] = newSiblings[targetIndex];
+      newSiblings[targetIndex] = temp;
       
-      // Меняем только sort_order в объектах
-      const tempOrder = newCategories[idx1].sort_order;
-      newCategories[idx1] = { ...newCategories[idx1], sort_order: newCategories[idx2].sort_order };
-      newCategories[idx2] = { ...newCategories[idx2], sort_order: tempOrder };
-      
+      // Переназначаем sort_order всем сиблингам (Shift метод)
+      const updates = newSiblings.map((sibling, index) => ({
+        id: sibling.id,
+        sort_order: index + 1 // Нормализуем индексы 1, 2, 3...
+      }));
+
+      const updatesMap = new Map(updates.map(u => [u.id, u.sort_order]));
+
       // Пересортировываем локальный стейт, чтобы иерархия не сломалась
-      // Но проще всего просто вызвать пересчет иерархии на основе новых данных
+      const newCategories = categories.map(c => 
+        updatesMap.has(c.id) ? { ...c, sort_order: updatesMap.get(c.id)! } : c
+      );
+      
       const roots = newCategories.filter(c => !c.parent_id).sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
       const finalSorted: Category[] = [];
       const usedIds = new Set<string>();
@@ -114,21 +121,16 @@ export default function CategoriesScreen() {
       });
 
       // Добавляем остальных (сирот)
-      const orphans = newCategories.filter(c => !usedIds.has(c.id));
-      finalSorted.push(...orphans);
+      finalSorted.push(...newCategories.filter(c => !usedIds.has(c.id)));
 
       setCategories(finalSorted);
 
       // 2. Обновление в Supabase в фоне (без лоадера)
       try {
-        await swapCategorySortOrder(
-          category.id, targetCategory.sort_order,
-          targetCategory.id, category.sort_order
-        );
+        await updateCategorySortOrders(updates);
         
         // Инвалидируем кеш беззвучно
         useCategoryStore.getState().invalidateCache();
-        await fetchCategories(true);
       } catch {
         Alert.alert('Ошибка', 'Не удалось сохранить порядок. Пожалуйста, потяните вниз для обновления.');
         await fetchCategories();
@@ -158,12 +160,12 @@ export default function CategoriesScreen() {
       if (editingCategory) {
         await updateCategory(editingCategory.id, data);
       } else {
-        // Для новых категорий вычисляем минимальный sort_order
+        // Для новых категорий вычисляем максимальный sort_order + 1 (добавление в конец)
         const sameLevel = categories.filter(c => c.parent_id === (data.parent_id || null));
-        let sortOrder = 0;
+        let sortOrder = 1;
         if (sameLevel.length > 0) {
-          const minOrder = Math.min(...sameLevel.map(c => c.sort_order));
-          sortOrder = minOrder - 1;
+          const maxOrder = Math.max(...sameLevel.map(c => c.sort_order || 0));
+          sortOrder = maxOrder + 1;
         }
 
         await createCategory({

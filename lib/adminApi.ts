@@ -69,23 +69,20 @@ export async function deleteCategory(id: string, allRelatedIds: string[]): Promi
 }
 
 /**
- * Обмен sort_order между двумя категориями
+ * Массовое обновление sort_order категорий (для метода Shift)
  */
-export async function swapCategorySortOrder(
-  id1: string, sortOrder1: number,
-  id2: string, sortOrder2: number
+export async function updateCategorySortOrders(
+  updates: { id: string; sort_order: number }[]
 ): Promise<void> {
-  const { error: err1 } = await supabase
-    .from('categories')
-    .update({ sort_order: sortOrder2 })
-    .eq('id', id1);
+  const promises = updates.map((update) =>
+    supabase.from('categories').update({ sort_order: update.sort_order }).eq('id', update.id)
+  );
 
-  const { error: err2 } = await supabase
-    .from('categories')
-    .update({ sort_order: sortOrder1 })
-    .eq('id', id2);
-
-  if (err1 || err2) throw new Error('Ошибка обмена sort_order категорий');
+  const results = await Promise.all(promises);
+  const hasError = results.some((res) => res.error);
+  if (hasError) {
+    throw new Error('Ошибка при обновлении порядка сортировки категорий');
+  }
 }
 
 // ─── Продукты (admin) ────────────────────────────────────────

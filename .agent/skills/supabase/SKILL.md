@@ -27,6 +27,10 @@ This skill defines the high-standard workflow for managing the Supabase backend 
 - `npm run supabase:push` - Deploy local migrations to the cloud.
 - `npx supabase db reset` - Reset local environment and re-apply all migrations.
 
+## ⛔ Destructive Operations
+- **ВСЕГДА спрашивай разрешение пользователя** перед выполнением деструктивных команд: `db reset`, `db drop`, `TRUNCATE`, `DELETE` без `WHERE` и любых других операций, уничтожающих данные.
+- Локальная БД может содержать данные, введённые вручную. Reset пересоздаёт БД из миграций и seed.sql, уничтожая всё остальное.
+
 ## 🛡️ Best Practices
 - **Atomic Migrations**: Keep each migration focused on a single logical change.
 - **Local Testing**: Verify migrations locally using Docker (`npx supabase start`) before pushing.
