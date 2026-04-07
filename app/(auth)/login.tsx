@@ -1,16 +1,16 @@
 import { Colors } from '@/constants/theme';
-import { logger } from '@/lib/utils/logger';
-import { createOtpCode, verifyActiveOtp, markOtpAsUsed, authenticateWithPhone } from '@/lib/api/authApi';
+import { authenticateWithPhone, createOtpCode, markOtpAsUsed, verifyActiveOtp } from '@/lib/api/authApi';
 import { generateOTP, normalizePhone, sendSMS } from '@/lib/services/sms';
+import { logger } from '@/lib/utils/logger';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Alert, Keyboard, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 
-import { loginStyles as styles } from './_login.styles';
-import { PhoneStep } from '@/components/auth/PhoneStep';
 import { OtpStep } from '@/components/auth/OtpStep';
+import { PhoneStep } from '@/components/auth/PhoneStep';
+import { loginStyles as styles } from '@/app/(auth)/_login.styles';
 
 // Шаги авторизации
 type AuthStep = 'phone' | 'otp';

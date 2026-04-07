@@ -1,13 +1,13 @@
+import AdminCategoryPicker from '@/components/admin/AdminCategoryPicker';
 import { Colors, Radius, Spacing } from '@/constants/theme';
 import { fetchAllCategories, fetchProductForEdit, updateProduct } from '@/lib/api/adminApi';
+import { uploadImage } from '@/lib/utils/storageUtils';
+import { Category } from '@/types';
+import { Ionicons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { Category } from '@/types';
-import * as ImagePicker from 'expo-image-picker';
-import { uploadImage } from '@/lib/utils/storageUtils';
-import AdminCategoryPicker from '@/components/admin/AdminCategoryPicker';
-import { Ionicons } from '@expo/vector-icons';
 
 export default function EditProductScreen() {
   const router = useRouter();
@@ -37,7 +37,7 @@ export default function EditProductScreen() {
 
   const fetchData = async () => {
     setInitialLoading(true);
-    
+
     try {
       const catData = await fetchAllCategories();
       setCategories(catData);
@@ -60,7 +60,7 @@ export default function EditProductScreen() {
         Alert.alert('Ошибка', 'Не удалось загрузить товар');
       }
     }
-    
+
     setInitialLoading(false);
   };
 
@@ -115,7 +115,7 @@ export default function EditProductScreen() {
   if (initialLoading) {
     return (
       <View style={styles.centerContainer}>
-         <ActivityIndicator size="large" color={Colors.light.primary} />
+        <ActivityIndicator size="large" color={Colors.light.primary} />
       </View>
     );
   }

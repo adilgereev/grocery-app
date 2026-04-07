@@ -1,13 +1,13 @@
+import AdminCategoryPicker from '@/components/admin/AdminCategoryPicker';
 import { Colors, Radius, Spacing } from '@/constants/theme';
-import { fetchAllCategories, createProduct } from '@/lib/api/adminApi';
+import { createProduct, fetchAllCategories } from '@/lib/api/adminApi';
+import { uploadImage } from '@/lib/utils/storageUtils';
+import { Category } from '@/types';
+import { Ionicons } from '@expo/vector-icons';
+import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { Category } from '@/types';
-import * as ImagePicker from 'expo-image-picker';
-import { uploadImage } from '@/lib/utils/storageUtils';
-import AdminCategoryPicker from '@/components/admin/AdminCategoryPicker';
-import { Ionicons } from '@expo/vector-icons';
 
 export default function AddProductScreen() {
   const router = useRouter();
@@ -39,7 +39,7 @@ export default function AddProductScreen() {
       // Ошибка загрузки категорий
     }
   };
-  
+
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ['images'],
