@@ -1,5 +1,5 @@
 import { Colors, Radius, Spacing, Shadows } from '@/constants/theme';
-import { fetchAllCategories, createProduct } from '@/lib/adminApi';
+import { fetchAllCategories, createProduct } from '@/lib/api/adminApi';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';

@@ -1,8 +1,8 @@
 import Skeleton from '@/components/ui/Skeleton';
 import { ErrorToast } from '@/components/ui/ErrorToast';
-import { logger } from '@/lib/logger';
+import { logger } from '@/lib/utils/logger';
 import { Colors, Radius, Spacing } from '@/constants/theme';
-import { fetchProductById, fetchRelatedProducts } from '@/lib/productsApi';
+import { fetchProductById, fetchRelatedProducts } from '@/lib/api/productsApi';
 import { useAuth } from '@/providers/AuthProvider';
 import { useCartStore } from '@/store/cartStore';
 import { useFavoriteStore } from '@/store/favoriteStore';

@@ -1,7 +1,7 @@
 import AddressSearchInput from '@/components/address/AddressSearchInput';
 import { Colors, Radius, Spacing, Shadows } from '@/constants/theme';
-import { formatAddressString } from '@/lib/addressUtils';
-import { DaDataSuggestion } from '@/lib/dadataApi';
+import { formatAddressString } from '@/lib/utils/addressUtils';
+import { DaDataSuggestion } from '@/lib/api/dadataApi';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import React from 'react';

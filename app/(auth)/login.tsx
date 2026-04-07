@@ -1,7 +1,7 @@
 import { Colors } from '@/constants/theme';
-import { logger } from '@/lib/logger';
-import { createOtpCode, verifyActiveOtp, markOtpAsUsed, authenticateWithPhone } from '@/lib/authApi';
-import { generateOTP, normalizePhone, sendSMS } from '@/lib/sms';
+import { logger } from '@/lib/utils/logger';
+import { createOtpCode, verifyActiveOtp, markOtpAsUsed, authenticateWithPhone } from '@/lib/api/authApi';
+import { generateOTP, normalizePhone, sendSMS } from '@/lib/services/sms';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';

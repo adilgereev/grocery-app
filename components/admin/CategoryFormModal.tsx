@@ -18,7 +18,7 @@ import {
 
 import { Colors, Radius, Spacing } from '@/constants/theme';
 import { Category } from '@/types';
-import { uploadImage } from '@/lib/storageUtils';
+import { uploadImage } from '@/lib/utils/storageUtils';
 import { slugify } from '@/utils/slugify';
 
 interface CategoryFormModalProps {

@@ -1,13 +1,13 @@
 import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, RefreshControl, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { useRouter, useFocusEffect } from 'expo-router';
-import { supabase } from '@/lib/supabase';
-import { fetchOrders as fetchOrdersApi } from '@/lib/orderApi';
+import { supabase } from '@/lib/services/supabase';
+import { fetchOrders as fetchOrdersApi } from '@/lib/api/orderApi';
 import { useAuth } from '@/providers/AuthProvider';
 import { Ionicons } from '@expo/vector-icons';
 import Skeleton from '@/components/ui/Skeleton';
 import { ErrorToast } from '@/components/ui/ErrorToast';
-import { logger } from '@/lib/logger';
+import { logger } from '@/lib/utils/logger';
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { Order } from '@/types';
 import { SafeAreaView } from 'react-native-safe-area-context';

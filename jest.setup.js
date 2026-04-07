@@ -80,6 +80,6 @@ jest.mock('@supabase/supabase-js', () => ({
 }));
 
 // Mock our internal supabase client
-jest.mock('@/lib/supabase', () => ({
+jest.mock('@/lib/services/supabase', () => ({
   supabase: createSupabaseMock(),
 }));

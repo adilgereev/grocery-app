@@ -1,9 +1,9 @@
 import Skeleton from '@/components/ui/Skeleton';
 import ScreenHeader from '@/components/ui/ScreenHeader';
 import { Colors, FontSize, Fonts, Radius, Spacing, Shadows } from '@/constants/theme';
-import { formatPhoneDisplay } from '@/lib/sms';
-import { fetchUserProfile, updateUserProfile } from '@/lib/authApi';
-import { logger } from '@/lib/logger';
+import { formatPhoneDisplay } from '@/lib/services/sms';
+import { fetchUserProfile, updateUserProfile } from '@/lib/api/authApi';
+import { logger } from '@/lib/utils/logger';
 import { useAuth } from '@/providers/AuthProvider';
 
 import { useRouter } from 'expo-router';
@@ -13,7 +13,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { profileSchema, ProfileFormData } from '@/lib/schemas';
+import { profileSchema, ProfileFormData } from '@/lib/utils/schemas';
 
 export default function EditProfileScreen() {
   const router = useRouter();

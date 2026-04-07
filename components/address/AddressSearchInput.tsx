@@ -1,5 +1,5 @@
 import { Colors } from '@/constants/theme';
-import { DaDataSuggestion, getAddressSuggestions } from '@/lib/dadataApi';
+import { DaDataSuggestion, getAddressSuggestions } from '@/lib/api/dadataApi';
 import { Ionicons } from '@expo/vector-icons';
 import debounce from 'lodash.debounce';
 import React, { useEffect, useMemo, useState } from 'react';

@@ -17,7 +17,7 @@ import {
 import CategoryFormModal from '@/components/admin/CategoryFormModal';
 import CategoryItem from '@/components/admin/CategoryItem';
 import { Colors, Radius, Spacing } from '@/constants/theme';
-import { fetchAllCategories, createCategory, updateCategory, deleteCategory, updateCategorySortOrders } from '@/lib/adminApi';
+import { fetchAllCategories, createCategory, updateCategory, deleteCategory, updateCategorySortOrders } from '@/lib/api/adminApi';
 import { useCategoryStore } from '@/store/categoryStore';
 import { Category } from '@/types';
 

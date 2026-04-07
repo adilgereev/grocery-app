@@ -10,7 +10,7 @@ import { useColorScheme } from '@/hooks/use-color-scheme';
 import AuthProvider, { useAuth } from '@/providers/AuthProvider';
 import { useAppStore } from '@/store/appStore';
 import { useAddressStore } from '@/store/addressStore';
-import { registerForPushNotificationsAsync } from '@/lib/NotificationService';
+import { registerForPushNotificationsAsync } from '@/lib/services/NotificationService';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 
 // Полифилл для Buffer (нужен для AWS SDK / R2)

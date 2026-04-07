@@ -5,10 +5,10 @@ import { AddressCommentSection } from '@/components/address/AddressCommentSectio
 import { AddressDetailsSection } from '@/components/address/AddressDetailsSection';
 import { AddressMainSection } from '@/components/address/AddressMainSection';
 import { Colors, Radius, Spacing } from '@/constants/theme';
-import { cleanAddress, formatAddressString } from '@/lib/addressUtils';
-import { getAddressByCoords } from '@/lib/dadataApi';
-import { logger } from '@/lib/logger';
-import { AddressFormData, addressSchema } from '@/lib/schemas';
+import { cleanAddress, formatAddressString } from '@/lib/utils/addressUtils';
+import { getAddressByCoords } from '@/lib/api/dadataApi';
+import { logger } from '@/lib/utils/logger';
+import { AddressFormData, addressSchema } from '@/lib/utils/schemas';
 import { useAddressStore } from '@/store/addressStore';
 import { Ionicons } from '@expo/vector-icons';
 import { zodResolver } from '@hookform/resolvers/zod';

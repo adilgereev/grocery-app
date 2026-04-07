@@ -1,14 +1,14 @@
 import React, { useCallback, useEffect, useState, useMemo } from 'react';
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, Platform, useWindowDimensions } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { fetchProductsByCategoryId } from '@/lib/productsApi';
+import { fetchProductsByCategoryId } from '@/lib/api/productsApi';
 import { Ionicons } from '@expo/vector-icons';
 import { useCategoryStore } from '@/store/categoryStore';
 import ProductCard from '@/components/product/ProductCard';
 import SubcategoryCard from '@/components/category/SubcategoryCard';
 import Skeleton from '@/components/ui/Skeleton';
 import { ErrorToast } from '@/components/ui/ErrorToast';
-import { logger } from '@/lib/logger';
+import { logger } from '@/lib/utils/logger';
 import { Colors, Spacing, Radius, Shadows } from '@/constants/theme';
 import { Product } from '@/types';
 import { getMosaicCardWidth } from '@/utils/mosaicLayout';

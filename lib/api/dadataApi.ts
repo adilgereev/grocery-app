@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { logger } from './logger';
+import { logger } from '@/lib/utils/logger';
 
 const DADATA_API_KEY = process.env.EXPO_PUBLIC_DADATA_API_KEY || '';
 const SUGGEST_URL = 'https://suggestions.dadata.ru/suggestions/api/4_1/rs/suggest/address';

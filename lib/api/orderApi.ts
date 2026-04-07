@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import { supabase } from '@/lib/services/supabase';
 import { Order } from '@/types';
 
 /**

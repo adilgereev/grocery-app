@@ -1,9 +1,9 @@
 import React, { createContext, useCallback, useContext, useEffect, useState, useRef } from 'react';
 import { Session } from '@supabase/supabase-js';
-import { supabase } from '@/lib/supabase';
-import { logger } from '@/lib/logger';
+import { supabase } from '@/lib/services/supabase';
+import { logger } from '@/lib/utils/logger';
 import { Profile } from '@/types';
-import { fetchUserProfile } from '@/lib/authApi';
+import { fetchUserProfile } from '@/lib/api/authApi';
 import { useAddressStore } from '@/store/addressStore';
 
 type AuthContextType = {

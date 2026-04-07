@@ -2,7 +2,7 @@ import React from 'react';
 import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import SetupProfileScreen from '@/app/setup-profile';
 import { useAuth } from '@/providers/AuthProvider';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/services/supabase';
 
 // Мокаем AuthProvider
 jest.mock('@/providers/AuthProvider', () => ({
@@ -10,7 +10,7 @@ jest.mock('@/providers/AuthProvider', () => ({
 }));
 
 // Мокаем logger
-jest.mock('@/lib/logger', () => ({
+jest.mock('@/lib/utils/logger', () => ({
   logger: { error: jest.fn(), log: jest.fn(), warn: jest.fn() },
 }));
 

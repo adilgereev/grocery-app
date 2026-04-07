@@ -1,5 +1,5 @@
 import { useAddressStore } from '../addressStore';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/services/supabase';
 
 // Типизируем мок Supabase
 const mockSupabase = supabase as any;

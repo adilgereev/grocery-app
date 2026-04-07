@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
 import { Colors, Spacing, Radius, Duration } from '@/constants/theme';
 import { useImageKit } from '@/hooks/useImageKit';
-import { OrderItem } from '@/lib/orderApi';
+import { OrderItem } from '@/lib/api/orderApi';
 
 interface OrderItemRowProps {
   item: OrderItem;

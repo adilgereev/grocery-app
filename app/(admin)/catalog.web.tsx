@@ -1,5 +1,5 @@
 import { Colors, Radius, Spacing, Shadows } from '@/constants/theme';
-import { fetchAllProductsWithCategory, deleteProduct } from '@/lib/adminApi';
+import { fetchAllProductsWithCategory, deleteProduct } from '@/lib/api/adminApi';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useFocusEffect } from 'expo-router';
 import React, { useCallback, useState } from 'react';

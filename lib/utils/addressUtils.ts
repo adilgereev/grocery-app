@@ -1,4 +1,4 @@
-import { DaDataSuggestion } from './dadataApi';
+import { DaDataSuggestion } from '@/lib/api/dadataApi';
 
 /**
  * Вспомогательная функция для красивого форматирования адреса из подсказки DaData

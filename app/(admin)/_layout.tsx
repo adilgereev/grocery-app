@@ -1,7 +1,7 @@
 import { Stack, useRouter } from 'expo-router';
 import { useAuth } from '@/providers/AuthProvider';
 import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/services/supabase';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { Colors } from '@/constants/theme';
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
 import AddressSearchInput from '@/components/address/AddressSearchInput';
-import { getAddressSuggestions } from '@/lib/dadataApi';
+import { getAddressSuggestions } from '@/lib/api/dadataApi';
 
 // Мокаем debounce, чтобы он выполнялся мгновенно
 jest.mock('lodash.debounce', () => (fn: any) => {
@@ -10,7 +10,7 @@ jest.mock('lodash.debounce', () => (fn: any) => {
 });
 
 // Мокаем API подсказок
-jest.mock('@/lib/dadataApi', () => ({
+jest.mock('@/lib/api/dadataApi', () => ({
   getAddressSuggestions: jest.fn(),
 }));
 

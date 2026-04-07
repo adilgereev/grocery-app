@@ -1,8 +1,8 @@
-import { supabase } from './supabase';
+import { supabase } from '@/lib/services/supabase';
 import { Profile } from '@/types';
 import { Session } from '@supabase/supabase-js';
 
-import { generatePasswordFromPhone, phoneToEmail } from './authUtils';
+import { generatePasswordFromPhone, phoneToEmail } from '@/lib/utils/authUtils';
 
 /**
  * Получение профиля пользователя по ID

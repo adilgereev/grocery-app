@@ -2,8 +2,8 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Category, CategoryWithSubcategories, CategoryWithHierarchy } from '@/types';
-import { logger } from '@/lib/logger';
-import { fetchRootCategories, fetchFullHierarchy, fetchCategoriesWithHierarchy } from '@/lib/categoriesApi';
+import { logger } from '@/lib/utils/logger';
+import { fetchRootCategories, fetchFullHierarchy, fetchCategoriesWithHierarchy } from '@/lib/api/categoriesApi';
 
 interface CategoryState {
   // Хранилище иерархии категорий

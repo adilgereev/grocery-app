@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { Alert, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
-import { createOrder, createOrderItems } from '@/lib/orderApi';
+import { createOrder, createOrderItems } from '@/lib/api/orderApi';
 import { useAuth } from '@/providers/AuthProvider';
 import { useCartStore } from '@/store/cartStore';
 import { useAddressStore } from '@/store/addressStore';
 import { formatFullAddress } from '@/utils/addressFormatter';
-import { schedulePushNotification } from '@/lib/NotificationService';
-import { logger } from '@/lib/logger';
+import { schedulePushNotification } from '@/lib/services/NotificationService';
+import { logger } from '@/lib/utils/logger';
 import { Address, PaymentMethod } from '@/types';
 
 /**

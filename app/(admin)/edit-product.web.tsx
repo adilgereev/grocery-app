@@ -1,5 +1,5 @@
 import { Colors, Radius, Spacing, Shadows } from '@/constants/theme';
-import { fetchAllCategories, fetchProductForEdit, updateProduct } from '@/lib/adminApi';
+import { fetchAllCategories, fetchProductForEdit, updateProduct } from '@/lib/api/adminApi';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';

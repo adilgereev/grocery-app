@@ -1,6 +1,6 @@
 import hmacSHA256 from 'crypto-js/hmac-sha256';
 import Hex from 'crypto-js/enc-hex';
-import { normalizePhone } from './sms';
+import { normalizePhone } from '@/lib/services/sms';
 
 /**
  * Генерация детерминированного, но криптографически безопасного пароля из номера телефона.

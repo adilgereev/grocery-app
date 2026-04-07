@@ -1,11 +1,11 @@
 import { Colors, Radius, Spacing } from '@/constants/theme';
-import { fetchAllCategories, fetchProductForEdit, updateProduct } from '@/lib/adminApi';
+import { fetchAllCategories, fetchProductForEdit, updateProduct } from '@/lib/api/adminApi';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { Category } from '@/types';
 import * as ImagePicker from 'expo-image-picker';
-import { uploadImage } from '@/lib/storageUtils';
+import { uploadImage } from '@/lib/utils/storageUtils';
 import AdminCategoryPicker from '@/components/admin/AdminCategoryPicker';
 import { Ionicons } from '@expo/vector-icons';
 

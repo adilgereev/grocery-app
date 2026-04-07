@@ -1,5 +1,5 @@
 import { Address } from '@/types';
-import { cleanAddress } from '@/lib/addressUtils';
+import { cleanAddress } from '@/lib/utils/addressUtils';
 
 /**
  * Короткий формат: Улица + Дом (для Шапки главной)

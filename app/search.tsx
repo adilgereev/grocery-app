@@ -1,8 +1,8 @@
 import ProductCard from '@/components/product/ProductCard';
 import { ErrorToast } from '@/components/ui/ErrorToast';
-import { logger } from '@/lib/logger';
+import { logger } from '@/lib/utils/logger';
 import { Colors, Spacing, Radius, Shadows } from '@/constants/theme';
-import { searchProducts, fetchRecommendedProducts } from '@/lib/productsApi';
+import { searchProducts, fetchRecommendedProducts } from '@/lib/api/productsApi';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';

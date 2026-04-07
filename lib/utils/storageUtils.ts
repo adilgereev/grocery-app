@@ -1,4 +1,4 @@
-import { logger } from './logger';
+import { logger } from '@/lib/utils/logger';
 import * as FileSystem from 'expo-file-system';
 import { decode } from 'base64-arraybuffer';
 

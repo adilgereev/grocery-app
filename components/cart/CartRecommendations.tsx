@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, FlatList, ActivityIndicator } from 'react-native';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/services/supabase';
 import { Product } from '@/types';
-import { logger } from '@/lib/logger';
+import { logger } from '@/lib/utils/logger';
 import ProductCard from '@/components/product/ProductCard';
 import { Spacing, FontSize, Colors } from '@/constants/theme';
 

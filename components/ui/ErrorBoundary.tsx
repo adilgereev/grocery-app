@@ -1,5 +1,5 @@
 import React, { Component, ReactNode } from 'react';
-import { logger } from '@/lib/logger';
+import { logger } from '@/lib/utils/logger';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Spacing, Radius, Shadows } from '@/constants/theme';

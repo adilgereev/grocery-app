@@ -1,8 +1,8 @@
 import { Colors, Radius, Spacing, Shadows } from '@/constants/theme';
-import { supabase } from '@/lib/supabase';
-import { fetchAllOrdersWithDetails, updateOrderStatus, AdminOrderWithDetails } from '@/lib/adminApi';
+import { supabase } from '@/lib/services/supabase';
+import { fetchAllOrdersWithDetails, updateOrderStatus, AdminOrderWithDetails } from '@/lib/api/adminApi';
 import { Ionicons } from '@expo/vector-icons';
-import { cleanAddress } from '@/lib/addressUtils';
+import { cleanAddress } from '@/lib/utils/addressUtils';
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, FlatList, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 

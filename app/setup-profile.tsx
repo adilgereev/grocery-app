@@ -7,10 +7,10 @@ import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 
 import { Colors, Fonts, Radius, Shadows, Spacing } from '@/constants/theme';
-import { profileSchema, ProfileFormData } from '@/lib/schemas';
+import { profileSchema, ProfileFormData } from '@/lib/utils/schemas';
 import { useAuth } from '@/providers/AuthProvider';
-import { supabase } from '@/lib/supabase';
-import { logger } from '@/lib/logger';
+import { supabase } from '@/lib/services/supabase';
+import { logger } from '@/lib/utils/logger';
 
 export default function SetupProfileScreen() {
   const { session, refreshProfile } = useAuth();

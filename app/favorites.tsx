@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, FlatList, RefreshControl, TouchableOpacity, ScrollView } from 'react-native';
-import { fetchFavoriteProducts as fetchFavoriteProductsByIds } from '@/lib/favoriteApi';
-import { fetchRecommendedProducts } from '@/lib/productsApi';
-import { logger } from '@/lib/logger';
+import { fetchFavoriteProducts as fetchFavoriteProductsByIds } from '@/lib/api/favoriteApi';
+import { fetchRecommendedProducts } from '@/lib/api/productsApi';
+import { logger } from '@/lib/utils/logger';
 import { useAuth } from '@/providers/AuthProvider';
 import { useFavoriteStore } from '@/store/favoriteStore';
 import { Ionicons } from '@expo/vector-icons';
