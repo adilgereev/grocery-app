@@ -1,0 +1,20 @@
+{
+  "skill_name": "navigation",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Создай новый экран 'Уведомления' (notifications) как stack-экран вне табов.",
+      "expected_outcome": "Создан app/notifications.tsx с SafeAreaView edges=['bottom'], ScreenHeader, зарегистрирован в app/_layout.tsx как Stack.Screen name='notifications'. Все интерактивные элементы имеют testID."
+    },
+    {
+      "id": 2,
+      "prompt": "Добавь новую вкладку 'Акции' в нижнюю навигацию с иконкой тега.",
+      "expected_outcome": "Создана папка app/(tabs)/(promo)/ с _layout.tsx и index.tsx. В app/(tabs)/_layout.tsx добавлен Tabs.Screen name='(promo)' с tabBarTestID. initialRouteName остался '(index)'."
+    },
+    {
+      "id": 3,
+      "prompt": "Создай динамический экран для отображения деталей акции по ID: /promo/[id].",
+      "expected_outcome": "Создан app/promo/[id].tsx с useLocalSearchParams<{ id: string }>(), SafeAreaView edges=['bottom'], ScreenHeader. Зарегистрирован в app/_layout.tsx."
+    }
+  ]
+}

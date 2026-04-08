@@ -1,5 +1,7 @@
 ---
+name: supabase-sync
 description: Pull current Supabase DB structure, apply local migrations, and update TypeScript types.
+turbo_note: "Шаги с маркером // turbo могут выполняться параллельно между собой. Шаги без маркера — последовательно, зависят от предыдущих."
 ---
 # Supabase Sync Workflow
 

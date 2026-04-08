@@ -57,11 +57,11 @@ Components subscribe via selectors (e.g. `useCartStore(state => state.totalItems
 
 ### Backend (Supabase)
 
-- Client in `lib/supabase.ts` — typed with `Database` from `types/supabase.ts`. Custom storage adapter handles Web (localStorage) vs Native (AsyncStorage), plus SSR guard.
+- Client in `lib/services/supabase.ts` — typed with `Database` from `types/supabase.ts`. Custom storage adapter handles Web (localStorage) vs Native (AsyncStorage), plus SSR guard.
 - Tables: `profiles`, `categories`, `products`, `orders`, `order_items`, `addresses`, `favorites`.
 - RLS enabled — users can only access their own data.
 - Schema changes via migrations in `supabase/migrations/`. After any schema change, run `npm run supabase:types`.
-- Category API extracted to `lib/categoriesApi.ts` for hierarchy queries.
+- Category API extracted to `lib/api/categoriesApi.ts` for hierarchy queries.
 
 ### Auth
 
@@ -70,7 +70,7 @@ Components subscribe via selectors (e.g. `useCartStore(state => state.totalItems
 ### Forms & Validation
 
 - `react-hook-form` + `zod` + `@hookform/resolvers/zod`.
-- Schemas in `lib/schemas.ts` (profile, address).
+- Schemas in `lib/utils/schemas.ts` (profile, address).
 - `TextInput` with `textAlignVertical: 'top'` for multiline (Android fix).
 
 ### Theme System (`constants/theme.ts`)
@@ -101,14 +101,14 @@ All styling uses tokens — no raw hex codes or magic numbers in components:
 |---|---|
 | `types/index.ts` | Core interfaces: `Category`, `Product`, `Order`, `Profile`, etc. |
 | `types/supabase.ts` | Auto-generated DB types (via `npm run supabase:types`) |
-| `lib/schemas.ts` | Zod validation schemas for forms |
-| `lib/categoriesApi.ts` | Supabase queries for category hierarchy |
-| `lib/supabase.ts` | Typed Supabase client with cross-platform storage |
-| `lib/NotificationService.ts` | Push notification registration |
+| `lib/utils/schemas.ts` | Zod validation schemas for forms |
+| `lib/api/categoriesApi.ts` | Supabase queries for category hierarchy |
+| `lib/services/supabase.ts` | Typed Supabase client with cross-platform storage |
+| `lib/services/NotificationService.ts` | Push notification registration |
 | `providers/AuthProvider.tsx` | Auth context + phone sync |
-| `components/ScreenHeader.tsx` | Mandatory screen header component |
-| `components/ProductCard.tsx` | Unified product card |
-| `components/Skeleton.tsx` | Loading placeholder component |
+| `components/ui/ScreenHeader.tsx` | Mandatory screen header component |
+| `components/product/ProductCard.tsx` | Unified product card |
+| `components/ui/Skeleton.tsx` | Loading placeholder component |
 | `BACKLOG.md` | Project backlog |
 
 ## Testing

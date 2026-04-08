@@ -1,5 +1,7 @@
 ---
+name: verify-task
 description: Automated AI regression cycle to verify task completion.
+turbo_note: "Шаги с маркером // turbo могут выполняться параллельно между собой. Шаги без маркера — последовательно, зависят от предыдущих."
 ---
 # Verify Task Workflow: Automated Regression Cycle
 
@@ -11,6 +13,7 @@ This workflow ensures your changes follow the project's quality standards.
    npm run lint
    ```
 
+// turbo
 2. **Check for unused code**:
    ```powershell
    npx knip
