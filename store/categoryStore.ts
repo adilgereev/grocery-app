@@ -108,7 +108,7 @@ export const useCategoryStore = create<CategoryState>()(
             isLoading: false,
             lastFetch: now
           });
-          logger.info(`Иерархия категорий обновлена (${data.length} корней)`);
+
         } catch (error) {
           const errorMessage = error instanceof Error ? error.message : 'Не удалось загрузить иерархию категорий';
           logger.error('Ошибка загрузки иерархии:', error);
