@@ -2,7 +2,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import {
-  ActivityIndicator,
   Alert,
   FlatList,
   LayoutAnimation,
@@ -16,6 +15,7 @@ import {
 
 import CategoryFormModal from '@/components/admin/CategoryFormModal';
 import CategoryItem from '@/components/admin/CategoryItem';
+import Skeleton from '@/components/ui/Skeleton';
 import { Colors, Radius, Spacing } from '@/constants/theme';
 import { fetchAllCategories, createCategory, updateCategory, deleteCategory, updateCategorySortOrders } from '@/lib/api/adminApi';
 import { useCategoryStore } from '@/store/categoryStore';
@@ -220,8 +220,18 @@ export default function CategoriesScreen() {
 
   if (loading) {
     return (
-      <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color={Colors.light.primary} />
+      <View style={styles.container}>
+        <View style={styles.list}>
+          {[1, 2, 3, 4, 5, 6].map(i => (
+            <View key={i} style={styles.skeletonRow}>
+              <Skeleton width={44} height={44} borderRadius={Radius.m} style={styles.skeletonIcon} />
+              <View style={styles.skeletonTextContainer}>
+                <Skeleton width="60%" height={15} style={styles.skeletonLine} />
+                <Skeleton width="35%" height={13} />
+              </View>
+            </View>
+          ))}
+        </View>
       </View>
     );
   }
@@ -269,7 +279,10 @@ export default function CategoriesScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.light.background },
-  centerContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  skeletonRow: { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.light.card, borderRadius: Radius.l, padding: Spacing.m, marginBottom: Spacing.m },
+  skeletonIcon: { marginRight: Spacing.m },
+  skeletonTextContainer: { flex: 1 },
+  skeletonLine: { marginBottom: 6 },
   header: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
     padding: Spacing.m, backgroundColor: Colors.light.card, borderBottomWidth: 1, borderBottomColor: Colors.light.borderLight,

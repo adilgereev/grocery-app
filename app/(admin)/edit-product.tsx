@@ -2,6 +2,7 @@ import AdminCategoryPicker from '@/components/admin/AdminCategoryPicker';
 import { Colors, Radius, Spacing } from '@/constants/theme';
 import { fetchAllCategories, fetchProductForEdit, updateProduct } from '@/lib/api/adminApi';
 import { uploadImage } from '@/lib/utils/storageUtils';
+import Skeleton from '@/components/ui/Skeleton';
 import { Category } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
 import * as ImagePicker from 'expo-image-picker';
@@ -114,9 +115,14 @@ export default function EditProductScreen() {
 
   if (initialLoading) {
     return (
-      <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color={Colors.light.primary} />
-      </View>
+      <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+        {[1, 2, 3, 4, 5].map(i => (
+          <View key={i} style={styles.skeletonField}>
+            <Skeleton width={120} height={14} style={styles.skeletonLabel} />
+            <Skeleton width="100%" height={50} borderRadius={Radius.m} />
+          </View>
+        ))}
+      </ScrollView>
     );
   }
 
@@ -222,8 +228,9 @@ export default function EditProductScreen() {
 const styles = StyleSheet.create({
   keyboardView: { flex: 1 },
   container: { flex: 1, backgroundColor: Colors.light.card },
-  centerContainer: { justifyContent: 'center', alignItems: 'center' },
   content: { padding: Spacing.l, paddingBottom: 60 },
+  skeletonField: { marginBottom: Spacing.m },
+  skeletonLabel: { marginBottom: 8 },
   labelRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: Spacing.m, marginBottom: 8 },
   label: { fontSize: 14, fontWeight: '600', color: Colors.light.text },
   pickText: { fontSize: 14, fontWeight: '700', color: Colors.light.primary },

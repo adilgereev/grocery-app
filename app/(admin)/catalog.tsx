@@ -1,9 +1,10 @@
 import { Colors, Radius, Spacing, Shadows } from '@/constants/theme';
 import { fetchAllProductsWithCategory, deleteProduct } from '@/lib/api/adminApi';
+import Skeleton from '@/components/ui/Skeleton';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, SectionList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, SectionList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { ProductWithCategory } from '@/types';
 
 export default function CatalogScreen() {
@@ -107,8 +108,24 @@ export default function CatalogScreen() {
 
   if (loading) {
     return (
-      <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color={Colors.light.primary} />
+      <View style={styles.container}>
+        <View style={styles.list}>
+          {[1, 2, 3].map(section => (
+            <View key={section}>
+              <Skeleton width={140} height={24} style={styles.skeletonSectionTitle} />
+              {[1, 2, 3].map(item => (
+                <View key={item} style={[styles.card, styles.skeletonCardRow]}>
+                  <Skeleton width={60} height={60} borderRadius={Radius.m} style={styles.skeletonImage} />
+                  <View style={styles.skeletonTextContainer}>
+                    <Skeleton width="70%" height={15} style={styles.skeletonLine} />
+                    <Skeleton width="40%" height={13} style={styles.skeletonLine} />
+                    <Skeleton width="30%" height={16} />
+                  </View>
+                </View>
+              ))}
+            </View>
+          ))}
+        </View>
       </View>
     );
   }
@@ -131,8 +148,12 @@ export default function CatalogScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.light.background },
-  centerContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   list: { padding: Spacing.m },
+  skeletonSectionTitle: { marginTop: Spacing.m, marginBottom: Spacing.s },
+  skeletonCardRow: { flexDirection: 'row', alignItems: 'center' },
+  skeletonImage: { marginRight: Spacing.m },
+  skeletonTextContainer: { flex: 1 },
+  skeletonLine: { marginBottom: 6 },
   card: {
     backgroundColor: Colors.light.card,
     borderRadius: Radius.l,
