@@ -35,15 +35,11 @@
 - [ ] Оповещения — когда мало товара на складе
 - [ ] БД: таблица analytics, triggers для stock alerts
 
-## 📱 Авторизация
-- [x] Привязка профиля к номеру телефона
-- [x] Обязательность имени при авторизации
-
 ---
 
 # 🔍 БЛОК 2: Аудит (07.04.2026)
 
-## 🏗️ Аудит Архитектуры — 13 задач
+## 🏗️ Аудит Архитектуры
 
 ### 🟠 Прямые Supabase запросы в UI (вынести в lib/)
 - [ ] **`app/(tabs)/(profile)/index.tsx:60`** — `supabase.auth.signOut()` прямо в экране → вынести в `lib/api/authApi.ts`
@@ -57,18 +53,7 @@
 - [ ] **`components/product/ProductRelated.tsx`** — `router.push('/product/...')` → принимать `onPress` как пропс
 - [ ] **`components/cart/EmptyCart.tsx`** — `router.push('/(tabs)/(index)')` → принимать `onPress` как пропс
 
-### 🟠 Структура папок
-- [ ] **Объединить `utils/` и `lib/utils/`** — в корне есть отдельная папка `utils/` (`addressFormatter.ts`, `imageKit.ts`, `mosaicLayout.ts`, `slugify.ts`). Перенести всё в `lib/utils/` и обновить импорты.
-
-### 🟡 Дублирование кода
-- [ ] **`useImagePicker()` хук** — логика `pickImage()` продублирована в `add-product.tsx`, `edit-product.tsx`, `CategoryFormModal.tsx`. Вынести в общий хук.
-- [ ] **`useCategoryList()` хук** — загрузка категорий дублируется в `add-product.tsx`, `edit-product.tsx`, `CategoryFormModal.tsx`. Вынести в общий хук.
-- [ ] **`showAlert()` утилита** — разница между `.tsx` и `.web.tsx` версиями admin-экранов только в `Alert` vs `window.alert`. Создать `lib/utils/platformUtils.ts` с `showAlert()`.
-- [ ] **Объединить `add-product.tsx` и `edit-product.tsx`** — 85% идентичного кода. Создать общий `ProductFormScreen` с параметром `mode: 'add' | 'edit'`.
-
----
-
-## 🧹 Аудит Качества Кода — 9 задач
+## 🧹 Аудит Качества Кода
 
 ### 🟠 useCallback — отсутствует мемоизация
 - [ ] **`app/(admin)/catalog.tsx`** — `handleEdit`, `handleDelete` передаются как пропсы без `useCallback`
@@ -76,8 +61,6 @@
 - [ ] **`app/(tabs)/(cart)/index.tsx`** — `formatAddress` передаётся в `CartSummary` без `useCallback`
 
 ### 🟠 HEX/rgba напрямую вместо токенов
-- [ ] **`app/(admin)/add-product.tsx:182`** — `#fff` → заменить на `Colors.light.white`
-- [ ] **`app/(admin)/edit-product.tsx:211`** — `#fff` → заменить на `Colors.light.white`
 - [ ] **`components/address/AddressActionButtons.tsx:36`** — `#059669` в LinearGradient → использовать `Colors.light.primary`
 
 ### 🟡 testID — низкое покрытие (~27%)
@@ -85,19 +68,7 @@
 - [ ] **`components/address/AddressSearchInput.tsx`** — нет `testID` на `TextInput` и элементах подсказок
 - [ ] **Экраны профиля** — минимальное покрытие, добавить `testID` на кнопки и поля
 
----
-
-## ⚡ Аудит Производительности — 12 задач
-
-### 🟠 Селекторы в сторах — подписка на весь стор вместо конкретных полей
-- [ ] **`components/product/ProductCard.tsx`** — `useCartStore()` целиком вместо 3 селекторов → перерендер карточки при изменении любого поля корзины
-- [ ] **`app/(tabs)/(cart)/index.tsx:20`** — `useCartStore()` с деструктуризацией 7 полей → разбить на отдельные селекторы
-- [ ] **`app/(tabs)/(index)/index.tsx:28`** — 3 стора подключены целиком (`useCategoryStore`, `useCartStore`, `useAddressStore`) → разбить на селекторы
-- [ ] **`app/category/[id].tsx:25`** — `useCategoryStore()` целиком для 3 функций → селекторы
-- [ ] **`app/product/[id].tsx:31`** — `useCartStore()` + `useFavoriteStore()` целиком → селекторы
-- [ ] **`app/favorites.tsx:27`** — `useFavoriteStore()` целиком → селектор на `favoriteIds`
-- [ ] **`app/addresses.tsx:13`** — `useAddressStore()` целиком → селекторы
-- [ ] **`hooks/useCheckout.ts:20`** — `useCartStore()` + `useAddressStore()` целиком → селекторы
+## ⚡ Аудит Производительности
 
 ### 🟡 FlatList — отсутствует `getItemLayout`
 - [ ] **`app/category/[id].tsx`** — FlatList с `ProductCard` (фиксированная высота) → добавить `getItemLayout`
@@ -107,9 +78,7 @@
 ### 🟡 useEffect — потенциальный двойной вызов
 - [ ] **`app/favorites.tsx:56`** — `fetchFavoriteProducts` и `favoriteIds` оба в зависимостях создают цепочку перезапусков. Убрать `fetchFavoriteProducts` из зависимостей `useCallback`, оставить только `[session, favoriteIds]` в `useEffect`
 
----
-
-## 🎨 Аудит UI / Soft Minimalism — 16 задач
+## 🎨 Аудит UI / Soft Minimalism
 
 ### 🟠 Тени
 - [ ] **Унифицировать `shadowColor` по всему проекту** — часть компонентов использует `Colors.light.text`, часть `Colors.light.primary` (нарушение Soft Minimalism). Привести всё к `Colors.light.text` с `shadowOpacity: 0.03–0.05`
@@ -130,14 +99,7 @@
 - [ ] **`app/(auth)/_login.styles.ts`** и **`app/setup-profile.tsx`** — `paddingTop/Bottom: 60` → `Spacing.*`
 - [ ] **Прочие файлы** — ~30+ файлов с числовыми padding/margin → систематически заменить на `Spacing.*` токены
 
-### 🔴 Критичные
-- [x] **`app/(admin)/add-product.tsx`** — цветная тень: `shadowColor: Colors.light.primary`, `shadowOpacity: 0.3`, `elevation: 4` → заменить на `...Shadows.md`
-- [x] **`app/(admin)/edit-product.tsx`** — то же самое, что и `add-product.tsx`
-- [x] **`components/admin/AdminCategoryPicker.tsx`** — `SafeAreaView` импортируется из `react-native` вместо `react-native-safe-area-context`
-
----
-
-## 🧪 Аудит Тестов — 8 задач
+## 🧪 Аудит Тестов
 
 ### 🟠 Покрытие — критически низкое
 - [ ] **`store/favoriteStore.ts`** — нет ни одного теста на критичный стор → написать тесты (actions: add, remove, toggle, sync)
@@ -151,9 +113,7 @@
 - [ ] **`OrderCard.test.tsx`** — `status: 'delivered'` задан как string вместо `Enums<'order_status'>` → привести к правильному типу
 - [ ] **`CartItem.test.tsx`** и **`ProductCard.test.tsx`** — дублируют мок `useRouter` который уже есть в `jest.setup.js` → удалить локальные переопределения
 
----
-
-## 🧩 Аудит Обязательных Компонентов — 10 задач
+## 🧩 Аудит Обязательных Компонентов
 
 ### 🟠 ScreenHeader — отсутствует на 11 экранах
 - [ ] **`app/setup-profile.tsx`** — кастомная шапка с LinearGradient → заменить на `<ScreenHeader />`
@@ -166,34 +126,6 @@
 ### 🟡 ProductCard — самописные карточки
 - [ ] **`components/home/PopularSection.tsx`** — кастомная карточка товара → заменить на `<ProductCard />`
 - [ ] **`app/(admin)/catalog.tsx`** — функция `renderProduct` с кастомной разметкой → заменить на `<ProductCard />`
-
-### 🟠 Skeleton — ActivityIndicator вместо Skeleton
-- [x] **`app/search.tsx`** — `<ActivityIndicator />` при загрузке → только внутри кнопки retry, Skeleton не уместен
-- [x] **`app/(admin)/catalog.tsx`**, **`categories.tsx`**, **`orders.tsx`**, **`edit-product.tsx`** — `ActivityIndicator` заменён на `<Skeleton />` (в кнопках сохранён)
-
----
-
-## 🔐 Аудит Безопасности — 6 задач
-
-### 🔴 Критичные
-- [x] **RLS для `otp_codes`** — Любой может читать и менять чужие OTP коды. Переписать политики: запретить публичный SELECT/UPDATE, оставить только через `service_role`. (`supabase/migrations/`)
-- [x] **Cloudflare R2 Secret Key в клиентском бандле** — `EXPO_PUBLIC_R2_SECRET_ACCESS_KEY` попадает в бандл. Перенести загрузку в R2 через Supabase Edge Function с presigned URL. Это также уберёт `@aws-sdk/` (~8.6 MB) из бандла. (`.env.local`)
-- [x] **Сменить `SUPABASE_DB_PASSWORD`** — Пароль БД хранится в plaintext в `.env`. Сменить в дашборде Supabase, удалить переменную из `.env`.
-
-### 🟠 Высокие
-- [x] **Дублирующиеся RLS политики для `categories`** — Два идентичных `SELECT` policy (`Allow select for all` и `Categories are viewable by everyone`). Удалить один. (`supabase/migrations/`)
-
----
-
-## 🗄️ Аудит Supabase — 4 задачи
-
-### 🔴 Критичные — дыры в RLS
-- [x] **Таблица `addresses`** — нет политик `SELECT` и `INSERT` (открыто для всех) → политика `FOR ALL` уже присутствует в схеме
-- [x] **Таблица `order_items`** — нет политик `UPDATE` и `DELETE` → добавить защиту через ownership заказа
-- [x] **Таблица `otp_codes`** — `UPDATE` открыт для всех (дополняет задачу из Безопасности) → ограничить через `service_role`
-
-### 🟠 Типы
-- [x] **`types/supabase.ts`** — отсутствует поле `image_transformations` в таблице `categories` (добавлено миграцией, но типы не регенерированы) → запустить `npm run supabase:types`
 
 ---
 
@@ -214,9 +146,6 @@
 
 ## 📢 Маркетинг
 
-### Stories и Баннеры
-- [x] **Переход на Stories** — Убрать блок «Акции и новинки» (статичные баннеры) и реализовать динамические сторис для акций и новинок.
-
 ### Push-уведомления (FCM)
 - [ ] Настройка серверных пушей через Firebase Cloud Messaging
 - [ ] Триггеры уведомлений из Supabase при смене статуса заказа
@@ -234,7 +163,6 @@
 ### Категории
 - [ ] Массовая загрузка категорий в БД через SQL или Админ-панель
 - [ ] Массовая загрузка продуктов в БД через Админ-панель (excel)
-- [x] Финальный список 18+ категорий (Лавка-стайл)
 
 ## 🛠️ Предстоящие Этапы (Refactoring & Features)
 
@@ -244,15 +172,73 @@
 - [ ] Интеграция валидации полей через Zod в `ProductFormModal.tsx`.
 - [ ] Управление тегами товаров
 
-### 🧺 Фаза 5: Оптимизация корзины и оформления заказа
-- [x] Рефакторинг `CartStore.ts`: вынос логики расчета и скидок.
-- [x] Оптимизация экрана корзины: декомпозиция на модульные компоненты.
-- [x] Улучшение UX выбора способа оплаты и адреса внутри корзины.
-- [x] Анимации добавления и удаления товаров (LayoutAnimations).
-
 ---
 
 # 🛠️ БЛОК 4: Технический долг и Багфикс
 
 - [ ] **Проверить отображение комментария курьеру в админской панели в заказах.** (Убедиться, что текст, введенный пользователем, корректно доходит до курьера/сборщика).
-- [x] **Редизайн экрана "Профиль".** (Привести экран к премиальному стилю Soft Minimalism: переработать карточки, списки и общий вид).
+
+---
+
+# ✅ Выполнено
+
+## 🚀 БЛОК 1: MVP
+### 📱 Авторизация
+- [x] Привязка профиля к номеру телефона
+- [x] Обязательность имени при авторизации
+
+## 🔍 БЛОК 2: Аудит
+### 🏗️ Аудит Архитектуры
+- [x] **Объединить `utils/` и `lib/utils/`** — Перенесено всё в `lib/utils/` и обновлены импорты.
+- [x] **`useImagePicker()` хук** — Логика вынесена в общий хук.
+- [x] **`useCategoryList()` хук** — Загрузка категорий вынесена в общий хук.
+- [x] **`showAlert()` утилита** — Создана `lib/utils/platformUtils.ts` с универсальным `showAlert()`.
+- [x] **Объединить `add-product.tsx` и `edit-product.tsx`** — Создан общий `ProductFormScreen`.
+
+### 🧹 Аудит Качества Кода
+- [x] **app/(admin)/add-product.tsx:182** — `#fff` → `Colors.light.white`
+- [x] **app/(admin)/edit-product.tsx:211** — `#fff` → `Colors.light.white`
+
+### ⚡ Аудит Производительности
+- [x] **Селекторы в сторах** — Реализована подписка на конкретные поля во всех компонентах и хуках (CartStore, CategoryStore, AddressStore).
+
+### 🎨 Аудит UI / Soft Minimalism
+- [x] **Тени в админке** — `shadowColor: Colors.light.primary` заменены на `...Shadows.md` в `add-product.tsx` и `edit-product.tsx`.
+- [x] **components/admin/AdminCategoryPicker.tsx** — `SafeAreaView` заменен на версию из `react-native-safe-area-context`.
+
+### 🟠 Skeleton — ActivityIndicator вместо Skeleton
+- [x] **app/search.tsx** — `<ActivityIndicator />` при загрузке → только в кнопке retry.
+- [x] **Админ-панель** — `ActivityIndicator` заменён на `<Skeleton />` в каталоге, категориях и заказах.
+
+### 🔐 Аудит Безопасности
+- [x] **RLS для `otp_codes`** — политики ограничены через `service_role`.
+- [x] **Cloudflare R2 Secret Key** — перенос загрузки в Edge Function, удаление ключа из бандла.
+- [x] **Сменить `SUPABASE_DB_PASSWORD`** — пароль обновлен и удален из `.env`.
+- [x] **Дублирующиеся RLS политики для `categories`** — лишняя политика удалена.
+
+### 🗄️ Аудит Supabase
+- [x] **Таблица `addresses`** — политика `FOR ALL` проверена.
+- [x] **Таблица `order_items`** — добавлена защита через ownership заказа.
+- [x] **Таблица `otp_codes`** — `UPDATE` ограничен.
+- [x] **`types/supabase.ts`** — типы регенерированы (image_transformations добавлен).
+
+## 💎 БЛОК 3: Развитие
+### 📢 Маркетинг
+- [x] **Переход на Stories** — Убран блок статических баннеров, реализованы динамические сторис.
+
+### 📦 Наполнение контента
+- [x] **Финальный список 18+ категорий** — Лавка-стайл.
+
+### 🛠️ Предстоящие Этапы
+- [x] **Фаза 5: Оптимизация корзины** — Рефакторинг `CartStore`, декомпозиция экрана, UX выбора оплаты/адреса, анимации LayoutAnimations.
+
+## 🛠️ БЛОК 4: Технический долг
+- [x] **Редизайн экрана "Профиль"** — Приведен к стилю Soft Minimalism.
+- [x] **Удалить debug-логи** — Чистка `console.log`.
+- [x] **Fallback для не-ImageKit URL** — Graceful fallback в `utils/imageKit.ts`.
+- [x] **Валидация env-переменных для R2**.
+- [x] **Lazy-loading AWS SDK** — Решено через Edge Function.
+- [x] **Адаптивные размеры изображений**.
+- [x] **Кастомный хук для изображений** — `useImageKit`.
+- [x] **Унифицировать transition time** — Вынесено в тему.
+- [x] **Pill-радиус на Android** — Исправлено на `100`.

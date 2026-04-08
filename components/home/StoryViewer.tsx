@@ -14,7 +14,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, FontSize, Radius, Spacing } from '@/constants/theme';
 import { Story } from '@/types';
-import { getOptimizedImage } from '@/utils/imageKit';
+import { getOptimizedImage } from '@/lib/utils/imageKit';
 
 const { width: W, height: H } = Dimensions.get('window');
 // Длительность одной сторис в миллисекундах

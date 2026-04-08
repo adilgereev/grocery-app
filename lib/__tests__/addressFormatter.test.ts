@@ -1,4 +1,4 @@
-import { formatShortAddress, formatFullAddress } from '../addressFormatter';
+import { formatShortAddress, formatFullAddress } from '../utils/addressFormatter';
 import { Address } from '@/types';
 
 describe('addressFormatter', () => {

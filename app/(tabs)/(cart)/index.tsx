@@ -6,7 +6,7 @@ import { Colors, Duration, FontSize, Spacing } from '@/constants/theme';
 import { useCheckout } from '@/hooks/useCheckout';
 import { useCartStore } from '@/store/cartStore';
 import { Address, PaymentMethod } from '@/types';
-import { formatFullAddress } from '@/utils/addressFormatter';
+import { formatFullAddress } from '@/lib/utils/addressFormatter';
 import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import Animated, { Layout, useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
@@ -17,14 +17,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
  * Логика чекаута вынесена в useCheckout, логика расчетов — в cartStore.
  */
 export default function CartScreen() {
-  const { 
-    items, 
-    updateQuantity, 
-    removeItem, 
-    subtotal, 
-    deliveryFee, 
-    totalPrice 
-  } = useCartStore();
+  const items = useCartStore(state => state.items);
+  const updateQuantity = useCartStore(state => state.updateQuantity);
+  const removeItem = useCartStore(state => state.removeItem);
+  const subtotal = useCartStore(state => state.subtotal);
+  const deliveryFee = useCartStore(state => state.deliveryFee);
+  const totalPrice = useCartStore(state => state.totalPrice);
   
   const insets = useSafeAreaInsets();
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cash');

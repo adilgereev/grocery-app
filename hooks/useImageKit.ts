@@ -1,4 +1,4 @@
-import { getOptimizedImage, getPlaceholderUrl, ImageOptions } from '@/utils/imageKit';
+import { getOptimizedImage, getPlaceholderUrl, ImageOptions } from '@/lib/utils/imageKit';
 import { Duration } from '@/constants/theme';
 import { useMemo } from 'react';
 

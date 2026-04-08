@@ -24,7 +24,7 @@ export default function FavoritesScreen() {
   const isRecommendedFetched = React.useRef(false);
 
   
-  const { favoriteIds } = useFavoriteStore();
+  const favoriteIds = useFavoriteStore(state => state.favoriteIds);
 
   const fetchRecommended = useCallback(async () => {
     if (isRecommendedFetched.current) return;

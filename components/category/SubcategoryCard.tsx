@@ -1,7 +1,7 @@
 import { Colors, Radius, Duration } from '@/constants/theme';
 import { useCategoryStore } from '@/store/categoryStore';
 import { Category } from '@/types';
-import { getOptimizedImage, getPlaceholderUrl } from '@/utils/imageKit';
+import { getOptimizedImage, getPlaceholderUrl } from '@/lib/utils/imageKit';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import React from 'react';

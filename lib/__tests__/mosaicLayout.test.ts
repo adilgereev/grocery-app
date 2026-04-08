@@ -1,4 +1,4 @@
-import { getMosaicCardWidth } from '../mosaicLayout';
+import { getMosaicCardWidth } from '../utils/mosaicLayout';
 
 describe('getMosaicCardWidth', () => {
   const CW = 316; // Container Width (для тестов: 316 - 16 зазоров = 300 / 3 = 100 unit width)

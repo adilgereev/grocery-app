@@ -11,7 +11,7 @@ import { ErrorToast } from '@/components/ui/ErrorToast';
 import { logger } from '@/lib/utils/logger';
 import { Colors, Spacing, Radius, Shadows } from '@/constants/theme';
 import { Product } from '@/types';
-import { getMosaicCardWidth } from '@/utils/mosaicLayout';
+import { getMosaicCardWidth } from '@/lib/utils/mosaicLayout';
 
 export default function CategoryProductsScreen() {
   const { id, name } = useLocalSearchParams();
@@ -21,10 +21,11 @@ export default function CategoryProductsScreen() {
   const [error, setError] = useState<string | null>(null);
   const [activeTag, setActiveTag] = useState<string | null>(null);
 
-  // Подключаем хранилище категорий для получения подкатегорий
-  const { getCategoryById, getSubcategories, fetchAllCategories } = useCategoryStore();
-  const category = getCategoryById(id as string);
-  const subcategories = getSubcategories(id as string);
+  // Подписываемся на конкретные поля стора, не на весь объект
+  const allCategories = useCategoryStore(state => state.allCategories);
+  const fetchAllCategories = useCategoryStore(state => state.fetchAllCategories);
+  const category = useMemo(() => allCategories.find(c => c.id === (id as string)), [allCategories, id]);
+  const subcategories = useMemo(() => allCategories.filter(c => c.parent_id === (id as string)), [allCategories, id]);
   const { width: windowWidth } = useWindowDimensions();
   const containerWidth = windowWidth - Spacing.m * 2;
   const GAP = 8;

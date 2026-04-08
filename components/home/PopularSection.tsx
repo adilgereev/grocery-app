@@ -1,6 +1,6 @@
 import { Colors, Duration } from '@/constants/theme';
 import { Product } from '@/types';
-import { getOptimizedImage, getPlaceholderUrl } from '@/utils/imageKit';
+import { getOptimizedImage, getPlaceholderUrl } from '@/lib/utils/imageKit';
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
 import React from 'react';

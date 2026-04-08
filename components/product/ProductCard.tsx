@@ -21,9 +21,9 @@ export default function ProductCard({ item, index = 0 }: { item: Product, index?
     { width: cardWidth, height: cardWidth, transition: Duration.default },
   );
 
-  const { items, addItem, updateQuantity } = useCartStore();
-
-  const cartItem = items.find((i) => i.product.id === item.id);
+  const cartItem = useCartStore(state => state.items.find(i => i.product.id === item.id));
+  const addItem = useCartStore(state => state.addItem);
+  const updateQuantity = useCartStore(state => state.updateQuantity);
 
   return (
     <AnimatedTouchable 

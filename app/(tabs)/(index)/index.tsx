@@ -11,7 +11,7 @@ import { useCartStore } from '@/store/cartStore';
 import { useCategoryStore } from '@/store/categoryStore';
 import { useStoriesStore } from '@/store/storiesStore';
 import { Category, Product } from '@/types';
-import { formatShortAddress } from '@/utils/addressFormatter';
+import { formatShortAddress } from '@/lib/utils/addressFormatter';
 import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useMemo, useRef, useState } from 'react';
@@ -26,16 +26,20 @@ export default function HomeScreen() {
   const { session, profile } = useAuth();
   const router = useRouter();
 
-  const { categoriesWithSubs, fetchFullHierarchy, isLoading: categoriesLoading } = useCategoryStore();
-  const { addItem } = useCartStore();
-  const fetchStories = useStoriesStore((state) => state.fetchStories);
+  const categoriesWithSubs = useCategoryStore(state => state.categoriesWithSubs);
+  const fetchFullHierarchy = useCategoryStore(state => state.fetchFullHierarchy);
+  const categoriesLoading = useCategoryStore(state => state.isLoading);
+  const addItem = useCartStore(state => state.addItem);
+  const fetchStories = useStoriesStore(state => state.fetchStories);
 
   const [popularProducts, setPopularProducts] = useState<Product[]>([]);
   const [popularLoading, setPopularLoading] = useState(true);
   // Имя из контекста (сбрасывается при выходе)
   const firstName = profile?.first_name || '';
 
-  const { addresses, selectedAddressId, loadAddresses } = useAddressStore();
+  const addresses = useAddressStore(state => state.addresses);
+  const selectedAddressId = useAddressStore(state => state.selectedAddressId);
+  const loadAddresses = useAddressStore(state => state.loadAddresses);
   const selectedAddress = addresses.find(a => a.id === selectedAddressId);
   const displayAddress = formatShortAddress(selectedAddress);
 

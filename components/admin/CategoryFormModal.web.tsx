@@ -16,7 +16,7 @@ import {
 
 import { Colors, Radius, Spacing } from '@/constants/theme';
 import { Category } from '@/types';
-import { slugify } from '@/utils/slugify';
+import { slugify } from '@/lib/utils/slugify';
 
 interface CategoryFormModalProps {
   visible: boolean;

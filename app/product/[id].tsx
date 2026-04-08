@@ -28,10 +28,12 @@ export default function ProductDetailScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const { items, addItem, updateQuantity } = useCartStore();
-  const { favoriteIds, toggleFavorite } = useFavoriteStore();
+  const cartItem = useCartStore(state => state.items.find(i => i.product.id === id));
+  const addItem = useCartStore(state => state.addItem);
+  const updateQuantity = useCartStore(state => state.updateQuantity);
+  const favoriteIds = useFavoriteStore(state => state.favoriteIds);
+  const toggleFavorite = useFavoriteStore(state => state.toggleFavorite);
 
-  const cartItem = items.find((i) => i.product.id === id);
   const isFavorite = typeof id === 'string' ? favoriteIds.includes(id) : false;
 
   const fetchProductDetails = useCallback(async () => {

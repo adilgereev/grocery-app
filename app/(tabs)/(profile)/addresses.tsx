@@ -3,14 +3,16 @@ import { View, Text, StyleSheet, TouchableOpacity, FlatList, Platform } from 're
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useAddressStore } from '@/store/addressStore';
 import { Address } from '@/types';
-import { formatFullAddress } from '@/utils/addressFormatter';
+import { formatFullAddress } from '@/lib/utils/addressFormatter';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { Colors, FontSize, Spacing, Radius, Shadows } from '@/constants/theme';
 import ScreenHeader from '@/components/ui/ScreenHeader';
 
 export default function AddressesScreen() {
-  const { addresses, selectedAddressId, selectAddress } = useAddressStore();
+  const addresses = useAddressStore(state => state.addresses);
+  const selectedAddressId = useAddressStore(state => state.selectedAddressId);
+  const selectAddress = useAddressStore(state => state.selectAddress);
   const router = useRouter();
 
   // Используем централизованное форматирование

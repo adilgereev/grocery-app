@@ -1,6 +1,6 @@
 import { Colors, Spacing } from '@/constants/theme';
 import { CategoryWithSubcategories } from '@/types';
-import { getMosaicCardWidth } from '@/utils/mosaicLayout';
+import { getMosaicCardWidth } from '@/lib/utils/mosaicLayout';
 import React from 'react';
 import { StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import SubcategoryCard from '@/components/category/SubcategoryCard';
