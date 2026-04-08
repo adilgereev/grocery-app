@@ -3,6 +3,7 @@ import { CategoryWithSubcategories } from '@/types';
 import { getMosaicCardWidth } from '@/lib/utils/mosaicLayout';
 import React from 'react';
 import { StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { useRouter } from 'expo-router';
 import SubcategoryCard from '@/components/category/SubcategoryCard';
 
 interface CategoryHierarchySectionProps {
@@ -12,6 +13,7 @@ interface CategoryHierarchySectionProps {
 const CategoryHierarchySection = React.memo(({ category }: CategoryHierarchySectionProps) => {
   const { subcategories } = category;
   const { width: windowWidth } = useWindowDimensions();
+  const router = useRouter();
 
   if (!subcategories || subcategories.length === 0) {
     return null;
@@ -38,6 +40,7 @@ const CategoryHierarchySection = React.memo(({ category }: CategoryHierarchySect
               subcategory={item}
               cardWidth={cardWidth}
               index={index}
+              onPress={() => router.push(`/category/${item.id}?name=${encodeURIComponent(item.name)}`)}
             />
           );
         })}

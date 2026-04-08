@@ -2,8 +2,7 @@ import Skeleton from '@/components/ui/Skeleton';
 import { Colors, FontSize, Radius, Spacing, Shadows } from '@/constants/theme';
 import { logger } from '@/lib/utils/logger';
 import { formatPhoneDisplay } from '@/lib/services/sms';
-import { fetchUserProfile } from '@/lib/api/authApi';
-import { supabase } from '@/lib/services/supabase';
+import { fetchUserProfile, signOut } from '@/lib/api/authApi';
 import { useAuth } from '@/providers/AuthProvider';
 import { useCartStore } from '@/store/cartStore';
 import { Profile } from '@/types';
@@ -57,7 +56,7 @@ export default function ProfileScreen() {
   };
 
   const performLogout = async () => {
-    await supabase.auth.signOut();
+    await signOut();
     clearCart();
   };
 

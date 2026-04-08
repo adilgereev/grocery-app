@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, FlatList, RefreshControl, TouchableOpacity, ScrollView } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { View, Text, StyleSheet, FlatList, RefreshControl, TouchableOpacity, ScrollView, useWindowDimensions } from 'react-native';
 import { fetchFavoriteProducts as fetchFavoriteProductsByIds } from '@/lib/api/favoriteApi';
 import { fetchRecommendedProducts } from '@/lib/api/productsApi';
 import { logger } from '@/lib/utils/logger';
@@ -17,6 +17,22 @@ import ScreenHeader from '@/components/ui/ScreenHeader';
 export default function FavoritesScreen() {
   const router = useRouter();
   const { session } = useAuth();
+  const { width } = useWindowDimensions();
+
+  // Фиксированная высота строки для оптимизации FlatList
+  const cardRowHeight = useMemo(() => {
+    const cardWidth = Math.round((width - Spacing.m * 2 - 16) / 2);
+    return cardWidth + 132;
+  }, [width]);
+
+  const getItemLayout = useCallback(
+    (_: unknown, index: number) => ({
+      length: cardRowHeight,
+      offset: Spacing.m + Math.floor(index / 2) * cardRowHeight,
+      index,
+    }),
+    [cardRowHeight]
+  );
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -25,6 +41,14 @@ export default function FavoritesScreen() {
 
   
   const favoriteIds = useFavoriteStore(state => state.favoriteIds);
+
+  const handleProductPress = useCallback((id: string, name: string) => {
+    router.push(`/product/${id}?name=${encodeURIComponent(name)}`);
+  }, [router]);
+
+  // Ref для чтения актуальных favoriteIds внутри useCallback без добавления в зависимости
+  const favoriteIdsRef = React.useRef(favoriteIds);
+  favoriteIdsRef.current = favoriteIds;
 
   const fetchRecommended = useCallback(async () => {
     if (isRecommendedFetched.current) return;
@@ -39,7 +63,8 @@ export default function FavoritesScreen() {
   }, []);
 
   const fetchFavoriteProducts = useCallback(async () => {
-    if (favoriteIds.length === 0) {
+    const ids = favoriteIdsRef.current;
+    if (ids.length === 0) {
       setProducts([]);
       setLoading(false);
       setRefreshing(false);
@@ -47,11 +72,11 @@ export default function FavoritesScreen() {
       return;
     }
 
-    const data = await fetchFavoriteProductsByIds(favoriteIds);
+    const data = await fetchFavoriteProductsByIds(ids);
     setProducts(data);
     setLoading(false);
     setRefreshing(false);
-  }, [favoriteIds, fetchRecommended]);
+  }, [fetchRecommended]);
 
   useEffect(() => {
     if (session?.user) {
@@ -101,7 +126,7 @@ export default function FavoritesScreen() {
               <View style={styles.gridContainer}>
                 {recommended.map((item, index) => (
                   <View key={`rec-${item.id}`} style={styles.gridItem}>
-                    <ProductCard item={item} index={index} />
+                    <ProductCard item={item} index={index} onPress={() => handleProductPress(item.id, item.name)} />
                   </View>
                 ))}
               </View>
@@ -119,7 +144,8 @@ export default function FavoritesScreen() {
           showsVerticalScrollIndicator={false}
           numColumns={2}
           columnWrapperStyle={styles.columnWrapper}
-          renderItem={({ item, index }) => <ProductCard item={item} index={index} />}
+          getItemLayout={getItemLayout}
+          renderItem={({ item, index }) => <ProductCard item={item} index={index} onPress={() => handleProductPress(item.id, item.name)} />}
         />
       )}
     </SafeAreaView>

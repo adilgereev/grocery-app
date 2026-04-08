@@ -7,8 +7,9 @@ import { useCheckout } from '@/hooks/useCheckout';
 import { useCartStore } from '@/store/cartStore';
 import { Address, PaymentMethod } from '@/types';
 import { formatFullAddress } from '@/lib/utils/addressFormatter';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { useRouter } from 'expo-router';
 import Animated, { Layout, useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -45,11 +46,21 @@ export default function CartScreen() {
     },
   });
 
-  const formatAddress = (addr: Address | null | undefined) => formatFullAddress(addr);
+  const router = useRouter();
+
+  const formatAddress = useCallback((addr: Address | null | undefined) => formatFullAddress(addr), []);
+
+  const handleProductPress = useCallback((productId: string, productName: string) => {
+    router.push(`/product/${productId}?name=${encodeURIComponent(productName)}`);
+  }, [router]);
+
+  const handleGoShopping = useCallback(() => {
+    router.push('/(tabs)/(index)');
+  }, [router]);
 
   // Состояние пустой корзины с рекомендациями
   if (items.length === 0) {
-    return <EmptyCart insetsTop={insets.top} />;
+    return <EmptyCart insetsTop={insets.top} onGoShopping={handleGoShopping} />;
   }
 
   return (
@@ -97,6 +108,7 @@ export default function CartScreen() {
             index={index}
             onUpdateQuantity={updateQuantity}
             onRemove={removeItem}
+            onPress={() => handleProductPress(item.product.id, item.product.name)}
           />
         )}
       />

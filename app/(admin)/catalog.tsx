@@ -3,7 +3,7 @@ import { fetchAllProductsWithCategory, deleteProduct } from '@/lib/api/adminApi'
 import Skeleton from '@/components/ui/Skeleton';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, SectionList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { ProductWithCategory } from '@/types';
 
@@ -40,18 +40,18 @@ export default function CatalogScreen() {
     setLoading(false);
   };
 
-  const handleEdit = (id: string) => {
+  const handleEdit = useCallback((id: string) => {
     router.push({ pathname: '/(admin)/edit-product', params: { id } });
-  };
+  }, [router]);
 
-  const handleDelete = (id: string, name: string) => {
+  const handleDelete = useCallback((id: string, name: string) => {
     Alert.alert(
       'Удаление товара',
       `Вы уверены, что хотите безвозвратно удалить "${name}"?`,
       [
         { text: 'Отмена', style: 'cancel' },
-        { 
-          text: 'Удалить', 
+        {
+          text: 'Удалить',
           style: 'destructive',
           onPress: async () => {
             try {
@@ -68,9 +68,9 @@ export default function CatalogScreen() {
         }
       ]
     );
-  };
+  }, []);
 
-  const renderProduct = ({ item }: { item: ProductWithCategory }) => (
+  const renderProduct = useCallback(({ item }: { item: ProductWithCategory }) => (
     <View style={styles.card}>
       <View style={styles.infoRow}>
         {item.image_url ? (
@@ -95,16 +95,16 @@ export default function CatalogScreen() {
         </TouchableOpacity>
       </View>
     </View>
-  );
+  ), [handleEdit, handleDelete]);
 
-  const renderSectionHeader = ({ section: { title, data } }: { section: { title: string; data: ProductWithCategory[] } }) => (
+  const renderSectionHeader = useCallback(({ section: { title, data } }: { section: { title: string; data: ProductWithCategory[] } }) => (
     <View style={styles.sectionHeader}>
       <Text style={styles.sectionTitle}>{title}</Text>
       <View style={styles.sectionBadge}>
         <Text style={styles.sectionBadgeText}>{data.length}</Text>
       </View>
     </View>
-  );
+  ), []);
 
   if (loading) {
     return (

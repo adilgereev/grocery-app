@@ -3,7 +3,6 @@ import { useCategoryStore } from '@/store/categoryStore';
 import { Category } from '@/types';
 import { getOptimizedImage, getPlaceholderUrl } from '@/lib/utils/imageKit';
 import { Image } from 'expo-image';
-import { useRouter } from 'expo-router';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
@@ -17,16 +16,11 @@ interface SubcategoryCardProps {
   subcategory: Category;
   cardWidth: number;
   index: number;
+  onPress: () => void;
 }
 
-const SubcategoryCard = React.memo(({ subcategory, cardWidth, index }: SubcategoryCardProps) => {
-  const router = useRouter();
+const SubcategoryCard = React.memo(({ subcategory, cardWidth, index, onPress }: SubcategoryCardProps) => {
   const lastFetch = useCategoryStore((state) => state.lastFetch);
-
-  const handlePress = () => {
-    // Навигация на страницу продуктов подкатегории
-    router.push(`/category/${subcategory.id}?name=${encodeURIComponent(subcategory.name)}`);
-  };
 
   // Цвет фона: из базы (HEX) или нейтральный дефолт
   const isHex = subcategory.image_url?.startsWith('#');
@@ -37,7 +31,7 @@ const SubcategoryCard = React.memo(({ subcategory, cardWidth, index }: Subcatego
       testID="subcategory-card"
       style={[styles.card, { width: cardWidth, backgroundColor: bgColor as string }]}
       activeOpacity={0.8}
-      onPress={handlePress}
+      onPress={onPress}
       entering={FadeInDown.delay((index % 5) * 50).duration(Duration.default)}
     >
       {subcategory.image_url && !isHex && (

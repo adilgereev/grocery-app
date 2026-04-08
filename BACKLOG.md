@@ -41,42 +41,15 @@
 
 ## 🏗️ Аудит Архитектуры
 
-### 🟠 Прямые Supabase запросы в UI (вынести в lib/)
-- [ ] **`app/(tabs)/(profile)/index.tsx:60`** — `supabase.auth.signOut()` прямо в экране → вынести в `lib/api/authApi.ts`
-- [ ] **`components/cart/CartRecommendations.tsx:23`** — `supabase.from('products')` в компоненте → использовать уже существующий `fetchRecommendedProducts()` из lib
-- [ ] **`app/setup-profile.tsx:38`** — `supabase.from('profiles').upsert()` в экране → вынести в `lib/api/authApi.ts`
-
-### 🟠 `useRouter()` в компонентах — передавать callback от родителя
-- [ ] **`components/product/ProductCard.tsx`** — `router.push('/product/...')` → принимать `onPress` как пропс
-- [ ] **`components/cart/CartItem.tsx`** — `router.push('/product/...')` → принимать `onPress` как пропс
-- [ ] **`components/category/SubcategoryCard.tsx`** — `router.push('/category/...')` → принимать `onPress` как пропс
-- [ ] **`components/product/ProductRelated.tsx`** — `router.push('/product/...')` → принимать `onPress` как пропс
-- [ ] **`components/cart/EmptyCart.tsx`** — `router.push('/(tabs)/(index)')` → принимать `onPress` как пропс
+### 🟡 useRouter() в компонентах — передавать callback от родителя
+- [ ] **`components/home/PopularSection.tsx`** — кастомная карточка с прямым `router.push`
 
 ## 🧹 Аудит Качества Кода
-
-### 🟠 useCallback — отсутствует мемоизация
-- [ ] **`app/(admin)/catalog.tsx`** — `handleEdit`, `handleDelete` передаются как пропсы без `useCallback`
-- [ ] **`app/(admin)/orders.tsx`** — `handleUpdateStatus`, `callCustomer`, `toggleExpand` без `useCallback`
-- [ ] **`app/(tabs)/(cart)/index.tsx`** — `formatAddress` передаётся в `CartSummary` без `useCallback`
-
-### 🟠 HEX/rgba напрямую вместо токенов
-- [ ] **`components/address/AddressActionButtons.tsx:36`** — `#059669` в LinearGradient → использовать `Colors.light.primary`
 
 ### 🟡 testID — низкое покрытие (~27%)
 - [ ] **`components/admin/AdminCategoryPicker.tsx`** — нет ни одного `testID` на интерактивных элементах
 - [ ] **`components/address/AddressSearchInput.tsx`** — нет `testID` на `TextInput` и элементах подсказок
 - [ ] **Экраны профиля** — минимальное покрытие, добавить `testID` на кнопки и поля
-
-## ⚡ Аудит Производительности
-
-### 🟡 FlatList — отсутствует `getItemLayout`
-- [ ] **`app/category/[id].tsx`** — FlatList с `ProductCard` (фиксированная высота) → добавить `getItemLayout`
-- [ ] **`app/search.tsx`** — FlatList с `ProductCard` → добавить `getItemLayout`
-- [ ] **`app/favorites.tsx`** — FlatList с `ProductCard` → добавить `getItemLayout`
-
-### 🟡 useEffect — потенциальный двойной вызов
-- [ ] **`app/favorites.tsx:56`** — `fetchFavoriteProducts` и `favoriteIds` оба в зависимостях создают цепочку перезапусков. Убрать `fetchFavoriteProducts` из зависимостей `useCallback`, оставить только `[session, favoriteIds]` в `useEffect`
 
 ## 🎨 Аудит UI / Soft Minimalism
 
@@ -179,68 +152,3 @@
 # 🛠️ БЛОК 4: Технический долг и Багфикс
 
 - [ ] **Проверить отображение комментария курьеру в админской панели в заказах.** (Убедиться, что текст, введенный пользователем, корректно доходит до курьера/сборщика).
-
----
-
-# ✅ Выполнено
-
-## 🚀 БЛОК 1: MVP
-### 📱 Авторизация
-- [x] Привязка профиля к номеру телефона
-- [x] Обязательность имени при авторизации
-
-## 🔍 БЛОК 2: Аудит
-### 🏗️ Аудит Архитектуры
-- [x] **Объединить `utils/` и `lib/utils/`** — Перенесено всё в `lib/utils/` и обновлены импорты.
-- [x] **`useImagePicker()` хук** — Логика вынесена в общий хук.
-- [x] **`useCategoryList()` хук** — Загрузка категорий вынесена в общий хук.
-- [x] **`showAlert()` утилита** — Создана `lib/utils/platformUtils.ts` с универсальным `showAlert()`.
-- [x] **Объединить `add-product.tsx` и `edit-product.tsx`** — Создан общий `ProductFormScreen`.
-
-### 🧹 Аудит Качества Кода
-- [x] **app/(admin)/add-product.tsx:182** — `#fff` → `Colors.light.white`
-- [x] **app/(admin)/edit-product.tsx:211** — `#fff` → `Colors.light.white`
-
-### ⚡ Аудит Производительности
-- [x] **Селекторы в сторах** — Реализована подписка на конкретные поля во всех компонентах и хуках (CartStore, CategoryStore, AddressStore).
-
-### 🎨 Аудит UI / Soft Minimalism
-- [x] **Тени в админке** — `shadowColor: Colors.light.primary` заменены на `...Shadows.md` в `add-product.tsx` и `edit-product.tsx`.
-- [x] **components/admin/AdminCategoryPicker.tsx** — `SafeAreaView` заменен на версию из `react-native-safe-area-context`.
-
-### 🟠 Skeleton — ActivityIndicator вместо Skeleton
-- [x] **app/search.tsx** — `<ActivityIndicator />` при загрузке → только в кнопке retry.
-- [x] **Админ-панель** — `ActivityIndicator` заменён на `<Skeleton />` в каталоге, категориях и заказах.
-
-### 🔐 Аудит Безопасности
-- [x] **RLS для `otp_codes`** — политики ограничены через `service_role`.
-- [x] **Cloudflare R2 Secret Key** — перенос загрузки в Edge Function, удаление ключа из бандла.
-- [x] **Сменить `SUPABASE_DB_PASSWORD`** — пароль обновлен и удален из `.env`.
-- [x] **Дублирующиеся RLS политики для `categories`** — лишняя политика удалена.
-
-### 🗄️ Аудит Supabase
-- [x] **Таблица `addresses`** — политика `FOR ALL` проверена.
-- [x] **Таблица `order_items`** — добавлена защита через ownership заказа.
-- [x] **Таблица `otp_codes`** — `UPDATE` ограничен.
-- [x] **`types/supabase.ts`** — типы регенерированы (image_transformations добавлен).
-
-## 💎 БЛОК 3: Развитие
-### 📢 Маркетинг
-- [x] **Переход на Stories** — Убран блок статических баннеров, реализованы динамические сторис.
-
-### 📦 Наполнение контента
-- [x] **Финальный список 18+ категорий** — Лавка-стайл.
-
-### 🛠️ Предстоящие Этапы
-- [x] **Фаза 5: Оптимизация корзины** — Рефакторинг `CartStore`, декомпозиция экрана, UX выбора оплаты/адреса, анимации LayoutAnimations.
-
-## 🛠️ БЛОК 4: Технический долг
-- [x] **Редизайн экрана "Профиль"** — Приведен к стилю Soft Minimalism.
-- [x] **Удалить debug-логи** — Чистка `console.log`.
-- [x] **Fallback для не-ImageKit URL** — Graceful fallback в `utils/imageKit.ts`.
-- [x] **Валидация env-переменных для R2**.
-- [x] **Lazy-loading AWS SDK** — Решено через Edge Function.
-- [x] **Адаптивные размеры изображений**.
-- [x] **Кастомный хук для изображений** — `useImageKit`.
-- [x] **Унифицировать transition time** — Вынесено в тему.
-- [x] **Pill-радиус на Android** — Исправлено на `100`.

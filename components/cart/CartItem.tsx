@@ -5,7 +5,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { Colors, Spacing, Radius, Duration, Shadows } from '@/constants/theme';
 import Animated, { FadeInLeft, FadeOutLeft, Layout } from 'react-native-reanimated';
 import { Product } from '@/types';
-import { useRouter } from 'expo-router';
 import { useImageKit } from '@/hooks/useImageKit';
 
 interface CartItemProps {
@@ -16,15 +15,11 @@ interface CartItemProps {
   index: number;
   onUpdateQuantity: (productId: string, quantity: number) => void;
   onRemove: (productId: string) => void;
+  onPress: () => void;
 }
 
-const CartItem: React.FC<CartItemProps> = ({ item, index, onUpdateQuantity, onRemove }) => {
-  const router = useRouter();
+const CartItem: React.FC<CartItemProps> = ({ item, index, onUpdateQuantity, onRemove, onPress }) => {
   const { source, placeholder, hasImage, imageProps } = useImageKit(item.product.image_url, { width: 60, height: 60 });
-
-  const handleProductPress = () => {
-    router.push(`/product/${item.product.id}?name=${encodeURIComponent(item.product.name)}`);
-  };
 
   return (
     <Animated.View
@@ -37,7 +32,7 @@ const CartItem: React.FC<CartItemProps> = ({ item, index, onUpdateQuantity, onRe
       <TouchableOpacity
         style={styles.itemTouchRow}
         activeOpacity={0.7}
-        onPress={handleProductPress}
+        onPress={onPress}
         testID="cart-item-touchable"
       >
         {hasImage ? (

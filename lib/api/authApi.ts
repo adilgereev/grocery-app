@@ -68,6 +68,27 @@ export async function verifyOtp(phone: string, code: string): Promise<boolean> {
 }
 
 /**
+ * Выход из аккаунта
+ */
+export async function signOut(): Promise<void> {
+  const { error } = await supabase.auth.signOut();
+  if (error) throw error;
+}
+
+/**
+ * Создание или обновление профиля пользователя (upsert)
+ */
+export async function upsertUserProfile(
+  userId: string,
+  data: { first_name: string; last_name: string | null; phone: string }
+): Promise<void> {
+  const { error } = await supabase
+    .from('profiles')
+    .upsert({ id: userId, ...data });
+  if (error) throw error;
+}
+
+/**
  * Авторизация/регистрация пользователя по номеру телефона
  */
 export async function authenticateWithPhone(phone: string): Promise<void> {

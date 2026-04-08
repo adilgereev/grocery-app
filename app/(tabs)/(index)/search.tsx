@@ -5,8 +5,8 @@ import { Colors, Spacing, Radius, Shadows } from '@/constants/theme';
 import { searchProducts, fetchRecommendedProducts } from '@/lib/api/productsApi';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React, { useCallback, useEffect, useState } from 'react';
-import { FlatList, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, ActivityIndicator } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { FlatList, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, ActivityIndicator, useWindowDimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Product } from '@/types';
 
@@ -14,6 +14,7 @@ const POPULAR_SEARCHES = ['Молоко', 'Хлеб', 'Яйца', 'Сыр', 'В�
 
 export default function SearchScreen() {
   const router = useRouter();
+  const { width } = useWindowDimensions();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Product[]>([]);
   const [recommended, setRecommended] = useState<Product[]>([]);
@@ -21,7 +22,24 @@ export default function SearchScreen() {
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
 
+  // Фиксированная высота строки для оптимизации FlatList
+  const cardRowHeight = useMemo(() => {
+    const cardWidth = Math.round((width - Spacing.m * 2 - 16) / 2);
+    return cardWidth + 132;
+  }, [width]);
 
+  const getItemLayout = useCallback(
+    (_: unknown, index: number) => ({
+      length: cardRowHeight,
+      offset: Spacing.m + Math.floor(index / 2) * cardRowHeight,
+      index,
+    }),
+    [cardRowHeight]
+  );
+
+  const handleProductPress = useCallback((id: string, name: string) => {
+    router.push(`/product/${id}?name=${encodeURIComponent(name)}`);
+  }, [router]);
 
   const fetchRecommended = useCallback(async () => {
     try {
@@ -139,7 +157,7 @@ export default function SearchScreen() {
                 <View style={styles.gridContainer}>
                   {recommended.map((item, index) => (
                     <View key={`rec-${item.id}`} style={styles.gridItem}>
-                      <ProductCard item={item} index={index} />
+                      <ProductCard item={item} index={index} onPress={() => handleProductPress(item.id, item.name)} />
                     </View>
                   ))}
                 </View>
@@ -175,7 +193,8 @@ export default function SearchScreen() {
             keyboardDismissMode="on-drag"
             numColumns={2}
             columnWrapperStyle={styles.columnWrapper}
-            renderItem={({ item, index }) => <ProductCard item={item} index={index} />}
+            getItemLayout={getItemLayout}
+            renderItem={({ item, index }) => <ProductCard item={item} index={index} onPress={() => handleProductPress(item.id, item.name)} />}
           />
         )}
       </View>

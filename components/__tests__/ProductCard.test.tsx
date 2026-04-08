@@ -3,7 +3,6 @@ import { render, fireEvent } from '@testing-library/react-native';
 import ProductCard from '@/components/product/ProductCard';
 import { Product } from '@/types';
 import { useCartStore } from '@/store/cartStore';
-import { useRouter } from 'expo-router';
 
 // Мокаем стор корзины
 jest.mock('@/store/cartStore', () => ({
@@ -31,11 +30,10 @@ const mockProduct: Product = {
 describe('ProductCard', () => {
   const mockAddItem = jest.fn();
   const mockUpdateQuantity = jest.fn();
-  const mockPush = jest.fn();
+  const mockOnPress = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
-    (useRouter as jest.Mock).mockReturnValue({ push: mockPush });
   });
 
   it('renders correctly when item is not in cart', () => {
@@ -46,7 +44,7 @@ describe('ProductCard', () => {
     });
 
     const { getByText, getByTestId, queryByTestId } = render(
-      <ProductCard item={mockProduct} />
+      <ProductCard item={mockProduct} onPress={mockOnPress} />
     );
 
     expect(getByText('Бананы')).toBeTruthy();
@@ -63,8 +61,8 @@ describe('ProductCard', () => {
       updateQuantity: mockUpdateQuantity,
     });
 
-    const { getByTestId } = render(<ProductCard item={mockProduct} />);
-    
+    const { getByTestId } = render(<ProductCard item={mockProduct} onPress={mockOnPress} />);
+
     fireEvent.press(getByTestId('product-add-button'));
     expect(mockAddItem).toHaveBeenCalledWith(mockProduct);
   });
@@ -77,7 +75,7 @@ describe('ProductCard', () => {
     });
 
     const { getByTestId, queryByTestId } = render(
-      <ProductCard item={mockProduct} />
+      <ProductCard item={mockProduct} onPress={mockOnPress} />
     );
 
     expect(queryByTestId('product-add-button')).toBeNull();
@@ -93,8 +91,8 @@ describe('ProductCard', () => {
       updateQuantity: mockUpdateQuantity,
     });
 
-    const { getByTestId } = render(<ProductCard item={mockProduct} />);
-    
+    const { getByTestId } = render(<ProductCard item={mockProduct} onPress={mockOnPress} />);
+
     fireEvent.press(getByTestId('product-increase-button'));
     expect(mockUpdateQuantity).toHaveBeenCalledWith('p1', 4);
 
@@ -102,16 +100,16 @@ describe('ProductCard', () => {
     expect(mockUpdateQuantity).toHaveBeenCalledWith('p1', 2);
   });
 
-  it('navigates to product detail when card is pressed', () => {
+  it('calls onPress when card is pressed', () => {
     (useCartStore as unknown as jest.Mock).mockReturnValue({
       items: [],
       addItem: mockAddItem,
       updateQuantity: mockUpdateQuantity,
     });
 
-    const { getByTestId } = render(<ProductCard item={mockProduct} />);
-    
+    const { getByTestId } = render(<ProductCard item={mockProduct} onPress={mockOnPress} />);
+
     fireEvent.press(getByTestId('product-card'));
-    expect(mockPush).toHaveBeenCalledWith(expect.stringContaining('/product/p1'));
+    expect(mockOnPress).toHaveBeenCalled();
   });
 });

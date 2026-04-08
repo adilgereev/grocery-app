@@ -30,6 +30,29 @@ export default function CategoryProductsScreen() {
   const containerWidth = windowWidth - Spacing.m * 2;
   const GAP = 8;
 
+  const handleProductPress = useCallback((id: string, name: string) => {
+    router.push(`/product/${id}?name=${encodeURIComponent(name)}`);
+  }, [router]);
+
+  const handleSubcategoryPress = useCallback((subcatId: string, subcatName: string) => {
+    router.push(`/category/${subcatId}?name=${encodeURIComponent(subcatName)}`);
+  }, [router]);
+
+  // Фиксированная высота строки для оптимизации FlatList
+  const cardRowHeight = useMemo(() => {
+    const cardWidth = Math.round((windowWidth - Spacing.m * 2 - 16) / 2);
+    return cardWidth + 132;
+  }, [windowWidth]);
+
+  const getItemLayout = useCallback(
+    (_: unknown, index: number) => ({
+      length: cardRowHeight,
+      offset: Spacing.m + Math.floor(index / 2) * cardRowHeight,
+      index,
+    }),
+    [cardRowHeight]
+  );
+
   const fetchProducts = useCallback(async (categoryId: string) => {
     setLoading(true);
     setError(null);
@@ -92,11 +115,12 @@ export default function CategoryProductsScreen() {
                 GAP
               );
               return (
-                <SubcategoryCard 
-                  key={item.id} 
-                  subcategory={item} 
+                <SubcategoryCard
+                  key={item.id}
+                  subcategory={item}
                   cardWidth={cardWidth}
-                  index={index} 
+                  index={index}
+                  onPress={() => handleSubcategoryPress(item.id, item.name)}
                 />
               );
             })}
@@ -156,7 +180,8 @@ export default function CategoryProductsScreen() {
               </View>
             ) : null
           }
-          renderItem={({ item, index }) => <ProductCard item={item} index={index} />}
+          getItemLayout={getItemLayout}
+          renderItem={({ item, index }) => <ProductCard item={item} index={index} onPress={() => handleProductPress(item.id, item.name)} />}
           ListEmptyComponent={
             <Text style={styles.emptyText}>Ничего не найдено по этому фильтру.</Text>
           }

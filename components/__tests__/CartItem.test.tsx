@@ -2,11 +2,6 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
 import CartItem from '@/components/cart/CartItem';
 import { Product } from '@/types';
-import { useRouter } from 'expo-router';
-
-// Моки useRouter уже в jest.setup.js
-const mockPush = jest.fn();
-(useRouter as jest.Mock).mockReturnValue({ push: mockPush });
 
 const mockProduct: Product = {
   id: 'prod-1',
@@ -34,6 +29,7 @@ describe('CartItem', () => {
 
   const mockUpdateQuantity = jest.fn();
   const mockRemove = jest.fn();
+  const mockOnPress = jest.fn();
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -41,11 +37,12 @@ describe('CartItem', () => {
 
   it('renders product details correctly', () => {
     const { getByText, getByTestId } = render(
-      <CartItem 
-        item={mockItem} 
-        index={0} 
-        onUpdateQuantity={mockUpdateQuantity} 
-        onRemove={mockRemove} 
+      <CartItem
+        item={mockItem}
+        index={0}
+        onUpdateQuantity={mockUpdateQuantity}
+        onRemove={mockRemove}
+        onPress={mockOnPress}
       />
     );
 
@@ -57,11 +54,12 @@ describe('CartItem', () => {
 
   it('calls onUpdateQuantity when increase/decrease buttons are pressed', () => {
     const { getByTestId } = render(
-      <CartItem 
-        item={mockItem} 
-        index={0} 
-        onUpdateQuantity={mockUpdateQuantity} 
-        onRemove={mockRemove} 
+      <CartItem
+        item={mockItem}
+        index={0}
+        onUpdateQuantity={mockUpdateQuantity}
+        onRemove={mockRemove}
+        onPress={mockOnPress}
       />
     );
 
@@ -74,11 +72,12 @@ describe('CartItem', () => {
 
   it('calls onRemove when delete button is pressed', () => {
     const { getByTestId } = render(
-      <CartItem 
-        item={mockItem} 
-        index={0} 
-        onUpdateQuantity={mockUpdateQuantity} 
-        onRemove={mockRemove} 
+      <CartItem
+        item={mockItem}
+        index={0}
+        onUpdateQuantity={mockUpdateQuantity}
+        onRemove={mockRemove}
+        onPress={mockOnPress}
       />
     );
 
@@ -86,17 +85,18 @@ describe('CartItem', () => {
     expect(mockRemove).toHaveBeenCalledWith('prod-1');
   });
 
-  it('navigates to product details when pressed', () => {
+  it('calls onPress when item is pressed', () => {
     const { getByTestId } = render(
-      <CartItem 
-        item={mockItem} 
-        index={0} 
-        onUpdateQuantity={mockUpdateQuantity} 
-        onRemove={mockRemove} 
+      <CartItem
+        item={mockItem}
+        index={0}
+        onUpdateQuantity={mockUpdateQuantity}
+        onRemove={mockRemove}
+        onPress={mockOnPress}
       />
     );
 
     fireEvent.press(getByTestId('cart-item-touchable'));
-    expect(mockPush).toHaveBeenCalledWith(expect.stringContaining('/product/prod-1'));
+    expect(mockOnPress).toHaveBeenCalled();
   });
 });

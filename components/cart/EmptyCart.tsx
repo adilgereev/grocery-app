@@ -1,5 +1,4 @@
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
 import React from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -8,13 +7,13 @@ import { Colors, Radius, Spacing, Shadows } from '@/constants/theme';
 
 interface EmptyCartProps {
   insetsTop: number;
+  onGoShopping: () => void;
 }
 
 /**
  * Компонент пустой корзины с автономным блоком рекомендованных товаров.
  */
-export default function EmptyCart({ insetsTop }: EmptyCartProps) {
-  const router = useRouter();
+export default function EmptyCart({ insetsTop, onGoShopping }: EmptyCartProps) {
 
   return (
     <View style={styles.container}>
@@ -35,7 +34,7 @@ export default function EmptyCart({ insetsTop }: EmptyCartProps) {
 
           <TouchableOpacity 
             style={styles.goShoppingBtn} 
-            onPress={() => router.push('/(tabs)/(index)')}
+            onPress={onGoShopping}
             activeOpacity={0.8}
             testID="cart-go-shopping-btn"
           >

@@ -4,7 +4,7 @@ import { fetchAllOrdersWithDetails, updateOrderStatus, AdminOrderWithDetails } f
 import Skeleton from '@/components/ui/Skeleton';
 import { Ionicons } from '@expo/vector-icons';
 import { cleanAddress } from '@/lib/utils/addressUtils';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, FlatList, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 const STATUSES = {
@@ -22,9 +22,9 @@ export default function ManageOrdersScreen() {
   const [loading, setLoading] = useState(true);
   const [expandedOrders, setExpandedOrders] = useState<string[]>([]);
 
-  const toggleExpand = (id: string) => {
+  const toggleExpand = useCallback((id: string) => {
     setExpandedOrders(prev => prev.includes(id) ? prev.filter(o => o !== id) : [...prev, id]);
-  };
+  }, []);
 
   useEffect(() => {
     fetchOrders();
@@ -52,7 +52,7 @@ export default function ManageOrdersScreen() {
     setLoading(false);
   };
 
-  const handleUpdateStatus = async (orderId: string, newStatus: OrderStatus) => {
+  const handleUpdateStatus = useCallback(async (orderId: string, newStatus: OrderStatus) => {
     try {
       await updateOrderStatus(orderId, newStatus);
       // Оптимистичное обновление
@@ -61,9 +61,9 @@ export default function ManageOrdersScreen() {
       const errorMessage = error instanceof Error ? error.message : 'Неизвестная ошибка';
       Alert.alert('Ошибка', errorMessage);
     }
-  };
+  }, []);
 
-  const showStatusOptions = (orderId: string, _currentStatus: string) => {
+  const showStatusOptions = useCallback((orderId: string, _currentStatus: string) => {
     Alert.alert(
       'Изменить статус',
       'Выберите новый статус для заказа',
@@ -75,17 +75,17 @@ export default function ManageOrdersScreen() {
         { text: 'Назад', style: 'cancel' }
       ]
     );
-  };
+  }, [handleUpdateStatus]);
 
-  const callCustomer = (phone: string | null) => {
+  const callCustomer = useCallback((phone: string | null) => {
     if (phone) {
       Linking.openURL(`tel:${phone}`);
     } else {
       Alert.alert('Ошибка', 'У клиента не указан номер телефона');
     }
-  };
+  }, []);
 
-  const renderOrder = ({ item }: { item: AdminOrderWithDetails }) => {
+  const renderOrder = useCallback(({ item }: { item: AdminOrderWithDetails }) => {
     const statusInfo = STATUSES[item.status] || STATUSES.pending;
     const profile = Array.isArray(item.profiles) ? item.profiles[0] : item.profiles;
     const customerName = profile?.first_name ? `${profile.first_name} ${profile.last_name || ''}` : 'Клиент';
@@ -152,7 +152,7 @@ export default function ManageOrdersScreen() {
         </TouchableOpacity>
       </View>
     );
-  };
+  }, [expandedOrders, toggleExpand, callCustomer, showStatusOptions]);
 
   if (loading) {
     return (

@@ -4,15 +4,13 @@ import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { useCartStore } from '@/store/cartStore';
 import Animated, { FadeInDown } from 'react-native-reanimated';
-import { useRouter } from 'expo-router';
 import { Colors, Spacing, Radius, Duration, Shadows } from '@/constants/theme';
 import { Product } from '@/types';
 import { useImageKit } from '@/hooks/useImageKit';
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
-export default function ProductCard({ item, index = 0 }: { item: Product, index?: number }) {
-  const router = useRouter();
+export default function ProductCard({ item, index = 0, onPress }: { item: Product, index?: number, onPress: () => void }) {
   const { width } = useWindowDimensions();
   
   const cardWidth = useMemo(() => Math.round((width - 32 - 16) / 2), [width]);
@@ -29,7 +27,7 @@ export default function ProductCard({ item, index = 0 }: { item: Product, index?
     <AnimatedTouchable 
       style={[styles.productCard, { width: cardWidth }]}
       activeOpacity={0.9}
-      onPress={() => router.push(`/product/${item.id}?name=${encodeURIComponent(item.name)}`)}
+      onPress={onPress}
       entering={FadeInDown.delay(index * 50).duration(Duration.default)}
       testID="product-card"
     >

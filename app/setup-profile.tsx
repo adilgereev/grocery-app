@@ -8,8 +8,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 
 import { Colors, Fonts, Radius, Shadows, Spacing } from '@/constants/theme';
 import { profileSchema, ProfileFormData } from '@/lib/utils/schemas';
+import { upsertUserProfile } from '@/lib/api/authApi';
 import { useAuth } from '@/providers/AuthProvider';
-import { supabase } from '@/lib/services/supabase';
 import { logger } from '@/lib/utils/logger';
 
 export default function SetupProfileScreen() {
@@ -35,16 +35,11 @@ export default function SetupProfileScreen() {
       const phone = session.user.user_metadata?.phone || session.user.phone || '';
 
       // Используем upsert — профиль может ещё не существовать в БД
-      const { error: upsertError } = await supabase
-        .from('profiles')
-        .upsert({
-          id: session.user.id,
-          first_name: formData.first_name,
-          last_name: formData.last_name || null,
-          phone,
-        });
-
-      if (upsertError) throw upsertError;
+      await upsertUserProfile(session.user.id, {
+        first_name: formData.first_name,
+        last_name: formData.last_name || null,
+        phone,
+      });
       // Обновляем профиль в контексте → layout перенаправит в табы
       await refreshProfile();
     } catch (err) {

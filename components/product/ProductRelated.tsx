@@ -1,22 +1,20 @@
 import React from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Image } from 'expo-image';
-import { useRouter } from 'expo-router';
 import { Colors, Radius, Spacing, Shadows } from '@/constants/theme';
 import { Product } from '@/types';
 import Skeleton from '@/components/ui/Skeleton';
 import { useImageKit } from '@/hooks/useImageKit';
 
 /** Карточка одного рекомендуемого товара */
-const RelatedProductCard = ({ item }: { item: Product }) => {
-  const router = useRouter();
+const RelatedProductCard = ({ item, onPress }: { item: Product; onPress: () => void }) => {
   const { source, placeholder, hasImage, imageProps } = useImageKit(item.image_url, { width: 140, height: 110 });
 
   return (
     <TouchableOpacity
       style={styles.relatedCard}
       activeOpacity={0.8}
-      onPress={() => router.push(`/product/${item.id}?name=${encodeURIComponent(item.name)}` as any)}
+      onPress={onPress}
     >
       {hasImage ? (
         <Image
@@ -39,12 +37,13 @@ const RelatedProductCard = ({ item }: { item: Product }) => {
 interface ProductRelatedProps {
   products: Product[];
   isLoading: boolean;
+  onProductPress: (item: Product) => void;
 }
 
 /**
  * Секция с похожими/рекомендуемыми товарами
  */
-export const ProductRelated: React.FC<ProductRelatedProps> = ({ products, isLoading }) => {
+export const ProductRelated: React.FC<ProductRelatedProps> = ({ products, isLoading, onProductPress }) => {
   if (!isLoading && products.length === 0) return null;
 
   return (
@@ -65,7 +64,7 @@ export const ProductRelated: React.FC<ProductRelatedProps> = ({ products, isLoad
           contentContainerStyle={styles.relatedScrollContent}
         >
           {products.map((item) => (
-            <RelatedProductCard key={item.id} item={item} />
+            <RelatedProductCard key={item.id} item={item} onPress={() => onProductPress(item)} />
           ))}
         </ScrollView>
       )}

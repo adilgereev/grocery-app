@@ -125,9 +125,10 @@ export default function ProductDetailScreen() {
           
           <ProductNutrition product={product} />
 
-          <ProductRelated 
-            products={relatedProducts} 
-            isLoading={loading} 
+          <ProductRelated
+            products={relatedProducts}
+            isLoading={loading}
+            onProductPress={(item) => router.push(`/product/${item.id}?name=${encodeURIComponent(item.name)}` as any)}
           />
 
           <View style={styles.bottomSpacer} />
