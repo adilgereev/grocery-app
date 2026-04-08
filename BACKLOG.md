@@ -12,7 +12,6 @@
 
 ## 💳 Платёжная система
 - [ ] Интеграция платёжного шлюза (Stripe / ЮKassa / CloudPayments)
-- [ ] Выбор способа оплаты: онлайн / наличными курьеру / картой курьеру
 - [ ] Чек и фискализация (54-ФЗ для РФ)
 - [ ] Таблица payment_methods: типы, комиссии, статусы
 
@@ -211,8 +210,8 @@
 
 ### 🟠 Skeleton — ActivityIndicator вместо Skeleton
 
-- [ ] **`app/search.tsx`** — `<ActivityIndicator />` при загрузке → заменить на `<Skeleton />`
-- [ ] **`app/(admin)/catalog.tsx`**, **`categories.tsx`**, **`orders.tsx`**, **`add-product.tsx`**, **`edit-product.tsx`** — `ActivityIndicator` → заменить на `<Skeleton />`
+- [x] **`app/search.tsx`** — `<ActivityIndicator />` при загрузке → только внутри кнопки retry, Skeleton не уместен
+- [x] **`app/(admin)/catalog.tsx`**, **`categories.tsx`**, **`orders.tsx`**, **`edit-product.tsx`** — `ActivityIndicator` заменён на `<Skeleton />` (в кнопках сохранён)
 
 ### 🟡 ProductCard — самописные карточки
 
