@@ -1,0 +1,37 @@
+{
+    "prompt_metadata": {
+        "style_name": "Modern Minimalist E-grocery (Organic, Flat HEX BG)",
+        "lighting": "Composite lighting for high-end commerce",
+        "camera": "Top-down flat lay, 85mm lens, f/8 aperture"
+    },
+    "parameters": {
+        "aspect_ratio": "16:9",
+        "stylize": 200,
+        "chaos": 0
+    },
+    "master_prompt": {
+        "subject": "{{subject}}, scattered organically",
+        "background": {
+            "layer": "Pre-rendered, perfectly flat, strictly solid digital layer",
+            "exact_color": "{{hex_code}}",
+            "isolation": "Background layer is isolated from all post-processing, color grading, and global illumination adjustments applied to subjects. The color value of {{hex_code}} must remain absolute."
+        },
+        "composition_rules": [
+            "Minimalist flat lay composition",
+            "Bottom-weighted alignment (leave the top half completely empty for typography)",
+            "Dynamic, slightly chaotic arrangement of items in the lower half",
+            "Abundant negative space at the top for UI overlay",
+            "Ultra-clean aesthetic"
+        ],
+        "lighting_and_shadows": {
+            "light_type": "Composite lighting scheme",
+            "object_lighting": "Soft, uniform key light on subjects only to reveal texture and form",
+            "background_lighting": "Strictly no light effects on the background",
+            "shadow_style": "Minimal tight contact shadows directly under the objects, absolutely no cast shadows, glow, halo, or light bounce on the background",
+            "reflections": "Matte finish on objects, zero glare"
+        },
+        "technical_fidelity": "High-end commercial photography subjects on a solid vector-style background, 8k resolution, sharp focus",
+        "color_science": "Vibrant and saturated subject colors, calibrated to the static background"
+    },
+    "negative_constraints": "vignette, uneven lighting, spotlight, glow, halo, light bounce, shimmering, directional light falloff, gradient background, color variation on background, ambient light bleed, perfect grid, straight lines, aligned in a row, rigid order, clutter, messy, dark shadows, wooden textures, blur, bokeh, distorted labels, low resolution, desaturated colors"
+}
