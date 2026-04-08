@@ -1,5 +1,5 @@
 import CategoryHierarchySection from '@/components/home/CategoryHierarchySection';
-import BannersSection from '@/components/home/BannersSection';
+import StoriesSection from '@/components/home/StoriesSection';
 import HomeHeader from '@/components/home/HomeHeader';
 import PopularSection from '@/components/home/PopularSection';
 import SubcategoriesSkeleton from '@/components/category/SubcategoriesSkeleton';
@@ -9,6 +9,7 @@ import { useAuth } from '@/providers/AuthProvider';
 import { useAddressStore } from '@/store/addressStore';
 import { useCartStore } from '@/store/cartStore';
 import { useCategoryStore } from '@/store/categoryStore';
+import { useStoriesStore } from '@/store/storiesStore';
 import { Category, Product } from '@/types';
 import { formatShortAddress } from '@/utils/addressFormatter';
 import { useFocusEffect } from '@react-navigation/native';
@@ -27,6 +28,7 @@ export default function HomeScreen() {
 
   const { categoriesWithSubs, fetchFullHierarchy, isLoading: categoriesLoading } = useCategoryStore();
   const { addItem } = useCartStore();
+  const fetchStories = useStoriesStore((state) => state.fetchStories);
 
   const [popularProducts, setPopularProducts] = useState<Product[]>([]);
   const [popularLoading, setPopularLoading] = useState(true);
@@ -69,11 +71,12 @@ export default function HomeScreen() {
     useCallback(() => {
       fetchFullHierarchy();
       loadPopularProducts();
+      fetchStories();
 
       if (session?.user) {
         loadAddresses();
       }
-    }, [session, loadAddresses, fetchFullHierarchy, loadPopularProducts])
+    }, [session, loadAddresses, fetchFullHierarchy, loadPopularProducts, fetchStories])
   );
 
   // Определяем приветствие по времени суток
@@ -110,7 +113,7 @@ export default function HomeScreen() {
   // Стабильный заголовок списка
   const listHeader = useMemo(() => (
     <>
-      <BannersSection />
+      <StoriesSection />
       <PopularSection
         products={popularProducts}
         loading={popularLoading}
@@ -153,6 +156,7 @@ export default function HomeScreen() {
         onRefresh={() => {
           fetchFullHierarchy(true);
           loadPopularProducts();
+          fetchStories(true);
         }}
       />
     </View>

@@ -1,5 +1,5 @@
-import { Dimensions, StyleSheet } from 'react-native';
 import { Colors, Radius, Shadows, Spacing } from '@/constants/theme';
+import { Dimensions, StyleSheet } from 'react-native';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -52,27 +52,51 @@ export const homeStyles = StyleSheet.create({
     paddingTop: 0,
   },
 
-  // Баннеры
-  bannersSection: { marginBottom: Spacing.xl, marginTop: Spacing.m },
-  bannersTitle: { fontSize: 22, fontWeight: '700', color: Colors.light.text, paddingHorizontal: Spacing.m, marginBottom: Spacing.s },
-  bannersScroll: { paddingHorizontal: Spacing.m },
-  bannerCard: {
-    width: SCREEN_WIDTH * 0.8, height: 160, marginRight: Spacing.m, borderRadius: Radius.xl,
-    ...Shadows.md,
+  // Сторис
+  storiesSection: { marginBottom: Spacing.l, marginTop: Spacing.m },
+  storiesTitle: {
+    fontSize: 22, fontWeight: '700', color: Colors.light.text,
+    paddingHorizontal: Spacing.m, marginBottom: Spacing.s,
   },
-  bannerImageContainer: {
-    width: '100%',
-    height: '100%',
+  storiesScroll: { paddingHorizontal: Spacing.m, gap: Spacing.s },
+  storyItem: { alignItems: 'center', width: Math.floor((SCREEN_WIDTH - Spacing.m * 2 - Spacing.s * 2) / 3) },
+  // Градиентная рамка для непросмотренных сторис (вертикальный прямоугольник)
+  storyGradientBorder: {
+    width: Math.floor((SCREEN_WIDTH - Spacing.m * 2 - Spacing.s * 2) / 3),
+    height: Math.floor((SCREEN_WIDTH - Spacing.m * 2 - Spacing.s * 2) / 3 * 1.25),
+    borderRadius: Radius.xl, padding: 2.5, marginBottom: Spacing.xs,
+  },
+  // Серая рамка для просмотренных сторис
+  storyWatchedBorder: {
+    width: Math.floor((SCREEN_WIDTH - Spacing.m * 2 - Spacing.s * 2) / 3),
+    height: Math.floor((SCREEN_WIDTH - Spacing.m * 2 - Spacing.s * 2) / 3 * 1.3),
+    borderRadius: Radius.xl, padding: 2.5,
+    backgroundColor: Colors.light.border, marginBottom: Spacing.xs,
+  },
+  storyInnerBorder: {
+    flex: 1, borderRadius: Radius.l,
+    backgroundColor: Colors.light.card,
+    padding: 2, overflow: 'hidden',
+  },
+  storyImage: { width: '100%', height: '100%', borderRadius: Radius.m },
+  storyTitle: {
+    fontSize: 11, color: Colors.light.textSecondary,
+    textAlign: 'center', fontWeight: '500',
+    width: Math.floor((SCREEN_WIDTH - Spacing.m * 2 - Spacing.s * 2) / 3),
+  },
+  storyTitleWatched: { color: Colors.light.textLight },
+  // Скелетон для загрузки сторис
+  storySkeletonCircle: {
+    width: Math.floor((SCREEN_WIDTH - Spacing.m * 2 - Spacing.s * 2) / 3),
+    height: Math.floor((SCREEN_WIDTH - Spacing.m * 2 - Spacing.s * 2) / 3 * 1.25),
     borderRadius: Radius.xl,
-    overflow: 'hidden',
+    backgroundColor: Colors.light.borderLight, marginBottom: Spacing.xs,
   },
-  bannerImage: { width: '100%', height: '100%' },
-  bannerTitle: {
-    color: Colors.light.white, fontSize: 20, fontWeight: '700',
-    textShadowColor: Colors.light.blackTransparent, textShadowOffset: { width: 0, height: 2 },
-    position: 'absolute', bottom: Spacing.m, left: Spacing.m, right: Spacing.m,
+  storySkeletonTitle: {
+    width: Math.floor((SCREEN_WIDTH - Spacing.m * 2 - Spacing.s * 2) / 3 * 0.7),
+    height: 8, borderRadius: Radius.s,
+    backgroundColor: Colors.light.borderLight,
   },
-  gradientOverlay: { ...StyleSheet.absoluteFillObject, borderRadius: Radius.l },
 
   // Популярное
   popularSection: { marginBottom: Spacing.xl },
