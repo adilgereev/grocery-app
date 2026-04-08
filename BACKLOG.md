@@ -68,7 +68,7 @@
 
 ### 🟠 Типы
 
-- [ ] **`types/supabase.ts`** — отсутствует поле `image_transformations` в таблице `categories` (добавлено миграцией, но типы не регенерированы) → запустить `npm run supabase:types`
+- [x] **`types/supabase.ts`** — отсутствует поле `image_transformations` в таблице `categories` (добавлено миграцией, но типы не регенерированы) → запустить `npm run supabase:types`
 
 ---
 
