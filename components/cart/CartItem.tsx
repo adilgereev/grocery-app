@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Spacing, Radius, Duration, Shadows } from '@/constants/theme';
-import Animated, { FadeInLeft, Layout } from 'react-native-reanimated';
+import Animated, { FadeInLeft, FadeOutLeft, Layout } from 'react-native-reanimated';
 import { Product } from '@/types';
 import { useRouter } from 'expo-router';
 import { useImageKit } from '@/hooks/useImageKit';
@@ -29,6 +29,7 @@ const CartItem: React.FC<CartItemProps> = ({ item, index, onUpdateQuantity, onRe
   return (
     <Animated.View
       entering={FadeInLeft.delay(index * 50).duration(Duration.default)}
+      exiting={FadeOutLeft.duration(Duration.fast)}
       layout={Layout.springify()}
       style={styles.container}
       testID="cart-item"

@@ -2,7 +2,7 @@ import CartItem from '@/components/cart/CartItem';
 import CartSummary from '@/components/cart/CartSummary';
 import EmptyCart from '@/components/cart/EmptyCart';
 import FloatingCheckoutButton from '@/components/FloatingCheckoutButton';
-import { Colors, Spacing, FontSize } from '@/constants/theme';
+import { Colors, Duration, FontSize, Spacing } from '@/constants/theme';
 import { useCheckout } from '@/hooks/useCheckout';
 import { useCartStore } from '@/store/cartStore';
 import { Address, PaymentMethod } from '@/types';
@@ -75,19 +75,23 @@ export default function CartScreen() {
           contentHeight.value = height;
         }}
         ListFooterComponent={
-          <CartSummary
-            itemsCount={items.length}
-            subtotal={subtotal}
-            deliveryFee={deliveryFee}
-            totalPrice={totalPrice}
-            selectedAddress={selectedAddress}
-            paymentMethod={paymentMethod}
-            setPaymentMethod={setPaymentMethod}
-            onCheckout={() => handleCheckout(paymentMethod)}
-            onSelectAddress={handleSelectAddress}
-            isSubmitting={isSubmitting}
-            formatAddress={formatAddress}
-          />
+          // Задержка равна длительности FadeOutLeft (Duration.fast),
+          // чтобы футер не наезжал на удаляемый элемент до завершения его анимации
+          <Animated.View layout={Layout.springify().delay(Duration.fast)}>
+            <CartSummary
+              itemsCount={items.length}
+              subtotal={subtotal}
+              deliveryFee={deliveryFee}
+              totalPrice={totalPrice}
+              selectedAddress={selectedAddress}
+              paymentMethod={paymentMethod}
+              setPaymentMethod={setPaymentMethod}
+              onCheckout={() => handleCheckout(paymentMethod)}
+              onSelectAddress={handleSelectAddress}
+              isSubmitting={isSubmitting}
+              formatAddress={formatAddress}
+            />
+          </Animated.View>
         }
         renderItem={({ item, index }) => (
           <CartItem
