@@ -151,9 +151,9 @@
 
 ### 🔴 Критичные
 
-- [ ] **`app/(admin)/add-product.tsx`** — цветная тень: `shadowColor: Colors.light.primary`, `shadowOpacity: 0.3`, `elevation: 4` → заменить на `...Shadows.md`
-- [ ] **`app/(admin)/edit-product.tsx`** — то же самое, что и `add-product.tsx`
-- [ ] **`components/admin/AdminCategoryPicker.tsx`** — `SafeAreaView` импортируется из `react-native` вместо `react-native-safe-area-context`
+- [x] **`app/(admin)/add-product.tsx`** — цветная тень: `shadowColor: Colors.light.primary`, `shadowOpacity: 0.3`, `elevation: 4` → заменить на `...Shadows.md`
+- [x] **`app/(admin)/edit-product.tsx`** — то же самое, что и `add-product.tsx`
+- [x] **`components/admin/AdminCategoryPicker.tsx`** — `SafeAreaView` импортируется из `react-native` вместо `react-native-safe-area-context`
 
 ### 🟠 Тени
 

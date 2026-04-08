@@ -1,5 +1,5 @@
 import AdminCategoryPicker from '@/components/admin/AdminCategoryPicker';
-import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Colors, Radius, Shadows, Spacing } from '@/constants/theme';
 import { createProduct, fetchAllCategories } from '@/lib/api/adminApi';
 import { uploadImage } from '@/lib/utils/storageUtils';
 import { Category } from '@/types';
@@ -225,11 +225,7 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     alignItems: 'center',
     marginTop: Spacing.xl,
-    shadowColor: Colors.light.primary,
-    shadowOpacity: 0.3,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 8,
-    elevation: 4,
+    ...Shadows.md,
   },
   saveButtonDisabled: { opacity: 0.7 },
   saveButtonText: { color: Colors.light.white, fontSize: 16, fontWeight: '700' }
