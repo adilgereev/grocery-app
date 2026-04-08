@@ -49,17 +49,13 @@
 ### 🔴 Критичные
 
 - [x] **RLS для `otp_codes`** — Любой может читать и менять чужие OTP коды. Переписать политики: запретить публичный SELECT/UPDATE, оставить только через `service_role`. (`supabase/migrations/`)
-- [ ] **Cloudflare R2 Secret Key в клиентском бандле** — `EXPO_PUBLIC_R2_SECRET_ACCESS_KEY` попадает в бандл. Перенести загрузку в R2 через Supabase Edge Function с presigned URL. Это также уберёт `@aws-sdk/` (~8.6 MB) из бандла. (`.env.local`)
+- [x] **Cloudflare R2 Secret Key в клиентском бандле** — `EXPO_PUBLIC_R2_SECRET_ACCESS_KEY` попадает в бандл. Перенести загрузку в R2 через Supabase Edge Function с presigned URL. Это также уберёт `@aws-sdk/` (~8.6 MB) из бандла. (`.env.local`)
 - [ ] **Сменить `SUPABASE_DB_PASSWORD`** — Пароль БД хранится в plaintext в `.env`. Сменить в дашборде Supabase, удалить переменную из `.env`.
 
 ### 🟠 Высокие
 
 - [ ] **Удалить закомментированные продакшн-ключи** — В `.env` закомментированы URL и Anon Key от продакшн-инстанса Supabase. Удалить строки, проверить git-историю.
 - [ ] **Дублирующиеся RLS политики для `categories`** — Два идентичных `SELECT` policy (`Allow select for all` и `Categories are viewable by everyone`). Удалить один. (`supabase/migrations/`)
-
-### 🟡 Средние
-
-- [ ] **Логирование номеров телефонов** — `logger.log/warn` в `AuthProvider.tsx` (строки 41, 55, 61) выводит реальные номера телефонов. Убрать номер из аргументов логгера. (`providers/AuthProvider.tsx`)
 
 ---
 
