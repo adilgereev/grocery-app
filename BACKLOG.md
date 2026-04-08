@@ -54,8 +54,7 @@
 
 ### 🟠 Высокие
 
-- [ ] **Удалить закомментированные продакшн-ключи** — В `.env` закомментированы URL и Anon Key от продакшн-инстанса Supabase. Удалить строки, проверить git-историю.
-- [ ] **Дублирующиеся RLS политики для `categories`** — Два идентичных `SELECT` policy (`Allow select for all` и `Categories are viewable by everyone`). Удалить один. (`supabase/migrations/`)
+- [x] **Дублирующиеся RLS политики для `categories`** — Два идентичных `SELECT` policy (`Allow select for all` и `Categories are viewable by everyone`). Удалить один. (`supabase/migrations/`)
 
 ---
 
