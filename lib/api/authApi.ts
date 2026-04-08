@@ -43,42 +43,28 @@ export async function getSession(): Promise<Session | null> {
 }
 
 /**
- * Создать новый код подтверждения в базе
+ * Генерирует и отправляет OTP через Edge Function.
+ * В DEV-режиме (DEV_MODE=true на сервере) возвращает код в ответе — SMS не уходит.
+ * В PROD-режиме SMS отправляется через SMS.ru, код в ответе отсутствует.
  */
-export async function createOtpCode(phone: string, code: string): Promise<void> {
-  const { error } = await supabase.from('otp_codes').insert({
-    phone,
-    code,
-    expires_at: new Date(Date.now() + 5 * 60 * 1000).toISOString(),
+export async function sendOtp(phone: string): Promise<{ code?: string }> {
+  const { data, error } = await supabase.functions.invoke('send-otp', {
+    body: { phone },
   });
   if (error) throw error;
+  return data ?? {};
 }
 
 /**
- * Ищет активный и правильный код
+ * Верифицирует OTP через Edge Function (проверка происходит на сервере).
+ * Возвращает true если код верный и не истёк, иначе false.
  */
-export async function verifyActiveOtp(phone: string, code: string): Promise<string | null> {
-  const { data: otpData, error: otpError } = await supabase
-    .from('otp_codes')
-    .select('id')
-    .eq('phone', phone)
-    .eq('code', code)
-    .eq('used', false)
-    .gte('expires_at', new Date().toISOString())
-    .order('created_at', { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  if (otpError || !otpData) return null;
-  return otpData.id;
-}
-
-/**
- * Помечает код как использованный
- */
-export async function markOtpAsUsed(otpId: string): Promise<void> {
-  const { error } = await supabase.from('otp_codes').update({ used: true }).eq('id', otpId);
+export async function verifyOtp(phone: string, code: string): Promise<boolean> {
+  const { data, error } = await supabase.functions.invoke('verify-otp', {
+    body: { phone, code },
+  });
   if (error) throw error;
+  return data?.verified === true;
 }
 
 /**

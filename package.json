@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "scripts": {
     "start": "expo start",
+    "dev": "concurrently \"expo start -c\" \"supabase functions serve --env-file supabase/functions/.env\"",
     "reset-project": "node ./scripts/reset-project.js",
     "android": "expo start --android",
     "ios": "expo start --ios",
@@ -72,6 +73,7 @@
     "@types/jest": "^29.5.12",
     "@types/react": "~19.1.0",
     "babel-plugin-transform-import-meta": "^2.3.3",
+    "concurrently": "^9.2.1",
     "eslint": "^9.25.0",
     "eslint-config-expo": "~10.0.0",
     "eslint-plugin-react-native": "^5.0.0",

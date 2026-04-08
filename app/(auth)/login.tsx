@@ -1,7 +1,6 @@
 import { Colors } from '@/constants/theme';
-import { authenticateWithPhone, createOtpCode, markOtpAsUsed, verifyActiveOtp } from '@/lib/api/authApi';
-import { generateOTP, normalizePhone, sendSMS } from '@/lib/services/sms';
-import { logger } from '@/lib/utils/logger';
+import { authenticateWithPhone, sendOtp, verifyOtp } from '@/lib/api/authApi';
+import { normalizePhone } from '@/lib/services/sms';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
@@ -38,7 +37,7 @@ export default function Login() {
     }
   };
 
-  // Шаг 1: Отправка SMS-кода
+  // Шаг 1: Отправка SMS-кода через Edge Function
   const handleSendOTP = async () => {
     const normalized = normalizePhone(phone);
     if (normalized.length !== 11) {
@@ -48,24 +47,12 @@ export default function Login() {
 
     setLoading(true);
     try {
-      const code = generateOTP();
+      // Edge Function генерирует код, сохраняет в БД и отправляет SMS
+      const result = await sendOtp(normalized);
 
-      // Сохраняем код в базу
-      await createOtpCode(normalized, code);
-
-      // Отправляем SMS (только в продакшене)
-      let result = { success: true, error: null as string | null };
-      if (!__DEV__) {
-        const smsResult = await sendSMS(normalized, `Вкусная Доставка: ваш код ${code}`);
-        result = { success: smsResult.success, error: smsResult.error || null };
-      } else {
-        logger.log(`[DEV MODE] SMS bypass for ${normalized}. Your code is: ${code}`);
-      }
-
-      if (__DEV__) {
-        showAlert('Код отправлен', `[DEV] Ваш код: ${code}`);
-      } else if (!result.success) {
-        showAlert('Ошибка', result.error || 'Не удалось отправить SMS. Попробуйте ещё раз.');
+      // DEV-режим: сервер вернул код в ответе (DEV_MODE=true на сервере)
+      if (__DEV__ && result.code) {
+        showAlert('Код отправлен', `[DEV] Ваш код: ${result.code}`);
       } else {
         showAlert('Код отправлен', `SMS с кодом отправлено на ${phone}`);
       }
@@ -81,26 +68,23 @@ export default function Login() {
     }
   };
 
-  // Шаг 2: Проверка OTP и авторизация
+  // Шаг 2: Проверка OTP через Edge Function и авторизация
   const verifyOTP = async (code: string) => {
     const normalized = normalizePhone(phone);
     setLoading(true);
 
     try {
-      // Ищем актуальный код в базе
-      const otpId = await verifyActiveOtp(normalized, code);
+      // Верификация происходит на сервере — клиент не читает otp_codes напрямую
+      const verified = await verifyOtp(normalized, code);
 
-      if (!otpId) {
+      if (!verified) {
         showAlert('Неверный код', 'Код истёк или введён неверно. Попробуйте ещё раз.');
         setOtp(['', '', '', '']);
         setLoading(false);
         return;
       }
 
-      // Помечаем код как использованный
-      await markOtpAsUsed(otpId);
-
-      // Авторизуем пользователя
+      // Авторизуем пользователя после успешной верификации
       await authenticateWithPhone(normalized);
 
       // Успех! AuthProvider подхватит сессию автоматически
