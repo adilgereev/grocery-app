@@ -50,7 +50,7 @@
 
 - [x] **RLS для `otp_codes`** — Любой может читать и менять чужие OTP коды. Переписать политики: запретить публичный SELECT/UPDATE, оставить только через `service_role`. (`supabase/migrations/`)
 - [x] **Cloudflare R2 Secret Key в клиентском бандле** — `EXPO_PUBLIC_R2_SECRET_ACCESS_KEY` попадает в бандл. Перенести загрузку в R2 через Supabase Edge Function с presigned URL. Это также уберёт `@aws-sdk/` (~8.6 MB) из бандла. (`.env.local`)
-- [ ] **Сменить `SUPABASE_DB_PASSWORD`** — Пароль БД хранится в plaintext в `.env`. Сменить в дашборде Supabase, удалить переменную из `.env`.
+- [x] **Сменить `SUPABASE_DB_PASSWORD`** — Пароль БД хранится в plaintext в `.env`. Сменить в дашборде Supabase, удалить переменную из `.env`.
 
 ### 🟠 Высокие
 
