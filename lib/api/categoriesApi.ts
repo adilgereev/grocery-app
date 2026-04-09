@@ -10,6 +10,7 @@ export async function fetchRootCategories(): Promise<Category[]> {
     .from('categories')
     .select('*')
     .is('parent_id', null)
+    .eq('is_active', true)
     .order('sort_order', { ascending: true });
 
   if (error) throw new Error(`Не удалось загрузить корневые категории: ${error.message}`);
@@ -25,6 +26,7 @@ async function fetchSubcategories(parentId: string): Promise<Category[]> {
     .from('categories')
     .select('*')
     .eq('parent_id', parentId)
+    .eq('is_active', true)
     .order('sort_order', { ascending: true });
 
   if (error) throw new Error(`Не удалось загрузить подкатегории: ${error.message}`);
@@ -39,6 +41,7 @@ export async function fetchCategoriesWithHierarchy(): Promise<CategoryWithHierar
   const { data, error } = await supabase
     .from('categories_with_hierarchy')
     .select('*')
+    .eq('is_active', true)
     .order('sort_order', { ascending: true });
 
   if (error) throw new Error(`Не удалось загрузить категории с иерархией: ${error.message}`);
@@ -54,6 +57,7 @@ export async function fetchFullHierarchy(): Promise<CategoryWithSubcategories[]>
   const { data: allCategories, error } = await supabase
     .from('categories')
     .select('*')
+    .eq('is_active', true)
     .order('sort_order', { ascending: true });
 
   if (error) {

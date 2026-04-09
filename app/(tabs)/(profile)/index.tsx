@@ -96,6 +96,7 @@ export default function ProfileScreen() {
             style={styles.guestButton}
             activeOpacity={0.8}
             onPress={() => router.push('/(auth)/login')}
+            testID="profile-guest-login-button"
           >
             <View style={styles.guestButtonSolid}>
               <Text style={styles.guestButtonText}>Войти или зарегистрироваться</Text>
@@ -125,6 +126,7 @@ export default function ProfileScreen() {
             style={styles.userCard}
             activeOpacity={0.8}
             onPress={() => router.push('/edit-profile')}
+            testID="profile-user-card"
           >
             <View style={styles.avatar}>
               <Text style={styles.avatarText}>{getInitials()}</Text>
@@ -140,7 +142,7 @@ export default function ProfileScreen() {
         {/* Global Menu Card (Lite & Clean) */}
         <View style={styles.menuCard}>
           {/* Bonuses (New Lite Field) */}
-          <TouchableOpacity style={styles.menuItem} activeOpacity={0.7} onPress={() => Alert.alert('Бонусы', 'У вас 0 баллов. Делайте покупки, чтобы накопить кэшбэк.')}>
+          <TouchableOpacity style={styles.menuItem} activeOpacity={0.7} onPress={() => Alert.alert('Бонусы', 'У вас 0 баллов. Делайте покупки, чтобы накопить кэшбэк.')} testID="profile-menu-bonuses">
             <Ionicons name="diamond-outline" size={22} color={Colors.light.textSecondary} style={styles.menuItemIcon} />
             <Text style={styles.menuText}>Бонусный баланс</Text>
             <Text style={styles.bonusValue}>0 ₽</Text>
@@ -151,7 +153,7 @@ export default function ProfileScreen() {
           {/* Admin Tools */}
           {profile?.is_admin && (
             <>
-              <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/(admin)' as any)}>
+              <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/(admin)' as any)} testID="profile-menu-admin">
                 <Ionicons name="shield-checkmark-outline" size={22} color={Colors.light.textSecondary} style={styles.menuItemIcon} />
                 <Text style={styles.menuText}>Панель управления</Text>
                 <Ionicons name="chevron-forward" size={18} color={Colors.light.border} />
@@ -160,21 +162,21 @@ export default function ProfileScreen() {
             </>
           )}
 
-          <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/orders')}>
+          <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/orders')} testID="profile-menu-orders">
             <Ionicons name="receipt-outline" size={22} color={Colors.light.textSecondary} style={styles.menuItemIcon} />
             <Text style={styles.menuText}>История заказов</Text>
             <Ionicons name="chevron-forward" size={18} color={Colors.light.border} />
           </TouchableOpacity>
           <View style={styles.divider} />
 
-          <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/addresses')}>
+          <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/addresses')} testID="profile-menu-addresses">
             <Ionicons name="location-outline" size={22} color={Colors.light.textSecondary} style={styles.menuItemIcon} />
             <Text style={styles.menuText}>Мои адреса</Text>
             <Ionicons name="chevron-forward" size={18} color={Colors.light.border} />
           </TouchableOpacity>
           <View style={styles.divider} />
 
-          <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/favorites')}>
+          <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/favorites')} testID="profile-menu-favorites">
             <Ionicons name="heart-outline" size={22} color={Colors.light.textSecondary} style={styles.menuItemIcon} />
             <Text style={styles.menuText}>Избранное</Text>
             <Ionicons name="chevron-forward" size={18} color={Colors.light.border} />
@@ -182,7 +184,7 @@ export default function ProfileScreen() {
         </View>
 
         <View style={styles.menuCard}>
-          <TouchableOpacity style={styles.menuItem} onPress={() => Alert.alert('Поддержка', 'Чат с поддержкой временно недоступен.')}>
+          <TouchableOpacity style={styles.menuItem} onPress={() => Alert.alert('Поддержка', 'Чат с поддержкой временно недоступен.')} testID="profile-menu-support">
             <Ionicons name="chatbubbles-outline" size={22} color={Colors.light.textSecondary} style={styles.menuItemIcon} />
             <Text style={styles.menuText}>Связаться с нами</Text>
             <Ionicons name="chevron-forward" size={18} color={Colors.light.border} />
@@ -200,6 +202,7 @@ export default function ProfileScreen() {
           style={styles.logoutButton}
           onPress={handleLogout}
           activeOpacity={0.7}
+          testID="profile-logout-button"
         >
           <Ionicons name="log-out-outline" size={18} color={Colors.light.error} />
           <Text style={styles.logoutText}>Выйти из профиля</Text>

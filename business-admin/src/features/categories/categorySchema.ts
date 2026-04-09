@@ -6,6 +6,7 @@ export const categorySchema = z.object({
   parent_id: z.string().nullable().optional(),
   image_url: z.string().nullable().optional(),
   sort_order: z.coerce.number().int().min(0).optional(),
+  is_active: z.boolean().default(true),
 });
 
 export type CategoryFormValues = z.infer<typeof categorySchema>;

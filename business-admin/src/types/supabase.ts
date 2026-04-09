@@ -68,6 +68,7 @@ export type Database = {
           id: string
           image_transformations: string | null
           image_url: string | null
+          is_active: boolean
           name: string
           parent_id: string | null
           slug: string
@@ -78,6 +79,7 @@ export type Database = {
           id?: string
           image_transformations?: string | null
           image_url?: string | null
+          is_active?: boolean
           name: string
           parent_id?: string | null
           slug: string
@@ -88,6 +90,7 @@ export type Database = {
           id?: string
           image_transformations?: string | null
           image_url?: string | null
+          is_active?: boolean
           name?: string
           parent_id?: string | null
           slug?: string

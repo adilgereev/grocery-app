@@ -19,6 +19,7 @@ export async function createCategory(categoryData: {
   image_url?: string | null;
   parent_id?: string | null;
   sort_order: number;
+  is_active?: boolean;
 }): Promise<void> {
   const { error } = await supabase
     .from('categories')
@@ -133,7 +134,7 @@ export interface AdminOrderItem {
   id: string;
   quantity: number;
   price_at_time: number;
-  product?: { name: string } | null;
+  product?: { name: string; unit: string; image_url: string | null } | null;
 }
 
 export interface AdminOrderWithDetails {

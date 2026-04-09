@@ -11,6 +11,7 @@ describe('SubcategoryCard', () => {
     image_url: 'https://example.com/image.png',
     parent_id: 'parent-1',
     sort_order: 0,
+    is_active: true,
   };
 
   const mockOnPress = jest.fn();

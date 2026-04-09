@@ -7,6 +7,7 @@ import {
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ImageUploader } from '@/components/shared/ImageUploader';
 import { categorySchema, type CategoryFormValues } from './categorySchema';
@@ -49,9 +50,10 @@ export function CategoryFormModal({
         parent_id: category.parent_id,
         image_url: category.image_url,
         sort_order: category.sort_order,
+        is_active: category.is_active,
       });
     } else {
-      form.reset({ name: '', slug: '', parent_id: null, image_url: null, sort_order: 0 });
+      form.reset({ name: '', slug: '', parent_id: null, image_url: null, sort_order: 0, is_active: true });
     }
   }, [category, form, open]);
 
@@ -180,6 +182,20 @@ export function CategoryFormModal({
                 )}
               />
             </div>
+
+            {/* Активность */}
+            <FormField
+              control={form.control}
+              name="is_active"
+              render={({ field }) => (
+                <FormItem className="flex items-center gap-3">
+                  <FormControl>
+                    <Switch checked={field.value} onCheckedChange={field.onChange} />
+                  </FormControl>
+                  <FormLabel className="!mt-0">Категория активна (видна покупателям)</FormLabel>
+                </FormItem>
+              )}
+            />
 
             <DialogFooter>
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>

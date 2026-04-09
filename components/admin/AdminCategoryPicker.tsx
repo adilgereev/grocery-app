@@ -22,7 +22,7 @@ export default function AdminCategoryPicker({ categories, selectedId, onSelect, 
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
           <Text style={styles.headerTitle}>Выберите категорию</Text>
-          <TouchableOpacity onPress={onClose} style={styles.closeBtn}>
+          <TouchableOpacity onPress={onClose} style={styles.closeBtn} testID="category-picker-close">
             <Ionicons name="close" size={24} color={Colors.light.text} />
           </TouchableOpacity>
         </View>
@@ -34,9 +34,10 @@ export default function AdminCategoryPicker({ categories, selectedId, onSelect, 
             return (
               <View key={parent.id} style={styles.section}>
                 {/* Родительская категория (заголовок) */}
-                <TouchableOpacity 
+                <TouchableOpacity
                   style={[styles.parentRow, selectedId === parent.id && styles.selectedRow]}
                   onPress={() => { onSelect(parent.id); onClose(); }}
+                  testID={`category-picker-parent-${parent.id}`}
                 >
                   <Text style={[styles.parentName, selectedId === parent.id && styles.selectedText]}>{parent.name}</Text>
                   {selectedId === parent.id && <Ionicons name="checkmark-circle" size={20} color={Colors.light.primary} />}
@@ -44,10 +45,11 @@ export default function AdminCategoryPicker({ categories, selectedId, onSelect, 
 
                 {/* Дочерние категории */}
                 {children.map(child => (
-                  <TouchableOpacity 
+                  <TouchableOpacity
                     key={child.id}
                     style={[styles.childRow, selectedId === child.id && styles.selectedRow]}
                     onPress={() => { onSelect(child.id); onClose(); }}
+                    testID={`category-picker-child-${child.id}`}
                   >
                     <Ionicons name="return-down-forward" size={16} color={Colors.light.textLight} style={styles.childIcon} />
                     <Text style={[styles.childName, selectedId === child.id && styles.selectedText]}>{child.name}</Text>

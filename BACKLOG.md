@@ -39,30 +39,27 @@
 
 # 🔍 БЛОК 2: Аудит (07.04.2026)
 
-## 🏗️ Аудит Архитектуры
+## 🟢 Приоритет 1 — Быстрые правки
 
-### 🟡 useRouter() в компонентах — передавать callback от родителя
-- [ ] **`components/home/PopularSection.tsx`** — кастомная карточка с прямым `router.push`
+> ✅ Все задачи закрыты — см. Архив
 
-## 🧹 Аудит Качества Кода
+## 🟡 Приоритет 2 — Качество кода
 
-### 🟡 testID — низкое покрытие (~27%)
-- [ ] **`components/admin/AdminCategoryPicker.tsx`** — нет ни одного `testID` на интерактивных элементах
-- [ ] **`components/address/AddressSearchInput.tsx`** — нет `testID` на `TextInput` и элементах подсказок
-- [ ] **Экраны профиля** — минимальное покрытие, добавить `testID` на кнопки и поля
-## 🧪 Аудит Тестов
+> ✅ Все задачи закрыты — см. Архив
 
-### 🟠 Покрытие — критически низкое
-- [ ] **`store/favoriteStore.ts`** — нет ни одного теста на критичный стор → написать тесты (actions: add, remove, toggle, sync)
-- [ ] **`store/appStore.ts`** — нет тестов → написать базовые тесты инициализации
-- [ ] **Компоненты корзины** — `CartSummary`, `CheckoutButton`, `PaymentSelector`, `EmptyCart` не покрыты → написать тесты
-- [ ] **Компоненты авторизации** — `PhoneStep`, `OtpStep` не покрыты → написать тесты
-- [ ] **`components/ui/ScreenHeader.tsx`**, **`ErrorBoundary.tsx`** — нет тестов → написать базовые тесты рендера
-- [ ] **Тесты для `.web.tsx` компонентов** — `CategoryFormModal.web`, `catalog.web`, `categories.web`, `orders.web`, `add-product.web`, `edit-product.web` → написать unit-тесты
+## 🔴 Приоритет 3 — Новые тесты
 
-### 🟡 Актуальность тестов
-- [ ] **`OrderCard.test.tsx`** — `status: 'delivered'` задан как string вместо `Enums<'order_status'>` → привести к правильному типу
-- [ ] **`CartItem.test.tsx`** и **`ProductCard.test.tsx`** — дублируют мок `useRouter` который уже есть в `jest.setup.js` → удалить локальные переопределения
+### Сторы
+- [ ] **`store/favoriteStore.ts`** — написать тесты (actions: fetchFavorites, toggleFavorite add/remove, rollback при ошибке, clearFavorites)
+- [ ] **`store/appStore.ts`** — написать базовые тесты инициализации
+
+### Компоненты
+- [ ] **`components/ui/ScreenHeader.tsx`**, **`ErrorBoundary.tsx`** — написать базовые тесты рендера
+- [ ] **Компоненты корзины** — `CartSummary`, `CheckoutButton`, `PaymentSelector`, `EmptyCart` → написать тесты
+- [ ] **Компоненты авторизации** — `PhoneStep`, `OtpStep` → написать тесты
+
+### Веб-компоненты (`.web.tsx`)
+- [ ] `CategoryFormModal.web`, `catalog.web`, `categories.web`, `orders.web`, `add-product.web`, `edit-product.web` → написать unit-тесты
 
 ---
 
@@ -132,6 +129,21 @@
 ### ProductCard — самописные карточки
 - [x] **`components/home/PopularSection.tsx`** — кастомная карточка товара → заменено на `<ProductCard />` ✅
 - [x] **`app/(admin)/catalog.tsx`** — `renderProduct` намеренно кастомная: admin-строка с кнопками «Изменить/Удалить», не клиентская карточка покупки
+
+## 🧹 Аудит Качества Кода (10.04.2026)
+
+### ✅ testID — закрыто
+- [x] **`components/admin/AdminCategoryPicker.tsx`** — добавлены `category-picker-close`, `category-picker-parent-{id}`, `category-picker-child-{id}` ✅
+- [x] **`components/address/AddressSearchInput.tsx`** — `testID` уже присутствовали на всех элементах ✅
+- [x] **`app/(tabs)/(profile)/index.tsx`** — добавлены `profile-guest-login-button`, `profile-user-card`, `profile-menu-{bonuses/admin/orders/addresses/favorites/support}`, `profile-logout-button` ✅
+- [x] **`app/(tabs)/(profile)/edit-profile.tsx`** — `profile-firstname-input`, `profile-lastname-input`, `profile-save-button` уже присутствовали ✅
+
+### ✅ Архитектура — закрыто
+- [x] **`components/home/PopularSection.tsx`** — прямой `router.push` уже был заменён на `onProductPress` callback от родителя ✅
+
+### ✅ Актуальность тестов — закрыто
+- [x] **`OrderCard.test.tsx`** — `status: 'delivered'` приведён к `Enums<'order_status'>` (импорт типа + явное приведение) ✅
+- [x] **`CartItem.test.tsx`** и **`ProductCard.test.tsx`** — дублирующий мок `useRouter` уже отсутствовал ✅
 
 ## 🎨 Аудит UI / Soft Minimalism (обновлён 09.04.2026)
 

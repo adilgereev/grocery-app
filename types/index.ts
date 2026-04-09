@@ -23,6 +23,7 @@ export interface Category {
   image_url: string | null;
   parent_id: string | null;
   sort_order: number;
+  is_active: boolean;
   image_transformations?: string | null;
   created_at?: string;
 }
