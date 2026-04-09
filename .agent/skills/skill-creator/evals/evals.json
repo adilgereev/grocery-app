@@ -1,0 +1,20 @@
+{
+  "skill_name": "skill-creator",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Создай новый скилл для интеграции push-уведомлений через Expo Notifications.",
+      "expected_outcome": "Новый файл .agent/skills/notifications/SKILL.md с YAML frontmatter (name, description), разделами по триггерам, реализации, тестированию и путям файлов. Дополнительно создан evals/evals.json с 2-3 кейсами."
+    },
+    {
+      "id": 2,
+      "prompt": "Шаблон ui-component.md устарел — он описывает Emerald Minimalism вместо Soft Minimalism. Обнови его.",
+      "expected_outcome": "Обновлён .agent/skills/skill-creator/templates/ui-component.md: заголовок Soft Minimalism, тени 0.03-0.05, Radius.pill для кнопок, монохромная палитра с cta #059669, elevation: 0 для Android."
+    },
+    {
+      "id": 3,
+      "prompt": "Добавь evals к скиллу supabase-mastery — текущие кейсы слишком базовые, нужны edge cases.",
+      "expected_outcome": "Обновлён .agent/skills/supabase/evals/evals.json: добавлены кейсы на RLS-политики, деструктивные операции с подтверждением пользователя, и синхронизацию типов после миграции."
+    }
+  ]
+}

@@ -1,12 +1,11 @@
 /**
- * Below are the colors that are used in the app. The colors are defined in the light and dark mode.
- * There are many other ways to style your app. For example, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app), etc.
+ * Ниже приведены цвета, используемые в приложении. Цвета определены для светлой и темной тем.
+ * Существует множество других способов стилизации приложения. Например, [Nativewind](https://www.nativewind.dev/), [Tamagui](https://tamagui.dev/), [unistyles](https://reactnativeunistyles.vercel.app) и т.д.
  */
 
 import { Platform } from 'react-native';
 
 const tintColorLight = '#10B981';
-const tintColorDark = '#10B981';
 
 export const Colors = {
   light: {
@@ -14,6 +13,10 @@ export const Colors = {
     primaryDark: '#059669',
     primaryLight: '#F0FDF4',
     primaryBorder: '#D1FAE5',
+    // Тёмно-зелёный акцент для CTA-кнопок ("В корзину", "Оформить заказ")
+    cta: '#059669',
+    ctaDark: '#047857',
+    ctaLight: '#D1FAE5',
     background: '#F9FAFB',
     card: '#ffffff',
     text: '#111827',
@@ -23,15 +26,12 @@ export const Colors = {
     borderLight: '#F3F4F6',
     error: '#EF4444',
     errorLight: '#FEF2F2',
-    warning: '#F59E0B',
-    warningLight: '#FFFBEB',
+    warning: '#F97316',
+    warningLight: '#FFF7ED',
     info: '#3B82F6',
     infoLight: '#EEF2FF',
     success: '#16A34A',
     successLight: '#F0FDF4',
-    secondary: '#8B5CF6',
-    secondaryLight: '#F5F3FF',
-    tint: tintColorLight,
     icon: '#6B7280',
     tabIconDefault: '#9CA3AF',
     tabIconSelected: tintColorLight,
@@ -47,48 +47,14 @@ export const Colors = {
     glassBackground: 'rgba(255, 255, 255, 0.85)',
     glassBorder: 'rgba(255, 255, 255, 0.6)',
   },
-  dark: {
-    primary: tintColorDark,
-    primaryDark: '#065F46',
-    primaryLight: '#064E3B',
-    primaryBorder: '#065F46',
-    background: '#111827',
-    card: '#1F2937',
-    text: '#F9FAFB',
-    textSecondary: '#9CA3AF',
-    textLight: '#6B7280',
-    border: '#374151',
-    borderLight: '#1F2937',
-    error: '#F87171',
-    errorLight: '#450A0A',
-    warning: '#FBBF24',
-    warningLight: '#451A03',
-    info: '#60A5FA',
-    infoLight: '#1E1B4B',
-    success: '#34D399',
-    successLight: '#064E3B',
-    secondary: '#A78BFA',
-    secondaryLight: '#2E1065',
-    tint: tintColorDark,
-    icon: '#9CA3AF',
-    tabIconDefault: '#6B7280',
-    tabIconSelected: tintColorDark,
-    // Disabled/Readonly поля
-    disabledBackground: '#2D3748',
-    disabledText: '#9CA3AF',
-    // Прозрачные цвета
-    whiteTransparent: 'rgba(255,255,255,0.15)',
-    blackTransparent: 'rgba(0,0,0,0.3)',
-    // Стеклянные эффекты для темной темы
-    glassBackground: 'rgba(31, 41, 55, 0.8)',
-    glassBorder: 'rgba(255, 255, 255, 0.15)',
-  },
 };
 
 export const Spacing = {
   xs: 4,
   s: 8,
+  sm: 12,
   m: 16,
+  ml: 20,
   l: 24,
   xl: 32,
   xxl: 40,
@@ -106,29 +72,29 @@ export const Radius = {
 };
 
 export const Duration = {
-  fast: 150,      // микро-анимации (hover, press)
-  default: 300,   // карточки, переходы, toast
+  fast: 150,      // микро-анимации (наведение, нажатие)
+  default: 300,   // карточки, переходы, всплывающие уведомления
   slow: 500,      // полноэкранные переходы
-  pulse: 800,     // skeleton shimmer
+  pulse: 800,     // мерцание скелетона (shimmer)
 };
 
 export const Shadows = {
   sm: {
-    shadowColor: '#111827',
+    shadowColor: Colors.light.text,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.03,
     shadowRadius: 6,
     elevation: 0,
   },
   md: {
-    shadowColor: '#111827',
+    shadowColor: Colors.light.text,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.05,
     shadowRadius: 12,
     elevation: 0,
   },
   lg: {
-    shadowColor: '#111827',
+    shadowColor: Colors.light.text,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.06,
     shadowRadius: 16,

@@ -1,14 +1,15 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react-native';
-import OrderCard from '../OrderCard';
+import OrderCard from '@/components/order/OrderCard';
 import { Order } from '@/types';
+import type { Enums } from '@/types/supabase';
 
 const mockOrder: Order = {
   id: 'order-123',
   user_id: 'user-1',
   total_amount: 1500,
   delivery_address: 'г. Буйнакск, ул. Ленина, 10',
-  status: 'delivered', // Ожидаем: ✅ Доставлен
+  status: 'delivered' as Enums<'order_status'>,
   created_at: '2024-03-29T12:00:00Z',
   payment_method: 'cash',
 };

@@ -35,7 +35,7 @@ const OrderTracker = ({ steps, currentStepIndex, statusConfigs, accentColor }: O
                   <Ionicons
                     name={stepConfig.icon as any}
                     size={16}
-                    color={isActive ? Colors.light.card : Colors.light.textLight}
+                    color={isActive ? Colors.light.white : Colors.light.textLight}
                   />
                 </View>
                 <Text style={[
@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
   trackerDot: {
     width: 36,
     height: 36,
-    borderRadius: 18,
+    borderRadius: Radius.pill,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,

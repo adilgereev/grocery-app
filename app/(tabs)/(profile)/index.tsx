@@ -1,8 +1,8 @@
-import Skeleton from '@/components/Skeleton';
+import Skeleton from '@/components/ui/Skeleton';
 import { Colors, FontSize, Radius, Spacing, Shadows } from '@/constants/theme';
-import { logger } from '@/lib/logger';
-import { formatPhoneDisplay } from '@/lib/sms';
-import { supabase } from '@/lib/supabase';
+import { logger } from '@/lib/utils/logger';
+import { formatPhoneDisplay } from '@/lib/services/sms';
+import { fetchUserProfile, signOut } from '@/lib/api/authApi';
 import { useAuth } from '@/providers/AuthProvider';
 import { useCartStore } from '@/store/cartStore';
 import { Profile } from '@/types';
@@ -26,14 +26,8 @@ export default function ProfileScreen() {
     try {
       if (!session?.user?.id) return;
       setLoading(true);
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', session.user.id)
-        .single();
-
-      if (error) throw error;
-      if (data) setProfile(data as Profile);
+      const data = await fetchUserProfile(session.user.id);
+      if (data) setProfile(data);
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Неизвестная ошибка';
       logger.error('Ошибка загрузки профиля:', errorMessage);
@@ -62,7 +56,7 @@ export default function ProfileScreen() {
   };
 
   const performLogout = async () => {
-    await supabase.auth.signOut();
+    await signOut();
     clearCart();
   };
 
@@ -102,6 +96,7 @@ export default function ProfileScreen() {
             style={styles.guestButton}
             activeOpacity={0.8}
             onPress={() => router.push('/(auth)/login')}
+            testID="profile-guest-login-button"
           >
             <View style={styles.guestButtonSolid}>
               <Text style={styles.guestButtonText}>Войти или зарегистрироваться</Text>
@@ -131,6 +126,7 @@ export default function ProfileScreen() {
             style={styles.userCard}
             activeOpacity={0.8}
             onPress={() => router.push('/edit-profile')}
+            testID="profile-user-card"
           >
             <View style={styles.avatar}>
               <Text style={styles.avatarText}>{getInitials()}</Text>
@@ -146,7 +142,7 @@ export default function ProfileScreen() {
         {/* Global Menu Card (Lite & Clean) */}
         <View style={styles.menuCard}>
           {/* Bonuses (New Lite Field) */}
-          <TouchableOpacity style={styles.menuItem} activeOpacity={0.7} onPress={() => Alert.alert('Бонусы', 'У вас 0 баллов. Делайте покупки, чтобы накопить кэшбэк.')}>
+          <TouchableOpacity style={styles.menuItem} activeOpacity={0.7} onPress={() => Alert.alert('Бонусы', 'У вас 0 баллов. Делайте покупки, чтобы накопить кэшбэк.')} testID="profile-menu-bonuses">
             <Ionicons name="diamond-outline" size={22} color={Colors.light.textSecondary} style={styles.menuItemIcon} />
             <Text style={styles.menuText}>Бонусный баланс</Text>
             <Text style={styles.bonusValue}>0 ₽</Text>
@@ -157,7 +153,7 @@ export default function ProfileScreen() {
           {/* Admin Tools */}
           {profile?.is_admin && (
             <>
-              <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/(admin)' as any)}>
+              <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/(admin)' as any)} testID="profile-menu-admin">
                 <Ionicons name="shield-checkmark-outline" size={22} color={Colors.light.textSecondary} style={styles.menuItemIcon} />
                 <Text style={styles.menuText}>Панель управления</Text>
                 <Ionicons name="chevron-forward" size={18} color={Colors.light.border} />
@@ -166,21 +162,21 @@ export default function ProfileScreen() {
             </>
           )}
 
-          <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/orders')}>
+          <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/orders')} testID="profile-menu-orders">
             <Ionicons name="receipt-outline" size={22} color={Colors.light.textSecondary} style={styles.menuItemIcon} />
             <Text style={styles.menuText}>История заказов</Text>
             <Ionicons name="chevron-forward" size={18} color={Colors.light.border} />
           </TouchableOpacity>
           <View style={styles.divider} />
 
-          <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/addresses')}>
+          <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/addresses')} testID="profile-menu-addresses">
             <Ionicons name="location-outline" size={22} color={Colors.light.textSecondary} style={styles.menuItemIcon} />
             <Text style={styles.menuText}>Мои адреса</Text>
             <Ionicons name="chevron-forward" size={18} color={Colors.light.border} />
           </TouchableOpacity>
           <View style={styles.divider} />
 
-          <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/favorites')}>
+          <TouchableOpacity style={styles.menuItem} onPress={() => router.push('/favorites')} testID="profile-menu-favorites">
             <Ionicons name="heart-outline" size={22} color={Colors.light.textSecondary} style={styles.menuItemIcon} />
             <Text style={styles.menuText}>Избранное</Text>
             <Ionicons name="chevron-forward" size={18} color={Colors.light.border} />
@@ -188,7 +184,7 @@ export default function ProfileScreen() {
         </View>
 
         <View style={styles.menuCard}>
-          <TouchableOpacity style={styles.menuItem} onPress={() => Alert.alert('Поддержка', 'Чат с поддержкой временно недоступен.')}>
+          <TouchableOpacity style={styles.menuItem} onPress={() => Alert.alert('Поддержка', 'Чат с поддержкой временно недоступен.')} testID="profile-menu-support">
             <Ionicons name="chatbubbles-outline" size={22} color={Colors.light.textSecondary} style={styles.menuItemIcon} />
             <Text style={styles.menuText}>Связаться с нами</Text>
             <Ionicons name="chevron-forward" size={18} color={Colors.light.border} />
@@ -206,6 +202,7 @@ export default function ProfileScreen() {
           style={styles.logoutButton}
           onPress={handleLogout}
           activeOpacity={0.7}
+          testID="profile-logout-button"
         >
           <Ionicons name="log-out-outline" size={18} color={Colors.light.error} />
           <Text style={styles.logoutText}>Выйти из профиля</Text>
@@ -223,7 +220,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.background,
   },
   header: {
-    paddingHorizontal: 20,
+    paddingHorizontal: Spacing.ml,
     backgroundColor: Colors.light.background, // Чат на фоне приложения для легкости
     paddingBottom: Spacing.s,
     zIndex: 10,
@@ -245,7 +242,7 @@ const styles = StyleSheet.create({
   guestAvatarIcon: {
     width: 80,
     height: 80,
-    borderRadius: 40,
+    borderRadius: Radius.pill,
     backgroundColor: Colors.light.card,
     justifyContent: 'center',
     alignItems: 'center',
@@ -263,7 +260,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: Colors.light.textSecondary,
     textAlign: 'center',
-    marginBottom: 40,
+    marginBottom: Spacing.xxl,
     lineHeight: 24,
   },
   guestButton: {
@@ -279,12 +276,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   guestButtonText: {
-    color: Colors.light.card,
+    color: Colors.light.white,
     fontSize: 16,
     fontWeight: '700',
   },
   scrollContent: {
-    paddingHorizontal: 20,
+    paddingHorizontal: Spacing.ml,
     paddingTop: Spacing.m,
     paddingBottom: Spacing.xxl,
   },
@@ -294,14 +291,14 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.card,
     borderRadius: Radius.xl,
     padding: Spacing.m,
-    marginBottom: 24,
+    marginBottom: Spacing.l,
     // Облегченные тени
     ...Shadows.sm,
   },
   avatar: {
     width: 56,
     height: 56,
-    borderRadius: 28,
+    borderRadius: Radius.pill,
     backgroundColor: Colors.light.primaryLight,
     justifyContent: 'center',
     alignItems: 'center',
@@ -331,15 +328,15 @@ const styles = StyleSheet.create({
     borderRadius: Radius.xl,
     overflow: 'hidden',
     ...Shadows.sm,
-    marginBottom: 24,
+    marginBottom: Spacing.l,
   },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
+    padding: Spacing.m,
   },
   menuItemIcon: {
-    marginRight: 16,
+    marginRight: Spacing.m,
     width: 24,
     textAlign: 'center',
   },
@@ -353,7 +350,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '700',
     color: Colors.light.primary, // Акцент на бонусах
-    marginRight: 8,
+    marginRight: Spacing.s,
   },
   appVersion: {
     fontSize: 13,
@@ -369,8 +366,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
-    paddingVertical: 12,
+    gap: Spacing.s,
+    paddingVertical: Spacing.sm,
   },
   logoutText: {
     color: Colors.light.error,
@@ -378,6 +375,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   footerSpacing: {
-    height: 40,
+    height: Spacing.xxl,
   },
 });

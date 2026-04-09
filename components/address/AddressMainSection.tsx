@@ -1,7 +1,7 @@
-import AddressSearchInput from '@/components/AddressSearchInput';
+import AddressSearchInput from '@/components/address/AddressSearchInput';
 import { Colors, Radius, Spacing, Shadows } from '@/constants/theme';
-import { formatAddressString } from '@/lib/addressUtils';
-import { DaDataSuggestion } from '@/lib/dadataApi';
+import { formatAddressString } from '@/lib/utils/addressUtils';
+import { DaDataSuggestion } from '@/lib/api/dadataApi';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
 import React from 'react';
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
     backgroundColor: Colors.light.primaryLight,
-    paddingHorizontal: 12,
+    paddingHorizontal: Spacing.sm,
     paddingVertical: 6,
     borderRadius: Radius.m,
   },
@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
   switchBase: {
     width: 46,
     height: 26,
-    borderRadius: 13,
+    borderRadius: Radius.pill,
     backgroundColor: Colors.light.border,
     padding: 3,
   },
@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
   switchThumb: {
     width: 20,
     height: 20,
-    borderRadius: 10,
+    borderRadius: Radius.pill,
     backgroundColor: Colors.light.card,
     ...Shadows.sm,
   },

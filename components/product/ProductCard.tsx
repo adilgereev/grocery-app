@@ -1,0 +1,183 @@
+import React, { useMemo, useCallback } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, useWindowDimensions } from 'react-native';
+import { Image } from 'expo-image';
+import { Ionicons } from '@expo/vector-icons';
+import { useCartStore } from '@/store/cartStore';
+import Animated, { FadeInDown } from 'react-native-reanimated';
+import { Colors, Spacing, Radius, Duration, Shadows } from '@/constants/theme';
+import { Product } from '@/types';
+import { useImageKit } from '@/hooks/useImageKit';
+
+const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
+
+// React.memo предотвращает ре-рендер при неизменных пропсах (важно для FlatList)
+const ProductCard = React.memo(function ProductCard({ item, index = 0, onPress }: { item: Product, index?: number, onPress: () => void }) {
+  const { width } = useWindowDimensions();
+
+  const cardWidth = useMemo(() => Math.round((width - 32 - 16) / 2), [width]);
+  const { source, placeholder, hasImage, imageProps } = useImageKit(
+    item.image_url,
+    {
+      width: cardWidth,
+      height: cardWidth,
+      transition: Duration.default,
+      imageOptions: { pad: true }
+    },
+  );
+
+  // Примитивный селектор: перерисовка только при изменении количества ЭТОГО товара,
+  // а не при любом изменении корзины (объект-селектор создаёт новую ссылку каждый раз)
+  const quantity = useCartStore(state => state.items.find(i => i.product.id === item.id)?.quantity ?? 0);
+  const addItem = useCartStore(state => state.addItem);
+  const updateQuantity = useCartStore(state => state.updateQuantity);
+
+  const handleAdd = useCallback(() => addItem(item), [addItem, item]);
+  const handleDecrease = useCallback(() => updateQuantity(item.id, quantity - 1), [updateQuantity, item.id, quantity]);
+  const handleIncrease = useCallback(() => updateQuantity(item.id, quantity + 1), [updateQuantity, item.id, quantity]);
+
+  return (
+    <AnimatedTouchable
+      style={[styles.productCard, { width: cardWidth }]}
+      activeOpacity={0.9}
+      onPress={onPress}
+      entering={FadeInDown.delay(index * 50).duration(Duration.default)}
+      testID="product-card"
+    >
+      {hasImage ? (
+        <Image
+          source={source}
+          placeholder={placeholder}
+          style={styles.productImage}
+          {...imageProps}
+        />
+      ) : (
+        <View style={[styles.productImage, { backgroundColor: Colors.light.border }]} />
+      )}
+
+      <View style={styles.productInfo}>
+        <View style={styles.priceRow}>
+          <Text style={styles.productPrice} numberOfLines={1}>
+             {Number(item.price).toFixed(0)} ₽
+          </Text>
+          <Text style={styles.productUnit}>/ {item.unit}</Text>
+        </View>
+        <Text style={styles.productName} numberOfLines={2}>{item.name}</Text>
+      </View>
+
+      <View style={styles.actionContainer}>
+        {quantity === 0 ? (
+          <TouchableOpacity
+            style={styles.addButton}
+            activeOpacity={0.7}
+            onPress={handleAdd}
+            testID="product-add-button"
+          >
+            <Ionicons name="cart" size={22} color={Colors.light.cta} />
+          </TouchableOpacity>
+        ) : (
+          <View style={styles.activeControlContainer}>
+            <TouchableOpacity
+              style={styles.controlButton}
+              activeOpacity={0.7}
+              onPress={handleDecrease}
+              testID="product-decrease-button"
+            >
+              <Ionicons name="remove" size={16} color={Colors.light.cta} />
+            </TouchableOpacity>
+
+            <Text style={styles.controlQuantity} testID="product-quantity-text">{quantity}</Text>
+
+            <TouchableOpacity
+              style={styles.controlButton}
+              activeOpacity={0.7}
+              onPress={handleIncrease}
+              testID="product-increase-button"
+            >
+              <Ionicons name="add" size={16} color={Colors.light.cta} />
+            </TouchableOpacity>
+          </View>
+        )}
+      </View>
+    </AnimatedTouchable>
+  );
+});
+
+export default ProductCard;
+
+const styles = StyleSheet.create({
+  productCard: {
+    flexDirection: 'column',
+    backgroundColor: Colors.light.card,
+    borderRadius: Radius.xxl,
+    padding: Spacing.m,
+    marginBottom: Spacing.m,
+    ...Shadows.md,
+  },
+  productImage: {
+    width: '100%',
+    aspectRatio: 1,
+    borderRadius: Radius.l,
+    marginBottom: Spacing.s,
+    backgroundColor: Colors.light.borderLight,
+  },
+  productInfo: {
+    flex: 1,
+    marginBottom: Spacing.s,
+  },
+  priceRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    marginBottom: 2,
+  },
+  productPrice: {
+    fontSize: 18,
+    fontWeight: '700', // Облегченное начертание (Soft Bold)
+    color: Colors.light.text,
+  },
+  productUnit: {
+    fontSize: 12,
+    color: Colors.light.textLight,
+    marginLeft: 4,
+    fontWeight: '600',
+  },
+  productName: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: Colors.light.textSecondary,
+    lineHeight: 18,
+  },
+  actionContainer: {
+    marginTop: 'auto',
+  },
+  addButton: {
+    width: '100%',
+    height: 40,
+    borderRadius: Radius.pill, // "Пухлая" кнопка
+    backgroundColor: Colors.light.ctaLight,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  activeControlContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: Colors.light.cta,
+    borderRadius: Radius.pill, // Синхронизируем с кнопкой
+    height: 40,
+    paddingHorizontal: Spacing.xs,
+  },
+  controlButton: {
+    width: 32,
+    height: 32,
+    borderRadius: Radius.pill, // Круглые кнопки "+" и "-"
+    backgroundColor: Colors.light.card,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  controlQuantity: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: Colors.light.white,
+    marginHorizontal: Spacing.xs,
+  },
+});

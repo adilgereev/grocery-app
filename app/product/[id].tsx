@@ -1,8 +1,8 @@
-import Skeleton from '@/components/Skeleton';
-import { ErrorToast } from '@/components/ErrorToast';
-import { logger } from '@/lib/logger';
+import Skeleton from '@/components/ui/Skeleton';
+import { ErrorToast } from '@/components/ui/ErrorToast';
+import { logger } from '@/lib/utils/logger';
 import { Colors, Radius, Spacing } from '@/constants/theme';
-import { fetchProductById, fetchRelatedProducts } from '@/lib/productsApi';
+import { fetchProductById, fetchRelatedProducts } from '@/lib/api/productsApi';
 import { useAuth } from '@/providers/AuthProvider';
 import { useCartStore } from '@/store/cartStore';
 import { useFavoriteStore } from '@/store/favoriteStore';
@@ -28,10 +28,12 @@ export default function ProductDetailScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const { items, addItem, updateQuantity } = useCartStore();
-  const { favoriteIds, toggleFavorite } = useFavoriteStore();
+  const cartItem = useCartStore(state => state.items.find(i => i.product.id === id));
+  const addItem = useCartStore(state => state.addItem);
+  const updateQuantity = useCartStore(state => state.updateQuantity);
+  const favoriteIds = useFavoriteStore(state => state.favoriteIds);
+  const toggleFavorite = useFavoriteStore(state => state.toggleFavorite);
 
-  const cartItem = items.find((i) => i.product.id === id);
   const isFavorite = typeof id === 'string' ? favoriteIds.includes(id) : false;
 
   const fetchProductDetails = useCallback(async () => {
@@ -94,10 +96,10 @@ export default function ProductDetailScreen() {
         <Text style={styles.errorText}>{error || 'Товар не найден'}</Text>
         <TouchableOpacity style={styles.retryButton} onPress={() => fetchProductDetails()}>
           {loading ? (
-            <ActivityIndicator color={Colors.light.card} />
+            <ActivityIndicator color={Colors.light.white} />
           ) : (
             <>
-              <Ionicons name="refresh-outline" size={20} color={Colors.light.card} style={styles.retryIcon} />
+              <Ionicons name="refresh-outline" size={20} color={Colors.light.white} style={styles.retryIcon} />
               <Text style={styles.retryText}>Повторить</Text>
             </>
           )}
@@ -123,9 +125,10 @@ export default function ProductDetailScreen() {
           
           <ProductNutrition product={product} />
 
-          <ProductRelated 
-            products={relatedProducts} 
-            isLoading={loading} 
+          <ProductRelated
+            products={relatedProducts}
+            isLoading={loading}
+            onProductPress={(item) => router.push(`/product/${item.id}?name=${encodeURIComponent(item.name)}` as any)}
           />
 
           <View style={styles.bottomSpacer} />
@@ -149,14 +152,14 @@ const styles = StyleSheet.create({
     flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.light.card
   },
   errorText: {
-    fontSize: 18, color: Colors.light.textSecondary, marginBottom: 20, textAlign: 'center'
+    fontSize: 18, color: Colors.light.textSecondary, marginBottom: Spacing.ml, textAlign: 'center'
   },
   retryButton: {
     backgroundColor: Colors.light.primary, flexDirection: 'row', alignItems: 'center',
     paddingHorizontal: Spacing.xl, paddingVertical: Spacing.m, borderRadius: Radius.xl,
   },
   retryIcon: { marginRight: 8 },
-  retryText: { color: Colors.light.card, fontWeight: '700' },
+  retryText: { color: Colors.light.white, fontWeight: '700' },
   backButton: { marginTop: 16 },
   backButtonText: { color: Colors.light.textSecondary, fontSize: 16 },
   headerAbsolute: {
@@ -170,7 +173,7 @@ const styles = StyleSheet.create({
   },
   bottomSpacer: { height: 120 },
   skeletonContent: { padding: Spacing.l },
-  skeletonTitle: { marginBottom: 12 },
+  skeletonTitle: { marginBottom: Spacing.sm },
   skeletonSubtitle: { marginBottom: Spacing.l },
   skeletonText: { marginBottom: Spacing.s },
 });

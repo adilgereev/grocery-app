@@ -1,7 +1,7 @@
 import { Stack, useRouter } from 'expo-router';
 import { useAuth } from '@/providers/AuthProvider';
 import { useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/services/supabase';
 import { View, ActivityIndicator, StyleSheet } from 'react-native';
 import { Colors } from '@/constants/theme';
 
@@ -44,17 +44,13 @@ export default function AdminLayout() {
   }
 
   return (
-    <Stack screenOptions={{
-      headerShown: true,
-      headerStyle: { backgroundColor: Colors.light.background },
-      headerTintColor: Colors.light.text,
-      headerTitleStyle: { fontWeight: '700' }
-    }}>
-      <Stack.Screen name="index" options={{ title: 'Панель Владельца' }} />
-      <Stack.Screen name="add-product" options={{ title: 'Новый Товар' }} />
-      <Stack.Screen name="edit-product" options={{ title: 'Редактирование' }} />
-      <Stack.Screen name="catalog" options={{ title: 'Каталог' }} />
-      <Stack.Screen name="orders" options={{ title: 'Заказы Клиентов' }} />
+    <Stack screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="index" />
+      <Stack.Screen name="add-product" />
+      <Stack.Screen name="edit-product" />
+      <Stack.Screen name="catalog" />
+      <Stack.Screen name="orders" />
+      <Stack.Screen name="categories" />
     </Stack>
   );
 }

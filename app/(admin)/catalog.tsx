@@ -1,9 +1,12 @@
 import { Colors, Radius, Spacing, Shadows } from '@/constants/theme';
-import { supabase } from '@/lib/supabase';
+import { fetchAllProductsWithCategory, deleteProduct } from '@/lib/api/adminApi';
+import Skeleton from '@/components/ui/Skeleton';
+import ScreenHeader from '@/components/ui/ScreenHeader';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, SectionList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Alert, SectionList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { ProductWithCategory } from '@/types';
 
 export default function CatalogScreen() {
@@ -17,12 +20,8 @@ export default function CatalogScreen() {
 
   const fetchProducts = async () => {
     setLoading(true);
-    const { data, error } = await supabase
-      .from('products')
-      .select('*, category:category_id(name)')
-      .order('id', { ascending: false });
-
-    if (!error && data) {
+    try {
+      const data = await fetchAllProductsWithCategory();
       const grouped = data.reduce((acc: Record<string, ProductWithCategory[]>, current: ProductWithCategory) => {
         const catName = current.category?.name || 'Без категории';
         if (!acc[catName]) acc[catName] = [];
@@ -37,40 +36,43 @@ export default function CatalogScreen() {
       
       sectionData.sort((a, b) => a.title.localeCompare(b.title));
       setSections(sectionData);
+    } catch {
+      // Ошибка загрузки товаров
     }
     setLoading(false);
   };
 
-  const handleEdit = (id: string) => {
+  const handleEdit = useCallback((id: string) => {
     router.push({ pathname: '/(admin)/edit-product', params: { id } });
-  };
+  }, [router]);
 
-  const handleDelete = (id: string, name: string) => {
+  const handleDelete = useCallback((id: string, name: string) => {
     Alert.alert(
       'Удаление товара',
       `Вы уверены, что хотите безвозвратно удалить "${name}"?`,
       [
         { text: 'Отмена', style: 'cancel' },
-        { 
-          text: 'Удалить', 
+        {
+          text: 'Удалить',
           style: 'destructive',
           onPress: async () => {
-            const { error } = await supabase.from('products').delete().eq('id', id);
-            if (error) {
-              Alert.alert('Ошибка', error.message);
-            } else {
+            try {
+              await deleteProduct(id);
               setSections(prevSections => prevSections.map(section => ({
                 ...section,
                 data: section.data.filter((p) => p.id !== id)
               })).filter(section => section.data.length > 0));
+            } catch (error: unknown) {
+              const msg = error instanceof Error ? error.message : 'Неизвестная ошибка';
+              Alert.alert('Ошибка', msg);
             }
           }
         }
       ]
     );
-  };
+  }, []);
 
-  const renderProduct = ({ item }: { item: ProductWithCategory }) => (
+  const renderProduct = useCallback(({ item }: { item: ProductWithCategory }) => (
     <View style={styles.card}>
       <View style={styles.infoRow}>
         {item.image_url ? (
@@ -95,27 +97,45 @@ export default function CatalogScreen() {
         </TouchableOpacity>
       </View>
     </View>
-  );
+  ), [handleEdit, handleDelete]);
 
-  const renderSectionHeader = ({ section: { title, data } }: { section: { title: string; data: ProductWithCategory[] } }) => (
+  const renderSectionHeader = useCallback(({ section: { title, data } }: { section: { title: string; data: ProductWithCategory[] } }) => (
     <View style={styles.sectionHeader}>
       <Text style={styles.sectionTitle}>{title}</Text>
       <View style={styles.sectionBadge}>
         <Text style={styles.sectionBadgeText}>{data.length}</Text>
       </View>
     </View>
-  );
+  ), []);
 
   if (loading) {
     return (
-      <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color={Colors.light.primary} />
-      </View>
+      <SafeAreaView edges={['bottom']} style={styles.container}>
+        <ScreenHeader title="Каталог" />
+        <View style={styles.list}>
+          {[1, 2, 3].map(section => (
+            <View key={section}>
+              <Skeleton width={140} height={24} style={styles.skeletonSectionTitle} />
+              {[1, 2, 3].map(item => (
+                <View key={item} style={[styles.card, styles.skeletonCardRow]}>
+                  <Skeleton width={60} height={60} borderRadius={Radius.m} style={styles.skeletonImage} />
+                  <View style={styles.skeletonTextContainer}>
+                    <Skeleton width="70%" height={15} style={styles.skeletonLine} />
+                    <Skeleton width="40%" height={13} style={styles.skeletonLine} />
+                    <Skeleton width="30%" height={16} />
+                  </View>
+                </View>
+              ))}
+            </View>
+          ))}
+        </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView edges={['bottom']} style={styles.container}>
+      <ScreenHeader title="Каталог" />
       <SectionList
         sections={sections}
         keyExtractor={item => item.id}
@@ -126,14 +146,18 @@ export default function CatalogScreen() {
         stickySectionHeadersEnabled={false}
         ListEmptyComponent={<Text style={styles.empty}>Товары не найдены</Text>}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.light.background },
-  centerContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
   list: { padding: Spacing.m },
+  skeletonSectionTitle: { marginTop: Spacing.m, marginBottom: Spacing.s },
+  skeletonCardRow: { flexDirection: 'row', alignItems: 'center' },
+  skeletonImage: { marginRight: Spacing.m },
+  skeletonTextContainer: { flex: 1 },
+  skeletonLine: { marginBottom: 6 },
   card: {
     backgroundColor: Colors.light.card,
     borderRadius: Radius.l,
@@ -154,7 +178,7 @@ const styles = StyleSheet.create({
   placeholderImage: { width: 60, height: 60, borderRadius: Radius.m, marginRight: Spacing.m, backgroundColor: Colors.light.border },
   sectionHeader: { flexDirection: 'row', alignItems: 'center', paddingBottom: Spacing.s, paddingTop: Spacing.m },
   sectionTitle: { fontSize: 20, fontWeight: '800', color: Colors.light.text },
-  sectionBadge: { backgroundColor: Colors.light.border, borderRadius: 12, paddingHorizontal: 8, paddingVertical: 2, marginLeft: Spacing.s },
+  sectionBadge: { backgroundColor: Colors.light.border, borderRadius: Radius.m, paddingHorizontal: 8, paddingVertical: 2, marginLeft: Spacing.s },
   sectionBadgeText: { fontSize: 12, fontWeight: '700', color: Colors.light.textSecondary },
   empty: { textAlign: 'center', color: Colors.light.textSecondary, marginTop: 40 }
 });

@@ -1,4 +1,4 @@
-import { getOptimizedImage, getPlaceholderUrl, ImageOptions } from '@/utils/imageKit';
+import { getOptimizedImage, getPlaceholderUrl, ImageOptions } from '@/lib/utils/imageKit';
 import { Duration } from '@/constants/theme';
 import { useMemo } from 'react';
 
@@ -15,7 +15,9 @@ interface UseImageKitReturn {
   hasImage: boolean;
   /** Общие пропсы для expo-image <Image> */
   imageProps: {
-    contentFit: 'cover';
+    contentFit: 'cover' | 'contain';
+    /** Растягивает 20px LQIP на весь контейнер (по умолчанию expo-image — scale-down) */
+    placeholderContentFit: 'cover';
     transition: number;
   };
 }
@@ -29,6 +31,7 @@ export function useImageKit(
   options: UseImageKitOptions,
 ): UseImageKitReturn {
   const { width, height, transition = Duration.default, imageOptions } = options;
+  const pad = imageOptions?.pad ?? false;
 
   return useMemo(() => {
     const source = getOptimizedImage(url, { width, height, ...imageOptions });
@@ -39,10 +42,11 @@ export function useImageKit(
       placeholder,
       hasImage: !!url,
       imageProps: {
-        contentFit: 'cover' as const,
+        contentFit: pad ? 'contain' : 'cover' as const,
+        placeholderContentFit: 'cover' as const,
         transition,
       },
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [url, width, height, transition]);
+  }, [url, width, height, transition, pad]);
 }

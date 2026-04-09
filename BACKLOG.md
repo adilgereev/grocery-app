@@ -1,40 +1,35 @@
 # 📋 Актуальный Бэклог Grocery App
 
-Этот файл содержит список приоритетных задач для реализации. Разработка ведется итеративно, согласно принципам «Emerald Minimalism».
+Этот файл содержит список приоритетных задач для реализации. Разработка ведется итеративно, согласно принципам «Soft Minimalism».
 
 ---
 
-## 🚀 Критичные для Запуска (MVP)
+# 🚀 БЛОК 1: MVP — Критичные для Запуска
 
-### 📱 Авторизация
-- [ ] Привязка профиля к номеру телефона
-
-### 💳 Платёжная система
+## 💳 Платёжная система
 - [ ] Интеграция платёжного шлюза (Stripe / ЮKassa / CloudPayments)
-- [ ] Выбор способа оплаты: онлайн / наличными курьеру / картой курьеру
 - [ ] Чек и фискализация (54-ФЗ для РФ)
 - [ ] Таблица payment_methods: типы, комиссии, статусы
 
-### 🚚 Доставка
+## 🚚 Доставка
 - [ ] Зона доставки — проверка адреса (да/нет доставляем)
 - [ ] Стоимость доставки — минимум / фикс / по сумме / по расстоянию
 - [ ] Слоты доставки — время доставки (11:00-13:00, 14:00-16:00 и т.д.)
-- [ ] Трекинг курьера — карта для клиента
 - [ ] БД: таблицы delivery_zones, delivery_slots, delivery_rates
 
-### 👥 Сборщики и Курьеры
+## 👥 Сборщики и Курьеры
 - [ ] Отдельная роль «Сборщик» (picker) — экран назначенных заказов на сборку
 - [ ] Отдельная роль «Курьер» (courier) — маршрутный лист и навигация
 - [ ] Приложение для курьеров — звонок клиенту, подтверждение доставки
 - [ ] Админ-панель — назначение заказов на сборщиков/курьеров
 - [ ] Таблица staff_assignments: order_id, staff_type, staff_id, status
 
-### 📄 Юридическое
+## 📄 Юридическое
 - [ ] Политика конфиденциальности (152-ФЗ)
 - [ ] Публичная оферта
 - [ ] Согласие на обработку перс. данных (при регистрации)
 
-### 🔧 Операционное
+## 🔧 Операционное
 - [ ] Управление остатками — списание при заказе
 - [ ] Аналитика — продажи, топ товаров, средний чек
 - [ ] Оповещения — когда мало товара на складе
@@ -42,33 +37,38 @@
 
 ---
 
-## 🛠️ Технический долг и Багфикс
-- [ ] **Проверить отображение комментария курьеру в админской панели в заказах.** (Убедиться, что текст, введенный пользователем, корректно доходит до курьера/сборщика).
-- [x] **Редизайн экрана "Профиль".** (Привести экран к премиальному стилю Emerald Minimalism: переработать карточки, списки и общий вид).
-- [ ] Ожидание новых багов после редизайна...
+# 🔍 БЛОК 2: Аудит (07.04.2026)
 
-### 🔴 Критичные (после мёрджа feature/soft-minimalism-ui)
-- [x] **Удалить debug-логи** — Найти и удалить все `console.log` в продакшн-коде, оставленные при разработке soft-minimalism.
-- [x] **Fallback для не-ImageKit URL** — Проверка `ik.imagekit.io` в `utils/imageKit.ts` ломает обычные URL. Добавить graceful fallback (возвращать оригинальный URL без трансформаций).
-- [x] **Валидация env-переменных для R2** — Добавить проверки `R2_ENDPOINT`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY` в `storageUtils.ts` — молча падает при отсутствии.
-- [x] **Lazy-loading AWS SDK** — Динамический `import()` для `@aws-sdk/client-s3`. Частичное решение: Metro не поддерживает code-splitting, SDK всё равно в бандле.
-- [ ] **Убрать AWS SDK с клиента → Presigned URL** — Создать Supabase Edge Function, генерирующую presigned URL для загрузки в R2. Клиент грузит через обычный `fetch`. Это полностью уберёт `@aws-sdk/` (~8.6 MB) из бандла и спрячет R2-креды на сервере.
+## 🟢 Приоритет 1 — Быстрые правки
 
-### 🟡 Средний приоритет
-- [x] **Адаптивные размеры изображений** — Заменить хардкод (400, 250, 800) в трансформациях ImageKit на расчёт по реальным размерам контейнера.
-- [x] **Кастомный хук для изображений** — Вынести дублирующиеся паттерны загрузки (placeholder, transition, contentFit) в `useImageKit` хук.
-- [x] **Унифицировать transition time** — Стандартизировать `transitionDuration`: `300ms` для карточек, `500ms` для полноэкранных изображений. Вынести в тему.
-- [ ] **Унифицировать подход к теням** — Часть компонентов использует `text` цвет, часть `primary`. Привести к единому подходу через theme tokens.
-- [x] **Pill-радиус на Android** — `Radius.pill = 999` может давать артефакты на некоторых Android-устройствах. Рассмотреть `100` как безопасный максимум или платформенное ветвление.
-- [ ] **Тесты для .web.tsx компонентов** — Добавить unit-тесты для web-админки: `CategoryFormModal`, `catalog`, `categories`, `orders`, `add-product`, `edit-product`.
+> ✅ Все задачи закрыты — см. Архив
+
+## 🟡 Приоритет 2 — Качество кода
+
+> ✅ Все задачи закрыты — см. Архив
+
+## 🔴 Приоритет 3 — Новые тесты
+
+### Сторы
+- [ ] **`store/favoriteStore.ts`** — написать тесты (actions: fetchFavorites, toggleFavorite add/remove, rollback при ошибке, clearFavorites)
+- [ ] **`store/appStore.ts`** — написать базовые тесты инициализации
+
+### Компоненты
+- [ ] **`components/ui/ScreenHeader.tsx`**, **`ErrorBoundary.tsx`** — написать базовые тесты рендера
+- [ ] **Компоненты корзины** — `CartSummary`, `CheckoutButton`, `PaymentSelector`, `EmptyCart` → написать тесты
+- [ ] **Компоненты авторизации** — `PhoneStep`, `OtpStep` → написать тесты
+
+### Веб-компоненты (`.web.tsx`)
+- [ ] `CategoryFormModal.web`, `catalog.web`, `categories.web`, `orders.web`, `add-product.web`, `edit-product.web` → написать unit-тесты
 
 ---
+
+# 💎 БЛОК 3: Развитие
 
 ## 💎 Продаваемость и Рекомендации
 
 ### Система скидок и промокодов
 - [ ] Поле промокода в чеке корзины (валидация через Supabase)
-- [ ] Персональные скидки по уровню лояльности (bronze/silver/gold)
 - [ ] Countdown-таймеры на ограниченные акции
 - [ ] БД: таблицы discounts, promo_codes, loyalty_levels, promotions
 
@@ -77,8 +77,6 @@
 - [ ] **Cross-sell "С этим покупают"** — таблица related_products, логика комплементарных товаров
 - [ ] **На основе истории заказов** — анализ покупок, секция "Рекомендуем для вас"
 - [ ] Админ-панель — настройка связей товаров и приоритетов
-
----
 
 ## 📢 Маркетинг
 
@@ -94,44 +92,93 @@
 - [ ] Бонус приглашённому — первая доставка бесплатно/скидка
 - [ ] БД: таблица referrals, поле referral_code в profiles
 
----
-
 ## 📦 Наполнение контента
 
 ### Категории
-- [ ] Финальный список 18+ категорий (Лавка-стайл)
 - [ ] Массовая загрузка категорий в БД через SQL или Админ-панель
-- [ ] Иконки и цвета для каждой категории
-
----
+- [ ] Массовая загрузка продуктов в БД через Админ-панель (excel)
 
 ## 🛠️ Предстоящие Этапы (Refactoring & Features)
 
-### 🧺 Фаза 5: Оптимизация корзины и оформления заказа
-- [ ] Рефакторинг `CartStore.ts`: вынос логики расчета и скидок.
-- [ ] Оптимизация экрана корзины: декомпозиция на модульные компоненты.
-- [ ] Улучшение UX выбора способа оплаты и адреса внутри корзины.
-- [ ] Анимации добавления и удаления товаров (LayoutAnimations).
-
-### 👨‍💻 Админ-панель: Управление КБЖУ
+### 👨‍💻 Админ-панель: Управление продуктами
 - [ ] Интерфейс редактирования КБЖУ (белки, жиры, углеводы, калории) в карточке товара.
 - [ ] Массовое управление данными КБЖУ для списка продуктов.
 - [ ] Интеграция валидации полей через Zod в `ProductFormModal.tsx`.
+- [ ] Управление тегами товаров
+- [ ] Функционал скрытия категорий (visibility toggle) в админ-панели.
+- [ ] Функционал сворачивания категории (accordion/collapse) в списке админки.
 
 ---
 
-## ✨ Полировка и UX
+# 🛠️ БЛОК 4: Технический долг и Багфикс
+
+- [ ] **Проверить отображение комментария курьеру в админской панели в заказах.** (Убедиться, что текст, введенный пользователем, корректно доходит до курьера/сборщика).
+
 
 ---
 
-## ⚡ Оптимизация и Кеширование
+# ✅ Архив — Закрытые задачи
 
-### Полировка системы изображений
-- [ ] **Увеличить таймаут данных** — Вернуть `CACHE_TIMEOUT` с 1 минуты до 10-15 минут в `categoryStore.ts` (снижение нагрузки на БД).
-- [ ] **Умное версионирование картинок (Smart Cache Busting)** — В `SubcategoryCard.tsx` использовать `v=subcategory.updated_at` вместо глобального `lastFetch`. (Чтобы перекачивались только реально измененные картинки).
-- [ ] **Оптимизация CDN** — Проанализировать использование трафика ImageKit и настроить более агрессивное сжатие для бюджетных устройств.
+## 🧩 Аудит Обязательных Компонентов (07.04.2026)
 
-### Анимации и Переходы
-- [ ] **Shared Element Transitions** — плавная анимация карточки товара при переходе на экран деталей (`ProductScreen`).
-- [ ] **Lottie-анимации** — для пустых состояний (пустая корзина, поиск не дал результатов).
-- [ ] **Haptic Feedback** — тактильный отклик при добавлении товара в корзину и переключении табов.
+### ScreenHeader — отсутствует на некоторых экранах
+- [x] **`app/setup-profile.tsx`** — намеренно без `<ScreenHeader />`: экран стиля онбординга (как login), кастомная decorative-шапка
+- [x] **`app/product/[id].tsx`** — намеренно без `<ScreenHeader />`: overlay-кнопки поверх fullscreen-фото — стандарт для экрана товара (см. `ProductHeader`)
+- [x] **`app/(admin)/`** — все 6 файлов: нативный Stack-header → `<ScreenHeader />` ✅
+
+### ProductCard — самописные карточки
+- [x] **`components/home/PopularSection.tsx`** — кастомная карточка товара → заменено на `<ProductCard />` ✅
+- [x] **`app/(admin)/catalog.tsx`** — `renderProduct` намеренно кастомная: admin-строка с кнопками «Изменить/Удалить», не клиентская карточка покупки
+
+## 🧹 Аудит Качества Кода (10.04.2026)
+
+### ✅ testID — закрыто
+- [x] **`components/admin/AdminCategoryPicker.tsx`** — добавлены `category-picker-close`, `category-picker-parent-{id}`, `category-picker-child-{id}` ✅
+- [x] **`components/address/AddressSearchInput.tsx`** — `testID` уже присутствовали на всех элементах ✅
+- [x] **`app/(tabs)/(profile)/index.tsx`** — добавлены `profile-guest-login-button`, `profile-user-card`, `profile-menu-{bonuses/admin/orders/addresses/favorites/support}`, `profile-logout-button` ✅
+- [x] **`app/(tabs)/(profile)/edit-profile.tsx`** — `profile-firstname-input`, `profile-lastname-input`, `profile-save-button` уже присутствовали ✅
+
+### ✅ Архитектура — закрыто
+- [x] **`components/home/PopularSection.tsx`** — прямой `router.push` уже был заменён на `onProductPress` callback от родителя ✅
+
+### ✅ Актуальность тестов — закрыто
+- [x] **`OrderCard.test.tsx`** — `status: 'delivered'` приведён к `Enums<'order_status'>` (импорт типа + явное приведение) ✅
+- [x] **`CartItem.test.tsx`** и **`ProductCard.test.tsx`** — дублирующий мок `useRouter` уже отсутствовал ✅
+
+## 🎨 Аудит UI / Soft Minimalism (обновлён 09.04.2026)
+
+### ✅ Тени — закрыто
+- [x] **`shadowColor` унифицирован** — все компоненты используют `...Shadows.sm/md/lg` токены. Прямых `shadowColor` в компонентах нет ✅
+
+### ✅ Скругления — закрыто
+- [x] **`ProductBottomBar.tsx`** — `addToCartButton` → `Radius.pill` ✅
+- [x] **`OrderSection.tsx`** — `sectionCard` → `Radius.xl` ✅
+- [x] **`CartItem.tsx`** — `quantityControl` → `Radius.xxl` ✅
+- [x] **`ProductBottomBar.tsx`** — `quantityContainer` → `Radius.xxl` ✅
+- [x] **`components/cart/CartSummary.styles.ts`** — `addressSelector` + `paymentOption borderRadius: 18` → `Radius.xxl` ✅
+- [x] **`components/cart/CartSummary.styles.ts`** — `checkoutButton borderRadius: 100` → `Radius.pill` ✅
+- [x] **`components/order/OrderTracker.tsx`** — `trackerDot` 36×36, `borderRadius: 18` → `Radius.pill` ✅
+- [x] **`components/product/ProductHeader.tsx`** — `iconButton` 44×44, `borderRadius: 22` → `Radius.pill` ✅
+- [x] **`app/(admin)/catalog.tsx`** + **`catalog.web.tsx`** — `sectionBadge borderRadius: 12` → `Radius.m` ✅
+- [x] **`CartSummary.styles.ts`** — `paymentIconContainer` 44×44 → `Radius.pill` ✅
+- [x] **`ProductBottomBar.tsx`** — `quantityButton` 38×38 → `Radius.pill` ✅
+- [x] **`OrderSection.tsx`** — `iconContainer` 40×40 → `Radius.pill` ✅
+- [x] **`profile/index.tsx`** — `guestAvatarIcon` 80×80 + `avatar` 56×56 → `Radius.pill` ✅
+- [x] **`favorites.tsx`** — `emptyIconCircle` 80×80 → `Radius.pill` ✅
+- [x] **`EmptyCart.tsx`** — `emptyIconCircle` 80×80 → `Radius.pill` ✅
+- [x] **`ErrorBoundary.tsx`** — `iconBackground` 100×100 → `Radius.pill` ✅
+- [x] **`FloatingCheckoutButton.tsx`** — `floatingCheckoutButton` → `Radius.pill` ✅
+- [x] **`CartItem.tsx`** — `circleButton` 28×28 → `Radius.pill`; `itemImage` 60×60 → `Radius.xxl` ✅
+- [x] **`AddressMainSection.tsx`** — `switchBase` + `switchThumb` → `Radius.pill` ✅
+- [x] **`addresses.tsx`** — `radioOuter` + `radioInner` → `Radius.pill` ✅
+- [x] **`orders.web.tsx`** — `statusDot` 10×10 → `Radius.pill` ✅
+
+### ✅ Safe Area в `_login.styles.ts` — закрыто
+- [x] **`app/(auth)/_login.styles.ts`** — `paddingTop: 60` и `paddingBottom: 60` заменены на `useSafeAreaInsets()` в `login.tsx` ✅
+
+### ✅ Отступы — закрыто
+- [x] **Добавлены токены `Spacing.sm = 12` и `Spacing.ml = 20`** в `constants/theme.ts` ✅
+- [x] **20+ файлов** — все вхождения `12` и `20` как spacing-значений заменены на `Spacing.sm` / `Spacing.ml` ✅
+- [x] **`profile/index.tsx`** — точные совпадения `24→Spacing.l`, `40→Spacing.xxl`, `16→Spacing.m`, `8→Spacing.s` заменены ✅
+- [x] **Оставлены как дизайн-константы** — `18`, `30`, `36`, `6` (встречаются 1–2 раза, нет смысла в токене)
+

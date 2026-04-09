@@ -13,7 +13,7 @@ import {
 import CategoryFormModal from '@/components/admin/CategoryFormModal';
 import CategoryItem from '@/components/admin/CategoryItem';
 import { Colors, Radius, Spacing } from '@/constants/theme';
-import { supabase } from '@/lib/supabase';
+import { fetchAllCategories, createCategory, updateCategory, deleteCategory, updateCategorySortOrders } from '@/lib/api/adminApi';
 import { useCategoryStore } from '@/store/categoryStore';
 import { Category } from '@/types';
 
@@ -26,45 +26,40 @@ export default function CategoriesScreenWeb() {
 
   useFocusEffect(
     useCallback(() => {
-      fetchCategories();
+      fetchCategories(true);
     }, [])
   );
 
   const fetchCategories = async (silent = false) => {
     if (!silent) setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('categories')
-        .select('*')
-        .order('sort_order', { ascending: true });
+      const allCategories = await fetchAllCategories();
+      const roots = allCategories.filter((c) => !c.parent_id);
+      const sorted: Category[] = [];
+      const usedIds = new Set<string>();
 
-      if (!error && data) {
-        const allCategories = data as Category[];
-        const roots = allCategories.filter((c) => !c.parent_id);
-        const sorted: Category[] = [];
-        const usedIds = new Set<string>();
-
-        roots.forEach((parent) => {
-          sorted.push(parent);
-          usedIds.add(parent.id);
-          const children = allCategories.filter((c) => c.parent_id === parent.id);
-          children.forEach((child) => {
-            sorted.push(child);
-            usedIds.add(child.id);
-          });
+      roots.forEach((parent) => {
+        sorted.push(parent);
+        usedIds.add(parent.id);
+        const children = allCategories.filter((c) => c.parent_id === parent.id);
+        children.forEach((child) => {
+          sorted.push(child);
+          usedIds.add(child.id);
         });
+      });
 
-        const orphans = allCategories.filter((c) => !usedIds.has(c.id));
-        sorted.push(...orphans);
-        setCategories(sorted);
-      }
+      const orphans = allCategories.filter((c) => !usedIds.has(c.id));
+      sorted.push(...orphans);
+      setCategories(sorted);
     } finally {
       setLoading(false);
     }
   };
 
   const handleMove = async (category: Category, direction: 'up' | 'down') => {
-    const siblings = categories.filter(c => c.parent_id === category.parent_id);
+    const siblings = categories
+      .filter(c => c.parent_id === category.parent_id)
+      .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
     const currentIndex = siblings.findIndex(c => c.id === category.id);
 
     let targetIndex = -1;
@@ -75,15 +70,46 @@ export default function CategoriesScreenWeb() {
     }
 
     if (targetIndex !== -1) {
-      const targetCategory = siblings[targetIndex];
+      const newSiblings = [...siblings];
+      const temp = newSiblings[currentIndex];
+      newSiblings[currentIndex] = newSiblings[targetIndex];
+      newSiblings[targetIndex] = temp;
+      
+      const updates = newSiblings.map((sibling, index) => ({
+        id: sibling.id,
+        sort_order: index + 1
+      }));
+
+      const updatesMap = new Map(updates.map(u => [u.id, u.sort_order]));
+      const newCategories = categories.map(c => 
+        updatesMap.has(c.id) ? { ...c, sort_order: updatesMap.get(c.id)! } : c
+      );
+      
+      const roots = newCategories.filter(c => !c.parent_id).sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+      const finalSorted: Category[] = [];
+      const usedIds = new Set<string>();
+
+      roots.forEach(root => {
+        finalSorted.push(root);
+        usedIds.add(root.id);
+        const children = newCategories
+          .filter(c => c.parent_id === root.id)
+          .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
+        children.forEach(child => {
+          finalSorted.push(child);
+          usedIds.add(child.id);
+        });
+      });
+
+      finalSorted.push(...newCategories.filter(c => !usedIds.has(c.id)));
+      setCategories(finalSorted);
+
       try {
-        await supabase.from('categories').update({ sort_order: targetCategory.sort_order }).eq('id', category.id);
-        await supabase.from('categories').update({ sort_order: category.sort_order }).eq('id', targetCategory.id);
-        
+        await updateCategorySortOrders(updates);
         useCategoryStore.getState().invalidateCache();
-        await fetchCategories(true);
       } catch {
         alert('Не удалось изменить порядок');
+        await fetchCategories();
       }
     }
   };
@@ -102,35 +128,28 @@ export default function CategoriesScreenWeb() {
     setSubmitting(true);
     try {
       if (editingCategory) {
-        const { error } = await supabase
-          .from('categories')
-          .update(data)
-          .eq('id', editingCategory.id);
-        if (error) throw error;
+        await updateCategory(editingCategory.id, data);
       } else {
         const sameLevel = categories.filter(c => c.parent_id === (data.parent_id || null));
-        let sortOrder = 0;
+        let sortOrder = 1;
         if (sameLevel.length > 0) {
-          const minOrder = Math.min(...sameLevel.map(c => c.sort_order));
-          sortOrder = minOrder - 1;
+          const maxOrder = Math.max(...sameLevel.map(c => c.sort_order || 0));
+          sortOrder = maxOrder + 1;
         }
 
-        const { error } = await supabase
-          .from('categories')
-          .insert({
-            name: data.name!,
-            slug: data.slug!,
-            image_url: data.image_url,
-            parent_id: data.parent_id,
-            sort_order: sortOrder
-          });
-        if (error) throw error;
+        await createCategory({
+          name: data.name!,
+          slug: data.slug!,
+          image_url: data.image_url,
+          parent_id: data.parent_id,
+          sort_order: sortOrder
+        });
       }
       await fetchCategories(true);
       useCategoryStore.getState().invalidateCache();
       setModalVisible(false);
-    } catch (error: any) {
-      alert(error.message || 'Ошибка сохранения');
+    } catch (error: unknown) {
+      alert(error instanceof Error ? error.message : 'Ошибка сохранения');
     } finally {
       setSubmitting(false);
     }
@@ -141,8 +160,7 @@ export default function CategoriesScreenWeb() {
       (async () => {
         try {
           const allIds = [id, ...categories.filter(c => c.parent_id === id).map(c => c.id)];
-          await supabase.from('products').update({ category_id: null }).in('category_id', allIds);
-          await supabase.from('categories').delete().eq('id', id);
+          await deleteCategory(id, allIds);
           await fetchCategories(true);
           useCategoryStore.getState().invalidateCache();
         } catch {
@@ -165,7 +183,7 @@ export default function CategoriesScreenWeb() {
       <View style={styles.header}>
         <Text style={styles.headerTitle}>Все категории ({categories.length})</Text>
         <TouchableOpacity style={styles.addBtn} onPress={handleAdd}>
-          <Ionicons name="add" size={24} color={Colors.light.card} />
+          <Ionicons name="add" size={24} color={Colors.light.white} />
           <Text style={styles.addBtnText}>Добавить</Text>
         </TouchableOpacity>
       </View>
@@ -209,8 +227,8 @@ const styles = StyleSheet.create({
   headerTitle: { fontSize: 16, fontWeight: '700', color: Colors.light.text },
   addBtn: {
     flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.light.primary,
-    paddingHorizontal: 12, paddingVertical: 8, borderRadius: Radius.m,
+    paddingHorizontal: Spacing.sm, paddingVertical: 8, borderRadius: Radius.m,
   },
-  addBtnText: { color: Colors.light.card, fontWeight: '700', marginLeft: 4, fontSize: 14 },
+  addBtnText: { color: Colors.light.white, fontWeight: '700', marginLeft: 4, fontSize: 14 },
   list: { padding: Spacing.m },
 });

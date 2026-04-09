@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, Text, View, FlatList, ActivityIndicator } from 'react-native';
-import { supabase } from '@/lib/supabase';
+import { useRouter } from 'expo-router';
+import { fetchRecommendedProducts } from '@/lib/api/productsApi';
 import { Product } from '@/types';
-import { logger } from '@/lib/logger';
-import ProductCard from '@/components/ProductCard';
+import { logger } from '@/lib/utils/logger';
+import ProductCard from '@/components/product/ProductCard';
 import { Spacing, FontSize, Colors } from '@/constants/theme';
 
 /**
@@ -11,8 +12,13 @@ import { Spacing, FontSize, Colors } from '@/constants/theme';
  * Вынесен из основного экрана для оптимизации и чистоты кода.
  */
 export default function CartRecommendations() {
+  const router = useRouter();
   const [recommended, setRecommended] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const handleProductPress = useCallback((item: Product) => {
+    router.push(`/product/${item.id}?name=${encodeURIComponent(item.name)}`);
+  }, [router]);
 
   useEffect(() => {
     fetchRecommended();
@@ -20,15 +26,8 @@ export default function CartRecommendations() {
 
   const fetchRecommended = async () => {
     try {
-      const { data, error } = await supabase
-        .from('products')
-        .select('*')
-        .eq('is_active', true)
-        .order('id', { ascending: false })
-        .limit(6);
-
-      if (error) throw error;
-      if (data) setRecommended(data);
+      const data = await fetchRecommendedProducts(6);
+      setRecommended(data);
     } catch (err) {
       logger.error('Ошибка загрузки рекомендаций в корзине:', err);
     } finally {
@@ -54,7 +53,7 @@ export default function CartRecommendations() {
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <View style={styles.cardWrapper}>
-            <ProductCard item={item} />
+            <ProductCard item={item} onPress={() => handleProductPress(item)} />
           </View>
         )}
         horizontal
@@ -81,7 +80,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: Colors.light.text,
     marginBottom: Spacing.m,
-    paddingHorizontal: 20,
+    paddingHorizontal: Spacing.ml,
   },
   listContent: {
     paddingHorizontal: 15,

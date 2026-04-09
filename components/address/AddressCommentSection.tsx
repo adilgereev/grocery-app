@@ -1,5 +1,5 @@
 import { Colors, Radius, Spacing } from '@/constants/theme';
-import { AddressFormData } from '@/lib/schemas';
+import { AddressFormData } from '@/lib/utils/schemas';
 import React from 'react';
 import { Control, Controller } from 'react-hook-form';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
     height: 100,
     paddingHorizontal: Spacing.m,
     alignItems: 'flex-start',
-    paddingTop: 12,
+    paddingTop: Spacing.sm,
   },
   commentInput: {
     flex: 1,

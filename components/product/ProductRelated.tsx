@@ -1,22 +1,24 @@
 import React from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { Image } from 'expo-image';
-import { useRouter } from 'expo-router';
 import { Colors, Radius, Spacing, Shadows } from '@/constants/theme';
 import { Product } from '@/types';
-import Skeleton from '@/components/Skeleton';
+import Skeleton from '@/components/ui/Skeleton';
 import { useImageKit } from '@/hooks/useImageKit';
 
 /** Карточка одного рекомендуемого товара */
-const RelatedProductCard = ({ item }: { item: Product }) => {
-  const router = useRouter();
-  const { source, placeholder, hasImage, imageProps } = useImageKit(item.image_url, { width: 140, height: 110 });
+const RelatedProductCard = ({ item, onPress }: { item: Product; onPress: () => void }) => {
+  const { source, placeholder, hasImage, imageProps } = useImageKit(item.image_url, { 
+    width: 140, 
+    height: 110,
+    imageOptions: { pad: true, background: Colors.light.card }
+  });
 
   return (
     <TouchableOpacity
       style={styles.relatedCard}
       activeOpacity={0.8}
-      onPress={() => router.push(`/product/${item.id}?name=${encodeURIComponent(item.name)}` as any)}
+      onPress={onPress}
     >
       {hasImage ? (
         <Image
@@ -39,31 +41,34 @@ const RelatedProductCard = ({ item }: { item: Product }) => {
 interface ProductRelatedProps {
   products: Product[];
   isLoading: boolean;
+  onProductPress: (item: Product) => void;
 }
 
 /**
  * Секция с похожими/рекомендуемыми товарами
  */
-export const ProductRelated: React.FC<ProductRelatedProps> = ({ products, isLoading }) => {
+export const ProductRelated: React.FC<ProductRelatedProps> = ({ products, isLoading, onProductPress }) => {
+  if (!isLoading && products.length === 0) return null;
+
   return (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>С этим покупают</Text>
-      {!isLoading && products.length > 0 ? (
+      {isLoading ? (
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.relatedScrollContent}>
+          {[1, 2, 3].map((i) => (
+            <View key={i} style={styles.skeletonRelatedItem}>
+              <Skeleton width={140} height={190} borderRadius={20} />
+            </View>
+          ))}
+        </ScrollView>
+      ) : (
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.relatedScrollContent}
         >
           {products.map((item) => (
-            <RelatedProductCard key={item.id} item={item} />
-          ))}
-        </ScrollView>
-      ) : (
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.relatedScrollContent}>
-          {[1, 2, 3].map((i) => (
-            <View key={i} style={styles.skeletonRelatedItem}>
-              <Skeleton width={140} height={190} borderRadius={20} />
-            </View>
+            <RelatedProductCard key={item.id} item={item} onPress={() => onProductPress(item)} />
           ))}
         </ScrollView>
       )}
@@ -89,7 +94,7 @@ const styles = StyleSheet.create({
     marginRight: Spacing.m,
     backgroundColor: Colors.light.background,
     borderRadius: Radius.xl,
-    padding: 12,
+    padding: Spacing.sm,
     borderWidth: 1,
     borderColor: Colors.light.borderLight,
     ...Shadows.sm,

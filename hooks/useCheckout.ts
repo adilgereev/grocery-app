@@ -1,15 +1,14 @@
 import { useState } from 'react';
 import { Alert, Platform } from 'react-native';
 import { useRouter } from 'expo-router';
-import { fetchAddresses, createAddress, updateAddress, deleteAddress, markAddressAsSelected } from '@/lib/addressApi';
-import { createOrder, createOrderItems } from '@/lib/orderApi';
+import { createOrder, createOrderItems } from '@/lib/api/orderApi';
 import { useAuth } from '@/providers/AuthProvider';
 import { useCartStore } from '@/store/cartStore';
-import { useAddressStore, Address } from '@/store/addressStore';
-import { formatFullAddress } from '@/utils/addressFormatter';
-import { schedulePushNotification } from '@/lib/NotificationService';
-import { logger } from '@/lib/logger';
-import { PaymentMethod } from '@/components/CartSummary';
+import { useAddressStore } from '@/store/addressStore';
+import { formatFullAddress } from '@/lib/utils/addressFormatter';
+import { schedulePushNotification } from '@/lib/services/NotificationService';
+import { logger } from '@/lib/utils/logger';
+import { PaymentMethod } from '@/types';
 
 /**
  * Хук для управления процессом оформления заказа.
@@ -18,11 +17,13 @@ import { PaymentMethod } from '@/components/CartSummary';
 export function useCheckout() {
   const router = useRouter();
   const { session } = useAuth();
-  const { items, totalPrice, clearCart } = useCartStore();
-  const { addresses, selectedAddressId } = useAddressStore();
+  const items = useCartStore(state => state.items);
+  const totalPrice = useCartStore(state => state.totalPrice);
+  const clearCart = useCartStore(state => state.clearCart);
+  const selectedAddress = useAddressStore(
+    state => state.addresses.find(a => a.id === state.selectedAddressId)
+  );
   const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const selectedAddress = addresses.find((a) => a.id === selectedAddressId);
 
   const handleCheckout = async (paymentMethod: PaymentMethod) => {
     if (!session?.user) {

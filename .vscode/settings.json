@@ -4,5 +4,8 @@
     "source.organizeImports": "explicit",
     "source.sortMembers": "explicit"
   },
-  "claudeCode.useTerminal": false
+  "claudeCode.useTerminal": false,
+  "deno.enablePaths": [
+    "supabase/functions"
+  ]
 }

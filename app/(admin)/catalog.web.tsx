@@ -1,5 +1,5 @@
 import { Colors, Radius, Spacing, Shadows } from '@/constants/theme';
-import { supabase } from '@/lib/supabase';
+import { fetchAllProductsWithCategory, deleteProduct } from '@/lib/api/adminApi';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, useFocusEffect } from 'expo-router';
 import React, { useCallback, useState } from 'react';
@@ -20,47 +20,42 @@ export default function CatalogScreenWeb() {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('products')
-        .select('*, category:category_id(name)')
-        .order('id', { ascending: false });
+      const data = await fetchAllProductsWithCategory();
+      const grouped = data.reduce((acc: Record<string, ProductWithCategory[]>, current: ProductWithCategory) => {
+        const catName = current.category?.name || 'Без категории';
+        if (!acc[catName]) acc[catName] = [];
+        acc[catName].push(current);
+        return acc;
+      }, {});
 
-      if (!error && data) {
-        const grouped = data.reduce((acc: Record<string, ProductWithCategory[]>, current: ProductWithCategory) => {
-          const catName = current.category?.name || 'Без категории';
-          if (!acc[catName]) acc[catName] = [];
-          acc[catName].push(current);
-          return acc;
-        }, {});
+      const sectionData = Object.keys(grouped).map(key => ({
+        title: key,
+        data: grouped[key]
+      }));
 
-        const sectionData = Object.keys(grouped).map(key => ({
-          title: key,
-          data: grouped[key]
-        }));
-
-        sectionData.sort((a, b) => a.title.localeCompare(b.title));
-        setSections(sectionData);
-      }
+      sectionData.sort((a, b) => a.title.localeCompare(b.title));
+      setSections(sectionData);
     } finally {
       setLoading(false);
     }
   };
 
   const handleEdit = (id: string) => {
-    router.push({ pathname: '/(admin)/edit-product' as any, params: { id } });
+    router.push({ pathname: '/(admin)/edit-product', params: { id } });
   };
 
   const handleDelete = (id: string, name: string) => {
     if (window.confirm(`Вы уверены, что хотите безвозвратно удалить "${name}"?`)) {
       (async () => {
-        const { error } = await supabase.from('products').delete().eq('id', id);
-        if (error) {
-          alert(`Ошибка: ${error.message}`);
-        } else {
+        try {
+          await deleteProduct(id);
           setSections(prevSections => prevSections.map(section => ({
             ...section,
             data: section.data.filter((p) => p.id !== id)
           })).filter(section => section.data.length > 0));
+        } catch (error: unknown) {
+          const msg = error instanceof Error ? error.message : 'Неизвестная ошибка';
+          alert(`Ошибка: ${msg}`);
         }
       })();
     }
@@ -150,7 +145,7 @@ const styles = StyleSheet.create({
   placeholderImage: { width: 60, height: 60, borderRadius: Radius.m, marginRight: Spacing.m, backgroundColor: Colors.light.border },
   sectionHeader: { flexDirection: 'row', alignItems: 'center', paddingBottom: Spacing.s, paddingTop: Spacing.m },
   sectionTitle: { fontSize: 20, fontWeight: '800', color: Colors.light.text },
-  sectionBadge: { backgroundColor: Colors.light.border, borderRadius: 12, paddingHorizontal: 8, paddingVertical: 2, marginLeft: Spacing.s },
+  sectionBadge: { backgroundColor: Colors.light.border, borderRadius: Radius.m, paddingHorizontal: 8, paddingVertical: 2, marginLeft: Spacing.s },
   sectionBadgeText: { fontSize: 12, fontWeight: '700', color: Colors.light.textSecondary },
   empty: { textAlign: 'center', color: Colors.light.textSecondary, marginTop: 40 }
 });

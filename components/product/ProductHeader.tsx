@@ -1,9 +1,9 @@
-import { Colors, Spacing, Duration, Shadows } from '@/constants/theme';
+import { Colors, Radius, Spacing, Duration, Shadows } from '@/constants/theme';
 import { Product } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { Platform, StyleSheet, TouchableOpacity, View, useWindowDimensions } from 'react-native';
+import { StyleSheet, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import { Image } from 'expo-image';
 import { useImageKit } from '@/hooks/useImageKit';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -24,7 +24,12 @@ export const ProductHeader: React.FC<ProductHeaderProps> = ({
 }) => {
   const router = useRouter();
   const { width: screenWidth } = useWindowDimensions();
-  const { source, placeholder, hasImage, imageProps } = useImageKit(product.image_url, { width: screenWidth, height: 380, transition: Duration.slow });
+  const { source, placeholder, hasImage, imageProps } = useImageKit(product.image_url, { 
+    width: screenWidth, 
+    height: 380, 
+    transition: Duration.slow,
+    imageOptions: { pad: true, background: Colors.light.card }
+  });
 
   return (
     <View style={styles.imageContainer}>
@@ -48,7 +53,7 @@ export const ProductHeader: React.FC<ProductHeaderProps> = ({
           <Ionicons
             name={isFavorite ? "heart" : "heart-outline"}
             size={24}
-            color={isFavorite ? Colors.light.error : Colors.light.text}
+            color={isFavorite ? Colors.light.primary : Colors.light.text}
           />
         </TouchableOpacity>
       </SafeAreaView>
@@ -60,7 +65,7 @@ const styles = StyleSheet.create({
   imageContainer: {
     width: '100%',
     height: 380,
-    backgroundColor: Colors.light.borderLight,
+    backgroundColor: Colors.light.card,
   },
   image: {
     width: '100%',
@@ -77,12 +82,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: Spacing.m,
-    paddingTop: Platform.OS === 'android' ? 30 : 10,
+    paddingTop: Spacing.xs,
   },
   iconButton: {
     width: 44,
     height: 44,
-    borderRadius: 22,
+    borderRadius: Radius.pill,
     backgroundColor: Colors.light.whiteTransparent,
     justifyContent: 'center',
     alignItems: 'center',

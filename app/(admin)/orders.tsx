@@ -1,43 +1,32 @@
 import { Colors, Radius, Spacing, Shadows } from '@/constants/theme';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/lib/services/supabase';
+import { fetchAllOrdersWithDetails, updateOrderStatus, AdminOrderWithDetails } from '@/lib/api/adminApi';
+import Skeleton from '@/components/ui/Skeleton';
+import ScreenHeader from '@/components/ui/ScreenHeader';
 import { Ionicons } from '@expo/vector-icons';
-import { cleanAddress } from '@/lib/address';
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, FlatList, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { cleanAddress } from '@/lib/utils/addressUtils';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Alert, FlatList, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const STATUSES = {
   pending: { label: 'Новый', color: Colors.light.warning },
   processing: { label: 'Сборка', color: Colors.light.info },
-  shipped: { label: 'В пути', color: Colors.light.secondary },
+  shipped: { label: 'В пути', color: Colors.light.info },
   delivered: { label: 'Доставлен', color: Colors.light.success },
   cancelled: { label: 'Отменен', color: Colors.light.error }
 };
 
 type OrderStatus = keyof typeof STATUSES;
 
-interface OrderWithDetails {
-  id: string;
-  status: OrderStatus;
-  total_amount: number;
-  delivery_address: string;
-  created_at: string;
-  profiles: { first_name: string | null; last_name: string | null; phone: string } | { first_name: string | null; last_name: string | null; phone: string }[];
-  items?: {
-    id: string;
-    quantity: number;
-    price_at_time: number;
-    product?: { name: string };
-  }[];
-}
-
 export default function ManageOrdersScreen() {
-  const [orders, setOrders] = useState<OrderWithDetails[]>([]);
+  const [orders, setOrders] = useState<AdminOrderWithDetails[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedOrders, setExpandedOrders] = useState<string[]>([]);
 
-  const toggleExpand = (id: string) => {
+  const toggleExpand = useCallback((id: string) => {
     setExpandedOrders(prev => prev.includes(id) ? prev.filter(o => o !== id) : [...prev, id]);
-  };
+  }, []);
 
   useEffect(() => {
     fetchOrders();
@@ -56,55 +45,49 @@ export default function ManageOrdersScreen() {
 
   const fetchOrders = async () => {
     setLoading(true);
-    // Join with profiles to get user info 
-    const { data, error } = await supabase
-      .from('orders')
-      .select('*, profiles:user_id (first_name, last_name, phone), items:order_items(*, product:products(*))')
-      .order('created_at', { ascending: false });
-
-    if (!error && data) {
+    try {
+      const data = await fetchAllOrdersWithDetails();
       setOrders(data);
+    } catch {
+      // Ошибка загрузки заказов
     }
     setLoading(false);
   };
 
-  const updateStatus = async (orderId: string, newStatus: OrderStatus) => {
-    const { error } = await supabase
-      .from('orders')
-      .update({ status: newStatus })
-      .eq('id', orderId);
-
-    if (error) {
-      Alert.alert('Ошибка', error.message);
-    } else {
-      // Optimistic update
+  const handleUpdateStatus = useCallback(async (orderId: string, newStatus: OrderStatus) => {
+    try {
+      await updateOrderStatus(orderId, newStatus);
+      // Оптимистичное обновление
       setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus } : o));
+    } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Неизвестная ошибка';
+      Alert.alert('Ошибка', errorMessage);
     }
-  };
+  }, []);
 
-  const showStatusOptions = (orderId: string, currentStatus: string) => {
+  const showStatusOptions = useCallback((orderId: string, _currentStatus: string) => {
     Alert.alert(
       'Изменить статус',
       'Выберите новый статус для заказа',
       [
-        { text: 'Сборка', onPress: () => updateStatus(orderId, 'processing') },
-        { text: 'В пути', onPress: () => updateStatus(orderId, 'shipped') },
-        { text: 'Доставлен', onPress: () => updateStatus(orderId, 'delivered') },
-        { text: 'Отмена', onPress: () => updateStatus(orderId, 'cancelled'), style: 'destructive' },
+        { text: 'Сборка', onPress: () => handleUpdateStatus(orderId, 'processing') },
+        { text: 'В пути', onPress: () => handleUpdateStatus(orderId, 'shipped') },
+        { text: 'Доставлен', onPress: () => handleUpdateStatus(orderId, 'delivered') },
+        { text: 'Отмена', onPress: () => handleUpdateStatus(orderId, 'cancelled'), style: 'destructive' },
         { text: 'Назад', style: 'cancel' }
       ]
     );
-  };
+  }, [handleUpdateStatus]);
 
-  const callCustomer = (phone: string | null) => {
+  const callCustomer = useCallback((phone: string | null) => {
     if (phone) {
       Linking.openURL(`tel:${phone}`);
     } else {
       Alert.alert('Ошибка', 'У клиента не указан номер телефона');
     }
-  };
+  }, []);
 
-  const renderOrder = ({ item }: { item: OrderWithDetails }) => {
+  const renderOrder = useCallback(({ item }: { item: AdminOrderWithDetails }) => {
     const statusInfo = STATUSES[item.status] || STATUSES.pending;
     const profile = Array.isArray(item.profiles) ? item.profiles[0] : item.profiles;
     const customerName = profile?.first_name ? `${profile.first_name} ${profile.last_name || ''}` : 'Клиент';
@@ -171,18 +154,35 @@ export default function ManageOrdersScreen() {
         </TouchableOpacity>
       </View>
     );
-  };
+  }, [expandedOrders, toggleExpand, callCustomer, showStatusOptions]);
 
   if (loading) {
     return (
-      <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color={Colors.light.primary} />
-      </View>
+      <SafeAreaView edges={['bottom']} style={styles.container}>
+        <ScreenHeader title="Заказы Клиентов" />
+        <View style={styles.list}>
+          {[1, 2, 3].map(i => (
+            <View key={i} style={styles.card}>
+              <View style={styles.skeletonCardHeader}>
+                <Skeleton width={130} height={18} />
+                <Skeleton width={70} height={22} borderRadius={Radius.m} />
+              </View>
+              <Skeleton width="75%" height={14} style={styles.skeletonLine} />
+              <Skeleton width="55%" height={14} style={styles.skeletonLineBottom} />
+              <View style={styles.skeletonFooter}>
+                <Skeleton width={80} height={20} />
+                <Skeleton width={100} height={13} />
+              </View>
+            </View>
+          ))}
+        </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView edges={['bottom']} style={styles.container}>
+      <ScreenHeader title="Заказы Клиентов" />
       <FlatList
         data={orders}
         keyExtractor={item => item.id}
@@ -191,14 +191,17 @@ export default function ManageOrdersScreen() {
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={<Text style={styles.empty}>Нет заказов.</Text>}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.light.background },
-  centerContainer: { justifyContent: 'center', alignItems: 'center' },
   list: { padding: Spacing.m, paddingBottom: 60 },
+  skeletonCardHeader: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: Spacing.m },
+  skeletonLine: { marginBottom: Spacing.s },
+  skeletonLineBottom: { marginBottom: Spacing.m },
+  skeletonFooter: { flexDirection: 'row', justifyContent: 'space-between' },
   card: {
     backgroundColor: Colors.light.card,
     borderRadius: Radius.l,
@@ -208,7 +211,7 @@ const styles = StyleSheet.create({
   },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.m },
   orderId: { fontSize: 16, fontWeight: '700', color: Colors.light.text },
-  statusBadge: { paddingHorizontal: 12, paddingVertical: 4, borderRadius: Radius.m },
+  statusBadge: { paddingHorizontal: Spacing.sm, paddingVertical: 4, borderRadius: Radius.m },
   statusText: { fontSize: 12, fontWeight: '700' },
   customerInfo: { marginBottom: Spacing.s },
   customerRow: { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.light.background, padding: 10, borderRadius: Radius.m },
@@ -220,10 +223,10 @@ const styles = StyleSheet.create({
   footer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.m, borderTopWidth: 1, borderTopColor: Colors.light.borderLight, paddingTop: Spacing.s },
   price: { fontSize: 18, fontWeight: '800', color: Colors.light.text },
   date: { fontSize: 12, color: Colors.light.textLight },
-  actionButton: { paddingVertical: 12, borderRadius: Radius.m, alignItems: 'center' },
-  actionButtonText: { color: Colors.light.card, fontSize: 14, fontWeight: '700' },
+  actionButton: { paddingVertical: Spacing.sm, borderRadius: Radius.m, alignItems: 'center' },
+  actionButtonText: { color: Colors.light.white, fontSize: 14, fontWeight: '700' },
   empty: { textAlign: 'center', marginTop: 100, color: Colors.light.textSecondary },
-  expandButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: Spacing.s, marginBottom: Spacing.s, backgroundColor: Colors.light.infoLight, borderRadius: Radius.m },
+  expandButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: Spacing.s, marginBottom: Spacing.s, backgroundColor: Colors.light.primaryLight, borderRadius: Radius.m },
   expandButtonText: { color: Colors.light.primary, fontSize: 13, fontWeight: '600', marginRight: 4 },
   itemsContainer: { backgroundColor: Colors.light.background, borderRadius: Radius.m, padding: Spacing.m, marginBottom: Spacing.m },
   itemRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8, alignItems: 'flex-start' },

@@ -31,6 +31,7 @@
 Дополнительные протоколы для специализированных задач:
 - **`.agent/skills/supabase/SKILL.md`** — миграции, RLS, типы БД. Подробности в `architecture.md`.
 - **`.agent/skills/testing/SKILL.md`** — тестирование и AI Regression Cycle. Подробности в `code-standards.md`.
+- **`.agent/skills/navigation/SKILL.md`** — создание экранов, вкладок и динамических маршрутов в Expo Router.
 - **`.agent/skills/skill-creator/SKILL.md`** — создание и улучшение новых навыков.
 - **`.agent/workflows/verify-task.md`** — автоматическая проверка задач (lint + knip + test).
 - **`.agent/workflows/supabase-sync.md`** — синхронизация local ↔ remote БД.

@@ -6,7 +6,7 @@ import { useCategoryStore } from '../categoryStore';
 // Используем jest.doMock для перехвата динамических импортов в сторе
 // Важно: jest.mock хойстится, поэтому для тонкой настройки иногда лучше doMock внутри тестов,
 // но здесь мы попробуем сначала "чистый" jest.mock с правильной структурой модуля.
-jest.mock('@/lib/categoriesApi', () => ({
+jest.mock('@/lib/api/categoriesApi', () => ({
   __esModule: true,
   fetchRootCategories: jest.fn(),
   fetchFullHierarchy: jest.fn(),
@@ -27,7 +27,7 @@ describe('useCategoryStore', () => {
 
   beforeAll(() => {
     // В Jest mock-модули можно получить через require
-    categoriesApi = require('@/lib/categoriesApi');
+    categoriesApi = require('@/lib/api/categoriesApi');
   });
 
   beforeEach(() => {

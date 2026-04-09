@@ -1,6 +1,5 @@
 import { Ionicons } from '@expo/vector-icons';
-import * as ImagePicker from 'expo-image-picker';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -18,8 +17,9 @@ import {
 
 import { Colors, Radius, Spacing } from '@/constants/theme';
 import { Category } from '@/types';
-import { uploadImage } from '@/lib/storageUtils';
-import { slugify } from '@/utils/slugify';
+import { useImagePicker } from '@/hooks/useImagePicker';
+import { showAlert } from '@/lib/utils/platformUtils';
+import { slugify } from '@/lib/utils/slugify';
 
 interface CategoryFormModalProps {
   visible: boolean;
@@ -42,10 +42,9 @@ export default function CategoryFormModal({
   rootCategories,
   isSubmitting,
 }: CategoryFormModalProps) {
-  const [name, setName] = useState('');
-  const [imageUrl, setImageUrl] = useState('');
-  const [selectedParent, setSelectedParent] = useState<string | null>(null);
-  const [uploading, setUploading] = useState(false);
+  const [name, setName] = React.useState('');
+  const [selectedParent, setSelectedParent] = React.useState<string | null>(null);
+  const { imageUrl, setImageUrl, uploading, pickImage } = useImagePicker('categories');
 
   // Инициализация полей при открытии для редактирования
   useEffect(() => {
@@ -54,32 +53,11 @@ export default function CategoryFormModal({
       setImageUrl(initialData?.image_url || '');
       setSelectedParent(initialData?.parent_id || null);
     }
-  }, [visible, initialData]);
-
-  const handlePickImage = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ['images'],
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 0.8,
-    });
-
-    if (!result.canceled && result.assets[0].uri) {
-      setUploading(true);
-      try {
-        const publicUrl = await uploadImage(result.assets[0].uri, 'categories');
-        setImageUrl(publicUrl);
-      } catch {
-        Alert.alert('Ошибка', 'Не удалось загрузить изображение');
-      } finally {
-        setUploading(false);
-      }
-    }
-  };
+  }, [visible, initialData, setImageUrl]);
 
   const handleFormSubmit = () => {
     if (!name.trim()) {
-      Alert.alert('Ошибка', 'Введите название категории');
+      showAlert('Ошибка', 'Введите название категории');
       return;
     }
 
@@ -164,7 +142,7 @@ export default function CategoryFormModal({
             <View style={styles.formGroup}>
               <View style={styles.labelRow}>
                 <Text style={styles.label}>Ссылка на фото или HEX-код</Text>
-                <TouchableOpacity onPress={handlePickImage} disabled={uploading} testID="pick-image-btn">
+                <TouchableOpacity onPress={pickImage} disabled={uploading} testID="pick-image-btn">
                   <Text style={[styles.pickText, uploading && styles.pickTextDisabled]}>
                     {uploading ? 'Загрузка...' : 'Выбрать файл'}
                   </Text>
@@ -201,7 +179,7 @@ export default function CategoryFormModal({
               testID="submit-category-btn"
             >
               {isSubmitting ? (
-                <ActivityIndicator color={Colors.light.card} />
+                <ActivityIndicator color={Colors.light.white} />
               ) : (
                 <Text style={styles.submitBtnText}>
                   {initialData ? 'Сохранить изменения' : 'Создать категорию'}
@@ -296,10 +274,10 @@ const styles = StyleSheet.create({
     marginTop: Spacing.m, 
     marginBottom: Spacing.xl,
   },
-  submitBtnText: { 
-    color: Colors.light.card, 
-    fontSize: 16, 
-    fontWeight: '700' 
+  submitBtnText: {
+    color: Colors.light.white,
+    fontSize: 16,
+    fontWeight: '700'
   },
   btnDisabled: { 
     opacity: 0.6 

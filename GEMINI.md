@@ -2,18 +2,48 @@
 
 ## 🇷🇺 Language & Communication
 - **Russian Only**: Писать все комментарии к коду исключительно на **русском языке**.
-- **Concise Responses**: Отвечать кратко и по существу, следуя выбранному `communication_style`.
+- **Concise Responses**: Отвечать кратко и по существу.
 
 ## 🛠️ TypeScript & Code Standards
 - **Strict Typing**: Никогда не использовать `any`. Всегда описывать интерфейсы или типы.
 - **Return Types**: Всегда указывать типы возвращаемых значений для функций и хуков.
-- **Boy Scout Rule**: Всегда оставлять код чуть чище, чем он был до начала работы (удалять неиспользуемые импорты, исправлять мелкие ошибки типизации в соседних строках).
+- **No Raw Colors**: Запрещено использовать hex-коды или `rgba()` напрямую в компонентах. Только `Colors.light.*` токены из `constants/theme.ts`.
+- **No Magic Numbers**: Отступы через `Spacing.*`, радиусы через `Radius.*`, размеры шрифтов через `FontSize.*`.
+- **Boy Scout Rule**: Оставлять код чуть чище — удалять неиспользуемые импорты, исправлять мелкие ошибки типизации в соседних строках.
+
+## 🎨 UI: Soft Minimalism
+- **Стиль**: Soft Minimalism — мягкие нейтральные тени, экстремальное скругление, pill-форма для кнопок.
+- **Тени**: `shadowColor: Colors.light.text`, `shadowOpacity: 0.03–0.05`, `shadowRadius: 12–16`. Нейтральный серый, не цветной. `elevation: 0` на Android.
+- **Скругление**: Карточки — `Radius.xxl (24)`, кнопки/инпуты — `Radius.pill (999)`.
+- **Фон**: Экраны — `#F9FAFB`, карточки — `#ffffff`.
+
+## 🎨 Монохромная палитра
+- `primary` `#10B981` — бренд, навигация, иконки, выделение
+- `cta` `#059669` — ТОЛЬКО кнопки главного действия ("В корзину", "Оформить заказ")
+- `ctaDark` `#047857` — pressed-состояние CTA
+- Правило 60-30-10: 60% нейтраль, 30% primary, 10% CTA
+- `error`/`warning`/`success`/`info` — только для статусов, не для декора
+
+## 🗄️ Backend & Storage
+- **БД**: Supabase (PostgreSQL + RLS + Auth + Edge Functions).
+- **Хранилище**: Cloudflare R2 + ImageKit CDN (не Supabase Storage).
+  - Upload: `uploadImage(uri, folder)` из `lib/utils/storageUtils.ts` (presigned URL).
+  - Оптимизация: `getOptimizedImage(url, options)` из `lib/utils/imageKit.ts`.
+- **Типы**: После любого изменения схемы — `npm run supabase:types`. Никогда не редактировать `types/supabase.ts` вручную.
+
+## 🔀 Навигация (Expo Router)
+- **Файловая структура**: `app/` — все маршруты.
+- **Stack-экраны**: `headerShown: false` в layout + обязательный `<ScreenHeader />` внутри экрана.
+- **SafeAreaView**: `edges={['bottom']}` для stack-экранов, из `react-native-safe-area-context`.
+- **testID**: Обязателен на всех интерактивных и навигационных элементах.
 
 ## 🤖 AI Collaboration Strategy
-- **Smart Decomposition**: Если файл или компонент превышает **200 строк**, предлагать его декомпозицию. Это помогает ИИ сохранять точность и контекст.
-- **No Placeholders**: Никогда не оставлять `// TODO` или пустые реализации. Если данных недостаточно — задать уточняющий вопрос пользователю.
-- **Skill Creator**: Я умею проектировать новые навыки (Skills) с использованием шаблонов и системы тестирования (Evals). Используйте меня для расширения моих возможностей.
-- **Autonomous Verification**: После реализации логики или UI всегда предлагать запуск верификации (`/verify` или `npm test`).
+- **Smart Decomposition**: Если файл превышает **200 строк** — предлагать декомпозицию.
+- **No Placeholders**: Никогда не оставлять `// TODO` или пустые реализации.
+- **Autonomous Verification**: После реализации — предлагать `npm test` или `/verify`.
+- **Tests as Contracts**: Перед изменением логики — анализировать существующие тесты.
 
 ## 📁 Project Structure
-- Проектные настройки (Rules, Skills, Workflows) находятся в директории `.agent/` внутри репозитория.
+- Правила, скиллы и воркфлоу — в `.agent/` внутри репозитория.
+- **Скиллы**: `supabase`, `testing`, `navigation`, `skill-creator`.
+- **Воркфлоу**: `verify-task`, `supabase-sync`.

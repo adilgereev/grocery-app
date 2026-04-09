@@ -62,6 +62,7 @@ const createSupabaseMock = () => {
     contains: jest.fn().mockReturnThis(),
     order: jest.fn().mockReturnThis(),
     limit: jest.fn().mockReturnThis(),
+    rpc: jest.fn().mockReturnThis(),
     single: jest.fn().mockImplementation(() => Promise.resolve(mockSupabaseResponse())),
     maybeSingle: jest.fn().mockImplementation(() => Promise.resolve(mockSupabaseResponse())),
     then: jest.fn().mockImplementation((onFulfilled) => {
@@ -79,6 +80,6 @@ jest.mock('@supabase/supabase-js', () => ({
 }));
 
 // Mock our internal supabase client
-jest.mock('@/lib/supabase', () => ({
+jest.mock('@/lib/services/supabase', () => ({
   supabase: createSupabaseMock(),
 }));

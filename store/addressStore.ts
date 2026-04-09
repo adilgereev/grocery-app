@@ -1,21 +1,10 @@
 import { create } from 'zustand';
-import { supabase } from '@/lib/supabase';
-import { fetchAddresses, createAddress, updateAddress, deleteAddress, markAddressAsSelected } from '@/lib/addressApi';
-import { logger } from '@/lib/logger';
+import { supabase } from '@/lib/services/supabase';
+import { fetchAddresses, createAddress, updateAddress, deleteAddress, markAddressAsSelected } from '@/lib/api/addressApi';
+import { getSession } from '@/lib/api/authApi';
+import { logger } from '@/lib/utils/logger';
+import { Address } from '@/types';
 
-export interface Address {
-  id: string; // uuid from supabase
-  text: string;
-  house?: string;
-  entrance?: string;
-  floor?: string;
-  intercom?: string;
-  apartment?: string;
-  comment?: string;
-  is_selected: boolean;
-  lat?: number;
-  lon?: number;
-}
 
 interface AddressStore {
   addresses: Address[];
@@ -72,7 +61,7 @@ export const useAddressStore = create<AddressStore>((set, get) => ({
 
   loadAddresses: async () => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const session = await getSession();
       if (!session) return;
 
       const data = await fetchAddresses(session.user.id);
@@ -93,7 +82,7 @@ export const useAddressStore = create<AddressStore>((set, get) => ({
 
   addAddress: async (details) => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const session = await getSession();
       if (!session) return;
 
       // Если это первый адрес для пользователя, то сделаем его сразу "Выбранным" автоматически
@@ -126,7 +115,7 @@ export const useAddressStore = create<AddressStore>((set, get) => ({
 
   updateAddress: async (id, details) => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const session = await getSession();
       if (!session) return;
 
       const data = await updateAddress(session.user.id, id, {
@@ -152,7 +141,7 @@ export const useAddressStore = create<AddressStore>((set, get) => ({
 
   removeAddress: async (id) => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const session = await getSession();
       if (!session) return;
 
       await deleteAddress(session.user.id, id);
@@ -178,7 +167,7 @@ export const useAddressStore = create<AddressStore>((set, get) => ({
 
   selectAddress: async (id) => {
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      const session = await getSession();
       if (!session) return;
 
       // Быстрое локальное обновление стейта

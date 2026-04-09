@@ -1,5 +1,5 @@
-import { fetchRootCategories, fetchFullHierarchy, fetchCategoriesWithHierarchy } from '../categoriesApi';
-import { supabase } from '../supabase';
+import { fetchRootCategories, fetchFullHierarchy, fetchCategoriesWithHierarchy } from '@/lib/api/categoriesApi';
+import { supabase } from '@/lib/services/supabase';
 
 // Типизируем мок Supabase для тестов
 const mockSupabase = supabase as any;

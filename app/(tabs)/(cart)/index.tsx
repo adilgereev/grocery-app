@@ -1,13 +1,15 @@
-import CartItem from '@/components/CartItem';
-import CartSummary, { PaymentMethod } from '@/components/CartSummary';
-import EmptyCart from '@/components/EmptyCart';
+import CartItem from '@/components/cart/CartItem';
+import CartSummary from '@/components/cart/CartSummary';
+import EmptyCart from '@/components/cart/EmptyCart';
 import FloatingCheckoutButton from '@/components/FloatingCheckoutButton';
-import { Colors, Spacing, FontSize } from '@/constants/theme';
+import { Colors, Duration, FontSize, Spacing } from '@/constants/theme';
 import { useCheckout } from '@/hooks/useCheckout';
 import { useCartStore } from '@/store/cartStore';
-import { formatFullAddress } from '@/utils/addressFormatter';
-import React, { useState } from 'react';
+import { Address, PaymentMethod } from '@/types';
+import { formatFullAddress } from '@/lib/utils/addressFormatter';
+import React, { useCallback, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import { useRouter } from 'expo-router';
 import Animated, { Layout, useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -16,14 +18,12 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
  * Логика чекаута вынесена в useCheckout, логика расчетов — в cartStore.
  */
 export default function CartScreen() {
-  const { 
-    items, 
-    updateQuantity, 
-    removeItem, 
-    subtotal, 
-    deliveryFee, 
-    totalPrice 
-  } = useCartStore();
+  const items = useCartStore(state => state.items);
+  const updateQuantity = useCartStore(state => state.updateQuantity);
+  const removeItem = useCartStore(state => state.removeItem);
+  const subtotal = useCartStore(state => state.subtotal);
+  const deliveryFee = useCartStore(state => state.deliveryFee);
+  const totalPrice = useCartStore(state => state.totalPrice);
   
   const insets = useSafeAreaInsets();
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cash');
@@ -46,11 +46,21 @@ export default function CartScreen() {
     },
   });
 
-  const formatAddress = (addr: any) => formatFullAddress(addr);
+  const router = useRouter();
+
+  const formatAddress = useCallback((addr: Address | null | undefined) => formatFullAddress(addr), []);
+
+  const handleProductPress = useCallback((productId: string, productName: string) => {
+    router.push(`/product/${productId}?name=${encodeURIComponent(productName)}`);
+  }, [router]);
+
+  const handleGoShopping = useCallback(() => {
+    router.push('/(tabs)/(index)');
+  }, [router]);
 
   // Состояние пустой корзины с рекомендациями
   if (items.length === 0) {
-    return <EmptyCart insetsTop={insets.top} />;
+    return <EmptyCart insetsTop={insets.top} onGoShopping={handleGoShopping} />;
   }
 
   return (
@@ -74,19 +84,23 @@ export default function CartScreen() {
           contentHeight.value = height;
         }}
         ListFooterComponent={
-          <CartSummary
-            itemsCount={items.length}
-            subtotal={subtotal}
-            deliveryFee={deliveryFee}
-            totalPrice={totalPrice}
-            selectedAddress={selectedAddress}
-            paymentMethod={paymentMethod}
-            setPaymentMethod={setPaymentMethod}
-            onCheckout={() => handleCheckout(paymentMethod)}
-            onSelectAddress={handleSelectAddress}
-            isSubmitting={isSubmitting}
-            formatAddress={formatAddress}
-          />
+          // Задержка равна длительности FadeOutLeft (Duration.fast),
+          // чтобы футер не наезжал на удаляемый элемент до завершения его анимации
+          <Animated.View layout={Layout.springify().delay(Duration.fast)}>
+            <CartSummary
+              itemsCount={items.length}
+              subtotal={subtotal}
+              deliveryFee={deliveryFee}
+              totalPrice={totalPrice}
+              selectedAddress={selectedAddress}
+              paymentMethod={paymentMethod}
+              setPaymentMethod={setPaymentMethod}
+              onCheckout={() => handleCheckout(paymentMethod)}
+              onSelectAddress={handleSelectAddress}
+              isSubmitting={isSubmitting}
+              formatAddress={formatAddress}
+            />
+          </Animated.View>
         }
         renderItem={({ item, index }) => (
           <CartItem
@@ -94,6 +108,7 @@ export default function CartScreen() {
             index={index}
             onUpdateQuantity={updateQuantity}
             onRemove={removeItem}
+            onPress={() => handleProductPress(item.product.id, item.product.name)}
           />
         )}
       />
@@ -116,7 +131,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.background,
   },
   header: {
-    paddingHorizontal: 20,
+    paddingHorizontal: Spacing.ml,
     backgroundColor: Colors.light.background,
     paddingBottom: Spacing.s,
     zIndex: 10,
@@ -127,7 +142,7 @@ const styles = StyleSheet.create({
     color: Colors.light.text,
   },
   listContainer: {
-    paddingHorizontal: 20,
+    paddingHorizontal: Spacing.ml,
     paddingBottom: Spacing.xxl,
   },
 });

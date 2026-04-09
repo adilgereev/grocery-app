@@ -1,66 +1,53 @@
-import CategoryHierarchySection from '@/components/CategoryHierarchySection';
-import PopularProductsSkeleton from '@/components/PopularProductsSkeleton';
-import SubcategoriesSkeleton from '@/components/SubcategoriesSkeleton';
-import { Colors, Radius, Spacing, Duration, Shadows } from '@/constants/theme';
-import { mockBanners } from '@/data/mockBanners';
-import { logger } from '@/lib/logger';
-import { fetchPopularProducts } from '@/lib/productsApi';
-import { fetchUserProfile } from '@/lib/authApi';
+import CategoryHierarchySection from '@/components/home/CategoryHierarchySection';
+import StoriesSection from '@/components/home/StoriesSection';
+import HomeHeader from '@/components/home/HomeHeader';
+import PopularSection from '@/components/home/PopularSection';
+import SubcategoriesSkeleton from '@/components/category/SubcategoriesSkeleton';
+import { logger } from '@/lib/utils/logger';
+import { fetchPopularProducts } from '@/lib/api/productsApi';
 import { useAuth } from '@/providers/AuthProvider';
 import { useAddressStore } from '@/store/addressStore';
-import { useCartStore } from '@/store/cartStore';
 import { useCategoryStore } from '@/store/categoryStore';
-import { Category } from '@/types';
-import { formatShortAddress } from '@/utils/addressFormatter';
-import { getOptimizedImage, getPlaceholderUrl } from '@/utils/imageKit';
-import { Ionicons } from '@expo/vector-icons';
+import { useStoriesStore } from '@/store/storiesStore';
+import { Category, Product } from '@/types';
+import { formatShortAddress } from '@/lib/utils/addressFormatter';
 import { useFocusEffect } from '@react-navigation/native';
-import { Image } from 'expo-image';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import {
-  Animated,
-  Dimensions,
-  FlatList,
-  ScrollView, StyleSheet, Text, TouchableOpacity, View
-} from 'react-native';
+import React, { useCallback, useMemo, useRef, useState } from 'react';
+import { Animated, FlatList, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { homeStyles as s } from '@/components/home/index.styles';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-
-// Высота блока приветствия (greeting + margin)
-// Высота блока приветствия (greeting + адрес) — теперь 2 строки. 
-// Сделаем более компактно после уменьшения шрифтов.
+// Высота блока приветствия (greeting + адрес)
 const GREETING_HEIGHT = 52;
 
 export default function HomeScreen() {
-  const { session } = useAuth();
+  const { session, profile } = useAuth();
   const router = useRouter();
 
-  // Подключаем хранилище категорий для иерархии
-  const { categoriesWithSubs, fetchFullHierarchy, isLoading: categoriesLoading } = useCategoryStore();
-  const { addItem } = useCartStore();
+  const categoriesWithSubs = useCategoryStore(state => state.categoriesWithSubs);
+  const fetchFullHierarchy = useCategoryStore(state => state.fetchFullHierarchy);
+  const categoriesLoading = useCategoryStore(state => state.isLoading);
+  const fetchStories = useStoriesStore(state => state.fetchStories);
 
-  const [popularProducts, setPopularProducts] = useState<any[]>([]);
+  const [popularProducts, setPopularProducts] = useState<Product[]>([]);
   const [popularLoading, setPopularLoading] = useState(true);
-  const [firstName, setFirstName] = useState<string>('');
+  // Имя из контекста (сбрасывается при выходе)
+  const firstName = profile?.first_name || '';
 
-  // Подключаем хранилище адресов
-  const { addresses, selectedAddressId, loadAddresses } = useAddressStore();
+  const addresses = useAddressStore(state => state.addresses);
+  const selectedAddressId = useAddressStore(state => state.selectedAddressId);
+  const loadAddresses = useAddressStore(state => state.loadAddresses);
   const selectedAddress = addresses.find(a => a.id === selectedAddressId);
   const displayAddress = formatShortAddress(selectedAddress);
 
-  // Прямая привязка анимации к позиции скролла — нет конфликтов, нет дрожания
+  // Анимация привязана к позиции скролла
   const scrollY = useRef(new Animated.Value(0)).current;
-
-  // Высота блока плавно сходит к 0 при скролле вниз
   const greetingHeight = scrollY.interpolate({
     inputRange: [0, 80],
     outputRange: [GREETING_HEIGHT, 0],
     extrapolate: 'clamp',
   });
-  // Прозрачность исчезает чуть раньше чем высота
   const greetingOpacity = scrollY.interpolate({
     inputRange: [0, 40],
     outputRange: [1, 0],
@@ -69,173 +56,58 @@ export default function HomeScreen() {
 
   const loadPopularProducts = useCallback(async () => {
     try {
-      if (popularProducts.length === 0) { // Silent refresh check
+      if (popularProducts.length === 0) {
         setPopularLoading(true);
       }
       const data = await fetchPopularProducts(10);
       setPopularProducts(data || []);
-    } catch (error: any) {
-      logger.error('Ошибка загрузки популярных:', error.message);
+    } catch (error: unknown) {
+      logger.error('Ошибка загрузки популярных:', error instanceof Error ? error.message : error);
     } finally {
       setPopularLoading(false);
     }
   }, [popularProducts.length]);
 
-  const loadUserInfo = useCallback(async () => {
-    try {
-      const userId = session!.user.id;
-      const profileData = await fetchUserProfile(userId);
-      if (profileData && 'first_name' in profileData) {
-        setFirstName(profileData.first_name as string);
-      }
-    } catch (error) {
-      logger.error('Ошибка в loadUserInfo:', error);
-    }
-  }, [session]);
-
-  useEffect(() => {
-    // Начальная загрузка при монтировании (базовая)
-  }, []);
-
   // Загружаем данные при каждом фокусе на страницу
   useFocusEffect(
     useCallback(() => {
-      // fetchFullHierarchy проверит кеш: если он сброшен (invalidateCache), будет сетевой запрос
-      // Позволяем стору использовать кеш (5 минут), если не было принудительного обновления (onRefresh)
       fetchFullHierarchy();
       loadPopularProducts();
+      fetchStories();
 
       if (session?.user) {
-        loadUserInfo();
-        loadAddresses(); // Синхронизируем адреса из стора
+        loadAddresses();
       }
-    }, [session, loadAddresses, loadUserInfo, fetchFullHierarchy, loadPopularProducts])
+    }, [session, loadAddresses, fetchFullHierarchy, loadPopularProducts, fetchStories])
   );
 
   // Определяем приветствие по времени суток
-  const getGreeting = () => {
+  const greeting = useMemo(() => {
     const hour = new Date().getHours();
     if (hour >= 5 && hour < 12) return { text: 'Доброе утро', emoji: '☀️' };
     if (hour >= 12 && hour < 18) return { text: 'Добрый день', emoji: '🌤' };
     if (hour >= 18 && hour < 24) return { text: 'Добрый вечер', emoji: '🌙' };
     return { text: 'Доброй ночи', emoji: '✨' };
-  };
+  }, []);
 
-  const greeting = getGreeting();
-
-  // Обработчик скролла — просто пишем Animated.event
   const handleScroll = Animated.event(
     [{ nativeEvent: { contentOffset: { y: scrollY } } }],
     { useNativeDriver: false }
   );
 
-  // Секция «Популярное» (Мемоизирована)
-  const popularSection = useMemo(() => {
-    if (popularLoading && popularProducts.length === 0) {
-      return <PopularProductsSkeleton count={5} />;
-    }
-    if (popularProducts.length === 0 && !popularLoading) return null;
-
-    return (
-      <View style={styles.popularSection}>
-        <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>🔥 Популярное</Text>
-          <TouchableOpacity activeOpacity={0.7}>
-            <Text style={styles.seeAllText}>Все</Text>
-          </TouchableOpacity>
-        </View>
-        <ScrollView
-          horizontal showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.popularScroll}
-        >
-          {popularProducts.map((product) => (
-            <TouchableOpacity
-              key={product.id} style={styles.popularCard} activeOpacity={0.8}
-              onPress={() => router.push(`/product/${product.id}`)}
-            >
-              <View style={styles.imageWrapper}>
-                {product.image_url
-                  ? (
-                    <Image
-                      source={getOptimizedImage(product.image_url, { width: 140, height: 110 })}
-                      placeholder={getPlaceholderUrl(product.image_url)}
-                      style={styles.popularImage}
-                      contentFit="cover"
-                      transition={Duration.default}
-                    />
-                  ) : <View style={[styles.popularImage, styles.imagePlaceholder]} />
-                }
-                <TouchableOpacity
-                  style={styles.addPopularButton}
-                  onPress={(e) => {
-                    e.stopPropagation();
-                    addItem(product);
-                  }}
-                  activeOpacity={0.9}
-                >
-                  <Ionicons name="add" size={20} color={Colors.light.card} />
-                </TouchableOpacity>
-              </View>
-              <View style={styles.popularInfo}>
-                <Text style={styles.popularName} numberOfLines={1}>{product.name}</Text>
-                <Text style={styles.popularPrice}>
-                  {product.price} ₽<Text style={styles.popularUnit}> / {product.unit}</Text>
-                </Text>
-              </View>
-            </TouchableOpacity>
-          ))}
-        </ScrollView>
-      </View>
-    );
-  }, [popularProducts, popularLoading, addItem, router]);
-
-  // Секция баннеров (Мемоизирована)
-  const bannersSection = useMemo(() => (
-    <View style={styles.bannersSection}>
-      <Text style={styles.bannersTitle}>Акции и новинки</Text>
-      <ScrollView
-        horizontal showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.bannersScroll}
-        decelerationRate="fast"
-        snapToInterval={SCREEN_WIDTH * 0.8 + 16}
-      >
-        {mockBanners.map((banner) => (
-          <TouchableOpacity key={banner.id} style={styles.bannerCard} activeOpacity={0.9}>
-            <View style={styles.bannerImageContainer}>
-              <Image
-                source={getOptimizedImage(banner.image_url, { width: Math.round(SCREEN_WIDTH * 0.8), height: 160 })}
-                placeholder={getPlaceholderUrl(banner.image_url)}
-                style={styles.bannerImage}
-                contentFit="cover"
-                transition={Duration.slow}
-              />
-              <LinearGradient
-                colors={[Colors.light.blackTransparent, 'transparent']}
-                start={{ x: 0, y: 1 }}
-                end={{ x: 0, y: 0.4 }}
-                style={styles.gradientOverlay}
-              />
-              <Text style={styles.bannerTitle}>{banner.title}</Text>
-            </View>
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
-    </View>
-  ), []);
-
-  // Секция категорий (Мемоизирована)
+  // Секция категорий (мемоизирована)
   const categoriesSection = useMemo(() => (
     <>
       {categoriesLoading && categoriesWithSubs.length === 0 ? (
         <SubcategoriesSkeleton count={6} />
       ) : categoriesWithSubs.length > 0 ? (
-        <View style={styles.hierarchyContainer}>
+        <View style={s.hierarchyContainer}>
           {categoriesWithSubs.map((category) => (
             <CategoryHierarchySection key={category.id} category={category} />
           ))}
         </View>
       ) : (
-        <Text style={styles.categoryFallbackTitle}>Категории</Text>
+        <Text style={s.categoryFallbackTitle}>Категории</Text>
       )}
     </>
   ), [categoriesLoading, categoriesWithSubs]);
@@ -243,171 +115,51 @@ export default function HomeScreen() {
   // Стабильный заголовок списка
   const listHeader = useMemo(() => (
     <>
-      {bannersSection}
-      {popularSection}
+      <StoriesSection />
+      <PopularSection
+        products={popularProducts}
+        loading={popularLoading}
+        onProductPress={(id) => router.push(`/product/${id}`)}
+      />
       {categoriesSection}
     </>
-  ), [bannersSection, popularSection, categoriesSection]);
+  ), [popularProducts, popularLoading, router, categoriesSection]);
 
   return (
-    <View style={styles.container}>
-      <SafeAreaView style={styles.safeAreaTop} edges={['top']} />
-      {/* Умная шапка: приветствие скрывается при скролле */}
-      <View style={styles.header}>
-        {/* Анимированная строка приветствия + адрес */}
-        <Animated.View style={[styles.greetingAnimationContainer, { height: greetingHeight, opacity: greetingOpacity }]}>
-          <View style={styles.greetingContainer}>
-            <Text style={styles.greetingText}>
-              {firstName ? `${greeting.text}, ${firstName}! ${greeting.emoji}` : `${greeting.text}! ${greeting.emoji}`}
-            </Text>
-            {/* Клик по адресу → экран "Мои адреса" (или логин для гостя) */}
-            <TouchableOpacity
-              style={styles.addressRow}
-              activeOpacity={0.7}
-              onPress={() => {
-                if (!session?.user) {
-                  router.push('/(auth)/login');
-                } else {
-                  router.push('/addresses');
-                }
-              }}
-            >
-              <Ionicons name="location" size={14} color={Colors.light.primary} />
-              <Text style={styles.addressText} numberOfLines={1}>
-                {displayAddress}
-              </Text>
-              <Ionicons name="chevron-down" size={14} color={Colors.light.textLight} />
-            </TouchableOpacity>
-          </View>
-        </Animated.View>
+    <View style={s.container}>
+      <SafeAreaView style={s.safeAreaTop} edges={['top']} />
+      <HomeHeader
+        firstName={firstName}
+        greeting={greeting}
+        displayAddress={displayAddress}
+        greetingHeight={greetingHeight}
+        greetingOpacity={greetingOpacity}
+        onSearchPress={() => router.push('/search')}
+        onAddressPress={() => {
+          if (!session?.user) {
+            router.push('/(auth)/login');
+          } else {
+            router.push('/addresses');
+          }
+        }}
+      />
 
-        {/* Строка поиска — всегда видна */}
-        <TouchableOpacity
-          style={styles.searchContainer}
-          activeOpacity={0.8}
-          onPress={() => router.push('/search')}
-        >
-          <Ionicons name="search" size={20} color={Colors.light.primary} style={styles.searchIcon} />
-          <Text style={styles.searchInputText}>Поиск</Text>
-        </TouchableOpacity>
-      </View>
-
-      {/* Список с шапкой */}
       <FlatList
         data={[] as Category[]}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={styles.listContainer}
+        contentContainerStyle={s.listContainer}
         showsVerticalScrollIndicator={false}
         onScroll={handleScroll}
         scrollEventThrottle={16}
         ListHeaderComponent={listHeader}
-        renderItem={() => null} // Рендер происходит в ListHeader
+        renderItem={() => null}
         refreshing={categoriesLoading}
         onRefresh={() => {
           fetchFullHierarchy(true);
           loadPopularProducts();
+          fetchStories(true);
         }}
       />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: Colors.light.background },
-
-  header: {
-    paddingHorizontal: Spacing.m,
-    paddingBottom: Spacing.xs,
-    backgroundColor: Colors.light.card,
-    borderBottomLeftRadius: Radius.xxl,
-    borderBottomRightRadius: Radius.xxl,
-    borderBottomWidth: 1,
-    borderBottomColor: Colors.light.borderLight,
-    ...Shadows.sm,
-    zIndex: 10,
-  },
-  safeAreaTop: { backgroundColor: Colors.light.card },
-  greetingAnimationContainer: { overflow: 'hidden' },
-
-  // Приветствие и адрес теперь в стек
-  greetingContainer: {
-    justifyContent: 'center',
-    paddingBottom: Spacing.m,
-  },
-  greetingText: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: Colors.light.text,
-    marginBottom: Spacing.xs
-  },
-  addressRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.xs },
-  addressText: {
-    fontSize: 13, color: Colors.light.textSecondary, fontWeight: '500',
-    maxWidth: SCREEN_WIDTH * 0.85,
-  },
-
-  // Поиск
-  searchContainer: {
-    flexDirection: 'row', alignItems: 'center',
-    backgroundColor: Colors.light.primaryLight,
-    borderRadius: Radius.pill, // Максимальное скругление в стиле Лавки
-    paddingHorizontal: Spacing.m, height: 52,
-  },
-  searchIcon: { marginRight: 10 },
-  searchInputText: { flex: 1, fontSize: 16, color: Colors.light.textSecondary },
-
-  listContainer: { paddingTop: 0, paddingBottom: 80 },
-  hierarchyContainer: {
-    paddingTop: 0,
-  },
-  gradientOverlay: { ...StyleSheet.absoluteFillObject, borderRadius: Radius.l },
-  // Баннеры
-  bannersSection: { marginBottom: Spacing.xl, marginTop: Spacing.m },
-  bannersTitle: { fontSize: 22, fontWeight: '700', color: Colors.light.text, paddingHorizontal: Spacing.m, marginBottom: Spacing.s },
-  bannersScroll: { paddingHorizontal: Spacing.m },
-  bannerCard: {
-    width: SCREEN_WIDTH * 0.8, height: 160, marginRight: Spacing.m, borderRadius: Radius.xl,
-    ...Shadows.md,
-  },
-  bannerImageContainer: {
-    width: '100%',
-    height: '100%',
-    borderRadius: Radius.xl,
-    overflow: 'hidden',
-  },
-  bannerImage: { width: '100%', height: '100%' },
-  bannerTitle: {
-    color: Colors.light.card, fontSize: 20, fontWeight: '700',
-    textShadowColor: Colors.light.blackTransparent, textShadowOffset: { width: 0, height: 2 },
-    position: 'absolute', bottom: Spacing.m, left: Spacing.m, right: Spacing.m,
-  },
-
-  // Популярное
-  popularSection: { marginBottom: Spacing.xl },
-  sectionHeader: {
-    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    paddingHorizontal: Spacing.m, marginBottom: Spacing.s,
-  },
-  sectionTitle: { fontSize: 22, fontWeight: '700', color: Colors.light.text },
-  seeAllText: { fontSize: 14, color: Colors.light.primary, fontWeight: '600' },
-  popularScroll: { paddingHorizontal: Spacing.m },
-  popularCard: {
-    width: 140, marginRight: Spacing.m, backgroundColor: Colors.light.card, borderRadius: Radius.l,
-    overflow: 'hidden',
-    ...Shadows.md,
-  },
-  imageWrapper: { position: 'relative', width: '100%', height: 110 },
-  imagePlaceholder: { backgroundColor: Colors.light.borderLight },
-  popularImage: { width: '100%', height: '100%' },
-  popularInfo: { padding: Spacing.s, flex: 1, justifyContent: 'center' },
-  popularName: { fontSize: 13, fontWeight: '600', color: Colors.light.textSecondary, marginBottom: 2 },
-  popularPrice: { fontSize: 14, fontWeight: '700', color: Colors.light.text },
-  popularUnit: { fontSize: 11, color: Colors.light.textLight, fontWeight: '600' },
-  addPopularButton: {
-    position: 'absolute', bottom: 8, right: 8,
-    width: 32, height: 32, borderRadius: Radius.pill, backgroundColor: Colors.light.primary,
-    justifyContent: 'center', alignItems: 'center',
-    ...Shadows.sm,
-  },
-  categoryFallbackTitle: { fontSize: 22, fontWeight: '700', color: Colors.light.text, paddingHorizontal: Spacing.m }
-});

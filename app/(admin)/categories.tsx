@@ -2,7 +2,6 @@ import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from 'expo-router';
 import React, { useCallback, useState } from 'react';
 import {
-  ActivityIndicator,
   Alert,
   FlatList,
   LayoutAnimation,
@@ -13,11 +12,14 @@ import {
   UIManager,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import CategoryFormModal from '@/components/admin/CategoryFormModal';
 import CategoryItem from '@/components/admin/CategoryItem';
+import Skeleton from '@/components/ui/Skeleton';
+import ScreenHeader from '@/components/ui/ScreenHeader';
 import { Colors, Radius, Spacing } from '@/constants/theme';
-import { supabase } from '@/lib/supabase';
+import { fetchAllCategories, createCategory, updateCategory, deleteCategory, updateCategorySortOrders } from '@/lib/api/adminApi';
 import { useCategoryStore } from '@/store/categoryStore';
 import { Category } from '@/types';
 
@@ -35,19 +37,14 @@ export default function CategoriesScreen() {
 
   useFocusEffect(
     useCallback(() => {
-      fetchCategories();
+      fetchCategories(true);
     }, [])
   );
 
   const fetchCategories = async (silent = false) => {
     if (!silent) setLoading(true);
-    const { data, error } = await supabase
-      .from('categories')
-      .select('*')
-      .order('sort_order', { ascending: true });
-
-    if (!error && data) {
-      const allCategories = data as Category[];
+    try {
+      const allCategories = await fetchAllCategories();
       // Иерархическая сортировка: Родитель (по sort_order) -> Дети (по sort_order)
       const roots = allCategories.filter((c) => !c.parent_id);
       const sorted: Category[] = [];
@@ -66,13 +63,17 @@ export default function CategoriesScreen() {
       const orphans = allCategories.filter((c) => !usedIds.has(c.id));
       sorted.push(...orphans);
       setCategories(sorted);
+    } catch {
+      // Ошибка загрузки категорий
     }
     setLoading(false);
   };
 
   const handleMove = async (category: Category, direction: 'up' | 'down') => {
-    // Находим всех сиблингов (тот же уровень иерархии)
-    const siblings = categories.filter(c => c.parent_id === category.parent_id);
+    // Находим всех сиблингов (тот же уровень иерархии) и сортируем по sort_order
+    const siblings = categories
+      .filter(c => c.parent_id === category.parent_id)
+      .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
     const currentIndex = siblings.findIndex(c => c.id === category.id);
 
     let targetIndex = -1;
@@ -83,23 +84,28 @@ export default function CategoriesScreen() {
     }
 
     if (targetIndex !== -1) {
-      const targetCategory = siblings[targetIndex];
-      
       // 1. Оптимистичное обновление локального стейта
       LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
       
-      // Создаем новый массив категорий с переставленными элементами
-      const newCategories = [...categories];
-      const idx1 = newCategories.findIndex(c => c.id === category.id);
-      const idx2 = newCategories.findIndex(c => c.id === targetCategory.id);
+      // Меняем элементы местами в массиве сиблингов
+      const newSiblings = [...siblings];
+      const temp = newSiblings[currentIndex];
+      newSiblings[currentIndex] = newSiblings[targetIndex];
+      newSiblings[targetIndex] = temp;
       
-      // Меняем только sort_order в объектах
-      const tempOrder = newCategories[idx1].sort_order;
-      newCategories[idx1] = { ...newCategories[idx1], sort_order: newCategories[idx2].sort_order };
-      newCategories[idx2] = { ...newCategories[idx2], sort_order: tempOrder };
-      
+      // Переназначаем sort_order всем сиблингам (Shift метод)
+      const updates = newSiblings.map((sibling, index) => ({
+        id: sibling.id,
+        sort_order: index + 1 // Нормализуем индексы 1, 2, 3...
+      }));
+
+      const updatesMap = new Map(updates.map(u => [u.id, u.sort_order]));
+
       // Пересортировываем локальный стейт, чтобы иерархия не сломалась
-      // Но проще всего просто вызвать пересчет иерархии на основе новых данных
+      const newCategories = categories.map(c => 
+        updatesMap.has(c.id) ? { ...c, sort_order: updatesMap.get(c.id)! } : c
+      );
+      
       const roots = newCategories.filter(c => !c.parent_id).sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
       const finalSorted: Category[] = [];
       const usedIds = new Set<string>();
@@ -117,32 +123,19 @@ export default function CategoriesScreen() {
       });
 
       // Добавляем остальных (сирот)
-      const orphans = newCategories.filter(c => !usedIds.has(c.id));
-      finalSorted.push(...orphans);
+      finalSorted.push(...newCategories.filter(c => !usedIds.has(c.id)));
 
       setCategories(finalSorted);
 
       // 2. Обновление в Supabase в фоне (без лоадера)
       try {
-        const { error: err1 } = await supabase
-          .from('categories')
-          .update({ sort_order: targetCategory.sort_order })
-          .eq('id', category.id);
-
-        const { error: err2 } = await supabase
-          .from('categories')
-          .update({ sort_order: category.sort_order })
-          .eq('id', targetCategory.id);
-
-        if (err1 || err2) throw new Error('Ошибка БД');
+        await updateCategorySortOrders(updates);
         
         // Инвалидируем кеш беззвучно
         useCategoryStore.getState().invalidateCache();
-        // Можно сделать silent fetch, чтобы убедиться в синхронизации
-        await fetchCategories(true);
       } catch {
         Alert.alert('Ошибка', 'Не удалось сохранить порядок. Пожалуйста, потяните вниз для обновления.');
-        await fetchCategories(); // Полный рефетч для отката
+        await fetchCategories();
       }
     }
   };
@@ -167,39 +160,31 @@ export default function CategoriesScreen() {
     
     try {
       if (editingCategory) {
-        const { error } = await supabase
-          .from('categories')
-          .update(data)
-          .eq('id', editingCategory.id);
-
-        if (error) throw error;
+        await updateCategory(editingCategory.id, data);
       } else {
-        // Для новых категорий вычисляем минимальный sort_order
+        // Для новых категорий вычисляем максимальный sort_order + 1 (добавление в конец)
         const sameLevel = categories.filter(c => c.parent_id === (data.parent_id || null));
-        let sortOrder = 0;
+        let sortOrder = 1;
         if (sameLevel.length > 0) {
-          const minOrder = Math.min(...sameLevel.map(c => c.sort_order));
-          sortOrder = minOrder - 1;
+          const maxOrder = Math.max(...sameLevel.map(c => c.sort_order || 0));
+          sortOrder = maxOrder + 1;
         }
 
-        const { error } = await supabase
-          .from('categories')
-          .insert({
-            name: data.name!,
-            slug: data.slug!,
-            image_url: data.image_url,
-            parent_id: data.parent_id,
-            sort_order: sortOrder
-          });
-
-        if (error) throw error;
+        await createCategory({
+          name: data.name!,
+          slug: data.slug!,
+          image_url: data.image_url,
+          parent_id: data.parent_id,
+          sort_order: sortOrder
+        });
       }
 
       await fetchCategories(true);
       useCategoryStore.getState().invalidateCache();
       setModalVisible(false);
-    } catch (error: any) {
-      Alert.alert('Ошибка', error.message || 'Не удалось сохранить категорию');
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : 'Не удалось сохранить категорию';
+      Alert.alert('Ошибка', msg);
     } finally {
       setSubmitting(false);
     }
@@ -220,17 +205,14 @@ export default function CategoriesScreen() {
           style: 'destructive',
           onPress: async () => {
             try {
-              // Отвязываем товары
               const allIds = [id, ...categories.filter(c => c.parent_id === id).map(c => c.id)];
-              await supabase.from('products').update({ category_id: null }).in('category_id', allIds);
-
-              const { error } = await supabase.from('categories').delete().eq('id', id);
-              if (error) throw error;
+              await deleteCategory(id, allIds);
 
               await fetchCategories(true);
               useCategoryStore.getState().invalidateCache();
-            } catch (error: any) {
-              Alert.alert('Ошибка', error.message || 'Не удалось удалить категорию');
+            } catch (error: unknown) {
+              const msg = error instanceof Error ? error.message : 'Не удалось удалить категорию';
+              Alert.alert('Ошибка', msg);
             }
           }
         }
@@ -238,24 +220,34 @@ export default function CategoriesScreen() {
     );
   };
 
+  const addButton = (
+    <TouchableOpacity onPress={handleAdd} testID="add-category-btn">
+      <Ionicons name="add-circle" size={28} color={Colors.light.primary} />
+    </TouchableOpacity>
+  );
+
   if (loading) {
     return (
-      <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color={Colors.light.primary} />
-      </View>
+      <SafeAreaView edges={['bottom']} style={styles.container}>
+        <ScreenHeader title="Категории" rightElement={addButton} />
+        <View style={styles.list}>
+          {[1, 2, 3, 4, 5, 6].map(i => (
+            <View key={i} style={styles.skeletonRow}>
+              <Skeleton width={44} height={44} borderRadius={Radius.m} style={styles.skeletonIcon} />
+              <View style={styles.skeletonTextContainer}>
+                <Skeleton width="60%" height={15} style={styles.skeletonLine} />
+                <Skeleton width="35%" height={13} />
+              </View>
+            </View>
+          ))}
+        </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Все категории ({categories.length})</Text>
-        <TouchableOpacity style={styles.addBtn} onPress={handleAdd} testID="add-category-btn">
-          <Ionicons name="add" size={24} color={Colors.light.card} />
-          <Text style={styles.addBtnText}>Добавить</Text>
-        </TouchableOpacity>
-      </View>
-
+    <SafeAreaView edges={['bottom']} style={styles.container}>
+      <ScreenHeader title="Категории" rightElement={addButton} />
       <FlatList
         data={categories}
         keyExtractor={item => item.id}
@@ -283,23 +275,16 @@ export default function CategoriesScreen() {
         rootCategories={rootCategories}
         isSubmitting={submitting}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.light.background },
-  centerContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  header: {
-    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    padding: Spacing.m, backgroundColor: Colors.light.card, borderBottomWidth: 1, borderBottomColor: Colors.light.borderLight,
-  },
-  headerTitle: { fontSize: 16, fontWeight: '700', color: Colors.light.text },
-  addBtn: {
-    flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.light.primary,
-    paddingHorizontal: 12, paddingVertical: 8, borderRadius: Radius.m,
-  },
-  addBtnText: { color: Colors.light.card, fontWeight: '700', marginLeft: 4, fontSize: 14 },
+  skeletonRow: { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.light.card, borderRadius: Radius.l, padding: Spacing.m, marginBottom: Spacing.m },
+  skeletonIcon: { marginRight: Spacing.m },
+  skeletonTextContainer: { flex: 1 },
+  skeletonLine: { marginBottom: 6 },
   list: { padding: Spacing.m },
   empty: { textAlign: 'center', color: Colors.light.textSecondary, marginTop: 40 },
 });
