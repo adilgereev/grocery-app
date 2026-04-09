@@ -2,7 +2,7 @@ import React, { useRef, useEffect } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ActivityIndicator, Keyboard } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/theme';
-import { loginStyles as styles } from '@/app/(auth)/_login.styles';
+import { loginStyles as styles } from '@/components/auth/login.styles';
 
 interface OtpStepProps {
   phone: string;

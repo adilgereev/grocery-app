@@ -10,7 +10,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { OtpStep } from '@/components/auth/OtpStep';
 import { PhoneStep } from '@/components/auth/PhoneStep';
-import { loginStyles as styles } from '@/app/(auth)/_login.styles';
+import { loginStyles as styles } from '@/components/auth/login.styles';
 
 // Шаги авторизации
 type AuthStep = 'phone' | 'otp';
