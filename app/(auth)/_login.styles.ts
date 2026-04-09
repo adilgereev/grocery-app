@@ -12,12 +12,11 @@ export const loginStyles = StyleSheet.create({
   },
   keyboardView: { flex: 1 },
   scrollContent: { flexGrow: 1, justifyContent: 'center' },
-  innerContainer: { paddingBottom: 60 },
+  innerContainer: {},
 
   header: {
     alignItems: 'center',
     marginBottom: Spacing.xl,
-    paddingTop: 60,
   },
   logoContainer: {
     width: 84, height: 84,

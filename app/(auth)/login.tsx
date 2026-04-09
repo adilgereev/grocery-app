@@ -6,6 +6,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Alert, Keyboard, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { OtpStep } from '@/components/auth/OtpStep';
 import { PhoneStep } from '@/components/auth/PhoneStep';
@@ -16,6 +17,7 @@ type AuthStep = 'phone' | 'otp';
 
 export default function Login() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [step, setStep] = useState<AuthStep>('phone');
   const [phone, setPhone] = useState('');
   const [otp, setOtp] = useState(['', '', '', '']);
@@ -127,8 +129,8 @@ export default function Login() {
           alwaysBounceVertical={true}
         >
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <View style={styles.innerContainer}>
-              <View style={styles.header}>
+            <View style={[styles.innerContainer, { paddingBottom: insets.bottom }]}>
+              <View style={[styles.header, { paddingTop: insets.top }]}>
                 <View style={styles.logoContainer}>
                   <Ionicons name="basket" size={48} color={Colors.light.white} />
                 </View>

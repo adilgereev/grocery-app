@@ -50,9 +50,6 @@
 - [ ] **`components/admin/AdminCategoryPicker.tsx`** — нет ни одного `testID` на интерактивных элементах
 - [ ] **`components/address/AddressSearchInput.tsx`** — нет `testID` на `TextInput` и элементах подсказок
 - [ ] **Экраны профиля** — минимальное покрытие, добавить `testID` на кнопки и поля
-### 🟡 Техдолг: safe area в `_login.styles.ts`
-- [ ] **`app/(auth)/_login.styles.ts`** — `paddingTop: 60` и `paddingBottom: 60` компенсируют отсутствие safe area. Правильное решение: заменить на `useSafeAreaInsets()` вместо хардкода. Добавить `insets.top` к `paddingTop`, убрать магическое `60`.
-
 ## 🧪 Аудит Тестов
 
 ### 🟠 Покрытие — критически низкое
@@ -163,6 +160,9 @@
 - [x] **`AddressMainSection.tsx`** — `switchBase` + `switchThumb` → `Radius.pill` ✅
 - [x] **`addresses.tsx`** — `radioOuter` + `radioInner` → `Radius.pill` ✅
 - [x] **`orders.web.tsx`** — `statusDot` 10×10 → `Radius.pill` ✅
+
+### ✅ Safe Area в `_login.styles.ts` — закрыто
+- [x] **`app/(auth)/_login.styles.ts`** — `paddingTop: 60` и `paddingBottom: 60` заменены на `useSafeAreaInsets()` в `login.tsx` ✅
 
 ### ✅ Отступы — закрыто
 - [x] **Добавлены токены `Spacing.sm = 12` и `Spacing.ml = 20`** в `constants/theme.ts` ✅
