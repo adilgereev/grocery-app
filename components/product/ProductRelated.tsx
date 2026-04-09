@@ -8,7 +8,11 @@ import { useImageKit } from '@/hooks/useImageKit';
 
 /** Карточка одного рекомендуемого товара */
 const RelatedProductCard = ({ item, onPress }: { item: Product; onPress: () => void }) => {
-  const { source, placeholder, hasImage, imageProps } = useImageKit(item.image_url, { width: 140, height: 110 });
+  const { source, placeholder, hasImage, imageProps } = useImageKit(item.image_url, { 
+    width: 140, 
+    height: 110,
+    imageOptions: { pad: true, background: Colors.light.card }
+  });
 
   return (
     <TouchableOpacity

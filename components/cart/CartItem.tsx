@@ -19,7 +19,11 @@ interface CartItemProps {
 }
 
 const CartItem: React.FC<CartItemProps> = ({ item, index, onUpdateQuantity, onRemove, onPress }) => {
-  const { source, placeholder, hasImage, imageProps } = useImageKit(item.product.image_url, { width: 60, height: 60 });
+  const { source, placeholder, hasImage, imageProps } = useImageKit(item.product.image_url, { 
+    width: 60, 
+    height: 60,
+    imageOptions: { pad: true, background: Colors.light.card }
+  });
 
   return (
     <Animated.View

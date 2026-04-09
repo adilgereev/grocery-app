@@ -19,7 +19,12 @@ const OrderItemRow = ({ item, isLast }: OrderItemRowProps) => {
   const productName = item.product?.name || 'Товар';
   const imageUrl = item.product?.image_url ?? undefined;
   const totalPrice = Number(item.quantity * item.price_at_time).toFixed(0);
-  const { source, placeholder, hasImage, imageProps } = useImageKit(imageUrl, { width: 56, height: 56, transition: Duration.fast });
+  const { source, placeholder, hasImage, imageProps } = useImageKit(imageUrl, { 
+    width: 56, 
+    height: 56, 
+    transition: Duration.fast,
+    imageOptions: { pad: true, background: Colors.light.card }
+  });
 
   return (
     <View>

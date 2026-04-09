@@ -15,7 +15,7 @@ interface UseImageKitReturn {
   hasImage: boolean;
   /** Общие пропсы для expo-image <Image> */
   imageProps: {
-    contentFit: 'cover';
+    contentFit: 'cover' | 'contain';
     transition: number;
   };
 }
@@ -29,6 +29,7 @@ export function useImageKit(
   options: UseImageKitOptions,
 ): UseImageKitReturn {
   const { width, height, transition = Duration.default, imageOptions } = options;
+  const pad = imageOptions?.pad ?? false;
 
   return useMemo(() => {
     const source = getOptimizedImage(url, { width, height, ...imageOptions });
@@ -39,10 +40,10 @@ export function useImageKit(
       placeholder,
       hasImage: !!url,
       imageProps: {
-        contentFit: 'cover' as const,
+        contentFit: pad ? 'contain' : 'cover' as const,
         transition,
       },
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [url, width, height, transition]);
+  }, [url, width, height, transition, pad]);
 }

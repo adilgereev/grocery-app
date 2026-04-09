@@ -6,7 +6,6 @@ import React from 'react';
 import { Platform, StyleSheet, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import { Image } from 'expo-image';
 import { useImageKit } from '@/hooks/useImageKit';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface ProductHeaderProps {
   product: Product;
@@ -24,7 +23,12 @@ export const ProductHeader: React.FC<ProductHeaderProps> = ({
 }) => {
   const router = useRouter();
   const { width: screenWidth } = useWindowDimensions();
-  const { source, placeholder, hasImage, imageProps } = useImageKit(product.image_url, { width: screenWidth, height: 380, transition: Duration.slow });
+  const { source, placeholder, hasImage, imageProps } = useImageKit(product.image_url, { 
+    width: screenWidth, 
+    height: 380, 
+    transition: Duration.slow,
+    imageOptions: { pad: true, background: Colors.light.card }
+  });
 
   return (
     <View style={styles.imageContainer}>
@@ -39,7 +43,7 @@ export const ProductHeader: React.FC<ProductHeaderProps> = ({
         <View style={[styles.image, styles.placeholderImage]} />
       )}
 
-      <SafeAreaView edges={['top']} style={styles.headerAbsolute}>
+      <View style={styles.headerAbsolute}>
         <TouchableOpacity onPress={() => router.back()} style={styles.iconButton}>
           <Ionicons name="arrow-back" size={24} color={Colors.light.text} />
         </TouchableOpacity>
@@ -51,7 +55,7 @@ export const ProductHeader: React.FC<ProductHeaderProps> = ({
             color={isFavorite ? Colors.light.primary : Colors.light.text}
           />
         </TouchableOpacity>
-      </SafeAreaView>
+      </View>
     </View>
   );
 };
@@ -60,7 +64,7 @@ const styles = StyleSheet.create({
   imageContainer: {
     width: '100%',
     height: 380,
-    backgroundColor: Colors.light.borderLight,
+    backgroundColor: Colors.light.card,
   },
   image: {
     width: '100%',

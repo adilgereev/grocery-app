@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useCallback } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, useWindowDimensions } from 'react-native';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
@@ -10,21 +10,33 @@ import { useImageKit } from '@/hooks/useImageKit';
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 
-export default function ProductCard({ item, index = 0, onPress }: { item: Product, index?: number, onPress: () => void }) {
+// React.memo предотвращает ре-рендер при неизменных пропсах (важно для FlatList)
+const ProductCard = React.memo(function ProductCard({ item, index = 0, onPress }: { item: Product, index?: number, onPress: () => void }) {
   const { width } = useWindowDimensions();
-  
+
   const cardWidth = useMemo(() => Math.round((width - 32 - 16) / 2), [width]);
   const { source, placeholder, hasImage, imageProps } = useImageKit(
     item.image_url,
-    { width: cardWidth, height: cardWidth, transition: Duration.default },
+    {
+      width: cardWidth,
+      height: cardWidth,
+      transition: Duration.default,
+      imageOptions: { pad: true }
+    },
   );
 
-  const cartItem = useCartStore(state => state.items.find(i => i.product.id === item.id));
+  // Примитивный селектор: перерисовка только при изменении количества ЭТОГО товара,
+  // а не при любом изменении корзины (объект-селектор создаёт новую ссылку каждый раз)
+  const quantity = useCartStore(state => state.items.find(i => i.product.id === item.id)?.quantity ?? 0);
   const addItem = useCartStore(state => state.addItem);
   const updateQuantity = useCartStore(state => state.updateQuantity);
 
+  const handleAdd = useCallback(() => addItem(item), [addItem, item]);
+  const handleDecrease = useCallback(() => updateQuantity(item.id, quantity - 1), [updateQuantity, item.id, quantity]);
+  const handleIncrease = useCallback(() => updateQuantity(item.id, quantity + 1), [updateQuantity, item.id, quantity]);
+
   return (
-    <AnimatedTouchable 
+    <AnimatedTouchable
       style={[styles.productCard, { width: cardWidth }]}
       activeOpacity={0.9}
       onPress={onPress}
@@ -41,7 +53,7 @@ export default function ProductCard({ item, index = 0, onPress }: { item: Produc
       ) : (
         <View style={[styles.productImage, { backgroundColor: Colors.light.border }]} />
       )}
-      
+
       <View style={styles.productInfo}>
         <View style={styles.priceRow}>
           <Text style={styles.productPrice} numberOfLines={1}>
@@ -51,34 +63,34 @@ export default function ProductCard({ item, index = 0, onPress }: { item: Produc
         </View>
         <Text style={styles.productName} numberOfLines={2}>{item.name}</Text>
       </View>
-      
+
       <View style={styles.actionContainer}>
-        {!cartItem ? (
+        {quantity === 0 ? (
           <TouchableOpacity
             style={styles.addButton}
             activeOpacity={0.7}
-            onPress={() => addItem(item)}
+            onPress={handleAdd}
             testID="product-add-button"
           >
             <Ionicons name="cart" size={22} color={Colors.light.cta} />
           </TouchableOpacity>
         ) : (
           <View style={styles.activeControlContainer}>
-            <TouchableOpacity 
-              style={styles.controlButton} 
+            <TouchableOpacity
+              style={styles.controlButton}
               activeOpacity={0.7}
-              onPress={() => updateQuantity(item.id, cartItem.quantity - 1)}
+              onPress={handleDecrease}
               testID="product-decrease-button"
             >
               <Ionicons name="remove" size={16} color={Colors.light.cta} />
             </TouchableOpacity>
-            
-            <Text style={styles.controlQuantity} testID="product-quantity-text">{cartItem.quantity}</Text>
-            
-            <TouchableOpacity 
-              style={styles.controlButton} 
+
+            <Text style={styles.controlQuantity} testID="product-quantity-text">{quantity}</Text>
+
+            <TouchableOpacity
+              style={styles.controlButton}
               activeOpacity={0.7}
-              onPress={() => updateQuantity(item.id, cartItem.quantity + 1)}
+              onPress={handleIncrease}
               testID="product-increase-button"
             >
               <Ionicons name="add" size={16} color={Colors.light.cta} />
@@ -88,7 +100,9 @@ export default function ProductCard({ item, index = 0, onPress }: { item: Produc
       </View>
     </AnimatedTouchable>
   );
-}
+});
+
+export default ProductCard;
 
 const styles = StyleSheet.create({
   productCard: {

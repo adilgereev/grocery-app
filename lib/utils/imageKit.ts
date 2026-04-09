@@ -15,6 +15,7 @@ export interface ImageOptions {
   dpr?: number | 'auto'; // плотность пикселей (dpr-X)
   background?: string; // цвет фона без # (bg-XXXXXX)
   padding?: number; // отступы (p-X)
+  pad?: boolean; // вписать целиком с полями (cm-pad_resize)
   customTransformations?: string; // ручные параметры из базы (напр. fo-bottom)
   v?: number | string; // версия для сброса кеша
 }
@@ -40,6 +41,7 @@ export function getOptimizedImage(url: string | null | undefined, options: Image
     dpr = 'auto',
     background,
     padding,
+    pad,
     customTransformations,
     v,
   } = options;
@@ -59,7 +61,17 @@ export function getOptimizedImage(url: string | null | undefined, options: Image
     transforms.push('fo-auto');
   }
   if (blur) transforms.push(`bl-${blur}`);
-  if (background) transforms.push(`bg-${background.replace('#', '')}`);
+  if (background) {
+    transforms.push(`bg-${background.replace('#', '')}`);
+  } else if (pad) {
+    // Дефолтный белый фон для режима pad, если не указан другой
+    transforms.push('bg-FFFFFF');
+  }
+
+  if (pad) {
+    transforms.push('cm-pad_resize');
+  }
+
   if (padding) transforms.push(`p-${padding}`);
   if (customTransformations) transforms.push(customTransformations);
 

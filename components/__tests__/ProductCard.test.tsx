@@ -36,12 +36,14 @@ describe('ProductCard', () => {
     jest.clearAllMocks();
   });
 
+  // Хелпер: имитирует selector-вызов useCartStore(selector => selector(state))
+  const mockStore = (items: { product: typeof mockProduct; quantity: number }[]) => {
+    const state = { items, addItem: mockAddItem, updateQuantity: mockUpdateQuantity };
+    (useCartStore as unknown as jest.Mock).mockImplementation((selector: (s: typeof state) => unknown) => selector(state));
+  };
+
   it('renders correctly when item is not in cart', () => {
-    (useCartStore as unknown as jest.Mock).mockReturnValue({
-      items: [],
-      addItem: mockAddItem,
-      updateQuantity: mockUpdateQuantity,
-    });
+    mockStore([]);
 
     const { getByText, getByTestId, queryByTestId } = render(
       <ProductCard item={mockProduct} onPress={mockOnPress} />
@@ -55,11 +57,7 @@ describe('ProductCard', () => {
   });
 
   it('calls addItem when add button is pressed', () => {
-    (useCartStore as unknown as jest.Mock).mockReturnValue({
-      items: [],
-      addItem: mockAddItem,
-      updateQuantity: mockUpdateQuantity,
-    });
+    mockStore([]);
 
     const { getByTestId } = render(<ProductCard item={mockProduct} onPress={mockOnPress} />);
 
@@ -68,11 +66,7 @@ describe('ProductCard', () => {
   });
 
   it('renders correctly when item is already in cart', () => {
-    (useCartStore as unknown as jest.Mock).mockReturnValue({
-      items: [{ product: mockProduct, quantity: 3 }],
-      addItem: mockAddItem,
-      updateQuantity: mockUpdateQuantity,
-    });
+    mockStore([{ product: mockProduct, quantity: 3 }]);
 
     const { getByTestId, queryByTestId } = render(
       <ProductCard item={mockProduct} onPress={mockOnPress} />
@@ -85,11 +79,7 @@ describe('ProductCard', () => {
   });
 
   it('calls updateQuantity when +/- buttons are pressed', () => {
-    (useCartStore as unknown as jest.Mock).mockReturnValue({
-      items: [{ product: mockProduct, quantity: 3 }],
-      addItem: mockAddItem,
-      updateQuantity: mockUpdateQuantity,
-    });
+    mockStore([{ product: mockProduct, quantity: 3 }]);
 
     const { getByTestId } = render(<ProductCard item={mockProduct} onPress={mockOnPress} />);
 
@@ -101,11 +91,7 @@ describe('ProductCard', () => {
   });
 
   it('calls onPress when card is pressed', () => {
-    (useCartStore as unknown as jest.Mock).mockReturnValue({
-      items: [],
-      addItem: mockAddItem,
-      updateQuantity: mockUpdateQuantity,
-    });
+    mockStore([]);
 
     const { getByTestId } = render(<ProductCard item={mockProduct} onPress={mockOnPress} />);
 
