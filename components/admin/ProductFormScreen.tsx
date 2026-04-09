@@ -228,7 +228,7 @@ export default function ProductFormScreen({ mode, productId }: Props) {
     <KeyboardAvoidingView
       style={s.keyboardView}
       behavior="padding"
-      keyboardVerticalOffset={90}
+      keyboardVerticalOffset={0}
     >
       {form}
     </KeyboardAvoidingView>

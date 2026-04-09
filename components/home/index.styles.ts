@@ -107,23 +107,6 @@ export const homeStyles = StyleSheet.create({
   sectionTitle: { fontSize: 22, fontWeight: '700', color: Colors.light.text },
   seeAllText: { fontSize: 14, color: Colors.light.primary, fontWeight: '600' },
   popularScroll: { paddingHorizontal: Spacing.m },
-  popularCard: {
-    width: 140, marginRight: Spacing.m, backgroundColor: Colors.light.card, borderRadius: Radius.l,
-    overflow: 'hidden',
-    ...Shadows.md,
-  },
-  imageWrapper: { position: 'relative', width: '100%', height: 110 },
-  imagePlaceholder: { backgroundColor: Colors.light.borderLight },
-  popularImage: { width: '100%', height: '100%' },
-  popularInfo: { padding: Spacing.s, flex: 1, justifyContent: 'center' },
-  popularName: { fontSize: 13, fontWeight: '600', color: Colors.light.textSecondary, marginBottom: 2 },
-  popularPrice: { fontSize: 14, fontWeight: '700', color: Colors.light.text },
-  popularUnit: { fontSize: 11, color: Colors.light.textLight, fontWeight: '600' },
-  addPopularButton: {
-    position: 'absolute', bottom: 8, right: 8,
-    width: 32, height: 32, borderRadius: Radius.pill, backgroundColor: Colors.light.cta,
-    justifyContent: 'center', alignItems: 'center',
-    ...Shadows.sm,
-  },
+  popularCardWrapper: { marginRight: Spacing.m },
   categoryFallbackTitle: { fontSize: 22, fontWeight: '700', color: Colors.light.text, paddingHorizontal: Spacing.m }
 });

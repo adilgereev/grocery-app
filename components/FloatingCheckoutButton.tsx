@@ -88,8 +88,8 @@ const styles = StyleSheet.create({
   floatingCheckoutButton: {
     flexDirection: 'row',
     backgroundColor: Colors.light.cta,
-    borderRadius: 100,
-    paddingVertical: 12,
+    borderRadius: Radius.pill,
+    paddingVertical: Spacing.sm,
     paddingHorizontal: Spacing.m,
     alignItems: 'center',
     justifyContent: 'space-between',

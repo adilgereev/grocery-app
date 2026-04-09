@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: Spacing.l,
-    paddingVertical: 20,
+    paddingVertical: Spacing.ml,
     borderTopWidth: 1,
     borderTopColor: Colors.light.borderLight,
     ...Shadows.md,
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
   quantityButton: {
     width: 38,
     height: 38,
-    borderRadius: 19,
+    borderRadius: Radius.pill,
     backgroundColor: Colors.light.card,
     justifyContent: 'center',
     alignItems: 'center',

@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
     height: 100,
     paddingHorizontal: Spacing.m,
     alignItems: 'flex-start',
-    paddingTop: 12,
+    paddingTop: Spacing.sm,
   },
   commentInput: {
     flex: 1,

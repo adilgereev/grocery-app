@@ -227,7 +227,7 @@ const styles = StyleSheet.create({
     marginTop: 60,
     fontSize: 16,
     color: Colors.light.textSecondary,
-    paddingHorizontal: 20,
+    paddingHorizontal: Spacing.ml,
   },
   errorContainer: {
     flex: 1,

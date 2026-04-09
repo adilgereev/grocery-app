@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
   placeholderImage: { width: 60, height: 60, borderRadius: Radius.m, marginRight: Spacing.m, backgroundColor: Colors.light.border },
   sectionHeader: { flexDirection: 'row', alignItems: 'center', paddingBottom: Spacing.s, paddingTop: Spacing.m },
   sectionTitle: { fontSize: 20, fontWeight: '800', color: Colors.light.text },
-  sectionBadge: { backgroundColor: Colors.light.border, borderRadius: 12, paddingHorizontal: 8, paddingVertical: 2, marginLeft: Spacing.s },
+  sectionBadge: { backgroundColor: Colors.light.border, borderRadius: Radius.m, paddingHorizontal: 8, paddingVertical: 2, marginLeft: Spacing.s },
   sectionBadgeText: { fontSize: 12, fontWeight: '700', color: Colors.light.textSecondary },
   empty: { textAlign: 'center', color: Colors.light.textSecondary, marginTop: 40 }
 });

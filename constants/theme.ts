@@ -52,7 +52,9 @@ export const Colors = {
 export const Spacing = {
   xs: 4,
   s: 8,
+  sm: 12,
   m: 16,
+  ml: 20,
   l: 24,
   xl: 32,
   xxl: 40,

@@ -152,7 +152,7 @@ const styles = StyleSheet.create({
     flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: Colors.light.card
   },
   errorText: {
-    fontSize: 18, color: Colors.light.textSecondary, marginBottom: 20, textAlign: 'center'
+    fontSize: 18, color: Colors.light.textSecondary, marginBottom: Spacing.ml, textAlign: 'center'
   },
   retryButton: {
     backgroundColor: Colors.light.primary, flexDirection: 'row', alignItems: 'center',
@@ -173,7 +173,7 @@ const styles = StyleSheet.create({
   },
   bottomSpacer: { height: 120 },
   skeletonContent: { padding: Spacing.l },
-  skeletonTitle: { marginBottom: 12 },
+  skeletonTitle: { marginBottom: Spacing.sm },
   skeletonSubtitle: { marginBottom: Spacing.l },
   skeletonText: { marginBottom: Spacing.s },
 });

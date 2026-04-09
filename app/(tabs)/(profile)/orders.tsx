@@ -138,14 +138,14 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.light.background },
   
   centerContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: Spacing.xl },
-  listContainer: { paddingHorizontal: Spacing.m, paddingBottom: 20, paddingTop: Spacing.m, flexGrow: 1 },
-  emptyText: { fontSize: 18, color: Colors.light.textLight, marginTop: 20, fontWeight: '500' },
+  listContainer: { paddingHorizontal: Spacing.m, paddingBottom: Spacing.ml, paddingTop: Spacing.m, flexGrow: 1 },
+  emptyText: { fontSize: 18, color: Colors.light.textLight, marginTop: Spacing.ml, fontWeight: '500' },
   errorTitle: { fontSize: 20, fontWeight: '700', color: Colors.light.text, marginTop: Spacing.m, marginBottom: Spacing.s },
   errorMessage: { fontSize: 14, color: Colors.light.textSecondary, textAlign: 'center', marginBottom: Spacing.l },
   retryButton: { backgroundColor: Colors.light.primary, flexDirection: 'row', alignItems: 'center', paddingHorizontal: Spacing.xl, paddingVertical: Spacing.m, borderRadius: Radius.l },
   retryButtonText: { color: Colors.light.white, fontSize: 16, fontWeight: '600' },
   retryIcon: { marginRight: 8 },
-  skeletonItem: { marginBottom: 12 },
+  skeletonItem: { marginBottom: Spacing.sm },
 
   // OrderCard styles moved to OrderCard.tsx
 });

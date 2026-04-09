@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: Colors.light.borderLight,
     borderRadius: Radius.pill,
-    paddingHorizontal: 12,
+    paddingHorizontal: Spacing.sm,
     height: 48,
   },
   searchIcon: {
@@ -279,7 +279,7 @@ const styles = StyleSheet.create({
   columnWrapper: { justifyContent: 'space-between' },
   // Стили для умного поиска
   emptyStateContainer: {
-    padding: 20,
+    padding: Spacing.ml,
   },
   section: {
     marginBottom: Spacing.l,

@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
   iconBackground: {
     width: 100,
     height: 100,
-    borderRadius: 50,
+    borderRadius: Radius.pill,
     backgroundColor: Colors.light.errorLight,
     justifyContent: 'center',
     alignItems: 'center',

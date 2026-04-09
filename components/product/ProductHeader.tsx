@@ -1,4 +1,4 @@
-import { Colors, Spacing, Duration, Shadows } from '@/constants/theme';
+import { Colors, Radius, Spacing, Duration, Shadows } from '@/constants/theme';
 import { Product } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
   iconButton: {
     width: 44,
     height: 44,
-    borderRadius: 22,
+    borderRadius: Radius.pill,
     backgroundColor: Colors.light.whiteTransparent,
     justifyContent: 'center',
     alignItems: 'center',

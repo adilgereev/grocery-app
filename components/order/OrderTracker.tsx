@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
   trackerDot: {
     width: 36,
     height: 36,
-    borderRadius: 18,
+    borderRadius: Radius.pill,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors, Radius, Duration, Shadows } from '@/constants/theme';
+import { Colors, Radius, Duration, Shadows, Spacing } from '@/constants/theme';
 
 // Тип уведомления (используется только внутри компонента)
 type ToastType = 'success' | 'error' | 'warning' | 'info';
@@ -102,7 +102,7 @@ const styles = StyleSheet.create({
   toast: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 20,
+    paddingHorizontal: Spacing.ml,
     paddingVertical: 16,
     borderRadius: Radius.xl,
     ...Shadows.md,
@@ -112,7 +112,7 @@ const styles = StyleSheet.create({
   content: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
+    gap: Spacing.sm,
   },
   iconContainer: {
     flexShrink: 0,

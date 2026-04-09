@@ -190,7 +190,7 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.light.background },
   centerContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: Spacing.xl },
   loadingContainer: { padding: Spacing.m },
-  skeletonLarge: { marginBottom: 20 },
+  skeletonLarge: { marginBottom: Spacing.ml },
   skeletonMedium: { marginBottom: 16 },
 
   header: {
@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
   repeatButtonText: { color: Colors.light.white, fontSize: 16, fontWeight: '700' },
 
   footerSpacer: { height: Spacing.xl },
-  errorText: { fontSize: 18, color: Colors.light.textSecondary, marginTop: Spacing.m, marginBottom: 20, fontWeight: '500', textAlign: 'center' },
+  errorText: { fontSize: 18, color: Colors.light.textSecondary, marginTop: Spacing.m, marginBottom: Spacing.ml, fontWeight: '500', textAlign: 'center' },
   retryButtonCenter: { backgroundColor: Colors.light.primary, flexDirection: 'row', alignItems: 'center', paddingHorizontal: Spacing.xl, paddingVertical: Spacing.m, borderRadius: Radius.l },
   retryIcon: { marginRight: 8 },
   retryButtonText: { color: Colors.light.white, fontSize: 16, fontWeight: '600' },

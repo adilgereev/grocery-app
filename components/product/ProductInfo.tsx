@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     marginBottom: 28,
     backgroundColor: Colors.light.primaryLight,
     alignSelf: 'flex-start',
-    paddingHorizontal: 12,
+    paddingHorizontal: Spacing.sm,
     paddingVertical: 6,
     borderRadius: Radius.s,
   },

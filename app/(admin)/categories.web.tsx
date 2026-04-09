@@ -227,7 +227,7 @@ const styles = StyleSheet.create({
   headerTitle: { fontSize: 16, fontWeight: '700', color: Colors.light.text },
   addBtn: {
     flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.light.primary,
-    paddingHorizontal: 12, paddingVertical: 8, borderRadius: Radius.m,
+    paddingHorizontal: Spacing.sm, paddingVertical: 8, borderRadius: Radius.m,
   },
   addBtnText: { color: Colors.light.white, fontWeight: '700', marginLeft: 4, fontSize: 14 },
   list: { padding: Spacing.m },

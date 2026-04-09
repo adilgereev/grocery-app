@@ -1,10 +1,12 @@
 import { Colors, Radius, Spacing, Shadows } from '@/constants/theme';
 import { fetchAllProductsWithCategory, deleteProduct } from '@/lib/api/adminApi';
 import Skeleton from '@/components/ui/Skeleton';
+import ScreenHeader from '@/components/ui/ScreenHeader';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, SectionList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { ProductWithCategory } from '@/types';
 
 export default function CatalogScreen() {
@@ -108,7 +110,8 @@ export default function CatalogScreen() {
 
   if (loading) {
     return (
-      <View style={styles.container}>
+      <SafeAreaView edges={['bottom']} style={styles.container}>
+        <ScreenHeader title="Каталог" />
         <View style={styles.list}>
           {[1, 2, 3].map(section => (
             <View key={section}>
@@ -126,12 +129,13 @@ export default function CatalogScreen() {
             </View>
           ))}
         </View>
-      </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView edges={['bottom']} style={styles.container}>
+      <ScreenHeader title="Каталог" />
       <SectionList
         sections={sections}
         keyExtractor={item => item.id}
@@ -142,7 +146,7 @@ export default function CatalogScreen() {
         stickySectionHeadersEnabled={false}
         ListEmptyComponent={<Text style={styles.empty}>Товары не найдены</Text>}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -174,7 +178,7 @@ const styles = StyleSheet.create({
   placeholderImage: { width: 60, height: 60, borderRadius: Radius.m, marginRight: Spacing.m, backgroundColor: Colors.light.border },
   sectionHeader: { flexDirection: 'row', alignItems: 'center', paddingBottom: Spacing.s, paddingTop: Spacing.m },
   sectionTitle: { fontSize: 20, fontWeight: '800', color: Colors.light.text },
-  sectionBadge: { backgroundColor: Colors.light.border, borderRadius: 12, paddingHorizontal: 8, paddingVertical: 2, marginLeft: Spacing.s },
+  sectionBadge: { backgroundColor: Colors.light.border, borderRadius: Radius.m, paddingHorizontal: 8, paddingVertical: 2, marginLeft: Spacing.s },
   sectionBadgeText: { fontSize: 12, fontWeight: '700', color: Colors.light.textSecondary },
   empty: { textAlign: 'center', color: Colors.light.textSecondary, marginTop: 40 }
 });

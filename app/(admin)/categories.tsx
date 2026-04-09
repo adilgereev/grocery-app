@@ -12,10 +12,12 @@ import {
   UIManager,
   View,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import CategoryFormModal from '@/components/admin/CategoryFormModal';
 import CategoryItem from '@/components/admin/CategoryItem';
 import Skeleton from '@/components/ui/Skeleton';
+import ScreenHeader from '@/components/ui/ScreenHeader';
 import { Colors, Radius, Spacing } from '@/constants/theme';
 import { fetchAllCategories, createCategory, updateCategory, deleteCategory, updateCategorySortOrders } from '@/lib/api/adminApi';
 import { useCategoryStore } from '@/store/categoryStore';
@@ -218,9 +220,16 @@ export default function CategoriesScreen() {
     );
   };
 
+  const addButton = (
+    <TouchableOpacity onPress={handleAdd} testID="add-category-btn">
+      <Ionicons name="add-circle" size={28} color={Colors.light.primary} />
+    </TouchableOpacity>
+  );
+
   if (loading) {
     return (
-      <View style={styles.container}>
+      <SafeAreaView edges={['bottom']} style={styles.container}>
+        <ScreenHeader title="Категории" rightElement={addButton} />
         <View style={styles.list}>
           {[1, 2, 3, 4, 5, 6].map(i => (
             <View key={i} style={styles.skeletonRow}>
@@ -232,20 +241,13 @@ export default function CategoriesScreen() {
             </View>
           ))}
         </View>
-      </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.headerTitle}>Все категории ({categories.length})</Text>
-        <TouchableOpacity style={styles.addBtn} onPress={handleAdd} testID="add-category-btn">
-          <Ionicons name="add" size={24} color={Colors.light.white} />
-          <Text style={styles.addBtnText}>Добавить</Text>
-        </TouchableOpacity>
-      </View>
-
+    <SafeAreaView edges={['bottom']} style={styles.container}>
+      <ScreenHeader title="Категории" rightElement={addButton} />
       <FlatList
         data={categories}
         keyExtractor={item => item.id}
@@ -273,7 +275,7 @@ export default function CategoriesScreen() {
         rootCategories={rootCategories}
         isSubmitting={submitting}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -283,16 +285,6 @@ const styles = StyleSheet.create({
   skeletonIcon: { marginRight: Spacing.m },
   skeletonTextContainer: { flex: 1 },
   skeletonLine: { marginBottom: 6 },
-  header: {
-    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
-    padding: Spacing.m, backgroundColor: Colors.light.card, borderBottomWidth: 1, borderBottomColor: Colors.light.borderLight,
-  },
-  headerTitle: { fontSize: 16, fontWeight: '700', color: Colors.light.text },
-  addBtn: {
-    flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.light.primary,
-    paddingHorizontal: 12, paddingVertical: 8, borderRadius: Radius.m,
-  },
-  addBtnText: { color: Colors.light.white, fontWeight: '700', marginLeft: 4, fontSize: 14 },
   list: { padding: Spacing.m },
   empty: { textAlign: 'center', color: Colors.light.textSecondary, marginTop: 40 },
 });

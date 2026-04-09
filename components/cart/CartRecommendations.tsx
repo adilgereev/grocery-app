@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: Colors.light.text,
     marginBottom: Spacing.m,
-    paddingHorizontal: 20,
+    paddingHorizontal: Spacing.ml,
   },
   listContent: {
     paddingHorizontal: 15,

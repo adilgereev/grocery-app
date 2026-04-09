@@ -1,4 +1,4 @@
-import { Colors, Radius, Duration } from '@/constants/theme';
+import { Colors, Radius, Duration, Spacing } from '@/constants/theme';
 import { useCategoryStore } from '@/store/categoryStore';
 import { Category } from '@/types';
 import { getOptimizedImage, getPlaceholderUrl } from '@/lib/utils/imageKit';
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
     color: Colors.light.text,
     fontSize: 13,
     fontWeight: '700',
-    padding: 12, // Финальная настройка под Лавку
+    padding: Spacing.sm,
     lineHeight: 15,
     maxWidth: '90%',
     zIndex: 10,

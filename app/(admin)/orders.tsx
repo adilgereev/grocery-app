@@ -2,10 +2,12 @@ import { Colors, Radius, Spacing, Shadows } from '@/constants/theme';
 import { supabase } from '@/lib/services/supabase';
 import { fetchAllOrdersWithDetails, updateOrderStatus, AdminOrderWithDetails } from '@/lib/api/adminApi';
 import Skeleton from '@/components/ui/Skeleton';
+import ScreenHeader from '@/components/ui/ScreenHeader';
 import { Ionicons } from '@expo/vector-icons';
 import { cleanAddress } from '@/lib/utils/addressUtils';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, FlatList, Linking, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const STATUSES = {
   pending: { label: 'Новый', color: Colors.light.warning },
@@ -156,7 +158,8 @@ export default function ManageOrdersScreen() {
 
   if (loading) {
     return (
-      <View style={styles.container}>
+      <SafeAreaView edges={['bottom']} style={styles.container}>
+        <ScreenHeader title="Заказы Клиентов" />
         <View style={styles.list}>
           {[1, 2, 3].map(i => (
             <View key={i} style={styles.card}>
@@ -173,12 +176,13 @@ export default function ManageOrdersScreen() {
             </View>
           ))}
         </View>
-      </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView edges={['bottom']} style={styles.container}>
+      <ScreenHeader title="Заказы Клиентов" />
       <FlatList
         data={orders}
         keyExtractor={item => item.id}
@@ -187,7 +191,7 @@ export default function ManageOrdersScreen() {
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={<Text style={styles.empty}>Нет заказов.</Text>}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
@@ -207,7 +211,7 @@ const styles = StyleSheet.create({
   },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.m },
   orderId: { fontSize: 16, fontWeight: '700', color: Colors.light.text },
-  statusBadge: { paddingHorizontal: 12, paddingVertical: 4, borderRadius: Radius.m },
+  statusBadge: { paddingHorizontal: Spacing.sm, paddingVertical: 4, borderRadius: Radius.m },
   statusText: { fontSize: 12, fontWeight: '700' },
   customerInfo: { marginBottom: Spacing.s },
   customerRow: { flexDirection: 'row', alignItems: 'center', backgroundColor: Colors.light.background, padding: 10, borderRadius: Radius.m },
@@ -219,7 +223,7 @@ const styles = StyleSheet.create({
   footer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.m, borderTopWidth: 1, borderTopColor: Colors.light.borderLight, paddingTop: Spacing.s },
   price: { fontSize: 18, fontWeight: '800', color: Colors.light.text },
   date: { fontSize: 12, color: Colors.light.textLight },
-  actionButton: { paddingVertical: 12, borderRadius: Radius.m, alignItems: 'center' },
+  actionButton: { paddingVertical: Spacing.sm, borderRadius: Radius.m, alignItems: 'center' },
   actionButtonText: { color: Colors.light.white, fontSize: 14, fontWeight: '700' },
   empty: { textAlign: 'center', marginTop: 100, color: Colors.light.textSecondary },
   expandButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', paddingVertical: Spacing.s, marginBottom: Spacing.s, backgroundColor: Colors.light.primaryLight, borderRadius: Radius.m },

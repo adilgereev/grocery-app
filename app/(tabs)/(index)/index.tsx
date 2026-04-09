@@ -7,7 +7,6 @@ import { logger } from '@/lib/utils/logger';
 import { fetchPopularProducts } from '@/lib/api/productsApi';
 import { useAuth } from '@/providers/AuthProvider';
 import { useAddressStore } from '@/store/addressStore';
-import { useCartStore } from '@/store/cartStore';
 import { useCategoryStore } from '@/store/categoryStore';
 import { useStoriesStore } from '@/store/storiesStore';
 import { Category, Product } from '@/types';
@@ -29,7 +28,6 @@ export default function HomeScreen() {
   const categoriesWithSubs = useCategoryStore(state => state.categoriesWithSubs);
   const fetchFullHierarchy = useCategoryStore(state => state.fetchFullHierarchy);
   const categoriesLoading = useCategoryStore(state => state.isLoading);
-  const addItem = useCartStore(state => state.addItem);
   const fetchStories = useStoriesStore(state => state.fetchStories);
 
   const [popularProducts, setPopularProducts] = useState<Product[]>([]);
@@ -121,12 +119,11 @@ export default function HomeScreen() {
       <PopularSection
         products={popularProducts}
         loading={popularLoading}
-        onAddToCart={addItem}
         onProductPress={(id) => router.push(`/product/${id}`)}
       />
       {categoriesSection}
     </>
-  ), [popularProducts, popularLoading, addItem, router, categoriesSection]);
+  ), [popularProducts, popularLoading, router, categoriesSection]);
 
   return (
     <View style={s.container}>

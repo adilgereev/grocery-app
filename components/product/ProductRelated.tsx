@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
     marginRight: Spacing.m,
     backgroundColor: Colors.light.background,
     borderRadius: Radius.xl,
-    padding: 12,
+    padding: Spacing.sm,
     borderWidth: 1,
     borderColor: Colors.light.borderLight,
     ...Shadows.sm,

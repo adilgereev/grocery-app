@@ -50,27 +50,8 @@
 - [ ] **`components/admin/AdminCategoryPicker.tsx`** — нет ни одного `testID` на интерактивных элементах
 - [ ] **`components/address/AddressSearchInput.tsx`** — нет `testID` на `TextInput` и элементах подсказок
 - [ ] **Экраны профиля** — минимальное покрытие, добавить `testID` на кнопки и поля
-
-## 🎨 Аудит UI / Soft Minimalism
-
-### 🟠 Тени
-- [ ] **Унифицировать `shadowColor` по всему проекту** — часть компонентов использует `Colors.light.text`, часть `Colors.light.primary` (нарушение Soft Minimalism). Привести всё к `Colors.light.text` с `shadowOpacity: 0.03–0.05`
-
-### 🟠 Скругления — магические числа вместо токенов
-- [ ] **`components/cart/CartSummary.styles.ts`** — карточки адреса и платежа: `borderRadius: 18/22` → `Radius.xxl (24)`
-- [ ] **`components/product/ProductBottomBar.tsx`** — кнопка: `borderRadius: 19` → `Radius.pill`
-- [ ] **`components/order/OrderSection.tsx`** — карточка: `borderRadius: 20` → `Radius.xxl (24)`
-- [ ] **`app/(tabs)/(profile)/index.tsx`** — аватар: `borderRadius: 28/40` → `Radius.xxl (24)`
-- [ ] **`app/favorites.tsx`** — иконка: `borderRadius: 40` → `Radius.xxl (24)`
-- [ ] **`components/cart/CartItem.tsx`** — quantity control: `borderRadius: 14` → `Radius.m (12)`
-- [ ] **Прочие компоненты** — 15+ файлов с числовыми `borderRadius` → систематически заменить на `Radius.*` токены
-
-### 🟠 Отступы — магические числа вместо токенов
-- [ ] **`app/(tabs)/(profile)/index.tsx`** — `paddingHorizontal: 20/30`, `paddingVertical: 12` → `Spacing.*`
-- [ ] **`components/product/ProductBottomBar.tsx`** — `paddingVertical: 20/18`, `paddingHorizontal: 36` → `Spacing.*`
-- [ ] **`components/cart/CartSummary.styles.ts`** — 5 нарушений: `padding: 20`, `paddingHorizontal: 20/12`, `paddingVertical: 6` → `Spacing.*`
-- [ ] **`app/(auth)/_login.styles.ts`** и **`app/setup-profile.tsx`** — `paddingTop/Bottom: 60` → `Spacing.*`
-- [ ] **Прочие файлы** — ~30+ файлов с числовыми padding/margin → систематически заменить на `Spacing.*` токены
+### 🟡 Техдолг: safe area в `_login.styles.ts`
+- [ ] **`app/(auth)/_login.styles.ts`** — `paddingTop: 60` и `paddingBottom: 60` компенсируют отсутствие safe area. Правильное решение: заменить на `useSafeAreaInsets()` вместо хардкода. Добавить `insets.top` к `paddingTop`, убрать магическое `60`.
 
 ## 🧪 Аудит Тестов
 
@@ -85,20 +66,6 @@
 ### 🟡 Актуальность тестов
 - [ ] **`OrderCard.test.tsx`** — `status: 'delivered'` задан как string вместо `Enums<'order_status'>` → привести к правильному типу
 - [ ] **`CartItem.test.tsx`** и **`ProductCard.test.tsx`** — дублируют мок `useRouter` который уже есть в `jest.setup.js` → удалить локальные переопределения
-
-## 🧩 Аудит Обязательных Компонентов
-
-### 🟠 ScreenHeader — отсутствует на 11 экранах
-- [ ] **`app/setup-profile.tsx`** — кастомная шапка с LinearGradient → заменить на `<ScreenHeader />`
-- [ ] **`app/search.tsx`** — самописная навигационная панель → заменить на `<ScreenHeader />`
-- [ ] **`app/category/[id].tsx`** — кастомный header с back button → заменить на `<ScreenHeader />`
-- [ ] **`app/product/[id].tsx`** — back button внутри `ProductHeader` → заменить на `<ScreenHeader />`
-- [ ] **`app/order/[id].tsx`** — кастомный header → заменить на `<ScreenHeader />`
-- [ ] **`app/(admin)/`** — все 6 файлов без `<ScreenHeader />` → добавить
-
-### 🟡 ProductCard — самописные карточки
-- [ ] **`components/home/PopularSection.tsx`** — кастомная карточка товара → заменить на `<ProductCard />`
-- [ ] **`app/(admin)/catalog.tsx`** — функция `renderProduct` с кастомной разметкой → заменить на `<ProductCard />`
 
 ---
 
@@ -152,3 +119,54 @@
 # 🛠️ БЛОК 4: Технический долг и Багфикс
 
 - [ ] **Проверить отображение комментария курьеру в админской панели в заказах.** (Убедиться, что текст, введенный пользователем, корректно доходит до курьера/сборщика).
+
+
+---
+
+# ✅ Архив — Закрытые задачи
+
+## 🧩 Аудит Обязательных Компонентов (07.04.2026)
+
+### ScreenHeader — отсутствует на некоторых экранах
+- [x] **`app/setup-profile.tsx`** — намеренно без `<ScreenHeader />`: экран стиля онбординга (как login), кастомная decorative-шапка
+- [x] **`app/product/[id].tsx`** — намеренно без `<ScreenHeader />`: overlay-кнопки поверх fullscreen-фото — стандарт для экрана товара (см. `ProductHeader`)
+- [x] **`app/(admin)/`** — все 6 файлов: нативный Stack-header → `<ScreenHeader />` ✅
+
+### ProductCard — самописные карточки
+- [x] **`components/home/PopularSection.tsx`** — кастомная карточка товара → заменено на `<ProductCard />` ✅
+- [x] **`app/(admin)/catalog.tsx`** — `renderProduct` намеренно кастомная: admin-строка с кнопками «Изменить/Удалить», не клиентская карточка покупки
+
+## 🎨 Аудит UI / Soft Minimalism (обновлён 09.04.2026)
+
+### ✅ Тени — закрыто
+- [x] **`shadowColor` унифицирован** — все компоненты используют `...Shadows.sm/md/lg` токены. Прямых `shadowColor` в компонентах нет ✅
+
+### ✅ Скругления — закрыто
+- [x] **`ProductBottomBar.tsx`** — `addToCartButton` → `Radius.pill` ✅
+- [x] **`OrderSection.tsx`** — `sectionCard` → `Radius.xl` ✅
+- [x] **`CartItem.tsx`** — `quantityControl` → `Radius.xxl` ✅
+- [x] **`ProductBottomBar.tsx`** — `quantityContainer` → `Radius.xxl` ✅
+- [x] **`components/cart/CartSummary.styles.ts`** — `addressSelector` + `paymentOption borderRadius: 18` → `Radius.xxl` ✅
+- [x] **`components/cart/CartSummary.styles.ts`** — `checkoutButton borderRadius: 100` → `Radius.pill` ✅
+- [x] **`components/order/OrderTracker.tsx`** — `trackerDot` 36×36, `borderRadius: 18` → `Radius.pill` ✅
+- [x] **`components/product/ProductHeader.tsx`** — `iconButton` 44×44, `borderRadius: 22` → `Radius.pill` ✅
+- [x] **`app/(admin)/catalog.tsx`** + **`catalog.web.tsx`** — `sectionBadge borderRadius: 12` → `Radius.m` ✅
+- [x] **`CartSummary.styles.ts`** — `paymentIconContainer` 44×44 → `Radius.pill` ✅
+- [x] **`ProductBottomBar.tsx`** — `quantityButton` 38×38 → `Radius.pill` ✅
+- [x] **`OrderSection.tsx`** — `iconContainer` 40×40 → `Radius.pill` ✅
+- [x] **`profile/index.tsx`** — `guestAvatarIcon` 80×80 + `avatar` 56×56 → `Radius.pill` ✅
+- [x] **`favorites.tsx`** — `emptyIconCircle` 80×80 → `Radius.pill` ✅
+- [x] **`EmptyCart.tsx`** — `emptyIconCircle` 80×80 → `Radius.pill` ✅
+- [x] **`ErrorBoundary.tsx`** — `iconBackground` 100×100 → `Radius.pill` ✅
+- [x] **`FloatingCheckoutButton.tsx`** — `floatingCheckoutButton` → `Radius.pill` ✅
+- [x] **`CartItem.tsx`** — `circleButton` 28×28 → `Radius.pill`; `itemImage` 60×60 → `Radius.xxl` ✅
+- [x] **`AddressMainSection.tsx`** — `switchBase` + `switchThumb` → `Radius.pill` ✅
+- [x] **`addresses.tsx`** — `radioOuter` + `radioInner` → `Radius.pill` ✅
+- [x] **`orders.web.tsx`** — `statusDot` 10×10 → `Radius.pill` ✅
+
+### ✅ Отступы — закрыто
+- [x] **Добавлены токены `Spacing.sm = 12` и `Spacing.ml = 20`** в `constants/theme.ts` ✅
+- [x] **20+ файлов** — все вхождения `12` и `20` как spacing-значений заменены на `Spacing.sm` / `Spacing.ml` ✅
+- [x] **`profile/index.tsx`** — точные совпадения `24→Spacing.l`, `40→Spacing.xxl`, `16→Spacing.m`, `8→Spacing.s` заменены ✅
+- [x] **Оставлены как дизайн-константы** — `18`, `30`, `36`, `6` (встречаются 1–2 раза, нет смысла в токене)
+

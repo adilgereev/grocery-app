@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.background,
   },
   header: {
-    paddingHorizontal: 20,
+    paddingHorizontal: Spacing.ml,
     backgroundColor: Colors.light.background, // Чат на фоне приложения для легкости
     paddingBottom: Spacing.s,
     zIndex: 10,
@@ -239,7 +239,7 @@ const styles = StyleSheet.create({
   guestAvatarIcon: {
     width: 80,
     height: 80,
-    borderRadius: 40,
+    borderRadius: Radius.pill,
     backgroundColor: Colors.light.card,
     justifyContent: 'center',
     alignItems: 'center',
@@ -257,7 +257,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: Colors.light.textSecondary,
     textAlign: 'center',
-    marginBottom: 40,
+    marginBottom: Spacing.xxl,
     lineHeight: 24,
   },
   guestButton: {
@@ -278,7 +278,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   scrollContent: {
-    paddingHorizontal: 20,
+    paddingHorizontal: Spacing.ml,
     paddingTop: Spacing.m,
     paddingBottom: Spacing.xxl,
   },
@@ -288,14 +288,14 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.card,
     borderRadius: Radius.xl,
     padding: Spacing.m,
-    marginBottom: 24,
+    marginBottom: Spacing.l,
     // Облегченные тени
     ...Shadows.sm,
   },
   avatar: {
     width: 56,
     height: 56,
-    borderRadius: 28,
+    borderRadius: Radius.pill,
     backgroundColor: Colors.light.primaryLight,
     justifyContent: 'center',
     alignItems: 'center',
@@ -325,15 +325,15 @@ const styles = StyleSheet.create({
     borderRadius: Radius.xl,
     overflow: 'hidden',
     ...Shadows.sm,
-    marginBottom: 24,
+    marginBottom: Spacing.l,
   },
   menuItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
+    padding: Spacing.m,
   },
   menuItemIcon: {
-    marginRight: 16,
+    marginRight: Spacing.m,
     width: 24,
     textAlign: 'center',
   },
@@ -347,7 +347,7 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: '700',
     color: Colors.light.primary, // Акцент на бонусах
-    marginRight: 8,
+    marginRight: Spacing.s,
   },
   appVersion: {
     fontSize: 13,
@@ -363,8 +363,8 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
-    paddingVertical: 12,
+    gap: Spacing.s,
+    paddingVertical: Spacing.sm,
   },
   logoutText: {
     color: Colors.light.error,
@@ -372,6 +372,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   footerSpacing: {
-    height: 40,
+    height: Spacing.xxl,
   },
 });

@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
     paddingBottom: Spacing.xxl,
   },
   emptyScrollContent: {
-    paddingHorizontal: 20,
+    paddingHorizontal: Spacing.ml,
     paddingBottom: Spacing.xl,
   },
   emptyHeader: {
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
   emptyIconCircle: {
     width: 80,
     height: 80,
-    borderRadius: 40,
+    borderRadius: Radius.pill,
     backgroundColor: Colors.light.primaryLight,
     alignItems: 'center',
     justifyContent: 'center',

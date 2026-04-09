@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.background,
   },
   header: {
-    paddingHorizontal: 20,
+    paddingHorizontal: Spacing.ml,
     backgroundColor: Colors.light.background,
     paddingBottom: Spacing.s,
     zIndex: 10,
@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
     color: Colors.light.text,
   },
   emptyScrollContent: {
-    paddingHorizontal: 20,
+    paddingHorizontal: Spacing.ml,
     paddingBottom: Spacing.xl,
   },
   emptyHeader: {
@@ -77,7 +77,7 @@ const styles = StyleSheet.create({
   emptyIconCircle: {
     width: 80,
     height: 80,
-    borderRadius: 40,
+    borderRadius: Radius.pill,
     backgroundColor: Colors.light.primaryLight,
     alignItems: 'center',
     justifyContent: 'center',

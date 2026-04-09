@@ -2,11 +2,15 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-nati
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors, Spacing, Radius, Shadows } from '@/constants/theme';
+import ScreenHeader from '@/components/ui/ScreenHeader';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function AdminDashboard() {
   const router = useRouter();
 
   return (
+    <SafeAreaView edges={['bottom']} style={styles.safeArea}>
+    <ScreenHeader title="Панель Владельца" />
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       
       <View style={styles.headerBlock}>
@@ -67,13 +71,17 @@ export default function AdminDashboard() {
       </View>
 
     </ScrollView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  safeArea: {
     flex: 1,
     backgroundColor: Colors.light.background,
+  },
+  container: {
+    flex: 1,
   },
   content: {
     padding: Spacing.m,

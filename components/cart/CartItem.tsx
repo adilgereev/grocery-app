@@ -96,8 +96,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: Colors.light.card,
     borderRadius: Radius.xl,
-    padding: 12,
-    marginBottom: 12,
+    padding: Spacing.sm,
+    marginBottom: Spacing.sm,
     ...Shadows.md,
   },
   itemTouchRow: { 
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
   itemImage: {
     width: 60,
     height: 60,
-    borderRadius: 20, // Экстремальное скругление по-Лавке
+    borderRadius: Radius.xxl,
     marginRight: Spacing.m,
   },
   itemInfo: {
@@ -140,12 +140,12 @@ const styles = StyleSheet.create({
     borderRadius: Radius.xxl,
     paddingHorizontal: Spacing.xs,
     paddingVertical: Spacing.xs,
-    marginRight: 12,
+    marginRight: Spacing.sm,
   },
   circleButton: {
     width: 28,
     height: 28,
-    borderRadius: 14,
+    borderRadius: Radius.pill,
     backgroundColor: Colors.light.card,
     alignItems: 'center',
     justifyContent: 'center',
@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
   quantityText: {
     fontSize: 16,
     fontWeight: '700',
-    marginHorizontal: 12,
+    marginHorizontal: Spacing.sm,
     color: Colors.light.text,
     minWidth: 12,
     textAlign: 'center',

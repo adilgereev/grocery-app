@@ -131,7 +131,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.background,
   },
   header: {
-    paddingHorizontal: 20,
+    paddingHorizontal: Spacing.ml,
     backgroundColor: Colors.light.background,
     paddingBottom: Spacing.s,
     zIndex: 10,
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
     color: Colors.light.text,
   },
   listContainer: {
-    paddingHorizontal: 20,
+    paddingHorizontal: Spacing.ml,
     paddingBottom: Spacing.xxl,
   },
 });

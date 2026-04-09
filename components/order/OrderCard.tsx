@@ -86,8 +86,8 @@ const styles = StyleSheet.create({
   statusBadge: {
     flexDirection: 'row', 
     alignItems: 'center',
-    paddingHorizontal: 12, 
-    paddingVertical: 6, 
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 6,
     borderRadius: Radius.pill,
   },
   statusEmoji: { fontSize: 16, marginRight: 6 },

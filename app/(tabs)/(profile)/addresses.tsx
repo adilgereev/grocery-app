@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
   radioOuter: {
     width: 22,
     height: 22,
-    borderRadius: 11,
+    borderRadius: Radius.pill,
     borderWidth: 2,
     borderColor: Colors.light.border,
     justifyContent: 'center',
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
   radioInner: {
     width: 12,
     height: 12,
-    borderRadius: 6,
+    borderRadius: Radius.pill,
     backgroundColor: Colors.light.primary,
   },
   addressText: {

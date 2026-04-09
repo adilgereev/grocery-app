@@ -10,7 +10,7 @@ export const cartSummaryStyles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
     color: Colors.light.text,
-    marginBottom: 12,
+    marginBottom: Spacing.sm,
     paddingHorizontal: Spacing.xs,
   },
   addressSelector: {
@@ -18,7 +18,7 @@ export const cartSummaryStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: Colors.light.card,
-    borderRadius: 18,
+    borderRadius: Radius.xxl,
     padding: Spacing.m,
     marginBottom: Spacing.l,
     ...Shadows.md,
@@ -38,7 +38,7 @@ export const cartSummaryStyles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '700',
     color: Colors.light.text,
-    marginBottom: 12,
+    marginBottom: Spacing.sm,
     paddingHorizontal: Spacing.xs,
   },
   paymentContainer: {
@@ -49,7 +49,7 @@ export const cartSummaryStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: Colors.light.card,
-    borderRadius: 18,
+    borderRadius: Radius.xxl,
     padding: Spacing.m,
     borderWidth: 2,
     borderColor: Colors.light.card,
@@ -64,7 +64,7 @@ export const cartSummaryStyles = StyleSheet.create({
   paymentIconContainer: {
     width: 44,
     height: 44,
-    borderRadius: 22,
+    borderRadius: Radius.pill,
     backgroundColor: Colors.light.borderLight,
     justifyContent: 'center',
     alignItems: 'center',
@@ -91,7 +91,7 @@ export const cartSummaryStyles = StyleSheet.create({
   receiptCard: {
     backgroundColor: Colors.light.card,
     borderRadius: Radius.xl,
-    padding: 20,
+    padding: Spacing.ml,
     ...Shadows.md,
   },
   receiptTitle: {
@@ -103,7 +103,7 @@ export const cartSummaryStyles = StyleSheet.create({
   receiptRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 12,
+    marginBottom: Spacing.sm,
   },
   receiptText: {
     fontSize: 15,
@@ -119,7 +119,7 @@ export const cartSummaryStyles = StyleSheet.create({
     height: 1,
     backgroundColor: Colors.light.borderLight,
     marginVertical: Spacing.m,
-    marginHorizontal: -20,
+    marginHorizontal: -Spacing.ml,
   },
   receiptRowTotal: {
     flexDirection: 'row',
@@ -140,9 +140,9 @@ export const cartSummaryStyles = StyleSheet.create({
   checkoutButton: {
     flexDirection: 'row',
     backgroundColor: Colors.light.cta,
-    borderRadius: 100,
+    borderRadius: Radius.pill,
     paddingVertical: Spacing.m,
-    paddingHorizontal: 20,
+    paddingHorizontal: Spacing.ml,
     alignItems: 'center',
     justifyContent: 'space-between',
     ...Shadows.md,
@@ -156,7 +156,7 @@ export const cartSummaryStyles = StyleSheet.create({
   },
   checkoutPriceTag: {
     backgroundColor: Colors.light.whiteTransparent,
-    paddingHorizontal: 12,
+    paddingHorizontal: Spacing.sm,
     paddingVertical: 6,
     borderRadius: Radius.xl,
   },
