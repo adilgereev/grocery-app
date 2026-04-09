@@ -3,9 +3,10 @@ import { Product } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { Platform, StyleSheet, TouchableOpacity, View, useWindowDimensions } from 'react-native';
+import { StyleSheet, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import { Image } from 'expo-image';
 import { useImageKit } from '@/hooks/useImageKit';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface ProductHeaderProps {
   product: Product;
@@ -43,7 +44,7 @@ export const ProductHeader: React.FC<ProductHeaderProps> = ({
         <View style={[styles.image, styles.placeholderImage]} />
       )}
 
-      <View style={styles.headerAbsolute}>
+      <SafeAreaView edges={['top']} style={styles.headerAbsolute}>
         <TouchableOpacity onPress={() => router.back()} style={styles.iconButton}>
           <Ionicons name="arrow-back" size={24} color={Colors.light.text} />
         </TouchableOpacity>
@@ -55,7 +56,7 @@ export const ProductHeader: React.FC<ProductHeaderProps> = ({
             color={isFavorite ? Colors.light.primary : Colors.light.text}
           />
         </TouchableOpacity>
-      </View>
+      </SafeAreaView>
     </View>
   );
 };
@@ -81,7 +82,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingHorizontal: Spacing.m,
-    paddingTop: Platform.OS === 'android' ? 30 : 10,
+    paddingTop: Spacing.xs,
   },
   iconButton: {
     width: 44,

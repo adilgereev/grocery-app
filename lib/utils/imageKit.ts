@@ -103,10 +103,11 @@ export function getOptimizedImage(url: string | null | undefined, options: Image
  */
 export function getPlaceholderUrl(url: string | null | undefined): string {
   if (!url) return '';
-  return getOptimizedImage(url, { 
-    width: 20, 
-    quality: 10, 
+  return getOptimizedImage(url, {
+    width: 20,
+    quality: 10,
     blur: 5,
-    format: 'webp' 
+    format: 'webp',
+    dpr: 1,
   });
 }

@@ -16,6 +16,8 @@ interface UseImageKitReturn {
   /** Общие пропсы для expo-image <Image> */
   imageProps: {
     contentFit: 'cover' | 'contain';
+    /** Растягивает 20px LQIP на весь контейнер (по умолчанию expo-image — scale-down) */
+    placeholderContentFit: 'cover';
     transition: number;
   };
 }
@@ -41,6 +43,7 @@ export function useImageKit(
       hasImage: !!url,
       imageProps: {
         contentFit: pad ? 'contain' : 'cover' as const,
+        placeholderContentFit: 'cover' as const,
         transition,
       },
     };
