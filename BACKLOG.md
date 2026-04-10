@@ -50,13 +50,13 @@
 ## 🔴 Приоритет 3 — Новые тесты
 
 ### Сторы
-- [ ] **`store/favoriteStore.ts`** — написать тесты (actions: fetchFavorites, toggleFavorite add/remove, rollback при ошибке, clearFavorites)
-- [ ] **`store/appStore.ts`** — написать базовые тесты инициализации
+- [x] **`store/favoriteStore.ts`** — написать тесты (actions: fetchFavorites, toggleFavorite add/remove, rollback при ошибке, clearFavorites) ✅
+- [x] **`store/appStore.ts`** — написать базовые тесты инициализации ✅
 
 ### Компоненты
-- [ ] **`components/ui/ScreenHeader.tsx`**, **`ErrorBoundary.tsx`** — написать базовые тесты рендера
-- [ ] **Компоненты корзины** — `CartSummary`, `CheckoutButton`, `PaymentSelector`, `EmptyCart` → написать тесты
-- [ ] **Компоненты авторизации** — `PhoneStep`, `OtpStep` → написать тесты
+- [x] **`components/ui/ScreenHeader.tsx`**, **`ErrorBoundary.tsx`** — написать базовые тесты рендера ✅
+- [x] **Компоненты корзины** — `CartSummary`, `CheckoutButton`, `PaymentSelector`, `EmptyCart` → написать тесты ✅
+- [x] **Компоненты авторизации** — `PhoneStep`, `OtpStep` → написать тесты ✅
 
 ### Веб-компоненты (`.web.tsx`)
 - [ ] `CategoryFormModal.web`, `catalog.web`, `categories.web`, `orders.web`, `add-product.web`, `edit-product.web` → написать unit-тесты
