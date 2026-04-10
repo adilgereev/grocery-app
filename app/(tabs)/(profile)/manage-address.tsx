@@ -19,7 +19,6 @@ import { useForm } from 'react-hook-form';
 import {
   Alert,
   Modal,
-  Platform,
   StyleSheet,
   Text,
   TextInput,
@@ -92,11 +91,7 @@ export default function AddAddressScreen() {
   const lon = watch('lon');
 
   const showAlert = (title: string, message: string) => {
-    if (Platform.OS === 'web') {
-      window.alert(`${title}: ${message}`);
-    } else {
-      Alert.alert(title, message);
-    }
+    Alert.alert(title, message);
   };
 
   const handleAddAddress = async (formData: AddressFormData) => {
@@ -113,9 +108,7 @@ export default function AddAddressScreen() {
       // Очищаем адрес перед сохранением (убираем город и номер дома из основной строки)
       const cleanStreet = cleanAddress(rawAddress, { removeHouse: true });
 
-      if (Platform.OS !== 'web') {
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      }
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
 
       const payload = {
         text: cleanStreet,

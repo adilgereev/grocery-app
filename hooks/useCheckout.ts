@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Alert, Platform } from 'react-native';
+import { Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 import { createOrder, createOrderItems } from '@/lib/api/orderApi';
 import { useAuth } from '@/providers/AuthProvider';
@@ -32,9 +32,7 @@ export function useCheckout() {
     }
 
     if (!selectedAddress) {
-      const msg = 'Пожалуйста, выберите адрес доставки перед оформлением заказа.';
-      if (Platform.OS === 'web') window.alert(msg);
-      else Alert.alert('Внимание', msg);
+      Alert.alert('Внимание', 'Пожалуйста, выберите адрес доставки перед оформлением заказа.');
       return;
     }
 
@@ -61,27 +59,23 @@ export function useCheckout() {
 
       // 3. Обработка успеха: уведомления и редирект
       const paymentText = paymentMethod === 'cash' ? 'Наличными' : 'Онлайн';
-      
-      if (Platform.OS === 'web') {
-        window.alert(`Ура! Ваш заказ успешно оформлен. Оплата: ${paymentText} при получении 🛒`);
-      } else {
-        Alert.alert(
-          'Готово!', 
-          `Ваш заказ успешно оформлен и передан на сборку 🛒\nОплата: ${paymentText} при получении`
-        );
-        
-        // Планируем уведомления для имитации процесса доставки
-        schedulePushNotification(
-          "Заказ оформлен! ✅", 
-          "Ваш продуктовый набор уже начали собирать на складе.", 
-          2
-        );
-        schedulePushNotification(
-          "Курьер в пути! 🚴‍♂️", 
-          "Ожидайте доставку примерно через 15 минут. Вы можете отслеживать статус в приложении.", 
-          15
-        );
-      }
+
+      Alert.alert(
+        'Готово!',
+        `Ваш заказ успешно оформлен и передан на сборку 🛒\nОплата: ${paymentText} при получении`
+      );
+
+      // Планируем уведомления для имитации процесса доставки
+      schedulePushNotification(
+        "Заказ оформлен! ✅",
+        "Ваш продуктовый набор уже начали собирать на складе.",
+        2
+      );
+      schedulePushNotification(
+        "Курьер в пути! 🚴‍♂️",
+        "Ожидайте доставку примерно через 15 минут. Вы можете отслеживать статус в приложении.",
+        15
+      );
 
       // 4. Очистка и переход
       clearCart();
@@ -90,8 +84,7 @@ export function useCheckout() {
       const errorMessage = err instanceof Error ? err.message : 'Произошла ошибка при оформлении заказа';
       logger.error('Ошибка оформления заказа:', errorMessage);
       
-      if (Platform.OS === 'web') window.alert(`Ошибка: ${errorMessage}`);
-      else Alert.alert('Ошибка оформления', errorMessage);
+      Alert.alert('Ошибка оформления', errorMessage);
     } finally {
       setIsSubmitting(false);
     }

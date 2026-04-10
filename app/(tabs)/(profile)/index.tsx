@@ -10,7 +10,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import React, { useCallback, useState } from 'react';
-import { Alert, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function ProfileScreen() {
@@ -45,14 +45,10 @@ export default function ProfileScreen() {
   );
 
   const handleLogout = async () => {
-    if (Platform.OS !== 'web') {
-      Alert.alert('Выход', 'Вы уверены, что хотите выйти из аккаунта?', [
-        { text: 'Отмена', style: 'cancel' },
-        { text: 'Выйти', style: 'destructive', onPress: performLogout }
-      ]);
-    } else {
-      if (window.confirm('Вы уверены, что хотите выйти из аккаунта?')) performLogout();
-    }
+    Alert.alert('Выход', 'Вы уверены, что хотите выйти из аккаунта?', [
+      { text: 'Отмена', style: 'cancel' },
+      { text: 'Выйти', style: 'destructive', onPress: performLogout }
+    ]);
   };
 
   const performLogout = async () => {
