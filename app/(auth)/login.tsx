@@ -31,19 +31,11 @@ export default function Login() {
     return () => clearTimeout(timer);
   }, [countdown]);
 
-  const showAlert = (title: string, message: string) => {
-    if (Platform.OS === 'web') {
-      window.alert(`${title}\n${message}`);
-    } else {
-      Alert.alert(title, message);
-    }
-  };
-
   // Шаг 1: Отправка SMS-кода через Edge Function
   const handleSendOTP = async () => {
     const normalized = normalizePhone(phone);
     if (normalized.length !== 11) {
-      showAlert('Ошибка', 'Введите корректный номер телефона');
+      Alert.alert('Ошибка', 'Введите корректный номер телефона');
       return;
     }
 
@@ -54,9 +46,9 @@ export default function Login() {
 
       // DEV-режим: сервер вернул код в ответе (DEV_MODE=true на сервере)
       if (__DEV__ && result.code) {
-        showAlert('Код отправлен', `[DEV] Ваш код: ${result.code}`);
+        Alert.alert('Код отправлен', `[DEV] Ваш код: ${result.code}`);
       } else {
-        showAlert('Код отправлен', `SMS с кодом отправлено на ${phone}`);
+        Alert.alert('Код отправлен', `SMS с кодом отправлено на ${phone}`);
       }
 
       setStep('otp');
@@ -64,7 +56,7 @@ export default function Login() {
       setOtp(['', '', '', '']);
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Что-то пошло не так';
-      showAlert('Ошибка', errorMessage);
+      Alert.alert('Ошибка', errorMessage);
     } finally {
       setLoading(false);
     }
@@ -80,7 +72,7 @@ export default function Login() {
       const verified = await verifyOtp(normalized, code);
 
       if (!verified) {
-        showAlert('Неверный код', 'Код истёк или введён неверно. Попробуйте ещё раз.');
+        Alert.alert('Неверный код', 'Код истёк или введён неверно. Попробуйте ещё раз.');
         setOtp(['', '', '', '']);
         setLoading(false);
         return;
@@ -92,7 +84,7 @@ export default function Login() {
       // Успех! AuthProvider подхватит сессию автоматически
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Что-то пошло не так';
-      showAlert('Ошибка', errorMessage);
+      Alert.alert('Ошибка', errorMessage);
       setLoading(false);
     }
   };

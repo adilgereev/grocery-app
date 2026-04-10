@@ -8,7 +8,7 @@ import { useAuth } from '@/providers/AuthProvider';
 
 import { useRouter } from 'expo-router';
 import React, { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useForm, Controller } from 'react-hook-form';
@@ -71,16 +71,11 @@ export default function EditProfileScreen() {
         last_name: formData.last_name || null,
       });
 
-      if (Platform.OS === 'web') {
-        window.alert('Профиль успешно обновлен!');
-      } else {
-        Alert.alert('Готово', 'Персональные данные сохранены!');
-      }
+      Alert.alert('Готово', 'Персональные данные сохранены!');
       router.back();
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Неизвестная ошибка';
-      if (Platform.OS === 'web') window.alert(errorMessage);
-      else Alert.alert('Ошибка', errorMessage);
+      Alert.alert('Ошибка', errorMessage);
     } finally {
       setSaving(false);
     }

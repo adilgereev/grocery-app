@@ -11,7 +11,6 @@ import React, { useCallback, useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
-  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -176,14 +175,11 @@ export default function ProductFormScreen({ mode, productId }: Props) {
 
       <View style={s.labelRow}>
         <Text style={s.label}>Ссылка на фото (URL)</Text>
-        {/* Кнопка выбора файла только на native */}
-        {Platform.OS !== 'web' && (
-          <TouchableOpacity onPress={pickImage} disabled={uploading}>
-            <Text style={[s.pickText, uploading && s.pickTextDisabled]}>
-              {uploading ? 'Загрузка...' : 'Выбрать файл'}
-            </Text>
-          </TouchableOpacity>
-        )}
+        <TouchableOpacity onPress={pickImage} disabled={uploading}>
+          <Text style={[s.pickText, uploading && s.pickTextDisabled]}>
+            {uploading ? 'Загрузка...' : 'Выбрать файл'}
+          </Text>
+        </TouchableOpacity>
       </View>
       <TextInput
         style={s.input}
@@ -220,9 +216,6 @@ export default function ProductFormScreen({ mode, productId }: Props) {
 
     </ScrollView>
   );
-
-  // На web — без KeyboardAvoidingView
-  if (Platform.OS === 'web') return form;
 
   return (
     <KeyboardAvoidingView

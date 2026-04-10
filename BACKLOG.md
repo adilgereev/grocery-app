@@ -39,27 +39,7 @@
 
 # 🔍 БЛОК 2: Аудит (07.04.2026)
 
-## 🟢 Приоритет 1 — Быстрые правки
-
-> ✅ Все задачи закрыты — см. Архив
-
-## 🟡 Приоритет 2 — Качество кода
-
-> ✅ Все задачи закрыты — см. Архив
-
-## 🔴 Приоритет 3 — Новые тесты
-
-### Сторы
-- [x] **`store/favoriteStore.ts`** — написать тесты (actions: fetchFavorites, toggleFavorite add/remove, rollback при ошибке, clearFavorites) ✅
-- [x] **`store/appStore.ts`** — написать базовые тесты инициализации ✅
-
-### Компоненты
-- [x] **`components/ui/ScreenHeader.tsx`**, **`ErrorBoundary.tsx`** — написать базовые тесты рендера ✅
-- [x] **Компоненты корзины** — `CartSummary`, `CheckoutButton`, `PaymentSelector`, `EmptyCart` → написать тесты ✅
-- [x] **Компоненты авторизации** — `PhoneStep`, `OtpStep` → написать тесты ✅
-
-### Веб-компоненты (`.web.tsx`)
-- [ ] `CategoryFormModal.web`, `catalog.web`, `categories.web`, `orders.web`, `add-product.web`, `edit-product.web` → написать unit-тесты
+> ✅ Весь блок закрыт и перенесён в [Архив](#-архив--закрытые-задачи).
 
 ---
 
@@ -181,4 +161,15 @@
 - [x] **20+ файлов** — все вхождения `12` и `20` как spacing-значений заменены на `Spacing.sm` / `Spacing.ml` ✅
 - [x] **`profile/index.tsx`** — точные совпадения `24→Spacing.l`, `40→Spacing.xxl`, `16→Spacing.m`, `8→Spacing.s` заменены ✅
 - [x] **Оставлены как дизайн-константы** — `18`, `30`, `36`, `6` (встречаются 1–2 раза, нет смысла в токене)
+
+## 🧪 Аудит Тестов (10.04.2026)
+
+### ✅ Сторы — закрыто
+- [x] **`store/favoriteStore.ts`** — написаны тесты (fetchFavorites, toggleFavorite, rollback, clear) ✅
+- [x] **`store/appStore.ts`** — написаны базовые тесты инициализации ✅
+
+### ✅ Компоненты — закрыто
+- [x] **`components/ui/ScreenHeader.tsx`**, **`ErrorBoundary.tsx`** — написаны базовые тесты рендера ✅
+- [x] **Компоненты корзины** — `CartSummary`, `CheckoutButton`, `PaymentSelector`, `EmptyCart` → написаны тесты ✅
+- [x] **Компоненты авторизации** — `PhoneStep`, `OtpStep` → написаны тесты ✅
 
