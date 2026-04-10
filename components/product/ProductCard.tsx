@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 40,
     borderRadius: Radius.pill, // "Пухлая" кнопка
-    backgroundColor: Colors.light.ctaLight,
+    backgroundColor: Colors.light.primaryLight,
     justifyContent: 'center',
     alignItems: 'center',
   },

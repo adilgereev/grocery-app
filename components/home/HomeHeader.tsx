@@ -53,7 +53,7 @@ export default function HomeHeader({
         onPress={onSearchPress}
         testID="home-search-button"
       >
-        <Ionicons name="search" size={20} color={Colors.light.primary} style={s.searchIcon} />
+        <Ionicons name="search" size={20} color={Colors.light.textLight} style={s.searchIcon} />
         <Text style={s.searchInputText}>Поиск</Text>
       </TouchableOpacity>
     </View>

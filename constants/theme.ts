@@ -16,7 +16,6 @@ export const Colors = {
     // Тёмно-зелёный акцент для CTA-кнопок ("В корзину", "Оформить заказ")
     cta: '#059669',
     ctaDark: '#047857',
-    ctaLight: '#D1FAE5',
     background: '#F9FAFB',
     card: '#ffffff',
     text: '#111827',

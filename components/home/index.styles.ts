@@ -40,7 +40,7 @@ export const homeStyles = StyleSheet.create({
   // Поиск
   searchContainer: {
     flexDirection: 'row', alignItems: 'center',
-    backgroundColor: Colors.light.primaryLight,
+    backgroundColor: Colors.light.borderLight,
     borderRadius: Radius.pill,
     paddingHorizontal: Spacing.m, height: 52,
   },

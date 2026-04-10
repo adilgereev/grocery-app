@@ -23,6 +23,7 @@ This skill defines the high-standard workflow for managing the Supabase backend 
 
 ## 🚀 Key Commands
 - `npm run supabase:types` - Update `types/supabase.ts` (Never edit manually).
+  **После этого обязательно скопировать в business-admin:** `cp types/supabase.ts business-admin/src/types/supabase.ts`
 - `npm run supabase:pull` - Sync cloud changes to a local migration file.
 - `npm run supabase:push` - Deploy local migrations to the cloud.
 - `npx supabase db reset` - Reset local environment and re-apply all migrations.
@@ -50,13 +51,15 @@ This skill defines the high-standard workflow for managing the Supabase backend 
 1. Внести изменения в Supabase Dashboard (таблица, колонка, RLS).
 2. `npm run supabase:pull` — CLI создаст SQL-файл в `supabase/migrations/`.
 3. `npm run supabase:types` — обновить типы.
-4. Закоммитить миграцию в Git.
+4. Скопировать обновлённые типы в `business-admin`: `cp types/supabase.ts business-admin/src/types/supabase.ts`
+5. Закоммитить миграцию в Git.
 
 ### Сценарий Б: Ручная миграция (рекомендуется)
 1. `npx supabase migration new <name>` — создать заготовку.
 2. Написать SQL в созданном файле.
 3. `npm run supabase:push` — применить к облаку.
 4. `npm run supabase:types` — обновить типы.
+5. Скопировать обновлённые типы в `business-admin`: `cp types/supabase.ts business-admin/src/types/supabase.ts`
 
 ## ⛔ Destructive Operations
 - **ВСЕГДА спрашивай разрешение пользователя** перед выполнением деструктивных команд: `db reset`, `db drop`, `TRUNCATE`, `DELETE` без `WHERE` и любых других операций, уничтожающих данные.
@@ -66,3 +69,4 @@ This skill defines the high-standard workflow for managing the Supabase backend 
 - **Atomic Migrations**: Keep each migration focused on a single logical change.
 - **Local Testing**: Verify migrations locally using Docker (`npx supabase start`) before pushing.
 - **Git Hygiene**: Always commit migration files.
+- **Type Sync**: `types/supabase.ts` и `business-admin/src/types/supabase.ts` — две независимые копии одного файла. После каждого `supabase:types` обязательно копировать в `business-admin/`.
