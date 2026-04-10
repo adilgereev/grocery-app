@@ -31,6 +31,11 @@ jest.mock('expo-router', () => ({
   Link: 'Link',
 }));
 
+// Mock @expo/vector-icons — иконки не нужны в тестах
+jest.mock('@expo/vector-icons', () => ({
+  Ionicons: 'Ionicons',
+}));
+
 // --- Supabase Mock Helper ---
 const mockSupabaseResponse = (data = null, error = null) => ({
   data,
