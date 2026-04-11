@@ -39,11 +39,11 @@ export default function PaymentSelector({
               activeOpacity={0.7}
               testID={`payment-method-${method}`}
             >
-              <View style={s.paymentIconContainer}>
+              <View style={[s.paymentIconContainer, isSelected && s.paymentIconContainerSelected]}>
                 <Ionicons
                   name={PAYMENT_METHODS[method].icon as any}
                   size={20}
-                  color={isSelected ? Colors.light.primary : Colors.light.textSecondary}
+                  color={isSelected ? Colors.light.white : Colors.light.textSecondary}
                 />
               </View>
               <View style={s.paymentMethodInfo}>

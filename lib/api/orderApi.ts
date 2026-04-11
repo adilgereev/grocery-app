@@ -4,7 +4,7 @@ import { Order } from '@/types';
 /**
  * Тип заказа с его позициями для экрана деталей
  */
-export interface OrderWithItems {
+interface OrderWithItems {
   order: Order;
   items: OrderItem[];
 }

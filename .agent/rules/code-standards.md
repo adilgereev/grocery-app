@@ -25,6 +25,15 @@
 ## 4. ⛺ Правило Бойскаута (Boy Scout Rule)
 - Оставляй код чуть чище, чем он был до твоего прихода. Мелкие правки линта, импортов или типизации в соседних строках приветствуются.
 
-## 5. 🔗 Связанные навыки и workflows
+## 5. ⚠️ Типичные ошибки токенов
+
+- **`Duration.*` — только анимации, не размеры.** Значения `Duration.default` (~300), `Duration.fast` (~150) и т.д. — это миллисекунды. Нельзя использовать как `height`, `width`, `padding` и т.п.:
+  ```ts
+  // ❌ height: Duration.default → 300px лишнего пространства
+  // ✅ height: Spacing.xxl
+  ```
+- При выборе токена для размера — только `Spacing.*`, `Radius.*`, `FontSize.*`.
+
+## 6. 🔗 Связанные навыки и workflows
 - **Skill**: `.agent/skills/testing/SKILL.md` — стандарты тестирования (Jest + RNTL), AI Regression Cycle, покрытие stores и UI. Обязателен при любых изменениях логики.
 - **Workflow**: `.agent/workflows/verify-task.md` — пошаговая проверка задачи (lint → knip → test → UI-стандарты).

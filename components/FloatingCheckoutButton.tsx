@@ -104,9 +104,9 @@ const styles = StyleSheet.create({
   },
   floatingCheckoutPriceTag: {
     backgroundColor: Colors.light.whiteTransparent,
-    paddingHorizontal: 10,
+    paddingHorizontal: Spacing.sm,
     paddingVertical: Spacing.xs,
-    borderRadius: Radius.l,
+    borderRadius: Radius.xl,
   },
   floatingCheckoutPriceText: {
     color: Colors.light.white,

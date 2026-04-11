@@ -8,7 +8,8 @@
     "**/*.{ts,tsx}"
   ],
   "ignoreDependencies": [
-    "expo-router/entry"
+    "expo-router/entry",
+    "babel-plugin-transform-import-meta"
   ],
   "ignore": [
     "node_modules/**",
@@ -17,7 +18,10 @@
     "scripts/**",
     "**/*.ios.tsx",
     "**/*.android.tsx",
-    "**/*.native.tsx"
+    "**/*.native.tsx",
+    "business-admin/**",
+    "supabase/functions/**",
+    "types/supabase.ts"
   ],
   "rules": {
     "files": "warn",

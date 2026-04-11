@@ -30,6 +30,16 @@
 - **Экран открывается только из одного таба** → размещать в стеке этого таба. Пример: `app/(tabs)/(profile)/favorites.tsx`.
 - **Связанные экраны-цепочки** (например, `addresses → manage-address`) → должны жить в **одном стеке**. Если один экран цепочки перемещается на root-уровень, остальные — тоже.
 
-## 5. 🔗 Связанные навыки и workflows
+## 5. 🎞️ Анимации (Reanimated 4)
+
+- **`Layout` устарел** — в `react-native-reanimated` v4 (используется `~4.1.1`) `Layout` deprecated. Заменять на `LinearTransition`:
+  ```ts
+  // ❌ import { Layout } → deprecated
+  // ✅ import { LinearTransition }
+  layout={LinearTransition.springify()}
+  ```
+- Это касается всех `Animated.View`, `Animated.FlatList` и других анимированных компонентов.
+
+## 6. 🔗 Связанные навыки и workflows
 - **Skill**: `.agent/skills/supabase/SKILL.md` — детальный протокол работы с миграциями, RLS и типами. Обязателен при любых изменениях схемы БД.
 - **Workflow**: `.agent/workflows/supabase-sync.md` — пошаговая синхронизация local ↔ remote (pull → push → types).

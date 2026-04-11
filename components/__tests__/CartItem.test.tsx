@@ -28,7 +28,6 @@ describe('CartItem', () => {
   };
 
   const mockUpdateQuantity = jest.fn();
-  const mockRemove = jest.fn();
   const mockOnPress = jest.fn();
 
   beforeEach(() => {
@@ -41,14 +40,14 @@ describe('CartItem', () => {
         item={mockItem}
         index={0}
         onUpdateQuantity={mockUpdateQuantity}
-        onRemove={mockRemove}
         onPress={mockOnPress}
       />
     );
 
     expect(getByText('Яблоки')).toBeTruthy();
+    expect(getByText('кг')).toBeTruthy();
     expect(getByText('200 ₽')).toBeTruthy(); // 100 * 2
-    expect(getByText('100 ₽ / шт')).toBeTruthy();
+    expect(getByText('100 ₽ / кг')).toBeTruthy();
     expect(getByTestId('quantity-text').props.children).toBe(2);
   });
 
@@ -58,7 +57,6 @@ describe('CartItem', () => {
         item={mockItem}
         index={0}
         onUpdateQuantity={mockUpdateQuantity}
-        onRemove={mockRemove}
         onPress={mockOnPress}
       />
     );
@@ -70,19 +68,19 @@ describe('CartItem', () => {
     expect(mockUpdateQuantity).toHaveBeenCalledWith('prod-1', 1);
   });
 
-  it('calls onRemove when delete button is pressed', () => {
+  it('calls onUpdateQuantity with 0 when minus is pressed at quantity=1', () => {
+    const singleItem = { product: mockProduct, quantity: 1 };
     const { getByTestId } = render(
       <CartItem
-        item={mockItem}
+        item={singleItem}
         index={0}
         onUpdateQuantity={mockUpdateQuantity}
-        onRemove={mockRemove}
         onPress={mockOnPress}
       />
     );
 
-    fireEvent.press(getByTestId('remove-item'));
-    expect(mockRemove).toHaveBeenCalledWith('prod-1');
+    fireEvent.press(getByTestId('quantity-decrease'));
+    expect(mockUpdateQuantity).toHaveBeenCalledWith('prod-1', 0);
   });
 
   it('calls onPress when item is pressed', () => {
@@ -91,7 +89,6 @@ describe('CartItem', () => {
         item={mockItem}
         index={0}
         onUpdateQuantity={mockUpdateQuantity}
-        onRemove={mockRemove}
         onPress={mockOnPress}
       />
     );

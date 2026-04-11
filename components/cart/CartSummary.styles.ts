@@ -70,6 +70,9 @@ export const cartSummaryStyles = StyleSheet.create({
     alignItems: 'center',
     marginRight: Spacing.m,
   },
+  paymentIconContainerSelected: {
+    backgroundColor: Colors.light.primary,
+  },
   paymentMethodInfo: { flex: 1 },
   paymentLabelOption: {
     fontSize: 15,
@@ -90,7 +93,7 @@ export const cartSummaryStyles = StyleSheet.create({
   },
   receiptCard: {
     backgroundColor: Colors.light.card,
-    borderRadius: Radius.xl,
+    borderRadius: Radius.xxl,
     padding: Spacing.ml,
     ...Shadows.md,
   },

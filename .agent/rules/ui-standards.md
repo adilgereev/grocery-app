@@ -80,7 +80,36 @@
 | `success` | Завершено | Статус "Доставлен", успешные тосты |
 | `error` | Ошибка/опасность | Статус "Отменён", ошибки валидации |
 
-## 8. Визуальные отличия от предыдущего стиля (Emerald Minimalism)
+## 8. 🛒 Паттерн списка товаров (корзина)
+
+Список товаров в корзине — единая карточка с разделителями, **не** отдельные карточки с тенями на каждый товар:
+
+```tsx
+// ✅ Правильно: один itemsCard + ItemDivider между строками
+<View style={styles.itemsCard}>
+  {items.map((item, index) => (
+    <React.Fragment key={item.product.id}>
+      <CartItem ... />
+      {index < items.length - 1 && <View style={styles.itemDivider} />}
+    </React.Fragment>
+  ))}
+</View>
+
+itemsCard: {
+  backgroundColor: Colors.light.card,
+  borderRadius: Radius.xxl,
+  overflow: 'hidden',   // клипит скругление
+  ...Shadows.md,
+},
+itemDivider: { height: 1, backgroundColor: Colors.light.borderLight, marginHorizontal: Spacing.m },
+```
+
+- **Счётчик qty**: `− qty +` на серой капсуле без внутренних кружочков. `quantityButton: { padding: Spacing.xs }` + `hitSlop`.
+- **Удаление товара**: через кнопку минус при qty=1, с UndoToast на 4 секунды — **без** отдельной trash-иконки.
+
+Образец: Яндекс Лавка, Самокат.
+
+## 9. Визуальные отличия от предыдущего стиля (Emerald Minimalism)
 | Характеристика | Emerald Minimalism (было) | Soft Minimalism (стало) |
 |---|---|---|
 | Тени | Цветные emerald, opacity 0.04–0.08 | Нейтральные серые, opacity 0.03–0.05 |
