@@ -32,6 +32,7 @@ export default function HomeScreen() {
 
   const [popularProducts, setPopularProducts] = useState<Product[]>([]);
   const [popularLoading, setPopularLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   // Имя из контекста (сбрасывается при выходе)
   const firstName = profile?.first_name || '';
 
@@ -55,10 +56,8 @@ export default function HomeScreen() {
   });
 
   const loadPopularProducts = useCallback(async () => {
+    setPopularLoading(true);
     try {
-      if (popularProducts.length === 0) {
-        setPopularLoading(true);
-      }
       const data = await fetchPopularProducts(10);
       setPopularProducts(data || []);
     } catch (error: unknown) {
@@ -66,7 +65,22 @@ export default function HomeScreen() {
     } finally {
       setPopularLoading(false);
     }
-  }, [popularProducts.length]);
+  }, []);
+
+  // Обновление всех секций одновременно, спиннер ждёт завершения всех запросов
+  const handleRefresh = useCallback(async () => {
+    if (isRefreshing) return;
+    setIsRefreshing(true);
+    try {
+      await Promise.all([
+        fetchFullHierarchy(true),
+        loadPopularProducts(),
+        fetchStories(true),
+      ]);
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, [isRefreshing, fetchFullHierarchy, loadPopularProducts, fetchStories]);
 
   // Загружаем данные при каждом фокусе на страницу
   useFocusEffect(
@@ -153,12 +167,8 @@ export default function HomeScreen() {
         scrollEventThrottle={16}
         ListHeaderComponent={listHeader}
         renderItem={() => null}
-        refreshing={categoriesLoading}
-        onRefresh={() => {
-          fetchFullHierarchy(true);
-          loadPopularProducts();
-          fetchStories(true);
-        }}
+        refreshing={isRefreshing}
+        onRefresh={handleRefresh}
       />
     </View>
   );

@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
   },
   trackerStep: {
     alignItems: 'center',
-    width: 64,
+    width: 76,
   },
   trackerDot: {
     width: 36,

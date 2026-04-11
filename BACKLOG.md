@@ -1,23 +1,27 @@
 # 📋 Актуальный Бэклог Grocery App
 
-Этот файл содержит список приоритетных задач для реализации. Разработка ведется итеративно, согласно принципам «Soft Minimalism».
+Этот файл содержит список приоритетных задач для реализации. Разработка ведется
+итеративно, согласно принципам «Soft Minimalism».
 
 ---
 
 # 🚀 БЛОК 1: MVP — Критичные для Запуска
 
 ## 💳 Платёжная система
+
 - [ ] Интеграция платёжного шлюза (Stripe / ЮKassa / CloudPayments)
 - [ ] Чек и фискализация (54-ФЗ для РФ)
 - [ ] Таблица payment_methods: типы, комиссии, статусы
 
 ## 🚚 Доставка
+
 - [ ] Зона доставки — проверка адреса (да/нет доставляем)
 - [ ] Стоимость доставки — минимум / фикс / по сумме / по расстоянию
 - [ ] Слоты доставки — время доставки (11:00-13:00, 14:00-16:00 и т.д.)
 - [ ] БД: таблицы delivery_zones, delivery_slots, delivery_rates
 
 ## 👥 Сборщики и Курьеры
+
 - [ ] Отдельная роль «Сборщик» (picker) — экран назначенных заказов на сборку
 - [ ] Отдельная роль «Курьер» (courier) — маршрутный лист и навигация
 - [ ] Приложение для курьеров — звонок клиенту, подтверждение доставки
@@ -25,11 +29,13 @@
 - [ ] Таблица staff_assignments: order_id, staff_type, staff_id, status
 
 ## 📄 Юридическое
+
 - [ ] Политика конфиденциальности (152-ФЗ)
 - [ ] Публичная оферта
 - [ ] Согласие на обработку перс. данных (при регистрации)
 
 ## 🔧 Операционное
+
 - [ ] Управление остатками — списание при заказе
 - [ ] Аналитика — продажи, топ товаров, средний чек
 - [ ] Оповещения — когда мало товара на складе
@@ -48,25 +54,32 @@
 ## 💎 Продаваемость и Рекомендации
 
 ### Система скидок и промокодов
+
 - [ ] Поле промокода в чеке корзины (валидация через Supabase)
 - [ ] Countdown-таймеры на ограниченные акции
 - [ ] БД: таблицы discounts, promo_codes, loyalty_levels, promotions
 
 ### Умные рекомендации
-- [ ] **"Вы смотрели"** — таблица product_views, секция в ProductScreen (3-4 товара)
-- [ ] **Cross-sell "С этим покупают"** — таблица related_products, логика комплементарных товаров
-- [ ] **На основе истории заказов** — анализ покупок, секция "Рекомендуем для вас"
+
+- [ ] **"Вы смотрели"** — таблица product_views, секция в ProductScreen (3-4
+      товара)
+- [ ] **Cross-sell "С этим покупают"** — таблица related_products, логика
+      комплементарных товаров
+- [ ] **На основе истории заказов** — анализ покупок, секция "Рекомендуем для
+      вас"
 - [ ] Админ-панель — настройка связей товаров и приоритетов
 
 ## 📢 Маркетинг
 
 ### Push-уведомления (FCM)
+
 - [ ] Настройка серверных пушей через Firebase Cloud Messaging
 - [ ] Триггеры уведомлений из Supabase при смене статуса заказа
 - [ ] Уведомления в фоновом режиме
 - [ ] "Цена на X снизилась!" — с глубинной ссылкой на товар
 
 ### Реферальная система
+
 - [ ] Реферальные коды для пользователей
 - [ ] Бонус приглашившему — скидка/баллы
 - [ ] Бонус приглашённому — первая доставка бесплатно/скидка
@@ -75,24 +88,31 @@
 ## 📦 Наполнение контента
 
 ### Категории
+
 - [ ] Массовая загрузка категорий в БД через SQL или Админ-панель
 - [ ] Массовая загрузка продуктов в БД через Админ-панель (excel)
 
 ## 💎 Раздел "Популярное" на главном экране
 
-- [ ] Аудит и доработка визуала горизонтального скролла популярных товаров: скелетон, пустое состояние, анимации
+- [ ] Аудит и доработка визуала горизонтального скролла популярных товаров:
+      скелетон, пустое состояние, анимации
 - [ ] Рассмотреть персонализацию: "Вы покупали раньше" vs "Популярное у других"
-- [ ] Ограничение количества товаров с кнопкой "Смотреть все" → переход в соответствующую категорию или отдельный экран
+- [ ] Ограничение количества товаров с кнопкой "Смотреть все" → переход в
+      соответствующую категорию или отдельный экран
 
 ## 📍 Экран адресов
 
-- [ ] **Проработка UX/UI экрана «Мои адреса»** — общий редизайн: пустое состояние, анимации, структура списка
-- [ ] **Проработка экрана «Редактирование / Добавление адреса»** — UX формы, расположение кнопок, удобство ввода
+- [ ] **Проработка UX/UI экрана «Мои адреса»** — общий редизайн: пустое
+      состояние, анимации, структура списка
+- [ ] **Проработка экрана «Редактирование / Добавление адреса»** — UX формы,
+      расположение кнопок, удобство ввода
 
 ## 🛠️ Предстоящие Этапы (Refactoring & Features)
 
 ### 👨‍💻 Админ-панель: Управление продуктами
-- [ ] Интерфейс редактирования КБЖУ (белки, жиры, углеводы, калории) в карточке товара.
+
+- [ ] Интерфейс редактирования КБЖУ (белки, жиры, углеводы, калории) в карточке
+      товара.
 - [ ] Массовое управление данными КБЖУ для списка продуктов.
 - [ ] Интеграция валидации полей через Zod в `ProductFormModal.tsx`.
 - [ ] Управление тегами товаров
@@ -103,12 +123,9 @@
 
 # 🛠️ БЛОК 4: Технический долг и Багфикс
 
-- [ ] **Проверить отображение комментария курьеру в админской панели в заказах.** (Убедиться, что текст, введенный пользователем, корректно доходит до курьера/сборщика).
-- [ ] **Баг: Верстка статусов в деталях заказа.** Статусы «Собираем» и «Доставлен» не в полную ширину, последняя буква переносится на новую строку.
-- [ ] **Баг: Зависание Pull-to-refresh.** Если сделать рефреш на главной и успеть переключить таб, контент зависает в промежуточном состоянии.
-- [ ] **Баг: Кнопка на экране «Мои адреса».** Главная кнопка не прижата к низу, а «парит» над контентом.
-- [ ] **UX: Кнопки на экране «Редактирование адреса».** Кнопки «Сохранить изменения» и «Удалить адрес» занимают слишком много места по вертикали.
-
+- [ ] **Проверить отображение комментария курьеру в админской панели в
+      заказах.** (Убедиться, что текст, введенный пользователем, корректно
+      доходит до курьера/сборщика).
 
 ---
 
@@ -117,83 +134,147 @@
 ## 🧩 Аудит Обязательных Компонентов (07.04.2026)
 
 ### ScreenHeader — отсутствует на некоторых экранах
-- [x] **`app/setup-profile.tsx`** — намеренно без `<ScreenHeader />`: экран стиля онбординга (как login), кастомная decorative-шапка
-- [x] **`app/product/[id].tsx`** — намеренно без `<ScreenHeader />`: overlay-кнопки поверх fullscreen-фото — стандарт для экрана товара (см. `ProductHeader`)
-- [x] **`app/(admin)/`** — все 6 файлов: нативный Stack-header → `<ScreenHeader />` ✅
+
+- [x] **`app/setup-profile.tsx`** — намеренно без `<ScreenHeader />`: экран
+      стиля онбординга (как login), кастомная decorative-шапка
+- [x] **`app/product/[id].tsx`** — намеренно без `<ScreenHeader />`:
+      overlay-кнопки поверх fullscreen-фото — стандарт для экрана товара (см.
+      `ProductHeader`)
+- [x] **`app/(admin)/`** — все 6 файлов: нативный Stack-header →
+      `<ScreenHeader />` ✅
 
 ### ProductCard — самописные карточки
-- [x] **`components/home/PopularSection.tsx`** — кастомная карточка товара → заменено на `<ProductCard />` ✅
-- [x] **`app/(admin)/catalog.tsx`** — `renderProduct` намеренно кастомная: admin-строка с кнопками «Изменить/Удалить», не клиентская карточка покупки
+
+- [x] **`components/home/PopularSection.tsx`** — кастомная карточка товара →
+      заменено на `<ProductCard />` ✅
+- [x] **`app/(admin)/catalog.tsx`** — `renderProduct` намеренно кастомная:
+      admin-строка с кнопками «Изменить/Удалить», не клиентская карточка покупки
 
 ## 🧹 Багфикс навигации (11.04.2026)
 
-- [x] **Баг: Навигация из Избранного.** Кнопка «назад» (или свайп) ведет к Главному экрану, а не назад в Профиль. — Перемещён `favorites.tsx` в стек `(profile)` ✅
-- [x] **Баг: Навигация при выборе адреса в корзине.** Тап по адресу -> Кнопка «назад» ведет в «Профиль», а не обратно в Корзину. — Перемещены `addresses.tsx` и `manage-address.tsx` на root-уровень, зарегистрированы в `_layout.tsx` ✅
+- [x] **Баг: Навигация из Избранного.** Кнопка «назад» (или свайп) ведет к
+      Главному экрану, а не назад в Профиль. — Перемещён `favorites.tsx` в стек
+      `(profile)` ✅
+- [x] **Баг: Навигация при выборе адреса в корзине.** Тап по адресу -> Кнопка
+      «назад» ведет в «Профиль», а не обратно в Корзину. — Перемещены
+      `addresses.tsx` и `manage-address.tsx` на root-уровень, зарегистрированы в
+      `_layout.tsx` ✅
+
+## 🧹 Багфикс UI и производительности (11.04.2026)
+
+- [x] **Баг: Верстка статусов в деталях заказа.** Статусы «Собираем» и
+      «Доставлен» не в полную ширину, последняя буква переносится на новую
+      строку. — Увеличена ширина `trackerStep` с 64 до 76px в
+      `components/order/OrderTracker.tsx` ✅
+- [x] **Баг: Зависание Pull-to-refresh.** Если сделать рефреш на главной и
+      успеть переключить таб, контент зависает в промежуточном состоянии. —
+      Добавлен локальный `isRefreshing` стейт с `Promise.all` в
+      `app/(tabs)/(index)/index.tsx`, исправлена логика `loadPopularProducts` ✅
 
 ## 🧹 Аудит Качества Кода (10.04.2026)
 
 ### ✅ testID — закрыто
-- [x] **`components/admin/AdminCategoryPicker.tsx`** — добавлены `category-picker-close`, `category-picker-parent-{id}`, `category-picker-child-{id}` ✅
-- [x] **`components/address/AddressSearchInput.tsx`** — `testID` уже присутствовали на всех элементах ✅
-- [x] **`app/(tabs)/(profile)/index.tsx`** — добавлены `profile-guest-login-button`, `profile-user-card`, `profile-menu-{bonuses/admin/orders/addresses/favorites/support}`, `profile-logout-button` ✅
-- [x] **`app/(tabs)/(profile)/edit-profile.tsx`** — `profile-firstname-input`, `profile-lastname-input`, `profile-save-button` уже присутствовали ✅
+
+- [x] **`components/admin/AdminCategoryPicker.tsx`** — добавлены
+      `category-picker-close`, `category-picker-parent-{id}`,
+      `category-picker-child-{id}` ✅
+- [x] **`components/address/AddressSearchInput.tsx`** — `testID` уже
+      присутствовали на всех элементах ✅
+- [x] **`app/(tabs)/(profile)/index.tsx`** — добавлены
+      `profile-guest-login-button`, `profile-user-card`,
+      `profile-menu-{bonuses/admin/orders/addresses/favorites/support}`,
+      `profile-logout-button` ✅
+- [x] **`app/(tabs)/(profile)/edit-profile.tsx`** — `profile-firstname-input`,
+      `profile-lastname-input`, `profile-save-button` уже присутствовали ✅
 
 ### ✅ Архитектура — закрыто
-- [x] **`components/home/PopularSection.tsx`** — прямой `router.push` уже был заменён на `onProductPress` callback от родителя ✅
+
+- [x] **`components/home/PopularSection.tsx`** — прямой `router.push` уже был
+      заменён на `onProductPress` callback от родителя ✅
 
 ### ✅ Актуальность тестов — закрыто
-- [x] **`OrderCard.test.tsx`** — `status: 'delivered'` приведён к `Enums<'order_status'>` (импорт типа + явное приведение) ✅
-- [x] **`CartItem.test.tsx`** и **`ProductCard.test.tsx`** — дублирующий мок `useRouter` уже отсутствовал ✅
+
+- [x] **`OrderCard.test.tsx`** — `status: 'delivered'` приведён к
+      `Enums<'order_status'>` (импорт типа + явное приведение) ✅
+- [x] **`CartItem.test.tsx`** и **`ProductCard.test.tsx`** — дублирующий мок
+      `useRouter` уже отсутствовал ✅
 
 ## 🎨 Аудит UI / Soft Minimalism (обновлён 09.04.2026)
 
 ### ✅ Тени — закрыто
-- [x] **`shadowColor` унифицирован** — все компоненты используют `...Shadows.sm/md/lg` токены. Прямых `shadowColor` в компонентах нет ✅
+
+- [x] **`shadowColor` унифицирован** — все компоненты используют
+      `...Shadows.sm/md/lg` токены. Прямых `shadowColor` в компонентах нет ✅
 
 ### ✅ Цветовой баланс (Emerald Overload) — закрыто
-- [x] **Строка поиска на главном** — заменен `primaryLight` фон на `borderLight` (серый), иконка поиска на `textLight`. ✅
-- [x] **Кнопка "В корзину" в ProductCard** — заменен фон `ctaLight` на `primaryLight`. Токен `ctaLight` удален из темы. ✅
+
+- [x] **Строка поиска на главном** — заменен `primaryLight` фон на `borderLight`
+      (серый), иконка поиска на `textLight`. ✅
+- [x] **Кнопка "В корзину" в ProductCard** — заменен фон `ctaLight` на
+      `primaryLight`. Токен `ctaLight` удален из темы. ✅
 
 ### ✅ Скругления — закрыто
+
 - [x] **`ProductBottomBar.tsx`** — `addToCartButton` → `Radius.pill` ✅
 - [x] **`OrderSection.tsx`** — `sectionCard` → `Radius.xl` ✅
 - [x] **`CartItem.tsx`** — `quantityControl` → `Radius.xxl` ✅
 - [x] **`ProductBottomBar.tsx`** — `quantityContainer` → `Radius.xxl` ✅
-- [x] **`components/cart/CartSummary.styles.ts`** — `addressSelector` + `paymentOption borderRadius: 18` → `Radius.xxl` ✅
-- [x] **`components/cart/CartSummary.styles.ts`** — `checkoutButton borderRadius: 100` → `Radius.pill` ✅
-- [x] **`components/order/OrderTracker.tsx`** — `trackerDot` 36×36, `borderRadius: 18` → `Radius.pill` ✅
-- [x] **`components/product/ProductHeader.tsx`** — `iconButton` 44×44, `borderRadius: 22` → `Radius.pill` ✅
-- [x] **`app/(admin)/catalog.tsx`** + **`catalog.web.tsx`** — `sectionBadge borderRadius: 12` → `Radius.m` ✅
-- [x] **`CartSummary.styles.ts`** — `paymentIconContainer` 44×44 → `Radius.pill` ✅
+- [x] **`components/cart/CartSummary.styles.ts`** — `addressSelector` +
+      `paymentOption borderRadius: 18` → `Radius.xxl` ✅
+- [x] **`components/cart/CartSummary.styles.ts`** —
+      `checkoutButton borderRadius: 100` → `Radius.pill` ✅
+- [x] **`components/order/OrderTracker.tsx`** — `trackerDot` 36×36,
+      `borderRadius: 18` → `Radius.pill` ✅
+- [x] **`components/product/ProductHeader.tsx`** — `iconButton` 44×44,
+      `borderRadius: 22` → `Radius.pill` ✅
+- [x] **`app/(admin)/catalog.tsx`** + **`catalog.web.tsx`** —
+      `sectionBadge borderRadius: 12` → `Radius.m` ✅
+- [x] **`CartSummary.styles.ts`** — `paymentIconContainer` 44×44 → `Radius.pill`
+      ✅
 - [x] **`ProductBottomBar.tsx`** — `quantityButton` 38×38 → `Radius.pill` ✅
 - [x] **`OrderSection.tsx`** — `iconContainer` 40×40 → `Radius.pill` ✅
-- [x] **`profile/index.tsx`** — `guestAvatarIcon` 80×80 + `avatar` 56×56 → `Radius.pill` ✅
+- [x] **`profile/index.tsx`** — `guestAvatarIcon` 80×80 + `avatar` 56×56 →
+      `Radius.pill` ✅
 - [x] **`favorites.tsx`** — `emptyIconCircle` 80×80 → `Radius.pill` ✅
 - [x] **`EmptyCart.tsx`** — `emptyIconCircle` 80×80 → `Radius.pill` ✅
 - [x] **`ErrorBoundary.tsx`** — `iconBackground` 100×100 → `Radius.pill` ✅
-- [x] **`FloatingCheckoutButton.tsx`** — `floatingCheckoutButton` → `Radius.pill` ✅
-- [x] **`CartItem.tsx`** — `circleButton` 28×28 → `Radius.pill`; `itemImage` 60×60 → `Radius.xxl` ✅
-- [x] **`AddressMainSection.tsx`** — `switchBase` + `switchThumb` → `Radius.pill` ✅
+- [x] **`FloatingCheckoutButton.tsx`** — `floatingCheckoutButton` →
+      `Radius.pill` ✅
+- [x] **`CartItem.tsx`** — `circleButton` 28×28 → `Radius.pill`; `itemImage`
+      60×60 → `Radius.xxl` ✅
+- [x] **`AddressMainSection.tsx`** — `switchBase` + `switchThumb` →
+      `Radius.pill` ✅
 - [x] **`addresses.tsx`** — `radioOuter` + `radioInner` → `Radius.pill` ✅
 - [x] **`orders.web.tsx`** — `statusDot` 10×10 → `Radius.pill` ✅
 
 ### ✅ Safe Area в `_login.styles.ts` — закрыто
-- [x] **`app/(auth)/_login.styles.ts`** — `paddingTop: 60` и `paddingBottom: 60` заменены на `useSafeAreaInsets()` в `login.tsx` ✅
+
+- [x] **`app/(auth)/_login.styles.ts`** — `paddingTop: 60` и `paddingBottom: 60`
+      заменены на `useSafeAreaInsets()` в `login.tsx` ✅
 
 ### ✅ Отступы — закрыто
-- [x] **Добавлены токены `Spacing.sm = 12` и `Spacing.ml = 20`** в `constants/theme.ts` ✅
-- [x] **20+ файлов** — все вхождения `12` и `20` как spacing-значений заменены на `Spacing.sm` / `Spacing.ml` ✅
-- [x] **`profile/index.tsx`** — точные совпадения `24→Spacing.l`, `40→Spacing.xxl`, `16→Spacing.m`, `8→Spacing.s` заменены ✅
-- [x] **Оставлены как дизайн-константы** — `18`, `30`, `36`, `6` (встречаются 1–2 раза, нет смысла в токене)
+
+- [x] **Добавлены токены `Spacing.sm = 12` и `Spacing.ml = 20`** в
+      `constants/theme.ts` ✅
+- [x] **20+ файлов** — все вхождения `12` и `20` как spacing-значений заменены
+      на `Spacing.sm` / `Spacing.ml` ✅
+- [x] **`profile/index.tsx`** — точные совпадения `24→Spacing.l`,
+      `40→Spacing.xxl`, `16→Spacing.m`, `8→Spacing.s` заменены ✅
+- [x] **Оставлены как дизайн-константы** — `18`, `30`, `36`, `6` (встречаются
+      1–2 раза, нет смысла в токене)
 
 ## 🧪 Аудит Тестов (10.04.2026)
 
 ### ✅ Сторы — закрыто
-- [x] **`store/favoriteStore.ts`** — написаны тесты (fetchFavorites, toggleFavorite, rollback, clear) ✅
+
+- [x] **`store/favoriteStore.ts`** — написаны тесты (fetchFavorites,
+      toggleFavorite, rollback, clear) ✅
 - [x] **`store/appStore.ts`** — написаны базовые тесты инициализации ✅
 
 ### ✅ Компоненты — закрыто
-- [x] **`components/ui/ScreenHeader.tsx`**, **`ErrorBoundary.tsx`** — написаны базовые тесты рендера ✅
-- [x] **Компоненты корзины** — `CartSummary`, `CheckoutButton`, `PaymentSelector`, `EmptyCart` → написаны тесты ✅
-- [x] **Компоненты авторизации** — `PhoneStep`, `OtpStep` → написаны тесты ✅
 
+- [x] **`components/ui/ScreenHeader.tsx`**, **`ErrorBoundary.tsx`** — написаны
+      базовые тесты рендера ✅
+- [x] **Компоненты корзины** — `CartSummary`, `CheckoutButton`,
+      `PaymentSelector`, `EmptyCart` → написаны тесты ✅
+- [x] **Компоненты авторизации** — `PhoneStep`, `OtpStep` → написаны тесты ✅
