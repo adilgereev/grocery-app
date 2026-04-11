@@ -5,6 +5,14 @@
 > **При начале КАЖДОГО разговора** — обязательно прочитать ВСЕ файлы в `.agent/rules/` и `.agent/skills/*/SKILL.md` для полной загрузки контекста проекта.
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Quality Checks
+
+Always run `npx tsc --noEmit` after refactoring or editing multiple files to catch TypeScript errors before committing.
+
+## Git Workflow
+
+Do NOT commit or push changes automatically. Wait for the user to test first unless explicitly asked to commit.
+
 ## Project
 
 Cross-platform grocery delivery mobile app: Expo Router (file-based routing) + React Native + Supabase + Zustand. TypeScript, strict mode.
@@ -110,6 +118,11 @@ All styling uses tokens — no raw hex codes or magic numbers in components:
 | `components/product/ProductCard.tsx` | Unified product card |
 | `components/ui/Skeleton.tsx` | Loading placeholder component |
 | `BACKLOG.md` | Project backlog |
+
+## Взаимодействие
+
+- **Говори прямо**: Если подход пользователя неоптимальный — сказать об этом явно, объяснить почему, предложить лучший вариант. Не соглашаться "по умолчанию" только потому что так сказали.
+- **После каждой задачи**: Предложить одно конкретное улучшение — что можно оптимизировать или автоматизировать в том, что только что было сделано.
 
 ## Testing
 
