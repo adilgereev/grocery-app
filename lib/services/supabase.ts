@@ -3,9 +3,11 @@ import 'react-native-url-polyfill/auto';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createClient } from '@supabase/supabase-js';
 
-// Считываем наши ключи из файла .env
-const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL as string;
-const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY as string;
+import { env } from '@/config/env';
+
+// Считываем наши ключи из валидированного конфигурационного файла .env
+const supabaseUrl = env.EXPO_PUBLIC_SUPABASE_URL;
+const supabaseAnonKey = env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 
 // Адаптер хранилища на основе AsyncStorage (только нативные платформы)
 const customStorage = {

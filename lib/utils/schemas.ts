@@ -37,3 +37,19 @@ export const addressSchema = z.object({
 });
 
 export type AddressFormData = z.infer<typeof addressSchema>;
+
+/**
+ * Валидация номера телефона (после нормализации)
+ */
+export const authPhoneSchema = z
+  .string()
+  .length(11, 'Введите корректный номер телефона')
+  .regex(/^7\d{10}$/, 'Некорректный формат российского номера');
+
+/**
+ * Валидация OTP кода
+ */
+export const otpSchema = z
+  .string()
+  .length(4, 'Введен неполный код')
+  .regex(/^\d{4}$/, 'Код должен содержать только цифры');

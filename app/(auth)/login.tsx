@@ -1,5 +1,6 @@
 import { Colors } from '@/constants/theme';
 import { authenticateWithPhone, sendOtp, verifyOtp } from '@/lib/api/authApi';
+import { authPhoneSchema, otpSchema } from '@/lib/utils/schemas';
 import { normalizePhone } from '@/lib/services/sms';
 import { Ionicons } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -34,8 +35,11 @@ export default function Login() {
   // Шаг 1: Отправка SMS-кода через Edge Function
   const handleSendOTP = async () => {
     const normalized = normalizePhone(phone);
-    if (normalized.length !== 11) {
-      Alert.alert('Ошибка', 'Введите корректный номер телефона');
+    
+    const phoneValidation = authPhoneSchema.safeParse(normalized);
+    if (!phoneValidation.success) {
+      const errorMsg = phoneValidation.error.issues[0]?.message || 'Введите корректный номер телефона';
+      Alert.alert('Ошибка', errorMsg);
       return;
     }
 
@@ -65,6 +69,14 @@ export default function Login() {
   // Шаг 2: Проверка OTP через Edge Function и авторизация
   const verifyOTP = async (code: string) => {
     const normalized = normalizePhone(phone);
+
+    const otpValidation = otpSchema.safeParse(code);
+    if (!otpValidation.success) {
+      const errorMsg = otpValidation.error.issues[0]?.message || 'Введен некорректный код';
+      Alert.alert('Ошибка ввода', errorMsg);
+      return;
+    }
+
     setLoading(true);
 
     try {

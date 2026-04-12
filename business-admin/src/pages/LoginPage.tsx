@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
+import { authPhoneSchema, otpSchema } from '@/lib/schemas';
 import { normalizePhone, formatPhoneDisplay, generatePasswordFromPhone, phoneToEmail } from '@/lib/authUtils';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -41,8 +42,11 @@ export function LoginPage() {
 
   async function handleSendOtp() {
     const normalized = normalizePhone(phone);
-    if (normalized.length !== 11) {
-      toast.error('Введите корректный номер телефона (11 цифр)');
+    
+    const phoneValidation = authPhoneSchema.safeParse(normalized);
+    if (!phoneValidation.success) {
+      const errorMsg = phoneValidation.error.issues[0]?.message || 'Введите корректный номер телефона';
+      toast.error(errorMsg);
       return;
     }
 
@@ -73,7 +77,13 @@ export function LoginPage() {
 
   async function handleVerifyOtp() {
     const code = otp.join('');
-    if (code.length !== 4) return;
+    
+    const otpValidation = otpSchema.safeParse(code);
+    if (!otpValidation.success) {
+      const errorMsg = otpValidation.error.issues[0]?.message || 'Введен некорректный код';
+      toast.error(errorMsg);
+      return;
+    }
 
     setLoading(true);
     try {
@@ -128,6 +138,12 @@ export function LoginPage() {
   }
 
   async function handleVerifyOtpWithCode(code: string) {
+    const otpValidation = otpSchema.safeParse(code);
+    if (!otpValidation.success) {
+      toast.error(otpValidation.error.issues[0]?.message || 'Введен некорректный код');
+      return;
+    }
+
     setLoading(true);
     try {
       const normalized = normalizePhone(phone);
