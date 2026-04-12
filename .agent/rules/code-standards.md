@@ -37,3 +37,14 @@
 ## 6. 🔗 Связанные навыки и workflows
 - **Skill**: `.agent/skills/testing/SKILL.md` — стандарты тестирования (Jest + RNTL), AI Regression Cycle, покрытие stores и UI. Обязателен при любых изменениях логики.
 - **Workflow**: `.agent/workflows/verify-task.md` — пошаговая проверка задачи (lint → knip → test → UI-стандарты).
+
+## 7. 🧪 Testing Setup
+
+- **Preset**: `jest-expo` + `@testing-library/react-native`.
+- **Setup file**: `jest.setup.js`.
+- **Path alias**: `@/` mapped via `moduleNameMapper` in Jest config.
+- **Test directory**: `components/__tests__/`.
+- **Existing tests**: `ProductCard`, `CartItem`, `OrderCard`, `SubcategoryCard`, `AddressSearchInput`.
+- Run `npm test` after any logic change — no regressions allowed.
+- **Tests as contracts**: перед изменением логики — анализировать существующие тесты. Текст теста = самое точное ТЗ.
+- **AI Regression**: если тест падает — исправлять код или моки самостоятельно до презентации пользователю.

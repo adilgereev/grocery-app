@@ -1,132 +1,79 @@
 # CLAUDE.md
+
 > [!IMPORTANT]
+>
+> **Основная конфигурация** — в директории `.agent/rules/`. При начале каждого
+> разговора читать ВСЕ файлы там и `.agent/skills/*/SKILL.md`.
 
-> **ВНИМАНИЕ:** Основная конфигурация проекта для ИИ перенесена в директорию `.agent/`.
-> **При начале КАЖДОГО разговора** — обязательно прочитать ВСЕ файлы в `.agent/rules/` и `.agent/skills/*/SKILL.md` для полной загрузки контекста проекта.
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
-
-## Quality Checks
-
-Always run `npx tsc --noEmit` after refactoring or editing multiple files to catch TypeScript errors before committing.
-
-## Git Workflow
-
-Do NOT commit or push changes automatically. Wait for the user to test first unless explicitly asked to commit.
+This file provides guidance to Claude Code (claude.ai/code) when working with
+code in this repository.
 
 ## Project
 
-Cross-platform grocery delivery mobile app: Expo Router (file-based routing) + React Native + Supabase + Zustand. TypeScript, strict mode.
+Cross-platform grocery delivery mobile app: **Expo Router + React Native +
+Supabase + Zustand**. TypeScript strict mode.
 
 ## Commands
 
 ```bash
 npm install              # Install dependencies
 npm run start            # Dev server (expo start)
-npm run android          # Android emulator
-npm run ios              # iOS simulator
-npm run web              # Web browser
-npm run lint             # ESLint (--max-warnings 0, fails on any warning)
+npm run lint             # ESLint (--max-warnings 0)
 npm run type-check       # tsc --noEmit
-npm test                 # Jest (preset: jest-expo)
+npm test                 # Jest (jest-expo preset)
 npm run test:watch       # Jest --watch
-npm run supabase:types   # Regenerate Supabase types -> types/supabase.ts
-npm run supabase:link    # Link to remote Supabase project
-npm run supabase:pull    # Pull remote schema into migrations
-npm run supabase:push    # Push local migrations to remote
+npm run supabase:types   # Regenerate types/supabase.ts
+npm run supabase:pull    # Pull remote schema
+npm run supabase:push    # Push local migrations
 ```
 
-**Pre-commit hook** (Husky): runs `npm run lint && npm run type-check`. Must pass before committing.
+**Pre-commit hook** (Husky): `npm run lint && npm run type-check`. Must pass before committing.
 
-**Run single test**: `npx jest path/to/test.test.tsx`
-
-## Architecture
-
-### Routing (Expo Router)
-
-File-based in `app/`. Route groups use parentheses: `(tabs)`, `(auth)`, `(admin)`.
-
-- `app/_layout.tsx` — Root: wraps in `AuthProvider` + `ErrorBoundary`. Controls auth redirect logic.
-- `app/(tabs)/` — Main tab nav (Home, Cart, Profile). `unstable_settings.initialRouteName: '(index)'` ensures Home loads first (alphabetical `(cart)` would win otherwise).
-- `app/(auth)/` — Login flow.
-- `app/(admin)/` — Admin: catalog CRUD, order management, category management.
-- Stack screens outside tabs: `addresses`, `edit-profile`, `category/[id]`, `product/[id]`, `order/[id]`, `favorites`, `orders`, `search`.
-
-### State Management (Zustand)
-
-All stores in `store/`, created with `zustand/create()`. Stores with `persist` middleware use AsyncStorage.
-
-- `appStore` — Onboarding state (`hasSeenOnboarding`, `isReady`).
-- `cartStore` — Persisted. Cart items with computed `subtotal`, `deliveryFee` (free above 700₽), `totalPrice`, `totalItems`. Batch add support.
-- `categoryStore` — Persisted with 5-min cache. Fetches hierarchy from Supabase, provides `getCategoryById`, `getSubcategories`.
-- `favoriteStore` — User favorites synced with Supabase.
-- `addressStore` — Delivery addresses.
-
-Components subscribe via selectors (e.g. `useCartStore(state => state.totalItems)`).
-
-### Backend (Supabase)
-
-- Client in `lib/services/supabase.ts` — typed with `Database` from `types/supabase.ts`. Custom storage adapter handles Web (localStorage) vs Native (AsyncStorage), plus SSR guard.
-- Tables: `profiles`, `categories`, `products`, `orders`, `order_items`, `addresses`, `favorites`.
-- RLS enabled — users can only access their own data.
-- Schema changes via migrations in `supabase/migrations/`. After any schema change, run `npm run supabase:types`.
-- Category API extracted to `lib/api/categoriesApi.ts` for hierarchy queries.
-
-### Auth
-
-`AuthProvider` wraps app. Exposes `useAuth()` → `{ session, loading }`. Phone auto-synced to profile on sign-in. Root layout redirects unauthed users to login/onboarding.
-
-### Forms & Validation
-
-- `react-hook-form` + `zod` + `@hookform/resolvers/zod`.
-- Schemas in `lib/utils/schemas.ts` (profile, address).
-- `TextInput` with `textAlignVertical: 'top'` for multiline (Android fix).
-
-### Theme System (`constants/theme.ts`)
-
-All styling uses tokens — no raw hex codes or magic numbers in components:
-- `Colors.light.*` / `Colors.dark.*` — Full palette (primary: `#10B981` Emerald).
-- `Spacing` — `xs(4)`, `s(8)`, `m(16)`, `l(24)`, `xl(32)`, etc.
-- `Radius` — `xs(4)` through `xxl(24)`, `pill(999)`.
-- `FontSize` — `xs(10)` through `hero(48)`.
-- `Fonts` — Platform-adaptive (SF system-ui on iOS, system on Android).
-
-## Code Conventions
-
-- **Comments in Russian** — all code comments must be in Russian.
-- **No raw colors** — always use `Colors.light.*` tokens, never hex/rgba in components.
-- **`useCallback`** for all functions inside `useEffect` or passed to children.
-- **`testID`** on all interactive/navigable elements.
-- **Platform shadows** — always duplicate `shadow*` (iOS) with `elevation` (Android).
-- **`SafeAreaView`** from `react-native-safe-area-context` for screen edges.
-- **`KeyboardAwareScrollView`** with `enableOnAndroid` for forms.
-- **`ScreenHeader`** component mandatory for all stack screen headers — no hardcoded headers.
-- **Path alias**: `@/*` → project root (configured in tsconfig).
-- **Polyfill**: `react-native-url-polyfill/auto` required before Supabase import.
+**Single test**: `npx jest path/to/test.test.tsx`
 
 ## Key Files
 
-| Path | Purpose |
-|---|---|
-| `types/index.ts` | Core interfaces: `Category`, `Product`, `Order`, `Profile`, etc. |
-| `types/supabase.ts` | Auto-generated DB types (via `npm run supabase:types`) |
-| `lib/utils/schemas.ts` | Zod validation schemas for forms |
-| `lib/api/categoriesApi.ts` | Supabase queries for category hierarchy |
-| `lib/services/supabase.ts` | Typed Supabase client with cross-platform storage |
-| `lib/services/NotificationService.ts` | Push notification registration |
-| `providers/AuthProvider.tsx` | Auth context + phone sync |
-| `components/ui/ScreenHeader.tsx` | Mandatory screen header component |
-| `components/product/ProductCard.tsx` | Unified product card |
-| `components/ui/Skeleton.tsx` | Loading placeholder component |
-| `BACKLOG.md` | Project backlog |
+| Path                                 | Purpose                                                    |
+| ------------------------------------ | ---------------------------------------------------------- |
+| `types/index.ts`                     | Core interfaces: `Category`, `Product`, `Order`, `Profile` |
+| `types/supabase.ts`                  | Auto-generated DB types — never edit manually              |
+| `constants/theme.ts`                 | Design tokens: Colors, Spacing, Radius, FontSize, Shadows  |
+| `lib/utils/storageUtils.ts`          | `uploadImage()` — R2 upload via presigned URL              |
+| `lib/utils/imageKit.ts`              | `getOptimizedImage()`, `getPlaceholderUrl()` — CDN         |
+| `lib/utils/schemas.ts`               | Zod validation schemas for forms (profile, address)        |
+| `lib/api/categoriesApi.ts`           | Supabase category hierarchy queries                        |
+| `lib/services/supabase.ts`           | Typed Supabase client (cross-platform storage)             |
+| `providers/AuthProvider.tsx`         | Auth context — `useAuth()` → `{ session, loading }`        |
+| `lib/services/NotificationService.ts` | Push notification registration                            |
+| `components/ui/ScreenHeader.tsx`     | Mandatory stack screen header                              |
+| `components/product/ProductCard.tsx` | Unified product card component                             |
+| `components/ui/Skeleton.tsx`         | Loading placeholder / empty image fallback                 |
+| `BACKLOG.md`                         | Project backlog                                            |
+
+## .agent/ Structure
+
+```
+.agent/rules/
+  architecture.md      — Zustand stores, Supabase, Routing rules, Animations
+  code-standards.md    — TS conventions, tokens, testID, Boy Scout Rule, Testing
+  dev-workflow.md      — Quality checks, Git rules, Supabase workflow
+  project-overview.md  — Tech stack, directories, env vars, all commands, key files
+  storage-standards.md — Cloudflare R2 + ImageKit upload/display patterns
+  ui-standards.md      — Soft Minimalism, color palette, shadows, cart pattern
+.agent/skills/
+  supabase/            — Migrations, RLS, type generation
+  testing/             — Jest + RNTL, AI Regression Cycle
+  navigation/          — Expo Router screens and routes
+  skill-creator/       — Creating and improving skills
+.agent/workflows/
+  verify-task.md       — lint → knip → test → UI audit
+  supabase-sync.md     — local ↔ remote DB sync
+```
 
 ## Взаимодействие
 
-- **Говори прямо**: Если подход пользователя неоптимальный — сказать об этом явно, объяснить почему, предложить лучший вариант. Не соглашаться "по умолчанию" только потому что так сказали.
-- **После каждой задачи**: Предложить одно конкретное улучшение — что можно оптимизировать или автоматизировать в том, что только что было сделано.
-
-## Testing
-
-- Jest + `jest-expo` preset + `@testing-library/react-native`.
-- Setup in `jest.setup.js`, `@/` path alias mapped via `moduleNameMapper`.
-- Tests in `components/__tests__/` — `ProductCard`, `CartItem`, `OrderCard`, `SubcategoryCard`, `AddressSearchInput`.
-- Run `npm test` after any logic change — no regressions allowed.
+- **Говори прямо**: Если подход пользователя неоптимальный — сказать об этом
+  явно, объяснить почему, предложить лучший вариант. Не соглашаться «по
+  умолчанию» только потому что так сказали.
+- **После каждой задачи**: Предложить одно конкретное улучшение — что можно
+  оптимизировать или автоматизировать в том, что только что было сделано.

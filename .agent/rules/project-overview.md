@@ -35,3 +35,42 @@
 - **`.agent/skills/skill-creator/SKILL.md`** — создание и улучшение новых навыков.
 - **`.agent/workflows/verify-task.md`** — автоматическая проверка задач (lint + knip + test).
 - **`.agent/workflows/supabase-sync.md`** — синхронизация local ↔ remote БД.
+
+## Commands
+
+```bash
+npm install              # Install dependencies
+npm run start            # Dev server (expo start)
+npm run android          # Android emulator
+npm run ios              # iOS simulator
+npm run web              # Web browser
+npm run lint             # ESLint (--max-warnings 0, fails on any warning)
+npm run type-check       # tsc --noEmit
+npm test                 # Jest (preset: jest-expo)
+npm run test:watch       # Jest --watch
+npm run supabase:types   # Regenerate Supabase types -> types/supabase.ts
+npm run supabase:link    # Link to remote Supabase project
+npm run supabase:pull    # Pull remote schema into migrations
+npm run supabase:push    # Push local migrations to remote
+```
+
+**Run single test**: `npx jest path/to/test.test.tsx`
+
+## Key Files
+
+| Path | Purpose |
+|---|---|
+| `types/index.ts` | Core interfaces: `Category`, `Product`, `Order`, `Profile`, etc. |
+| `types/supabase.ts` | Auto-generated DB types (via `npm run supabase:types`) |
+| `constants/theme.ts` | Design tokens: Colors, Spacing, Radius, FontSize, Shadows, Duration |
+| `lib/utils/schemas.ts` | Zod validation schemas for forms |
+| `lib/utils/storageUtils.ts` | `uploadImage()` — upload via presigned URL to R2 |
+| `lib/utils/imageKit.ts` | `getOptimizedImage()`, `getPlaceholderUrl()` — CDN transforms |
+| `lib/api/categoriesApi.ts` | Supabase queries for category hierarchy |
+| `lib/services/supabase.ts` | Typed Supabase client with cross-platform storage |
+| `lib/services/NotificationService.ts` | Push notification registration |
+| `providers/AuthProvider.tsx` | Auth context + phone sync |
+| `components/ui/ScreenHeader.tsx` | Mandatory screen header component |
+| `components/product/ProductCard.tsx` | Unified product card |
+| `components/ui/Skeleton.tsx` | Loading placeholder / missing image fallback |
+| `BACKLOG.md` | Project backlog |
