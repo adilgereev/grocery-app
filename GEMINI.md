@@ -2,6 +2,7 @@
 
 > **Основная конфигурация** — в `.agent/rules/`. При начале каждого разговора
 > читать ВСЕ файлы там и `.agent/skills/*/SKILL.md`.
+> **Хуки автоматизации** настроены в `.antigravity/settings.json` и `.claude/settings.json`.
 
 ## 🇷🇺 Language & Communication
 

@@ -4,6 +4,7 @@
 >
 > **Основная конфигурация** — в директории `.agent/rules/`. При начале каждого
 > разговора читать ВСЕ файлы там и `.agent/skills/*/SKILL.md`.
+> **Automation hooks** are configured in `.antigravity/settings.json` and `.claude/settings.json`.
 
 This file provides guidance to Claude Code (claude.ai/code) when working with
 code in this repository.

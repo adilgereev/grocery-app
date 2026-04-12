@@ -18,7 +18,15 @@
 - Исключение: пользователь явно просит сделать коммит (`"закоммить"`, `"push"` и т.п.).
 - Ветки: работа ведётся в feature/fix-ветках, не в `main`.
 
-## 3. 🗂️ Supabase Workflow
+## 3. 🤖 Antigravity Hooks
+
+Для синхронизации поведения с Claude Code, Antigravity использует конфигурацию в `.antigravity/settings.json`.
+- **PostToolUse**: После каждого действия `Edit` или `Write`, ИИ должен:
+    1. Запустить `npm run type-check` (tsc).
+    2. Если изменена логика — запустить `npm test` или `/verify-task`.
+- Это обеспечивает мгновенную обратную связь об ошибках типизации и регрессиях.
+
+## 4. 🗂️ Supabase Workflow
 
 - Изменения схемы — только через миграции в `supabase/migrations/`.
 - После любого изменения схемы: `npm run supabase:types`.
