@@ -2,6 +2,7 @@
 import 'react-native-url-polyfill/auto';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { createClient } from '@supabase/supabase-js';
+import { Database } from '@/types/supabase';
 
 import { env } from '@/config/env';
 
@@ -11,12 +12,10 @@ const supabaseAnonKey = env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 
 // Адаптер хранилища на основе AsyncStorage (только нативные платформы)
 const customStorage = {
-  getItem: (key: string) => AsyncStorage.getItem(key),
-  setItem: (key: string, value: string) => AsyncStorage.setItem(key, value),
-  removeItem: (key: string) => AsyncStorage.removeItem(key),
+  getItem: (key: string): Promise<string | null> => AsyncStorage.getItem(key),
+  setItem: (key: string, value: string): Promise<void> => AsyncStorage.setItem(key, value),
+  removeItem: (key: string): Promise<void> => AsyncStorage.removeItem(key),
 };
-
-import { Database } from '@/types/supabase';
 
 // Инициализируем клиента Supabase с поддержкой типов
 export const supabase = createClient<Database>(supabaseUrl, supabaseAnonKey, {
