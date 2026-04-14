@@ -178,4 +178,22 @@ describe('PhoneStep', () => {
     // Локальное состояние синхронизировалось
     expect(getByTestId('login-phone-input').props.value).toBe('+7 (900) 123-45-67');
   });
+
+  it('показывает кнопку очистки при наличии текста', () => {
+    const { getByTestId, queryByTestId } = renderPhoneStep();
+    expect(queryByTestId('login-phone-clear')).toBeNull();
+
+    fireEvent.changeText(getByTestId('login-phone-input'), '79001234567');
+    expect(getByTestId('login-phone-clear')).toBeTruthy();
+  });
+
+  it('кнопка очистки сбрасывает поле и вызывает onPhoneChange("")', () => {
+    const { getByTestId, queryByTestId } = renderPhoneStep();
+    fireEvent.changeText(getByTestId('login-phone-input'), '79001234567');
+    fireEvent.press(getByTestId('login-phone-clear'));
+
+    expect(getByTestId('login-phone-input').props.value).toBe('');
+    expect(mockOnPhoneChange).toHaveBeenCalledWith('');
+    expect(queryByTestId('login-phone-clear')).toBeNull();
+  });
 });

@@ -114,6 +114,13 @@ export const PhoneStep: React.FC<PhoneStepProps> = ({ phone, loading, onPhoneCha
     setSelection(e.nativeEvent.selection);
   };
 
+  // Очистка поля при нажатии на крестик
+  const handleClear = useCallback(() => {
+    setDigits('');
+    onPhoneChange('');
+    inputRef.current?.focus();
+  }, [onPhoneChange]);
+
   // При выходе из поля отправляем форматированное значение в parent
   const handleEndEditing = useCallback(() => {
     const formatted = formatDigits(digits);
@@ -142,6 +149,15 @@ export const PhoneStep: React.FC<PhoneStepProps> = ({ phone, loading, onPhoneCha
           keyboardType="phone-pad"
           autoFocus
         />
+        {digits.length > 0 && (
+          <TouchableOpacity
+            onPress={handleClear}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            testID="login-phone-clear"
+          >
+            <Ionicons name="close-circle" size={20} color={Colors.light.textLight} />
+          </TouchableOpacity>
+        )}
       </View>
 
       <TouchableOpacity
