@@ -27,17 +27,30 @@ describe('PhoneStep', () => {
     expect(getByTestId('login-continue-button')).toBeTruthy();
   });
 
-  it('форматирует ввод в маску +7 (XXX) XXX-XX-XX', () => {
-    renderPhoneStep();
-    // Симулируем ввод 11 цифр
+  it('форматирует ввод при потере фокуса (onEndEditing)', () => {
     const { getByTestId } = renderPhoneStep();
-    fireEvent.changeText(getByTestId('login-phone-input'), '79001234567');
+    const input = getByTestId('login-phone-input');
+
+    // Вводим цифры без форматирования
+    fireEvent.changeText(input, '79001234567');
+
+    // onPhoneChange НЕ вызывается во время ввода
+    expect(mockOnPhoneChange).not.toHaveBeenCalled();
+
+    // Симулируем потерю фокуса (onEndEditing)
+    fireEvent(input, 'endEditing');
+
+    // Теперь форматирование применилось
     expect(mockOnPhoneChange).toHaveBeenCalledWith('+7 (900) 123-45-67');
   });
 
   it('конвертирует ввод начинающийся на 8 в +7', () => {
     const { getByTestId } = renderPhoneStep();
-    fireEvent.changeText(getByTestId('login-phone-input'), '89001234567');
+    const input = getByTestId('login-phone-input');
+
+    fireEvent.changeText(input, '89001234567');
+    fireEvent(input, 'endEditing');
+
     expect(mockOnPhoneChange).toHaveBeenCalledWith('+7 (900) 123-45-67');
   });
 
@@ -58,32 +71,51 @@ describe('PhoneStep', () => {
     expect(queryByText('Продолжить')).toBeNull();
   });
 
-  it('удаление последней цифры из (926) правильно переформатирует', () => {
-    const { getByTestId } = renderPhoneStep({ phone: '+7 (926)' });
-    // Удаляем последнюю цифру 6 → остаётся +7 (92
-    fireEvent.changeText(getByTestId('login-phone-input'), '+7 (92');
-    expect(mockOnPhoneChange).toHaveBeenCalledWith('+7 (92');
+  it('разрешает свободное редактирование без форматирования при вводе', () => {
+    const { getByTestId } = renderPhoneStep();
+    const input = getByTestId('login-phone-input');
+
+    // Пользователь может вводить в любом порядке
+    fireEvent.changeText(input, '7');
+    fireEvent.changeText(input, '79');
+    fireEvent.changeText(input, '79');  // Дублирование - обработка
+
+    // onPhoneChange не вызывается до потери фокуса
+    expect(mockOnPhoneChange).not.toHaveBeenCalled();
   });
 
-  it('полная очистка номера возвращает пустую строку', () => {
+  it('удаление номера полностью работает корректно', () => {
     const { getByTestId } = renderPhoneStep({ phone: '+7 (926) 123-45-67' });
-    fireEvent.changeText(getByTestId('login-phone-input'), '');
+    const input = getByTestId('login-phone-input');
+
+    // Пользователь удаляет всё справа налево
+    fireEvent.changeText(input, '');
+    // Форматирование не применяется при вводе
+    expect(mockOnPhoneChange).not.toHaveBeenCalled();
+
+    // При выходе из поля
+    fireEvent(input, 'endEditing');
     expect(mockOnPhoneChange).toHaveBeenCalledWith('');
   });
 
-  it('удаление всех цифр из полного номера', () => {
-    const { getByTestId } = renderPhoneStep({ phone: '+7 (900) 123-45-67' });
-    // Симулируем постепенное удаление цифр
-    fireEvent.changeText(getByTestId('login-phone-input'), '+7 (900) 123-45-');
-    fireEvent.changeText(getByTestId('login-phone-input'), '+7 (900) 123-45');
-    fireEvent.changeText(getByTestId('login-phone-input'), '+7 (900) 123-');
-    fireEvent.changeText(getByTestId('login-phone-input'), '');
-    expect(mockOnPhoneChange).toHaveBeenLastCalledWith('');
-  });
+  it('сохраняет локальное состояние при синхронизации с parent', () => {
+    const { rerender, getByTestId } = renderPhoneStep({ phone: '' });
+    const input = getByTestId('login-phone-input');
 
-  it('сохраняет формат при добавлении цифр к неполному номеру', () => {
-    const { getByTestId } = renderPhoneStep({ phone: '+7 (92' });
-    fireEvent.changeText(getByTestId('login-phone-input'), '+7 (926)');
-    expect(mockOnPhoneChange).toHaveBeenCalledWith('+7 (926)');
+    // Вводим цифры
+    fireEvent.changeText(input, '79001234567');
+
+    // Перерендерим с новым phone от parent (например, при возврате)
+    rerender(
+      <PhoneStep
+        phone="+7 (900) 123-45-67"
+        loading={false}
+        onPhoneChange={mockOnPhoneChange}
+        onContinue={mockOnContinue}
+      />
+    );
+
+    // Локальное состояние синхронизировалось
+    expect(getByTestId('login-phone-input').props.value).toBe('+7 (900) 123-45-67');
   });
 });

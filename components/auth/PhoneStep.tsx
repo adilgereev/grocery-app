@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/theme';
@@ -12,34 +12,34 @@ interface PhoneStepProps {
 }
 
 export const PhoneStep: React.FC<PhoneStepProps> = ({ phone, loading, onPhoneChange, onContinue }) => {
+  // Локальное состояние для свободного редактирования без прыганья курсора
+  const [localPhone, setLocalPhone] = useState(phone);
+
+  // Синхронизируем с parent state (например, после отправки OTP и возврата)
+  useEffect(() => {
+    setLocalPhone(phone);
+  }, [phone]);
+
   // Форматирует номер телефона: +7 (900) 123-45-67
-  // Обрабатывает удаление корректно без «застревания» курсора перед скобками
-  const handlePhoneChange = useCallback((text: string) => {
-    // Извлекаем только цифры
+  const formatPhone = useCallback((text: string): string => {
     let digits = text.replace(/\D/g, '');
 
-    // Нормализуем: 8 → 7 (для удобства ввода)
     if (digits.startsWith('8')) {
       digits = '7' + digits.slice(1);
     }
 
-    // Ограничиваем максимум 11 цифр (российский номер)
     if (digits.length > 11) {
       digits = digits.slice(0, 11);
     }
 
-    // Добавляем 7 в начало, если её нет
     if (digits.length > 0 && !digits.startsWith('7')) {
       digits = '7' + digits;
     }
 
-    // Если пусто, возвращаем пусто
     if (digits.length === 0) {
-      onPhoneChange('');
-      return;
+      return '';
     }
 
-    // Строим отформатированную строку постепенно
     let formatted = '+7';
 
     if (digits.length >= 2) {
@@ -62,8 +62,21 @@ export const PhoneStep: React.FC<PhoneStepProps> = ({ phone, loading, onPhoneCha
       formatted += `-${digits.slice(9, 11)}`;
     }
 
+    return formatted;
+  }, []);
+
+  // Во время ввода просто обновляем локальное состояние (БЕЗ форматирования)
+  // Это позволяет курсору двигаться свободно
+  const handlePhoneChange = useCallback((text: string) => {
+    setLocalPhone(text);
+  }, []);
+
+  // При выходе из поля (потеря фокуса) форматируем и отправляем parent
+  const handleEndEditing = useCallback(() => {
+    const formatted = formatPhone(localPhone);
+    setLocalPhone(formatted);
     onPhoneChange(formatted);
-  }, [onPhoneChange]);
+  }, [localPhone, formatPhone, onPhoneChange]);
 
   return (
     <>
@@ -79,8 +92,9 @@ export const PhoneStep: React.FC<PhoneStepProps> = ({ phone, loading, onPhoneCha
           style={styles.phoneInput}
           placeholder="+7 (900) 123-45-67"
           placeholderTextColor={Colors.light.textLight}
-          value={phone}
+          value={localPhone}
           onChangeText={handlePhoneChange}
+          onEndEditing={handleEndEditing}
           keyboardType="phone-pad"
           autoFocus
         />
