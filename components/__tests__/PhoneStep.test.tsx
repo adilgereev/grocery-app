@@ -57,4 +57,33 @@ describe('PhoneStep', () => {
     const { queryByText } = renderPhoneStep({ loading: true });
     expect(queryByText('Продолжить')).toBeNull();
   });
+
+  it('удаление последней цифры из (926) правильно переформатирует', () => {
+    const { getByTestId } = renderPhoneStep({ phone: '+7 (926)' });
+    // Удаляем последнюю цифру 6 → остаётся +7 (92
+    fireEvent.changeText(getByTestId('login-phone-input'), '+7 (92');
+    expect(mockOnPhoneChange).toHaveBeenCalledWith('+7 (92');
+  });
+
+  it('полная очистка номера возвращает пустую строку', () => {
+    const { getByTestId } = renderPhoneStep({ phone: '+7 (926) 123-45-67' });
+    fireEvent.changeText(getByTestId('login-phone-input'), '');
+    expect(mockOnPhoneChange).toHaveBeenCalledWith('');
+  });
+
+  it('удаление всех цифр из полного номера', () => {
+    const { getByTestId } = renderPhoneStep({ phone: '+7 (900) 123-45-67' });
+    // Симулируем постепенное удаление цифр
+    fireEvent.changeText(getByTestId('login-phone-input'), '+7 (900) 123-45-');
+    fireEvent.changeText(getByTestId('login-phone-input'), '+7 (900) 123-45');
+    fireEvent.changeText(getByTestId('login-phone-input'), '+7 (900) 123-');
+    fireEvent.changeText(getByTestId('login-phone-input'), '');
+    expect(mockOnPhoneChange).toHaveBeenLastCalledWith('');
+  });
+
+  it('сохраняет формат при добавлении цифр к неполному номеру', () => {
+    const { getByTestId } = renderPhoneStep({ phone: '+7 (92' });
+    fireEvent.changeText(getByTestId('login-phone-input'), '+7 (926)');
+    expect(mockOnPhoneChange).toHaveBeenCalledWith('+7 (926)');
+  });
 });
