@@ -27,21 +27,14 @@ describe('PhoneStep', () => {
     expect(getByTestId('login-continue-button')).toBeTruthy();
   });
 
-  it('форматирует ввод при потере фокуса (onEndEditing)', () => {
+  it('форматирует маску с кодом оператора во время ввода', () => {
     const { getByTestId } = renderPhoneStep();
     const input = getByTestId('login-phone-input');
 
-    // Вводим цифры без форматирования
+    // Вводим цифры - маска применяется сразу
     fireEvent.changeText(input, '79001234567');
-
-    // onPhoneChange НЕ вызывается во время ввода
-    expect(mockOnPhoneChange).not.toHaveBeenCalled();
-
-    // Симулируем потерю фокуса (onEndEditing)
-    fireEvent(input, 'endEditing');
-
-    // Теперь форматирование применилось
-    expect(mockOnPhoneChange).toHaveBeenCalledWith('+7 (900) 123-45-67');
+    // Ожидаем форматированный номер с скобками и дефисами
+    expect(input.props.value).toBe('+7 (900) 123-45-67');
   });
 
   it('конвертирует ввод начинающийся на 8 в +7', () => {
@@ -49,9 +42,7 @@ describe('PhoneStep', () => {
     const input = getByTestId('login-phone-input');
 
     fireEvent.changeText(input, '89001234567');
-    fireEvent(input, 'endEditing');
-
-    expect(mockOnPhoneChange).toHaveBeenCalledWith('+7 (900) 123-45-67');
+    expect(input.props.value).toBe('+7 (900) 123-45-67');
   });
 
   it('нажатие на кнопку вызывает onContinue (loading=false)', () => {
@@ -71,37 +62,14 @@ describe('PhoneStep', () => {
     expect(queryByText('Продолжить')).toBeNull();
   });
 
-  it('нормализует ввод без полного форматирования маски', () => {
-    const { getByTestId } = renderPhoneStep();
-    const input = getByTestId('login-phone-input');
-
-    // Вводим цифры - нормализация происходит, но без маски
-    fireEvent.changeText(input, '79001234567');
-    expect(input.props.value).toBe('+79001234567');  // Без скобок и дефисов
-
-    // onPhoneChange не вызывается до потери фокуса
-    expect(mockOnPhoneChange).not.toHaveBeenCalled();
-  });
-
-  it('конвертирует 8 в 7 во время ввода', () => {
-    const { getByTestId } = renderPhoneStep();
-    const input = getByTestId('login-phone-input');
-
-    fireEvent.changeText(input, '89001234567');
-    expect(input.props.value).toBe('+79001234567');  // 8 → 7
-
-    fireEvent(input, 'endEditing');
-    expect(mockOnPhoneChange).toHaveBeenCalledWith('+7 (900) 123-45-67');  // Маска при onEndEditing
-  });
-
   it('добавляет 7 в начало, если пользователь начинает с другой цифры', () => {
     const { getByTestId } = renderPhoneStep();
     const input = getByTestId('login-phone-input');
 
     // Попытка начать с 5 (неправильно)
     fireEvent.changeText(input, '59001234567');
-    // Должно быть нормализовано с добавлением 7 в начало
-    expect(input.props.value).toBe('+759001234567');  // +7 добавлен
+    // Должно быть нормализовано с добавлением 7 в начало и полной маской
+    expect(input.props.value).toBe('+7 (590) 012-34-56');
   });
 
   it('ограничивает максимум 11 цифр', () => {
@@ -110,7 +78,7 @@ describe('PhoneStep', () => {
 
     // Пытаемся ввести 12+ цифр
     fireEvent.changeText(input, '79001234567890');
-    expect(input.props.value).toBe('+79001234567');  // Обрезано до 11 цифр
+    expect(input.props.value).toBe('+7 (900) 123-45-67');  // Обрезано до 11 цифр с маской
   });
 
   it('удаление номера полностью работает корректно', () => {
@@ -119,12 +87,75 @@ describe('PhoneStep', () => {
 
     // Пользователь удаляет всё справа налево
     fireEvent.changeText(input, '');
-    // Форматирование не применяется при вводе
-    expect(mockOnPhoneChange).not.toHaveBeenCalled();
+    expect(input.props.value).toBe('');
+
+    // При выходе из поля отправляем в parent
+    fireEvent(input, 'endEditing');
+    expect(mockOnPhoneChange).toHaveBeenCalledWith('');
+  });
+
+  it('отправляет форматированный номер при onEndEditing', () => {
+    const { getByTestId } = renderPhoneStep();
+    const input = getByTestId('login-phone-input');
+
+    fireEvent.changeText(input, '79001234567');
+    expect(mockOnPhoneChange).not.toHaveBeenCalled();  // Не вызывается во время ввода
 
     // При выходе из поля
     fireEvent(input, 'endEditing');
-    expect(mockOnPhoneChange).toHaveBeenCalledWith('');
+    expect(mockOnPhoneChange).toHaveBeenCalledWith('+7 (900) 123-45-67');
+  });
+
+  it('показывает маску во время ввода (на каждом шаге)', () => {
+    const { getByTestId } = renderPhoneStep();
+    const input = getByTestId('login-phone-input');
+
+    fireEvent.changeText(input, '7');
+    expect(input.props.value).toBe('+7');
+
+    fireEvent.changeText(input, '79');
+    expect(input.props.value).toBe('+7 (9');
+
+    fireEvent.changeText(input, '790');
+    expect(input.props.value).toBe('+7 (90');
+
+    fireEvent.changeText(input, '7900');
+    expect(input.props.value).toBe('+7 (900)');
+
+    fireEvent.changeText(input, '79001');
+    expect(input.props.value).toBe('+7 (900) 1');
+  });
+
+  it('удаляет цифру при стирании форматного символа (скобка)', () => {
+    const { getByTestId } = renderPhoneStep();
+    const input = getByTestId('login-phone-input');
+
+    // Вводим 4 цифры: 7926
+    fireEvent.changeText(input, '7926');
+    expect(input.props.value).toBe('+7 (926)');
+
+    // Пользователь видит "+7 (926)" и нажимает backspace на ")"
+    // TextInput передает текст без ")": "+7 (926"
+    fireEvent.changeText(input, '+7 (926');
+    fireEvent(input, 'selectionChange', { nativeEvent: { selection: { start: 7, end: 7 } } });
+    // Должна удалиться цифра 6 перед скобкой
+    expect(input.props.value).toBe('+7 (92');
+  });
+
+  it('простое удаление форматного символа (скобка)', () => {
+    const { getByTestId } = renderPhoneStep();
+    const input = getByTestId('login-phone-input');
+
+    // Вводим 4 цифры: 7926
+    fireEvent.changeText(input, '7926');
+    expect(input.props.value).toBe('+7 (926)');
+
+    // Пользователь видит "+7 (926)" и нажимает backspace на ")"
+    // TextInput передает текст без ")": "+7 (926" (4 цифры, нет скобки)
+    fireEvent.changeText(input, '+7 (926');
+    fireEvent(input, 'selectionChange', { nativeEvent: { selection: { start: 7, end: 7 } } });
+    // Должна удалиться цифра 6, остается '792'
+    expect(input.props.value).toBe('+7 (92');
   });
 
   it('сохраняет локальное состояние при синхронизации с parent', () => {

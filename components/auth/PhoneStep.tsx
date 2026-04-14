@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/theme';
@@ -12,92 +12,113 @@ interface PhoneStepProps {
 }
 
 export const PhoneStep: React.FC<PhoneStepProps> = ({ phone, loading, onPhoneChange, onContinue }) => {
-  // Локальное состояние для свободного редактирования без прыганья курсора
-  const [localPhone, setLocalPhone] = useState(phone);
+  const inputRef = useRef<TextInput>(null);
+
+  // Храним только чистые цифры номера (без форматирования)
+  const [digits, setDigits] = useState(() => phone.replace(/\D/g, ''));
+  const [selection, setSelection] = useState({ start: 0, end: 0 });
 
   // Синхронизируем с parent state (например, после отправки OTP и возврата)
   useEffect(() => {
-    setLocalPhone(phone);
+    setDigits(phone.replace(/\D/g, ''));
   }, [phone]);
 
-  // Форматирует номер телефона: +7 (900) 123-45-67
-  const formatPhone = useCallback((text: string): string => {
-    let digits = text.replace(/\D/g, '');
+  // Нормализует и валидирует цифры (8→7, добавляет 7, ограничивает до 11)
+  const normalizeDigits = useCallback((raw: string): string => {
+    let normalized = raw.replace(/\D/g, '');
 
-    if (digits.startsWith('8')) {
-      digits = '7' + digits.slice(1);
+    if (normalized.startsWith('8')) {
+      normalized = '7' + normalized.slice(1);
     }
 
-    if (digits.length > 11) {
-      digits = digits.slice(0, 11);
+    if (normalized.length > 11) {
+      normalized = normalized.slice(0, 11);
     }
 
-    if (digits.length > 0 && !digits.startsWith('7')) {
-      digits = '7' + digits;
+    if (normalized.length > 0 && !normalized.startsWith('7')) {
+      normalized = '7' + normalized;
     }
 
-    if (digits.length === 0) {
-      return '';
-    }
+    return normalized;
+  }, []);
+
+  // Форматирует чистые цифры в маску: +7 (900) 123-45-67
+  const formatDigits = useCallback((cleanDigits: string): string => {
+    if (cleanDigits.length === 0) return '';
 
     let formatted = '+7';
 
-    if (digits.length >= 2) {
-      formatted += ` (${digits.slice(1, Math.min(4, digits.length))}`;
+    if (cleanDigits.length >= 2) {
+      formatted += ` (${cleanDigits.slice(1, Math.min(4, cleanDigits.length))}`;
     }
 
-    if (digits.length >= 4) {
+    if (cleanDigits.length >= 4) {
       formatted += ')';
     }
 
-    if (digits.length >= 5) {
-      formatted += ` ${digits.slice(4, Math.min(7, digits.length))}`;
+    if (cleanDigits.length >= 5) {
+      formatted += ` ${cleanDigits.slice(4, Math.min(7, cleanDigits.length))}`;
     }
 
-    if (digits.length >= 8) {
-      formatted += `-${digits.slice(7, Math.min(9, digits.length))}`;
+    if (cleanDigits.length >= 8) {
+      formatted += `-${cleanDigits.slice(7, Math.min(9, cleanDigits.length))}`;
     }
 
-    if (digits.length >= 10) {
-      formatted += `-${digits.slice(9, 11)}`;
+    if (cleanDigits.length >= 10) {
+      formatted += `-${cleanDigits.slice(9, 11)}`;
     }
 
     return formatted;
   }, []);
 
-  // Во время ввода: нормализуем цифры, но НЕ форматируем в маску
-  // Это позволяет курсору двигаться свободно, но сохраняет валидацию
-  const handlePhoneChange = useCallback((text: string) => {
-    // Извлекаем только цифры
-    let digits = text.replace(/\D/g, '');
+  const displayValue = formatDigits(digits);
 
-    // Нормализуем: 8 → 7 (тип с 8 на 7)
-    if (digits.startsWith('8')) {
-      digits = '7' + digits.slice(1);
-    }
+  // Обработчик изменения текста
+  const handlePhoneChange = useCallback(
+    (text: string) => {
+      const prevCount = digits.length;
+      const rawCount = text.replace(/\D/g, '').length;
 
-    // Ограничиваем 11 цифр максимум
-    if (digits.length > 11) {
-      digits = digits.slice(0, 11);
-    }
+      // Пользователь удалил форматный символ (скобка, пробел, дефис)
+      // Признак: количество цифр одинаковое, но длина текста уменьшилась
+      if (rawCount === prevCount && text.length < displayValue.length) {
+        // Если cursor position известна, используем её для точного удаления
+        // Иначе удаляем последнюю цифру
+        if (selection.start > 0) {
+          // Считаем цифры до позиции курсора в displayValue
+          let digitsBefore = 0;
+          for (let i = 0; i < Math.min(selection.start, displayValue.length); i++) {
+            if (/\d/.test(displayValue[i])) {
+              digitsBefore++;
+            }
+          }
+          // Удаляем цифру перед курсором
+          const deleteAt = Math.max(0, digitsBefore - 1);
+          const newDigits = digits.slice(0, deleteAt) + digits.slice(deleteAt + 1);
+          setDigits(newDigits);
+        } else {
+          // Fallback: удаляем последнюю цифру
+          setDigits(digits.slice(0, -1));
+        }
+        return;
+      }
 
-    // Добавляем 7 в начало, если её нет и есть цифры
-    if (digits.length > 0 && !digits.startsWith('7')) {
-      digits = '7' + digits;
-    }
+      // Обычное добавление или удаление цифры
+      const normalized = normalizeDigits(text);
+      setDigits(normalized);
+    },
+    [digits, normalizeDigits, displayValue, selection.start]
+  );
 
-    // Показываем в поле без маски: "+7926123456" (без скобок и дефисов)
-    // Маска применится только при onEndEditing
-    const displayValue = digits.length === 0 ? '' : '+' + digits;
-    setLocalPhone(displayValue);
-  }, []);
+  const handleSelectionChange = (e: any) => {
+    setSelection(e.nativeEvent.selection);
+  };
 
-  // При выходе из поля (потеря фокуса) форматируем и отправляем parent
+  // При выходе из поля отправляем форматированное значение в parent
   const handleEndEditing = useCallback(() => {
-    const formatted = formatPhone(localPhone);
-    setLocalPhone(formatted);
+    const formatted = formatDigits(digits);
     onPhoneChange(formatted);
-  }, [localPhone, formatPhone, onPhoneChange]);
+  }, [digits, formatDigits, onPhoneChange]);
 
   return (
     <>
@@ -109,12 +130,14 @@ export const PhoneStep: React.FC<PhoneStepProps> = ({ phone, loading, onPhoneCha
       <View style={styles.phoneInputContainer}>
         <Ionicons name="call-outline" size={20} color={Colors.light.textLight} />
         <TextInput
+          ref={inputRef}
           testID="login-phone-input"
           style={styles.phoneInput}
           placeholder="+7 (900) 123-45-67"
           placeholderTextColor={Colors.light.textLight}
-          value={localPhone}
+          value={displayValue}
           onChangeText={handlePhoneChange}
+          onSelectionChange={handleSelectionChange}
           onEndEditing={handleEndEditing}
           keyboardType="phone-pad"
           autoFocus
