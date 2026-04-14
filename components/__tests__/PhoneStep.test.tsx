@@ -71,17 +71,46 @@ describe('PhoneStep', () => {
     expect(queryByText('Продолжить')).toBeNull();
   });
 
-  it('разрешает свободное редактирование без форматирования при вводе', () => {
+  it('нормализует ввод без полного форматирования маски', () => {
     const { getByTestId } = renderPhoneStep();
     const input = getByTestId('login-phone-input');
 
-    // Пользователь может вводить в любом порядке
-    fireEvent.changeText(input, '7');
-    fireEvent.changeText(input, '79');
-    fireEvent.changeText(input, '79');  // Дублирование - обработка
+    // Вводим цифры - нормализация происходит, но без маски
+    fireEvent.changeText(input, '79001234567');
+    expect(input.props.value).toBe('+79001234567');  // Без скобок и дефисов
 
     // onPhoneChange не вызывается до потери фокуса
     expect(mockOnPhoneChange).not.toHaveBeenCalled();
+  });
+
+  it('конвертирует 8 в 7 во время ввода', () => {
+    const { getByTestId } = renderPhoneStep();
+    const input = getByTestId('login-phone-input');
+
+    fireEvent.changeText(input, '89001234567');
+    expect(input.props.value).toBe('+79001234567');  // 8 → 7
+
+    fireEvent(input, 'endEditing');
+    expect(mockOnPhoneChange).toHaveBeenCalledWith('+7 (900) 123-45-67');  // Маска при onEndEditing
+  });
+
+  it('добавляет 7 в начало, если пользователь начинает с другой цифры', () => {
+    const { getByTestId } = renderPhoneStep();
+    const input = getByTestId('login-phone-input');
+
+    // Попытка начать с 5 (неправильно)
+    fireEvent.changeText(input, '59001234567');
+    // Должно быть нормализовано с добавлением 7 в начало
+    expect(input.props.value).toBe('+759001234567');  // +7 добавлен
+  });
+
+  it('ограничивает максимум 11 цифр', () => {
+    const { getByTestId } = renderPhoneStep();
+    const input = getByTestId('login-phone-input');
+
+    // Пытаемся ввести 12+ цифр
+    fireEvent.changeText(input, '79001234567890');
+    expect(input.props.value).toBe('+79001234567');  // Обрезано до 11 цифр
   });
 
   it('удаление номера полностью работает корректно', () => {

@@ -65,10 +65,31 @@ export const PhoneStep: React.FC<PhoneStepProps> = ({ phone, loading, onPhoneCha
     return formatted;
   }, []);
 
-  // Во время ввода просто обновляем локальное состояние (БЕЗ форматирования)
-  // Это позволяет курсору двигаться свободно
+  // Во время ввода: нормализуем цифры, но НЕ форматируем в маску
+  // Это позволяет курсору двигаться свободно, но сохраняет валидацию
   const handlePhoneChange = useCallback((text: string) => {
-    setLocalPhone(text);
+    // Извлекаем только цифры
+    let digits = text.replace(/\D/g, '');
+
+    // Нормализуем: 8 → 7 (тип с 8 на 7)
+    if (digits.startsWith('8')) {
+      digits = '7' + digits.slice(1);
+    }
+
+    // Ограничиваем 11 цифр максимум
+    if (digits.length > 11) {
+      digits = digits.slice(0, 11);
+    }
+
+    // Добавляем 7 в начало, если её нет и есть цифры
+    if (digits.length > 0 && !digits.startsWith('7')) {
+      digits = '7' + digits;
+    }
+
+    // Показываем в поле без маски: "+7926123456" (без скобок и дефисов)
+    // Маска применится только при onEndEditing
+    const displayValue = digits.length === 0 ? '' : '+' + digits;
+    setLocalPhone(displayValue);
   }, []);
 
   // При выходе из поля (потеря фокуса) форматируем и отправляем parent
