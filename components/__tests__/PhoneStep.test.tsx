@@ -94,15 +94,13 @@ describe('PhoneStep', () => {
     expect(mockOnPhoneChange).toHaveBeenCalledWith('');
   });
 
-  it('отправляет форматированный номер при onEndEditing', () => {
+  it('отправляет форматированный номер при вводе', () => {
     const { getByTestId } = renderPhoneStep();
     const input = getByTestId('login-phone-input');
 
     fireEvent.changeText(input, '79001234567');
-    expect(mockOnPhoneChange).not.toHaveBeenCalled();  // Не вызывается во время ввода
-
-    // При выходе из поля
-    fireEvent(input, 'endEditing');
+    // Теперь onPhoneChange вызывается сразу при вводе, не дожидаясь потери фокуса
+    // Это необходимо, чтобы parent component мог проверить валидность при нажатии кнопки
     expect(mockOnPhoneChange).toHaveBeenCalledWith('+7 (900) 123-45-67');
   });
 

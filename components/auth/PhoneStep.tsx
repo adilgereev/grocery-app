@@ -79,6 +79,8 @@ export const PhoneStep: React.FC<PhoneStepProps> = ({ phone, loading, onPhoneCha
       const prevCount = digits.length;
       const rawCount = text.replace(/\D/g, '').length;
 
+      let newDigits = digits;
+
       // Пользователь удалил форматный символ (скобка, пробел, дефис)
       // Признак: количество цифр одинаковое, но длина текста уменьшилась
       if (rawCount === prevCount && text.length < displayValue.length) {
@@ -94,20 +96,22 @@ export const PhoneStep: React.FC<PhoneStepProps> = ({ phone, loading, onPhoneCha
           }
           // Удаляем цифру перед курсором
           const deleteAt = Math.max(0, digitsBefore - 1);
-          const newDigits = digits.slice(0, deleteAt) + digits.slice(deleteAt + 1);
-          setDigits(newDigits);
+          newDigits = digits.slice(0, deleteAt) + digits.slice(deleteAt + 1);
         } else {
           // Fallback: удаляем последнюю цифру
-          setDigits(digits.slice(0, -1));
+          newDigits = digits.slice(0, -1);
         }
-        return;
+      } else {
+        // Обычное добавление или удаление цифры
+        newDigits = normalizeDigits(text);
       }
 
-      // Обычное добавление или удаление цифры
-      const normalized = normalizeDigits(text);
-      setDigits(normalized);
+      setDigits(newDigits);
+      // Синхронизируем parent state сразу же (не ждём потери фокуса)
+      const formatted = formatDigits(newDigits);
+      onPhoneChange(formatted);
     },
-    [digits, normalizeDigits, displayValue, selection.start]
+    [digits, normalizeDigits, formatDigits, displayValue, selection.start, onPhoneChange]
   );
 
   const handleSelectionChange = (e: any) => {
@@ -121,11 +125,11 @@ export const PhoneStep: React.FC<PhoneStepProps> = ({ phone, loading, onPhoneCha
     inputRef.current?.focus();
   }, [onPhoneChange]);
 
-  // При выходе из поля отправляем форматированное значение в parent
+  // При выходе из поля больше ничего не нужно делать
+  // onPhoneChange уже вызывается при каждом изменении в handlePhoneChange
   const handleEndEditing = useCallback(() => {
-    const formatted = formatDigits(digits);
-    onPhoneChange(formatted);
-  }, [digits, formatDigits, onPhoneChange]);
+    // Оставляем пустым - это правильно, так как state уже синхронизирован
+  }, []);
 
   return (
     <>

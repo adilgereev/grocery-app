@@ -35,7 +35,7 @@ export default function Login() {
   // Шаг 1: Отправка SMS-кода через Edge Function
   const handleSendOTP = async () => {
     const normalized = normalizePhone(phone);
-    
+
     const phoneValidation = authPhoneSchema.safeParse(normalized);
     if (!phoneValidation.success) {
       const errorMsg = phoneValidation.error.issues[0]?.message || 'Введите корректный номер телефона';
