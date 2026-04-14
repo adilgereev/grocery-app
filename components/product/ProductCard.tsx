@@ -2,6 +2,7 @@ import React, { useMemo, useCallback } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, useWindowDimensions } from 'react-native';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 import { useCartStore } from '@/store/cartStore';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { Colors, Spacing, Radius, Duration, Shadows } from '@/constants/theme';
@@ -31,9 +32,20 @@ const ProductCard = React.memo(function ProductCard({ item, index = 0, onPress }
   const addItem = useCartStore(state => state.addItem);
   const updateQuantity = useCartStore(state => state.updateQuantity);
 
-  const handleAdd = useCallback(() => addItem(item), [addItem, item]);
-  const handleDecrease = useCallback(() => updateQuantity(item.id, quantity - 1), [updateQuantity, item.id, quantity]);
-  const handleIncrease = useCallback(() => updateQuantity(item.id, quantity + 1), [updateQuantity, item.id, quantity]);
+  const handleAdd = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    addItem(item);
+  }, [addItem, item]);
+
+  const handleDecrease = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    updateQuantity(item.id, quantity - 1);
+  }, [updateQuantity, item.id, quantity]);
+
+  const handleIncrease = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    updateQuantity(item.id, quantity + 1);
+  }, [updateQuantity, item.id, quantity]);
 
   return (
     <AnimatedTouchable

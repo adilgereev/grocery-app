@@ -1,7 +1,8 @@
 import { Colors, Radius, Spacing, Shadows } from '@/constants/theme';
 import { Product } from '@/types';
 import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
+import * as Haptics from 'expo-haptics';
+import React, { useCallback } from 'react';
 import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 interface ProductBottomBarProps {
@@ -20,6 +21,21 @@ export const ProductBottomBar: React.FC<ProductBottomBarProps> = ({
   onAddToCart,
   onUpdateQuantity,
 }) => {
+  const handleAddToCart = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    onAddToCart();
+  }, [onAddToCart]);
+
+  const handleDecrease = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    onUpdateQuantity(quantity - 1);
+  }, [onUpdateQuantity, quantity]);
+
+  const handleIncrease = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    onUpdateQuantity(quantity + 1);
+  }, [onUpdateQuantity, quantity]);
+
   return (
     <View style={styles.bottomBar}>
       <View>
@@ -29,21 +45,21 @@ export const ProductBottomBar: React.FC<ProductBottomBarProps> = ({
 
       <View style={styles.actionContainer}>
         {quantity === 0 ? (
-          <TouchableOpacity style={styles.addToCartButton} onPress={onAddToCart}>
+          <TouchableOpacity style={styles.addToCartButton} onPress={handleAddToCart}>
             <Text style={styles.addToCartText}>В корзину</Text>
           </TouchableOpacity>
         ) : (
           <View style={styles.quantityContainer}>
             <TouchableOpacity
               style={styles.quantityButton}
-              onPress={() => onUpdateQuantity(quantity - 1)}
+              onPress={handleDecrease}
             >
               <Ionicons name="remove" size={20} color={Colors.light.cta} />
             </TouchableOpacity>
             <Text style={styles.quantityText}>{quantity}</Text>
             <TouchableOpacity
               style={styles.quantityButton}
-              onPress={() => onUpdateQuantity(quantity + 1)}
+              onPress={handleIncrease}
             >
               <Ionicons name="add" size={20} color={Colors.light.cta} />
             </TouchableOpacity>

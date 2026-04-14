@@ -6,6 +6,7 @@ import { fetchProductById, fetchRelatedProducts } from '@/lib/api/productsApi';
 import { useAuth } from '@/providers/AuthProvider';
 import { useCartStore } from '@/store/cartStore';
 import { useFavoriteStore } from '@/store/favoriteStore';
+import * as Haptics from 'expo-haptics';
 import { ProductHeader } from '@/components/product/ProductHeader';
 import { ProductInfo } from '@/components/product/ProductInfo';
 import { ProductNutrition } from '@/components/product/ProductNutrition';
@@ -65,11 +66,12 @@ export default function ProductDetailScreen() {
     fetchProductDetails();
   }, [id, fetchProductDetails]);
 
-  const handleFavoritePress = () => {
+  const handleFavoritePress = useCallback(() => {
     if (session?.user && product) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
       toggleFavorite(product, session.user.id);
     }
-  };
+  }, [session, product, toggleFavorite]);
 
   if (loading) {
     return (

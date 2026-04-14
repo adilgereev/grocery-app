@@ -9,7 +9,9 @@ import { useCartStore } from '@/store/cartStore';
 import { Address, PaymentMethod, Product } from '@/types';
 import { formatFullAddress } from '@/lib/utils/addressFormatter';
 import React, { useCallback, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import Animated, { LinearTransition, useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -23,6 +25,7 @@ export default function CartScreen() {
   const updateQuantity = useCartStore(state => state.updateQuantity);
   const removeItem = useCartStore(state => state.removeItem);
   const addItem = useCartStore(state => state.addItem);
+  const clearCart = useCartStore(state => state.clearCart);
   const subtotal = useCartStore(state => state.subtotal);
   const deliveryFee = useCartStore(state => state.deliveryFee);
   const totalPrice = useCartStore(state => state.totalPrice);
@@ -88,9 +91,27 @@ export default function CartScreen() {
   const handleUndo = useCallback(() => {
     if (!pendingRemoval) return;
     clearTimeout(pendingRemoval.timerId);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     addItem(pendingRemoval.item.product);
     setPendingRemoval(null);
   }, [pendingRemoval, addItem]);
+
+  const handleClearCart = useCallback(() => {
+    Alert.alert(
+      'Очистить корзину',
+      'Удалить все товары из корзины?',
+      [
+        { text: 'Отмена', style: 'cancel' },
+        { text: 'Очистить', style: 'destructive', onPress: () => {
+          if (pendingRemoval) {
+            clearTimeout(pendingRemoval.timerId);
+            setPendingRemoval(null);
+          }
+          clearCart();
+        }},
+      ]
+    );
+  }, [pendingRemoval, clearCart]);
 
   const handleUndoDismiss = useCallback(() => {
     if (!pendingRemoval) return;
@@ -106,6 +127,11 @@ export default function CartScreen() {
     <View style={styles.container}>
       <View style={[styles.header, { paddingTop: insets.top + Spacing.m }]}>
         <Text style={styles.headerTitle}>Корзина</Text>
+        {items.length > 0 && (
+          <TouchableOpacity onPress={handleClearCart} testID="cart-clear-button" hitSlop={8}>
+            <Ionicons name="trash-outline" size={22} color={Colors.light.error} />
+          </TouchableOpacity>
+        )}
       </View>
 
       <Animated.ScrollView
@@ -183,6 +209,9 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.background,
   },
   header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: Spacing.ml,
     backgroundColor: Colors.light.background,
     paddingBottom: Spacing.s,

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Alert } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import { createOrder, createOrderItems } from '@/lib/api/orderApi';
 import { useAuth } from '@/providers/AuthProvider';
@@ -57,7 +58,8 @@ export function useCheckout() {
 
       await createOrderItems(orderItems);
 
-      // 3. Обработка успеха: уведомления и редирект
+      // 3. Обработка успеха: хаптика, уведомления и редирект
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
       const paymentText = paymentMethod === 'cash' ? 'Наличными' : 'Онлайн';
 
       Alert.alert(

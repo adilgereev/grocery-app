@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Image } from 'expo-image';
 import { Ionicons } from '@expo/vector-icons';
+import * as Haptics from 'expo-haptics';
 import { Colors, Spacing, Radius, Duration, FontSize } from '@/constants/theme';
 import Animated, { FadeInLeft, FadeOutLeft, LinearTransition } from 'react-native-reanimated';
 import { Product } from '@/types';
@@ -23,6 +24,16 @@ const CartItem: React.FC<CartItemProps> = ({ item, index, onUpdateQuantity, onPr
     height: 60,
     imageOptions: { pad: true, background: Colors.light.card }
   });
+
+  const handleDecrease = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    onUpdateQuantity(item.product.id, item.quantity - 1);
+  }, [onUpdateQuantity, item.product.id, item.quantity]);
+
+  const handleIncrease = useCallback(() => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    onUpdateQuantity(item.product.id, item.quantity + 1);
+  }, [onUpdateQuantity, item.product.id, item.quantity]);
 
   return (
     <Animated.View
@@ -67,7 +78,7 @@ const CartItem: React.FC<CartItemProps> = ({ item, index, onUpdateQuantity, onPr
       <View style={styles.quantityControl}>
         <TouchableOpacity
           style={styles.quantityButton}
-          onPress={() => onUpdateQuantity(item.product.id, item.quantity - 1)}
+          onPress={handleDecrease}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           testID="quantity-decrease"
         >
@@ -78,7 +89,7 @@ const CartItem: React.FC<CartItemProps> = ({ item, index, onUpdateQuantity, onPr
 
         <TouchableOpacity
           style={styles.quantityButton}
-          onPress={() => onUpdateQuantity(item.product.id, item.quantity + 1)}
+          onPress={handleIncrease}
           hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           testID="quantity-increase"
         >
