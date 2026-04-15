@@ -84,9 +84,15 @@ export function useCheckout() {
       clearCart();
       router.push('/orders');
     } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'Произошла ошибка при оформлении заказа';
-      logger.error('Ошибка оформления заказа:', errorMessage);
-      
+      // PostgrestError от Supabase не является instanceof Error — извлекаем message вручную
+      const errorMessage =
+        err instanceof Error
+          ? err.message
+          : typeof err === 'object' && err !== null && 'message' in err
+            ? String((err as { message: unknown }).message)
+            : 'Произошла ошибка при оформлении заказа';
+      logger.error('Ошибка оформления заказа:', err);
+
       Alert.alert('Ошибка оформления', errorMessage);
     } finally {
       setIsSubmitting(false);

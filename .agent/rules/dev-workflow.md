@@ -28,11 +28,18 @@
 
 ## 4. 🗂️ Supabase Workflow
 
-- Изменения схемы — только через миграции в `supabase/migrations/`.
-- После любого изменения схемы: `npm run supabase:types`.
-- После `supabase:types` — вручную скопировать `types/supabase.ts` → `business-admin/src/types/supabase.ts`.
+⚠️ **Применение миграций к БД — ТОЛЬКО пользователем вручную.** Claude не запускает команды, изменяющие состояние удалённой или локальной БД.
+
+**Роль Claude:**
+1. Написать SQL для миграции и сохранить в `supabase/migrations/<timestamp>_<name>.sql`.
+2. Напомнить пользователю выполнить `npm run supabase:push` и при необходимости перезагрузить кеш PostgREST (`NOTIFY pgrst, 'reload schema'`).
+3. После подтверждения пользователя — самостоятельно запустить `npm run supabase:types`.
+4. Напомнить скопировать `types/supabase.ts` → `business-admin/src/types/supabase.ts`.
+
+**Никогда не запускать самостоятельно**: `supabase db push`, `supabase db pull`, `supabase db reset`, `supabase migration new`, `supabase start/stop`.
+
 - Никогда не редактировать `types/supabase.ts` вручную.
-- Подробный протокол: `.agent/workflows/supabase-sync.md` и `.agent/skills/supabase/SKILL.md`.
+- Подробный протокол: `.agent/skills/supabase/SKILL.md`.
 
 ## 4. 🔗 Связанные навыки и workflows
 
