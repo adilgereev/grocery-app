@@ -145,6 +145,22 @@ export default function CategoriesScreen() {
   // Получить только корневые категории (для выбора родителя)
   const rootCategories = categories.filter(c => !c.parent_id);
 
+  const handleToggleVisibility = async (category: Category) => {
+    const newValue = !category.is_active;
+    setCategories(prev =>
+      prev.map(c => c.id === category.id ? { ...c, is_active: newValue } : c)
+    );
+    try {
+      await updateCategory(category.id, { is_active: newValue });
+      useCategoryStore.getState().invalidateCache();
+    } catch {
+      setCategories(prev =>
+        prev.map(c => c.id === category.id ? { ...c, is_active: !newValue } : c)
+      );
+      Alert.alert('Ошибка', 'Не удалось изменить видимость категории');
+    }
+  };
+
   const handleEdit = (category: Category) => {
     setEditingCategory(category);
     setModalVisible(true);
@@ -258,6 +274,7 @@ export default function CategoriesScreen() {
             onMove={handleMove}
             onEdit={handleEdit}
             onDelete={handleDeleteItem}
+            onToggleVisibility={handleToggleVisibility}
           />
         )}
         contentContainerStyle={styles.list}

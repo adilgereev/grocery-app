@@ -9,6 +9,7 @@ import {
   Platform,
   ScrollView,
   StyleSheet,
+  Switch,
   Text,
   TextInput,
   TouchableOpacity,
@@ -44,6 +45,7 @@ export default function CategoryFormModal({
 }: CategoryFormModalProps) {
   const [name, setName] = React.useState('');
   const [selectedParent, setSelectedParent] = React.useState<string | null>(null);
+  const [isActive, setIsActive] = React.useState(true);
   const { imageUrl, setImageUrl, uploading, pickImage } = useImagePicker('categories');
 
   // Инициализация полей при открытии для редактирования
@@ -52,6 +54,7 @@ export default function CategoryFormModal({
       setName(initialData?.name || '');
       setImageUrl(initialData?.image_url || '');
       setSelectedParent(initialData?.parent_id || null);
+      setIsActive(initialData?.is_active ?? true);
     }
   }, [visible, initialData, setImageUrl]);
 
@@ -67,6 +70,7 @@ export default function CategoryFormModal({
       slug,
       image_url: imageUrl.trim() || null,
       parent_id: selectedParent,
+      is_active: isActive,
     });
   };
 
@@ -170,6 +174,19 @@ export default function CategoryFormModal({
               </View>
             ) : null}
 
+            {/* Видимость */}
+            <View style={styles.formGroup}>
+              <View style={styles.switchRow}>
+                <Text style={styles.label}>Видна покупателям</Text>
+                <Switch
+                  value={isActive}
+                  onValueChange={setIsActive}
+                  trackColor={{ false: Colors.light.border, true: Colors.light.primary }}
+                  testID="category-active-switch"
+                />
+              </View>
+            </View>
+
             {/* Кнопка отправки */}
             <TouchableOpacity
               style={[styles.submitBtn, isSubmitting && styles.btnDisabled]}
@@ -256,8 +273,13 @@ const styles = StyleSheet.create({
   inputPlaceholder: { 
     color: Colors.light.textLight 
   },
-  previewSection: { 
-    marginBottom: Spacing.l 
+  switchRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  previewSection: {
+    marginBottom: Spacing.l
   },
   previewBox: { 
     width: 100, 

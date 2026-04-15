@@ -11,24 +11,26 @@ interface CategoryItemProps {
   onMove: (category: Category, direction: 'up' | 'down') => void;
   onEdit: (category: Category) => void;
   onDelete: (id: string, name: string) => void;
+  onToggleVisibility: (category: Category) => void;
 }
 
 /**
  * Элемент списка категорий в админ-панели.
  * Вынесен из app/(admin)/categories.tsx для декомпозиции.
  */
-export default function CategoryItem({ 
-  item, 
-  parentCategory, 
-  onMove, 
-  onEdit, 
-  onDelete 
+export default function CategoryItem({
+  item,
+  parentCategory,
+  onMove,
+  onEdit,
+  onDelete,
+  onToggleVisibility,
 }: CategoryItemProps) {
   const isHex = item.image_url?.startsWith('#');
   const isSubcategory = !!item.parent_id;
 
   return (
-    <View style={[styles.card, isSubcategory && styles.subcategoryCard]} testID={`category-item-${item.id}`}>
+    <View style={[styles.card, isSubcategory && styles.subcategoryCard, !item.is_active && styles.inactiveCard]} testID={`category-item-${item.id}`}>
       <View style={styles.infoRow}>
         {isSubcategory && (
           <Ionicons 
@@ -85,8 +87,24 @@ export default function CategoryItem({
           <Text style={styles.editText}>Изменить</Text>
         </TouchableOpacity>
         
-        <TouchableOpacity 
-          style={styles.actionBtn} 
+        <TouchableOpacity
+          style={styles.actionBtn}
+          onPress={() => onToggleVisibility(item)}
+          activeOpacity={0.6}
+          testID={`toggle-visibility-${item.id}`}
+        >
+          <Ionicons
+            name={item.is_active ? 'eye' : 'eye-off'}
+            size={18}
+            color={item.is_active ? Colors.light.primary : Colors.light.textLight}
+          />
+          <Text style={[styles.editText, !item.is_active && styles.hiddenText]}>
+            {item.is_active ? 'Скрыть' : 'Показать'}
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.actionBtn}
           onPress={() => onDelete(item.id, item.name)}
           activeOpacity={0.6}
           testID={`delete-btn-${item.id}`}
@@ -169,10 +187,16 @@ const styles = StyleSheet.create({
     marginLeft: 6, 
     color: Colors.light.primary 
   },
-  deleteText: { 
-    fontSize: 14, 
-    fontWeight: '600', 
-    marginLeft: 6, 
-    color: Colors.light.error 
+  deleteText: {
+    fontSize: 14,
+    fontWeight: '600',
+    marginLeft: 6,
+    color: Colors.light.error
+  },
+  hiddenText: {
+    color: Colors.light.textLight,
+  },
+  inactiveCard: {
+    opacity: 0.5,
   },
 });
