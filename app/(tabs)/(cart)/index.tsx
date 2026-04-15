@@ -170,9 +170,6 @@ export default function CartScreen() {
           testID="cart-checkout-btn"
         >
           <Text style={styles.checkoutText}>Оформить заказ</Text>
-          <View style={styles.checkoutPriceTag}>
-            <Text style={styles.checkoutPriceText}>{totalPrice.toFixed(0)} ₽</Text>
-          </View>
         </TouchableOpacity>
       </Animated.ScrollView>
 
@@ -235,30 +232,17 @@ const styles = StyleSheet.create({
     marginHorizontal: Spacing.m,
   },
   checkoutButton: {
-    flexDirection: 'row',
     backgroundColor: Colors.light.cta,
     borderRadius: Radius.pill,
     paddingVertical: Spacing.m,
     paddingHorizontal: Spacing.ml,
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     ...Shadows.md,
   },
   checkoutText: {
     color: Colors.light.white,
     fontSize: FontSize.xl,
-    fontWeight: '700',
-    marginLeft: Spacing.s,
-  },
-  checkoutPriceTag: {
-    backgroundColor: Colors.light.whiteTransparent,
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: 6,
-    borderRadius: Radius.xl,
-  },
-  checkoutPriceText: {
-    color: Colors.light.white,
-    fontSize: FontSize.l,
     fontWeight: '700',
   },
 });

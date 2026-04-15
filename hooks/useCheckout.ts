@@ -61,12 +61,6 @@ export function useCheckout() {
 
       // 3. Обработка успеха: хаптика, уведомления и редирект
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-      const paymentText = paymentMethod === 'cash' ? 'Наличными' : 'Онлайн';
-
-      Alert.alert(
-        'Готово!',
-        `Ваш заказ успешно оформлен и передан на сборку 🛒\nОплата: ${paymentText} при получении`
-      );
 
       // Планируем уведомления для имитации процесса доставки
       schedulePushNotification(
@@ -82,7 +76,7 @@ export function useCheckout() {
 
       // 4. Очистка и переход
       clearCart();
-      router.push('/orders');
+      router.replace({ pathname: '/order-success', params: { id: orderData.id } });
     } catch (err: unknown) {
       // PostgrestError от Supabase не является instanceof Error — извлекаем message вручную
       const errorMessage =

@@ -14,9 +14,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import ScreenHeader from '@/components/ui/ScreenHeader';
 import OrderCard from '@/components/order/OrderCard';
 
-// Конфигурация статусов теперь в OrderCard.tsx
-
-
 export default function OrdersScreen() {
   const { session } = useAuth();
   const router = useRouter();
@@ -71,10 +68,6 @@ export default function OrdersScreen() {
     fetchOrders();
   };
 
-  // formatDate перенесен в OrderCard.tsx
-
-
-  // Скелетон загрузки
   if (loading) {
     return (
       <SafeAreaView style={styles.container} edges={['bottom']}>
@@ -136,7 +129,6 @@ export default function OrdersScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.light.background },
-  
   centerContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: Spacing.xl },
   listContainer: { paddingHorizontal: Spacing.m, paddingBottom: Spacing.ml, paddingTop: Spacing.m, flexGrow: 1 },
   emptyText: { fontSize: 18, color: Colors.light.textLight, marginTop: Spacing.ml, fontWeight: '500' },
@@ -146,6 +138,4 @@ const styles = StyleSheet.create({
   retryButtonText: { color: Colors.light.white, fontSize: 16, fontWeight: '600' },
   retryIcon: { marginRight: 8 },
   skeletonItem: { marginBottom: Spacing.sm },
-
-  // OrderCard styles moved to OrderCard.tsx
 });

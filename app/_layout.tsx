@@ -67,6 +67,8 @@ function RootLayoutNav() {
         <Stack.Screen name="addresses" />
         <Stack.Screen name="manage-address" />
         <Stack.Screen name="checkout" />
+        <Stack.Screen name="orders" />
+        <Stack.Screen name="order-success" />
       </Stack>
       <StatusBar style="dark" />
     </ThemeProvider>
