@@ -47,6 +47,3 @@ app-example
 /ios
 /android
 coverage/
-
-# graphify
-graphify-out/

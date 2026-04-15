@@ -1,8 +1,0 @@
-npm run graph:update
-
-# Проверка на наличие изменений в директории graphify-out
-if [ -n "$(git status --porcelain graphify-out/)" ]; then
-  echo "\033[33m⚠️  Внимание: Граф знаний (graphify-out) не синхронизирован с кодом!\033[0m"
-  echo "Пожалуйста, закоммитьте изменения в graphify-out/ перед пушем."
-  exit 1
-fi
