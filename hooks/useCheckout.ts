@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { Alert } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
@@ -107,9 +107,15 @@ export function useCheckout() {
     }
   };
 
+  // Переход к экрану оформления заказа из корзины
+  const navigateToCheckout = useCallback(() => {
+    router.push('/checkout');
+  }, [router]);
+
   return {
     handleCheckout,
     handleSelectAddress,
+    navigateToCheckout,
     isSubmitting,
     selectedAddress,
   };

@@ -1,24 +1,24 @@
 import CartItem from '@/components/cart/CartItem';
-import CartSummary from '@/components/cart/CartSummary';
+import CartPriceSummary from '@/components/cart/CartPriceSummary';
 import EmptyCart from '@/components/cart/EmptyCart';
 import UndoToast from '@/components/cart/UndoToast';
 import FloatingCheckoutButton from '@/components/FloatingCheckoutButton';
 import { Colors, FontSize, Radius, Shadows, Spacing } from '@/constants/theme';
 import { useCheckout } from '@/hooks/useCheckout';
 import { useCartStore } from '@/store/cartStore';
-import { Address, PaymentMethod, Product } from '@/types';
-import { formatFullAddress } from '@/lib/utils/addressFormatter';
+import { Product } from '@/types';
 import React, { useCallback, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import Animated, { LinearTransition, useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
+import Animated, { useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 /**
  * Основной экран корзины.
- * Логика чекаута вынесена в useCheckout, логика расчетов — в cartStore.
+ * Показывает товары и итоговую стоимость.
+ * Оформление заказа вынесено на отдельный экран /checkout.
  */
 export default function CartScreen() {
   const items = useCartStore(state => state.items);
@@ -31,15 +31,8 @@ export default function CartScreen() {
   const totalPrice = useCartStore(state => state.totalPrice);
 
   const insets = useSafeAreaInsets();
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cash');
-  const [comment, setComment] = useState('');
 
-  const {
-    handleCheckout,
-    handleSelectAddress,
-    isSubmitting,
-    selectedAddress
-  } = useCheckout();
+  const { navigateToCheckout } = useCheckout();
 
   // Reanimated Shared Values для плавающей кнопки
   const scrollY = useSharedValue(0);
@@ -59,8 +52,6 @@ export default function CartScreen() {
     item: { product: Product; quantity: number };
     timerId: ReturnType<typeof setTimeout>;
   } | null>(null);
-
-  const formatAddress = useCallback((addr: Address | null | undefined) => formatFullAddress(addr), []);
 
   const handleProductPress = useCallback((productId: string, productName: string) => {
     router.push(`/product/${productId}?name=${encodeURIComponent(productName)}`);
@@ -164,46 +155,31 @@ export default function CartScreen() {
           </View>
         )}
 
-        {/* Поле комментария к заказу */}
-        <View style={styles.commentCard}>
-          <Text style={styles.commentLabel}>КОММЕНТАРИЙ К ЗАКАЗУ</Text>
-          <TextInput
-            style={styles.commentInput}
-            placeholder="Позвоните за 10 мин, замены не нужны..."
-            placeholderTextColor={Colors.light.textLight}
-            value={comment}
-            onChangeText={setComment}
-            multiline
-            numberOfLines={3}
-            textAlignVertical="top"
-            keyboardAppearance="light"
-            testID="cart-comment-input"
-          />
-        </View>
+        {/* Итоговая стоимость */}
+        <CartPriceSummary
+          subtotal={subtotal}
+          deliveryFee={deliveryFee}
+          totalPrice={totalPrice}
+        />
 
-        {/* Секция итогов и чекаута */}
-        <Animated.View layout={LinearTransition.springify()}>
-          <CartSummary
-            itemsCount={items.length}
-            subtotal={subtotal}
-            deliveryFee={deliveryFee}
-            totalPrice={totalPrice}
-            selectedAddress={selectedAddress}
-            paymentMethod={paymentMethod}
-            setPaymentMethod={setPaymentMethod}
-            onCheckout={() => handleCheckout(paymentMethod, comment)}
-            onSelectAddress={handleSelectAddress}
-            isSubmitting={isSubmitting}
-            formatAddress={formatAddress}
-          />
-        </Animated.View>
-
+        {/* Кнопка перехода к оформлению */}
+        <TouchableOpacity
+          style={styles.checkoutButton}
+          onPress={navigateToCheckout}
+          activeOpacity={0.9}
+          testID="cart-checkout-btn"
+        >
+          <Text style={styles.checkoutText}>Оформить заказ</Text>
+          <View style={styles.checkoutPriceTag}>
+            <Text style={styles.checkoutPriceText}>{totalPrice.toFixed(0)} ₽</Text>
+          </View>
+        </TouchableOpacity>
       </Animated.ScrollView>
 
       <FloatingCheckoutButton
         totalPrice={totalPrice}
-        isSubmitting={isSubmitting}
-        onCheckout={() => handleCheckout(paymentMethod, comment)}
+        isSubmitting={false}
+        onCheckout={navigateToCheckout}
         scrollY={scrollY}
         layoutHeight={layoutHeight}
         contentHeight={contentHeight}
@@ -258,24 +234,31 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.borderLight,
     marginHorizontal: Spacing.m,
   },
-  commentCard: {
-    backgroundColor: Colors.light.card,
-    borderRadius: Radius.xxl,
-    padding: Spacing.m,
-    marginBottom: Spacing.m,
-    ...Shadows.sm,
+  checkoutButton: {
+    flexDirection: 'row',
+    backgroundColor: Colors.light.cta,
+    borderRadius: Radius.pill,
+    paddingVertical: Spacing.m,
+    paddingHorizontal: Spacing.ml,
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    ...Shadows.md,
   },
-  commentLabel: {
-    fontSize: 11,
+  checkoutText: {
+    color: Colors.light.white,
+    fontSize: FontSize.xl,
     fontWeight: '700',
-    color: Colors.light.textSecondary,
-    letterSpacing: 1.5,
-    marginBottom: Spacing.s,
+    marginLeft: Spacing.s,
   },
-  commentInput: {
-    fontSize: 15,
-    color: Colors.light.text,
-    minHeight: 72,
-    textAlignVertical: 'top',
+  checkoutPriceTag: {
+    backgroundColor: Colors.light.whiteTransparent,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 6,
+    borderRadius: Radius.xl,
+  },
+  checkoutPriceText: {
+    color: Colors.light.white,
+    fontSize: FontSize.l,
+    fontWeight: '700',
   },
 });
