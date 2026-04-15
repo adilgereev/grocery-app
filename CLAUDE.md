@@ -34,22 +34,22 @@ npm run supabase:push    # Push local migrations
 
 ## Key Files
 
-| Path                                 | Purpose                                                    |
-| ------------------------------------ | ---------------------------------------------------------- |
-| `types/index.ts`                     | Core interfaces: `Category`, `Product`, `Order`, `Profile` |
-| `types/supabase.ts`                  | Auto-generated DB types — never edit manually              |
-| `constants/theme.ts`                 | Design tokens: Colors, Spacing, Radius, FontSize, Shadows  |
-| `lib/utils/storageUtils.ts`          | `uploadImage()` — R2 upload via presigned URL              |
-| `lib/utils/imageKit.ts`              | `getOptimizedImage()`, `getPlaceholderUrl()` — CDN         |
-| `lib/utils/schemas.ts`               | Zod validation schemas for forms (profile, address)        |
-| `lib/api/categoriesApi.ts`           | Supabase category hierarchy queries                        |
-| `lib/services/supabase.ts`           | Typed Supabase client (cross-platform storage)             |
-| `providers/AuthProvider.tsx`         | Auth context — `useAuth()` → `{ session, loading }`        |
-| `lib/services/NotificationService.ts` | Push notification registration                            |
-| `components/ui/ScreenHeader.tsx`     | Mandatory stack screen header                              |
-| `components/product/ProductCard.tsx` | Unified product card component                             |
-| `components/ui/Skeleton.tsx`         | Loading placeholder / empty image fallback                 |
-| `BACKLOG.md`                         | Project backlog                                            |
+| Path                                  | Purpose                                                    |
+| ------------------------------------- | ---------------------------------------------------------- |
+| `types/index.ts`                      | Core interfaces: `Category`, `Product`, `Order`, `Profile` |
+| `types/supabase.ts`                   | Auto-generated DB types — never edit manually              |
+| `constants/theme.ts`                  | Design tokens: Colors, Spacing, Radius, FontSize, Shadows  |
+| `lib/utils/storageUtils.ts`           | `uploadImage()` — R2 upload via presigned URL              |
+| `lib/utils/imageKit.ts`               | `getOptimizedImage()`, `getPlaceholderUrl()` — CDN         |
+| `lib/utils/schemas.ts`                | Zod validation schemas for forms (profile, address)        |
+| `lib/api/categoriesApi.ts`            | Supabase category hierarchy queries                        |
+| `lib/services/supabase.ts`            | Typed Supabase client (cross-platform storage)             |
+| `providers/AuthProvider.tsx`          | Auth context — `useAuth()` → `{ session, loading }`        |
+| `lib/services/NotificationService.ts` | Push notification registration                             |
+| `components/ui/ScreenHeader.tsx`      | Mandatory stack screen header                              |
+| `components/product/ProductCard.tsx`  | Unified product card component                             |
+| `components/ui/Skeleton.tsx`          | Loading placeholder / empty image fallback                 |
+| `BACKLOG.md`                          | Project backlog                                            |
 
 ## .agent/ Structure
 
@@ -71,6 +71,10 @@ npm run supabase:push    # Push local migrations
   supabase-sync.md     — local ↔ remote DB sync
 ```
 
+## Communication Style
+
+Respond like a caveman. No articles, no filler words, no pleasantries. Short. Direct. Code speaks for itself.
+
 ## Взаимодействие
 
 - **Говори прямо**: Если подход пользователя неоптимальный — сказать об этом
@@ -84,6 +88,7 @@ npm run supabase:push    # Push local migrations
 This project has a graphify knowledge graph at graphify-out/.
 
 Rules:
+
 - Before answering architecture or codebase questions, read graphify-out/GRAPH_REPORT.md for god nodes and community structure
 - If graphify-out/wiki/index.md exists, navigate it instead of reading raw files
 - After modifying code files in this session, run `graphify update .` to keep the graph current (AST-only, no API cost)

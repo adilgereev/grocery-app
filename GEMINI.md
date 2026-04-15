@@ -59,10 +59,6 @@
 - **Говори прямо**: Если подход неоптимальный — сказать явно, объяснить почему, предложить лучший вариант. Не соглашаться «по умолчанию».
 - **После каждой задачи**: Предложить одно конкретное улучшение — что можно оптимизировать или автоматизировать.
 
-## Communication Style
-
-Respond like a caveman. No articles, no filler words, no pleasantries. Short. Direct. Code speaks for itself.
-
 ## ⚡ Commands
 
 ```bash
@@ -103,19 +99,19 @@ npm run supabase:push    # Push local migrations
 
 ## 🗂️ Key Files
 
-| Path | Purpose |
-|---|---|
-| `types/index.ts` | Core interfaces: `Category`, `Product`, `Order`, `Profile` |
-| `types/supabase.ts` | Auto-generated DB types — never edit manually |
-| `constants/theme.ts` | Design tokens: Colors, Spacing, Radius, FontSize, Shadows |
-| `lib/utils/storageUtils.ts` | `uploadImage()` — R2 upload via presigned URL |
-| `lib/utils/imageKit.ts` | `getOptimizedImage()`, `getPlaceholderUrl()` — CDN |
-| `lib/utils/schemas.ts` | Zod validation schemas for forms (profile, address) |
-| `lib/api/categoriesApi.ts` | Supabase category hierarchy queries |
-| `lib/services/supabase.ts` | Typed Supabase client (cross-platform storage) |
-| `lib/services/NotificationService.ts` | Push notification registration |
-| `providers/AuthProvider.tsx` | Auth context — `useAuth()` → `{ session, loading }` |
-| `components/ui/ScreenHeader.tsx` | Mandatory stack screen header |
-| `components/product/ProductCard.tsx` | Unified product card component |
-| `components/ui/Skeleton.tsx` | Loading placeholder / empty image fallback |
-| `BACKLOG.md` | Project backlog |
+| Path                                  | Purpose                                                    |
+| ------------------------------------- | ---------------------------------------------------------- |
+| `types/index.ts`                      | Core interfaces: `Category`, `Product`, `Order`, `Profile` |
+| `types/supabase.ts`                   | Auto-generated DB types — never edit manually              |
+| `constants/theme.ts`                  | Design tokens: Colors, Spacing, Radius, FontSize, Shadows  |
+| `lib/utils/storageUtils.ts`           | `uploadImage()` — R2 upload via presigned URL              |
+| `lib/utils/imageKit.ts`               | `getOptimizedImage()`, `getPlaceholderUrl()` — CDN         |
+| `lib/utils/schemas.ts`                | Zod validation schemas for forms (profile, address)        |
+| `lib/api/categoriesApi.ts`            | Supabase category hierarchy queries                        |
+| `lib/services/supabase.ts`            | Typed Supabase client (cross-platform storage)             |
+| `lib/services/NotificationService.ts` | Push notification registration                             |
+| `providers/AuthProvider.tsx`          | Auth context — `useAuth()` → `{ session, loading }`        |
+| `components/ui/ScreenHeader.tsx`      | Mandatory stack screen header                              |
+| `components/product/ProductCard.tsx`  | Unified product card component                             |
+| `components/ui/Skeleton.tsx`          | Loading placeholder / empty image fallback                 |
+| `BACKLOG.md`                          | Project backlog                                            |
