@@ -14,7 +14,6 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import ScreenHeader from '@/components/ui/ScreenHeader';
 import CheckoutAddress from '@/components/checkout/CheckoutAddress';
 import CheckoutComment from '@/components/checkout/CheckoutComment';
-import CheckoutOrderSummary from '@/components/checkout/CheckoutOrderSummary';
 import PaymentSelector from '@/components/cart/PaymentSelector';
 import OrderReceipt from '@/components/cart/OrderReceipt';
 
@@ -88,8 +87,6 @@ export default function CheckoutScreen() {
             />
           </View>
 
-          <CheckoutOrderSummary items={items} />
-
           <OrderReceipt
             itemsCount={items.length}
             subtotal={subtotal}
@@ -110,12 +107,7 @@ export default function CheckoutScreen() {
             {isSubmitting ? (
               <ActivityIndicator color={Colors.light.white} />
             ) : (
-              <>
-                <Text style={styles.confirmText}>Подтвердить заказ</Text>
-                <View style={styles.priceTag}>
-                  <Text style={styles.priceTagText}>{totalPrice.toFixed(0)} ₽</Text>
-                </View>
-              </>
+              <Text style={styles.confirmText}>Подтвердить заказ</Text>
             )}
           </TouchableOpacity>
         </View>
@@ -165,7 +157,7 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.m,
     paddingHorizontal: Spacing.ml,
     alignItems: 'center',
-    justifyContent: 'space-between',
+    justifyContent: 'center',
     ...Shadows.md,
   },
   confirmButtonSubmitting: {
@@ -174,18 +166,6 @@ const styles = StyleSheet.create({
   confirmText: {
     color: Colors.light.white,
     fontSize: FontSize.xl,
-    fontWeight: '700',
-    marginLeft: Spacing.s,
-  },
-  priceTag: {
-    backgroundColor: Colors.light.whiteTransparent,
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: 6,
-    borderRadius: Radius.xl,
-  },
-  priceTagText: {
-    color: Colors.light.white,
-    fontSize: FontSize.l,
     fontWeight: '700',
   },
 });
