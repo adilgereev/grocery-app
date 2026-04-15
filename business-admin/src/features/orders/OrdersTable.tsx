@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, MessageSquare } from 'lucide-react';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
@@ -137,11 +137,17 @@ export function OrdersTable({ orders, onUpdated }: OrdersTableProps) {
                     </TableCell>
                   </TableRow>
 
-                  {/* Раскрываемая строка с товарами */}
+                  {/* Раскрываемая строка с товарами и комментарием */}
                   {isExpanded && (
                     <TableRow key={`${order.id}-items`}>
                       <TableCell colSpan={8} className="bg-muted/30 p-0">
                         <div className="px-10 py-3">
+                          {order.comment && (
+                            <div className="mb-3 flex items-start gap-2 rounded-md bg-amber-50 px-3 py-2 text-sm text-amber-800">
+                              <MessageSquare className="mt-0.5 h-4 w-4 shrink-0" />
+                              <span>{order.comment}</span>
+                            </div>
+                          )}
                           <table className="w-full text-sm">
                             <thead>
                               <tr className="border-b text-muted-foreground">

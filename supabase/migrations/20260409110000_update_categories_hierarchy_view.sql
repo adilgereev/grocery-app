@@ -1,5 +1,7 @@
 -- Обновляем view categories_with_hierarchy: добавляем is_active в SELECT
-CREATE OR REPLACE VIEW public.categories_with_hierarchy AS
+-- DROP + CREATE вместо CREATE OR REPLACE — нельзя менять порядок колонок через OR REPLACE
+DROP VIEW IF EXISTS public.categories_with_hierarchy;
+CREATE VIEW public.categories_with_hierarchy AS
 SELECT
   c.id,
   c.name,

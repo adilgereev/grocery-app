@@ -17,7 +17,6 @@ export type Database = {
       addresses: {
         Row: {
           apartment: string | null
-          comment: string | null
           created_at: string
           entrance: string | null
           floor: string | null
@@ -32,7 +31,6 @@ export type Database = {
         }
         Insert: {
           apartment?: string | null
-          comment?: string | null
           created_at?: string
           entrance?: string | null
           floor?: string | null
@@ -47,7 +45,6 @@ export type Database = {
         }
         Update: {
           apartment?: string | null
-          comment?: string | null
           created_at?: string
           entrance?: string | null
           floor?: string | null
@@ -193,6 +190,7 @@ export type Database = {
       }
       orders: {
         Row: {
+          comment: string | null
           created_at: string
           delivery_address: string
           id: string
@@ -202,6 +200,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          comment?: string | null
           created_at?: string
           delivery_address: string
           id?: string
@@ -211,6 +210,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          comment?: string | null
           created_at?: string
           delivery_address?: string
           id?: string
@@ -398,6 +398,7 @@ export type Database = {
           created_at: string | null
           id: string | null
           image_url: string | null
+          is_active: boolean | null
           is_root: boolean | null
           name: string | null
           parent_id: string | null

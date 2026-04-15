@@ -11,25 +11,23 @@ interface AddressStore {
   selectedAddressId: string | null;
   isLoading: boolean;
   error: string | null;
-  addAddress: (details: { 
-    text: string, 
-    house?: string, 
-    entrance?: string, 
-    floor?: string, 
-    intercom?: string, 
+  addAddress: (details: {
+    text: string,
+    house?: string,
+    entrance?: string,
+    floor?: string,
+    intercom?: string,
     apartment?: string,
-    comment?: string,
     lat?: number,
     lon?: number
   }) => Promise<void>;
-  updateAddress: (id: string, details: { 
-    text: string, 
-    house?: string, 
-    entrance?: string, 
-    floor?: string, 
-    intercom?: string, 
+  updateAddress: (id: string, details: {
+    text: string,
+    house?: string,
+    entrance?: string,
+    floor?: string,
+    intercom?: string,
     apartment?: string,
-    comment?: string,
     lat?: number,
     lon?: number
   }) => Promise<void>;
@@ -95,7 +93,6 @@ export const useAddressStore = create<AddressStore>((set, get) => ({
         floor: details.floor,
         intercom: details.intercom,
         apartment: details.apartment,
-        comment: details.comment,
         lat: details.lat,
         lon: details.lon,
         is_selected: isFirst
@@ -125,7 +122,6 @@ export const useAddressStore = create<AddressStore>((set, get) => ({
         floor: details.floor,
         intercom: details.intercom,
         apartment: details.apartment,
-        comment: details.comment,
         lat: details.lat,
         lon: details.lon,
       });

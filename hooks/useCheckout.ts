@@ -26,7 +26,7 @@ export function useCheckout() {
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleCheckout = async (paymentMethod: PaymentMethod) => {
+  const handleCheckout = async (paymentMethod: PaymentMethod, comment?: string) => {
     if (!session?.user) {
       router.push('/(auth)/login');
       return;
@@ -45,7 +45,8 @@ export function useCheckout() {
         session.user.id,
         totalPrice,
         formatFullAddress(selectedAddress),
-        paymentMethod
+        paymentMethod,
+        comment
       );
 
       // 2. Создаем позиции заказа через API

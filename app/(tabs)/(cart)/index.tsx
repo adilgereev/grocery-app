@@ -11,7 +11,7 @@ import { formatFullAddress } from '@/lib/utils/addressFormatter';
 import React, { useCallback, useState } from 'react';
 import { Ionicons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import { Alert, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import Animated, { LinearTransition, useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -32,6 +32,7 @@ export default function CartScreen() {
 
   const insets = useSafeAreaInsets();
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('cash');
+  const [comment, setComment] = useState('');
 
   const {
     handleCheckout,
@@ -163,6 +164,23 @@ export default function CartScreen() {
           </View>
         )}
 
+        {/* Поле комментария к заказу */}
+        <View style={styles.commentCard}>
+          <Text style={styles.commentLabel}>КОММЕНТАРИЙ К ЗАКАЗУ</Text>
+          <TextInput
+            style={styles.commentInput}
+            placeholder="Позвоните за 10 мин, замены не нужны..."
+            placeholderTextColor={Colors.light.textLight}
+            value={comment}
+            onChangeText={setComment}
+            multiline
+            numberOfLines={3}
+            textAlignVertical="top"
+            keyboardAppearance="light"
+            testID="cart-comment-input"
+          />
+        </View>
+
         {/* Секция итогов и чекаута */}
         <Animated.View layout={LinearTransition.springify()}>
           <CartSummary
@@ -173,7 +191,7 @@ export default function CartScreen() {
             selectedAddress={selectedAddress}
             paymentMethod={paymentMethod}
             setPaymentMethod={setPaymentMethod}
-            onCheckout={() => handleCheckout(paymentMethod)}
+            onCheckout={() => handleCheckout(paymentMethod, comment)}
             onSelectAddress={handleSelectAddress}
             isSubmitting={isSubmitting}
             formatAddress={formatAddress}
@@ -185,7 +203,7 @@ export default function CartScreen() {
       <FloatingCheckoutButton
         totalPrice={totalPrice}
         isSubmitting={isSubmitting}
-        onCheckout={() => handleCheckout(paymentMethod)}
+        onCheckout={() => handleCheckout(paymentMethod, comment)}
         scrollY={scrollY}
         layoutHeight={layoutHeight}
         contentHeight={contentHeight}
@@ -239,5 +257,25 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: Colors.light.borderLight,
     marginHorizontal: Spacing.m,
+  },
+  commentCard: {
+    backgroundColor: Colors.light.card,
+    borderRadius: Radius.xxl,
+    padding: Spacing.m,
+    marginBottom: Spacing.m,
+    ...Shadows.sm,
+  },
+  commentLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: Colors.light.textSecondary,
+    letterSpacing: 1.5,
+    marginBottom: Spacing.s,
+  },
+  commentInput: {
+    fontSize: 15,
+    color: Colors.light.text,
+    minHeight: 72,
+    textAlignVertical: 'top',
   },
 });

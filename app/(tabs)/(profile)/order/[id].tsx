@@ -158,6 +158,11 @@ export default function OrderDetailsScreen() {
           />
         )}
 
+        {/* Комментарий к заказу */}
+        {order.comment ? (
+          <OrderSection title="Комментарий к заказу" subtitle={order.comment} icon="chatbubble-ellipses-outline" />
+        ) : null}
+
         {/* Товары */}
         <Text style={styles.sectionTitle}>Товары · {orderItems.length} шт</Text>
         <View style={styles.itemsCard}>

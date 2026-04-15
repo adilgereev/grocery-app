@@ -30,7 +30,6 @@ export const addressSchema = z.object({
   floor: z.string().optional(),
   apartment: z.string().optional(),
   intercom: z.string().optional(),
-  comment: z.string().optional(),
   is_private_house: z.boolean(),
   lat: z.number().optional(),
   lon: z.number().optional(),

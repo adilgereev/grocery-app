@@ -10,7 +10,6 @@ export interface Address {
   floor?: string;
   intercom?: string;
   apartment?: string;
-  comment?: string;
   is_selected: boolean;
   lat?: number;
   lon?: number;
@@ -68,6 +67,7 @@ export interface Order {
   total_amount: number;
   delivery_address: string;
   payment_method: Enums<'payment_method'>;
+  comment?: string | null;
   created_at?: string;
 }
 

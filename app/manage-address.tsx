@@ -1,7 +1,6 @@
 import MapPicker from '@/components/address/MapPicker';
 import ScreenHeader from '@/components/ui/ScreenHeader';
 import { AddressActionButtons } from '@/components/address/AddressActionButtons';
-import { AddressCommentSection } from '@/components/address/AddressCommentSection';
 import { AddressDetailsSection } from '@/components/address/AddressDetailsSection';
 import { AddressMainSection } from '@/components/address/AddressMainSection';
 import { Colors, Radius, Spacing } from '@/constants/theme';
@@ -76,7 +75,6 @@ export default function AddAddressScreen() {
           floor: existing.floor || '',
           intercom: existing.intercom || '',
           apartment: existing.apartment || '',
-          comment: existing.comment || '',
           lat: existing.lat,
           lon: existing.lon,
           is_private_house: !existing.apartment && !!existing.house,
@@ -117,7 +115,6 @@ export default function AddAddressScreen() {
         floor: formData.floor?.trim() || undefined,
         intercom: formData.intercom?.trim() || undefined,
         apartment: formData.is_private_house ? undefined : formData.apartment?.trim() || undefined,
-        comment: formData.comment?.trim() || undefined,
         lat: formData.lat,
         lon: formData.lon,
       };
@@ -184,8 +181,6 @@ export default function AddAddressScreen() {
             intercomRef={intercomRef}
           />
         )}
-
-        <AddressCommentSection control={control} />
 
         {error ? (
           <View style={styles.errorBanner}>

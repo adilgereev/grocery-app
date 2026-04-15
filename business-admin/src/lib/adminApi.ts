@@ -142,6 +142,7 @@ export interface AdminOrderWithDetails {
   status: Order['status'];
   total_amount: number;
   delivery_address: string;
+  comment: string | null;
   created_at: string;
   profiles: { first_name: string | null; last_name: string | null; phone: string }
     | { first_name: string | null; last_name: string | null; phone: string }[];

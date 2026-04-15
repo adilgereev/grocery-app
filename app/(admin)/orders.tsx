@@ -121,6 +121,13 @@ export default function ManageOrdersScreen() {
           <Text style={styles.addressText} numberOfLines={2}>{cleanAddress(item.delivery_address)}</Text>
         </View>
 
+        {item.comment ? (
+          <View style={styles.commentBox}>
+            <Ionicons name="chatbubble-ellipses-outline" size={15} color={Colors.light.textSecondary} />
+            <Text style={styles.commentText}>{item.comment}</Text>
+          </View>
+        ) : null}
+
         <View style={styles.footer}>
           <Text style={styles.price}>{item.total_amount} ₽</Text>
           <Text style={styles.date}>{date}</Text>
@@ -218,8 +225,10 @@ const styles = StyleSheet.create({
   customerName: { fontSize: 14, fontWeight: '600', color: Colors.light.text },
   customerInfoContainer: { marginLeft: Spacing.s, flex: 1 },
   customerPhone: { fontSize: 12, color: Colors.light.textSecondary, marginTop: 2 },
-  addressBox: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: Spacing.m },
+  addressBox: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: Spacing.s },
   addressText: { fontSize: 13, color: Colors.light.textSecondary, marginLeft: 6, flex: 1, lineHeight: 18 },
+  commentBox: { flexDirection: 'row', alignItems: 'flex-start', backgroundColor: Colors.light.background, borderRadius: Radius.m, padding: Spacing.sm, marginBottom: Spacing.m, gap: 6 },
+  commentText: { flex: 1, fontSize: 13, color: Colors.light.text, lineHeight: 18 },
   footer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.m, borderTopWidth: 1, borderTopColor: Colors.light.borderLight, paddingTop: Spacing.s },
   price: { fontSize: 18, fontWeight: '800', color: Colors.light.text },
   date: { fontSize: 12, color: Colors.light.textLight },

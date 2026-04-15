@@ -29,7 +29,7 @@ export interface OrderItem {
 /**
  * Создание нового заказа
  */
-export async function createOrder(userId: string, totalAmount: number, address: string, paymentMethod: 'online' | 'cash'): Promise<Order> {
+export async function createOrder(userId: string, totalAmount: number, address: string, paymentMethod: 'online' | 'cash', comment?: string): Promise<Order> {
   const { data, error } = await supabase
     .from('orders')
     .insert({
@@ -38,6 +38,7 @@ export async function createOrder(userId: string, totalAmount: number, address: 
       delivery_address: address,
       status: 'pending' as const,
       payment_method: paymentMethod,
+      comment: comment?.trim() || null,
     })
     .select()
     .single();

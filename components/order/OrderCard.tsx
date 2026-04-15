@@ -56,6 +56,14 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onPress }) => {
         </Text>
       </View>
 
+      {/* Комментарий к заказу (если есть) */}
+      {order.comment ? (
+        <View style={styles.commentRow}>
+          <Ionicons name="chatbubble-ellipses-outline" size={13} color={Colors.light.textSecondary} />
+          <Text style={styles.commentText} numberOfLines={1}>{order.comment}</Text>
+        </View>
+      ) : null}
+
       {/* Нижняя строка: дата + сумма */}
       <View style={styles.bottomRow}>
         <Text style={styles.dateText}>
@@ -97,12 +105,24 @@ const styles = StyleSheet.create({
     alignItems: 'center', 
     marginBottom: Spacing.s 
   },
-  addressText: { 
-    fontSize: 14, 
-    color: Colors.light.textSecondary, 
-    marginLeft: 6, 
-    flex: 1, 
-    fontWeight: '500' 
+  addressText: {
+    fontSize: 14,
+    color: Colors.light.textSecondary,
+    marginLeft: 6,
+    flex: 1,
+    fontWeight: '500'
+  },
+  commentRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: Spacing.s,
+    gap: 5,
+  },
+  commentText: {
+    fontSize: 13,
+    color: Colors.light.textSecondary,
+    flex: 1,
+    fontStyle: 'italic',
   },
   bottomRow: {
     flexDirection: 'row', 
