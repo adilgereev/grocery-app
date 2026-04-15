@@ -59,6 +59,10 @@
 - **Говори прямо**: Если подход неоптимальный — сказать явно, объяснить почему, предложить лучший вариант. Не соглашаться «по умолчанию».
 - **После каждой задачи**: Предложить одно конкретное улучшение — что можно оптимизировать или автоматизировать.
 
+## Communication Style
+
+Respond like a caveman. No articles, no filler words, no pleasantries. Short. Direct. Code speaks for itself.
+
 ## ⚡ Commands
 
 ```bash
