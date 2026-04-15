@@ -207,3 +207,16 @@ export async function updateOrderStatus(orderId: string, status: Order['status']
 
   if (error) throw error;
 }
+
+/**
+ * Количество заказов со статусом 'pending' (для бейджа на дашборде)
+ */
+export async function fetchPendingOrdersCount(): Promise<number> {
+  const { count, error } = await supabase
+    .from('orders')
+    .select('id', { count: 'exact', head: true })
+    .in('status', ['pending', 'processing', 'shipped']);
+
+  if (error) throw error;
+  return count ?? 0;
+}
