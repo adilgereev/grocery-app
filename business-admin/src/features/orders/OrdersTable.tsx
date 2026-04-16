@@ -72,7 +72,11 @@ export function OrdersTable({ orders, onUpdated }: OrdersTableProps) {
                     className="cursor-pointer hover:bg-muted/50"
                     onClick={() => setExpandedIds(prev => {
                       const next = new Set(prev);
-                      isExpanded ? next.delete(order.id) : next.add(order.id);
+                      if (isExpanded) {
+                        next.delete(order.id);
+                      } else {
+                        next.add(order.id);
+                      }
                       return next;
                     })}
                   >
