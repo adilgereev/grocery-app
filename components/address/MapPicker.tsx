@@ -18,8 +18,8 @@ export default function MapPicker({ onLocationSelect, onClose, initialLocation }
   const [region, setRegion] = useState({
     latitude: initialLocation?.latitude || 42.8228,
     longitude: initialLocation?.longitude || 47.1167,
-    latitudeDelta: 0.01,
-    longitudeDelta: 0.01,
+    latitudeDelta: 0.003,
+    longitudeDelta: 0.003,
   });
 
   const handleConfirm = () => {
