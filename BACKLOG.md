@@ -110,10 +110,11 @@
 меньшие функциональные единицы. Список отсортирован по приоритету (больше всего строк = выше приоритет):
 
 **Admin Panel & Catalog:**
+
 - [x] `components/admin/ProductFormScreen.tsx` — 497 строк → 179 строк (вынесены: useProductForm hook, ProductFormSkeleton, ProductNutrientsSection, ProductImageField, BasicProductFields, стили) ✅
-- [ ] `app/(admin)/catalog.tsx` — 455 строк
-- [ ] `app/(admin)/orders.tsx` — 433 строк
-- [ ] `app/(admin)/categories.tsx` — 329 строк
+- [x] `app/(admin)/catalog.tsx` — 455 строк → 95 строк (вынесены: useCatalog hook, CatalogProductCard, CatalogSectionHeader, CatalogSkeleton, CatalogSearchBar, buildHierarchy utility) ✅
+- [x] `app/(admin)/orders.tsx` — 433 строк ✅
+- [x] `app/(admin)/categories.tsx` — 329 строк ✅
 - [ ] `components/admin/CategoryFormModal.tsx` — 308 строк
 - [ ] `business-admin/src/pages/LoginPage.tsx` — 271 строк
 - [ ] `business-admin/src/features/categories/CategoriesTable.tsx` — 236 строк
@@ -121,6 +122,7 @@
 - [ ] `components/admin/CategoryItem.tsx` — 228 строк
 
 **User Screens & Navigation:**
+
 - [ ] `app/(tabs)/(profile)/index.tsx` — 377 строк
 - [ ] `app/(tabs)/(index)/category/[id].tsx` — 319 строк
 - [ ] `app/(tabs)/(index)/search.tsx` — 322 строк
@@ -135,11 +137,13 @@
 - [ ] `app/(tabs)/(cart)/index.tsx` — 249 строк
 
 **Components & Utilities:**
+
 - [ ] `components/address/AddressMainSection.tsx` — 217 строк
 - [ ] `lib/api/adminApi.ts` — 227 строк
 - [ ] `business-admin/src/features/orders/OrdersTable.tsx` — 206 строк
 
 **Автоматическая проверка:**
+
 - Добавлен скрипт `scripts/check-file-length.js` (проверка перед коммитом)
 - Интегрирован в pre-commit hook: `npm run check:file-length && npm run lint && npm run type-check`
 - Требование: максимум 200 строк на файл (исключение: автогенерированные типы)
