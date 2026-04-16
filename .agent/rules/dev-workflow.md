@@ -7,10 +7,11 @@
 - После любого изменения логики — `npm test`. Новые фичи не должны ломать старые.
 
 ### Порядок проверки перед коммитом
-1. `npm run lint` — ESLint (--max-warnings 0, любое предупреждение = ошибка)
-2. `npm run type-check` — TypeScript strict mode
-3. `npm test` — полный прогон Jest
-4. `/verify-task` — AI Regression Cycle (опционально, для сложных задач)
+1. `npm run check:file-length` — Проверка, что файлы не превышают 200 строк (pre-commit hook)
+2. `npm run lint` — ESLint (--max-warnings 0, любое предупреждение = ошибка)
+3. `npm run type-check` — TypeScript strict mode
+4. `npm test` — полный прогон Jest
+5. `/verify-task` — AI Regression Cycle (опционально, для сложных задач)
 
 ## 2. 🔀 Git Workflow
 
