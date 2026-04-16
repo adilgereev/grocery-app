@@ -5,7 +5,7 @@ export const addressSearchStyles = StyleSheet.create({
   container: { zIndex: 100 },
   inputWrapper: {
     flexDirection: 'row', alignItems: 'center',
-    backgroundColor: Colors.light.card, minHeight: 54, borderRadius: Radius.m,
+    backgroundColor: Colors.light.card, minHeight: 54, borderRadius: Radius.l,
     paddingHorizontal: Spacing.m,
     paddingVertical: Platform.OS === 'ios' ? 8 : 4,
   },
@@ -37,19 +37,24 @@ export const addressSearchStyles = StyleSheet.create({
   },
   suggestionsContainer: {
     position: 'absolute', top: '100%', left: 0, right: 0,
-    marginTop: 4,
-    backgroundColor: Colors.light.card, borderRadius: Radius.m,
-    ...Shadows.md,
-    maxHeight: 400, overflow: 'hidden',
+    marginTop: 6,
+    backgroundColor: Colors.light.card, borderRadius: Radius.xl,
+    borderWidth: 1, borderColor: Colors.light.border,
+    ...Shadows.lg,
+    maxHeight: 280, overflow: 'hidden',
   },
   suggestionsScroll: {
-    maxHeight: 400,
+    maxHeight: 280,
   },
   suggestionItem: {
-    flexDirection: 'row', alignItems: 'center', padding: Spacing.m,
+    flexDirection: 'row', alignItems: 'flex-start',
+    paddingHorizontal: Spacing.m, paddingVertical: Spacing.sm,
   },
-  suggestionIcon: { marginRight: 10 },
-  suggestionText: { fontSize: 14, color: Colors.light.text, fontWeight: '600' },
-  suggestionSubtext: { fontSize: 12, color: Colors.light.textLight, marginTop: 2 },
+  suggestionDivider: {
+    height: 1, backgroundColor: Colors.light.borderLight,
+    marginLeft: Spacing.m + 10 + 18, // отступ под иконку
+  },
+  suggestionIcon: { marginRight: 10, marginTop: 2 },
+  suggestionText: { fontSize: 14, color: Colors.light.text, fontWeight: '600', lineHeight: 20 },
   flex1: { flex: 1 },
 });

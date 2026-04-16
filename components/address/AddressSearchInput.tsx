@@ -153,20 +153,29 @@ export default function AddressSearchInput({
             onScrollBeginDrag={() => Keyboard.dismiss()}
             testID="address-suggestions-scroll"
           >
-            {suggestions.map((item) => (
-              <TouchableOpacity
-                key={item.unrestricted_value}
-                style={s.suggestionItem}
-                onPress={() => handleSelect(item)}
-                testID={`suggestion-item-${item.unrestricted_value}`}
-              >
-                <Ionicons name="map-outline" size={18} color={Colors.light.textLight} style={s.suggestionIcon} />
-                <View style={s.flex1}>
-                  <Text style={s.suggestionText} numberOfLines={1}>{item.value}</Text>
-                  {item.data.city && <Text style={s.suggestionSubtext}>{item.data.city}</Text>}
+            {suggestions.map((item, index) => {
+              const isCompleteAddress = !!item.data.house;
+              return (
+                <View key={item.unrestricted_value}>
+                  {index > 0 && <View style={s.suggestionDivider} />}
+                  <TouchableOpacity
+                    style={s.suggestionItem}
+                    onPress={() => handleSelect(item)}
+                    testID={`suggestion-item-${item.unrestricted_value}`}
+                  >
+                    <Ionicons
+                      name={isCompleteAddress ? 'location-sharp' : 'chevron-forward-outline'}
+                      size={18}
+                      color={isCompleteAddress ? Colors.light.primary : Colors.light.textLight}
+                      style={s.suggestionIcon}
+                    />
+                    <View style={s.flex1}>
+                      <Text style={s.suggestionText} numberOfLines={2}>{item.value}</Text>
+                    </View>
+                  </TouchableOpacity>
                 </View>
-              </TouchableOpacity>
-            ))}
+              );
+            })}
           </ScrollView>
         </View>
       )}

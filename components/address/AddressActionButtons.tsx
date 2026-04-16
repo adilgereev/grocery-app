@@ -1,6 +1,5 @@
-import { Colors, FontSize, Fonts, Radius, Spacing, Shadows } from '@/constants/theme';
+import { Colors, FontSize, Radius, Spacing, Shadows } from '@/constants/theme';
 import { Ionicons } from '@expo/vector-icons';
-import { LinearGradient } from 'expo-linear-gradient';
 import React from 'react';
 import { ActivityIndicator, Alert, Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -24,52 +23,47 @@ export const AddressActionButtons: React.FC<AddressActionButtonsProps> = ({
   onSubmit,
   onDelete,
 }) => {
+  const isDisabled = !isValid || isSubmitting || isLoading;
+
   return (
     <View style={styles.footer}>
       <TouchableOpacity
         testID="manage-address-save-btn"
-        style={[styles.submitButton, (!isValid || isSubmitting) && styles.submitButtonDisabled]}
-        disabled={!isValid || isSubmitting}
+        style={[styles.submitButton, isDisabled && styles.submitButtonDisabled]}
+        disabled={isDisabled}
         onPress={onSubmit}
+        activeOpacity={0.8}
       >
-        <LinearGradient
-          colors={(!isValid || isSubmitting) ? [Colors.light.textLight, Colors.light.textLight] : [Colors.light.primary, Colors.light.primaryDark]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={styles.gradientButton}
-        >
-          {isSubmitting || isLoading ? (
-            <ActivityIndicator color={Colors.light.white} />
-          ) : (
-            <Text style={styles.submitButtonText}>
-              {isEditMode ? "Сохранить изменения" : "Сохранить адрес"}
-            </Text>
-          )}
-        </LinearGradient>
+        {isSubmitting || isLoading ? (
+          <ActivityIndicator color={Colors.light.white} />
+        ) : (
+          <Text style={styles.submitButtonText}>
+            {isEditMode ? 'Сохранить изменения' : 'Сохранить адрес'}
+          </Text>
+        )}
       </TouchableOpacity>
 
       {isEditMode && onDelete && (
-        <TouchableOpacity
-          testID="manage-address-delete-btn"
-          style={styles.deleteAddressBtn}
-          onPress={() => {
-            Alert.alert(
-              "Удалить адрес",
-              "Вы уверены, что хотите безвозвратно удалить этот адрес доставки?",
-              [
-                { text: "Отмена", style: "cancel" },
-                {
-                  text: "Удалить",
-                  style: "destructive",
-                  onPress: onDelete
-                }
-              ]
-            );
-          }}
-        >
-          <Ionicons name="trash-outline" size={20} color={Colors.light.error} />
-          <Text style={styles.deleteAddressText}>Удалить адрес</Text>
-        </TouchableOpacity>
+        <>
+          <View style={styles.deleteSeparator} />
+          <TouchableOpacity
+            testID="manage-address-delete-btn"
+            style={styles.deleteButton}
+            onPress={() => {
+              Alert.alert(
+                'Удалить адрес',
+                'Вы уверены, что хотите безвозвратно удалить этот адрес доставки?',
+                [
+                  { text: 'Отмена', style: 'cancel' },
+                  { text: 'Удалить', style: 'destructive', onPress: onDelete },
+                ]
+              );
+            }}
+          >
+            <Ionicons name="trash-outline" size={18} color={Colors.light.error} />
+            <Text style={styles.deleteButtonText}>Удалить адрес</Text>
+          </TouchableOpacity>
+        </>
       )}
     </View>
   );
@@ -80,46 +74,44 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.l,
     paddingTop: Spacing.m,
     paddingBottom: Platform.OS === 'ios' ? 20 : Spacing.m,
-    backgroundColor: Colors.light.background,
+    backgroundColor: Colors.light.card,
     borderTopWidth: 1,
     borderTopColor: Colors.light.borderLight,
   },
   submitButton: {
-    borderRadius: Radius.l,
     height: 56,
+    borderRadius: Radius.pill,
+    backgroundColor: Colors.light.cta,
+    justifyContent: 'center',
+    alignItems: 'center',
     ...Shadows.md,
   },
   submitButtonDisabled: {
+    backgroundColor: Colors.light.disabledBackground,
     shadowOpacity: 0,
     elevation: 0,
   },
-  gradientButton: {
-    width: '100%',
-    height: '100%',
-    borderRadius: Radius.l,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   submitButtonText: {
     color: Colors.light.white,
-    fontSize: 16,
+    fontSize: FontSize.l,
     fontWeight: '700',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    letterSpacing: 0.3,
   },
-  deleteAddressBtn: {
+  deleteSeparator: {
+    height: 1,
+    backgroundColor: Colors.light.borderLight,
+    marginTop: Spacing.m,
+  },
+  deleteButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    padding: Spacing.m,
-    marginTop: Spacing.m,
+    paddingVertical: Spacing.m,
+    gap: Spacing.xs,
   },
-  deleteAddressText: {
+  deleteButtonText: {
     color: Colors.light.error,
     fontSize: FontSize.m,
     fontWeight: '600',
-    marginLeft: Spacing.xs,
-    fontFamily: Fonts.sans,
   },
 });

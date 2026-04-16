@@ -1,5 +1,5 @@
 import AddressSearchInput from '@/components/address/AddressSearchInput';
-import { Colors, Radius, Spacing, Shadows } from '@/constants/theme';
+import { Colors, FontSize, Radius, Spacing, Shadows } from '@/constants/theme';
 import { formatAddressString } from '@/lib/utils/addressUtils';
 import { DaDataSuggestion } from '@/lib/api/dadataApi';
 import { Ionicons } from '@expo/vector-icons';
@@ -32,23 +32,12 @@ export const AddressMainSection: React.FC<AddressMainSectionProps> = ({
   error,
 }) => {
   return (
-    <View style={styles.cardWithZIndex}>
-      <View style={styles.fieldGroupWithZIndex}>
-        <View style={styles.labelRow}>
-          <View style={styles.labelWithIcon}>
-            <Ionicons name="location-sharp" size={18} color={Colors.light.primary} />
-            <Text style={styles.fieldLabel}>Адрес доставки*</Text>
-          </View>
-          <TouchableOpacity
-            onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-              onOpenMap();
-            }}
-            style={styles.mapLink}
-          >
-            <Ionicons name="map" size={16} color={Colors.light.primary} />
-            <Text style={styles.mapLinkText}>На карте</Text>
-          </TouchableOpacity>
+    <View style={styles.card}>
+      {/* Поле поиска адреса */}
+      <View style={styles.searchGroup}>
+        <View style={styles.labelWithIcon}>
+          <Ionicons name="location-sharp" size={16} color={Colors.light.primary} />
+          <Text style={styles.fieldLabel}>Адрес доставки</Text>
         </View>
         <AddressSearchInput
           city="Буйнакск"
@@ -75,30 +64,47 @@ export const AddressMainSection: React.FC<AddressMainSectionProps> = ({
           }}
         />
         {error && (
-          <Text style={styles.errorTextInline}>{error}</Text>
+          <Text style={styles.errorText}>{error}</Text>
         )}
       </View>
 
+      {/* Кнопка выбора на карте */}
       <TouchableOpacity
-        style={styles.toggleRowCompact}
+        onPress={() => {
+          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          onOpenMap();
+        }}
+        style={styles.mapButton}
+        activeOpacity={0.7}
+      >
+        <Ionicons name="map-outline" size={18} color={Colors.light.primary} />
+        <Text style={styles.mapButtonText}>Выбрать на карте</Text>
+      </TouchableOpacity>
+
+      {/* Разделитель */}
+      <View style={styles.divider} />
+
+      {/* Переключатель типа дома */}
+      <TouchableOpacity
+        style={styles.toggleRow}
         onPress={() => {
           Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
           onTogglePrivateHouse(!isPrivateHouse);
         }}
         activeOpacity={0.7}
       >
-        <View style={styles.toggleTextContainer}>
-          <Ionicons
-            name={isPrivateHouse ? "home" : "business"}
-            size={20}
-            color={isPrivateHouse ? Colors.light.primary : Colors.light.textSecondary}
-          />
+        <View style={styles.toggleLeft}>
+          <View style={[styles.toggleIconCircle, isPrivateHouse && styles.toggleIconCircleActive]}>
+            <Ionicons
+              name={isPrivateHouse ? 'home' : 'business'}
+              size={18}
+              color={isPrivateHouse ? Colors.light.primary : Colors.light.icon}
+            />
+          </View>
           <Text style={styles.toggleLabel}>Частный дом</Text>
         </View>
         <View style={[styles.switchBase, isPrivateHouse && styles.switchActive]}>
-          <View
-            style={[styles.switchThumb, isPrivateHouse && styles.switchThumbActive]}
-          />
+          <View style={[styles.switchThumb, isPrivateHouse && styles.switchThumbActive]} />
         </View>
       </TouchableOpacity>
     </View>
@@ -106,42 +112,91 @@ export const AddressMainSection: React.FC<AddressMainSectionProps> = ({
 };
 
 const styles = StyleSheet.create({
-  cardWithZIndex: {
-    borderRadius: Radius.xl,
-    marginBottom: Spacing.l,
+  card: {
+    backgroundColor: Colors.light.card,
+    borderRadius: Radius.xxl,
+    padding: Spacing.m,
+    marginBottom: Spacing.m,
     zIndex: 10,
+    ...Shadows.md,
   },
-  fieldGroupWithZIndex: { marginBottom: Spacing.s, zIndex: 99 },
-  fieldLabel: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: Colors.light.textSecondary,
-    marginBottom: Spacing.xs,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
+
+  // Поиск
+  searchGroup: {
+    marginBottom: Spacing.s,
+    zIndex: 99,
   },
-  labelRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.s },
-  labelWithIcon: { flexDirection: 'row', alignItems: 'center', gap: 6 },
-  mapLink: {
+  labelWithIcon: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: Colors.light.primaryLight,
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: 6,
-    borderRadius: Radius.m,
+    marginBottom: Spacing.s,
   },
-  mapLinkText: { fontSize: 13, color: Colors.light.primary, fontWeight: '700' },
-  errorTextInline: { color: Colors.light.error, fontSize: 12, marginTop: 4, fontWeight: '500' },
-  toggleRowCompact: {
+  fieldLabel: {
+    fontSize: FontSize.s,
+    fontWeight: '700',
+    color: Colors.light.textSecondary,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  errorText: {
+    color: Colors.light.error,
+    fontSize: FontSize.s,
+    marginTop: Spacing.xs,
+    fontWeight: '500',
+  },
+
+  // Кнопка карты
+  mapButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    backgroundColor: Colors.light.primaryLight,
+    borderRadius: Radius.l,
+    height: 44,
+    marginTop: Spacing.s,
+  },
+  mapButtonText: {
+    fontSize: FontSize.m,
+    color: Colors.light.primary,
+    fontWeight: '700',
+  },
+
+  // Разделитель
+  divider: {
+    height: 1,
+    backgroundColor: Colors.light.borderLight,
+    marginVertical: Spacing.m,
+  },
+
+  // Переключатель
+  toggleRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginTop: Spacing.xs,
-    paddingTop: Spacing.s,
   },
-  toggleTextContainer: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  toggleLabel: { fontSize: 15, fontWeight: '600', color: Colors.light.text },
+  toggleLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+  toggleIconCircle: {
+    width: 36,
+    height: 36,
+    borderRadius: Radius.pill,
+    backgroundColor: Colors.light.borderLight,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  toggleIconCircleActive: {
+    backgroundColor: Colors.light.primaryLight,
+  },
+  toggleLabel: {
+    fontSize: FontSize.m,
+    fontWeight: '600',
+    color: Colors.light.text,
+  },
   switchBase: {
     width: 46,
     height: 26,
