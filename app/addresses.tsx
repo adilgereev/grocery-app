@@ -72,11 +72,6 @@ export default function AddressesScreen() {
                   {details ? (
                     <Text style={styles.addressDetails} numberOfLines={1}>{details}</Text>
                   ) : null}
-                  {isSelected && (
-                    <View style={styles.badge}>
-                      <Text style={styles.badgeText}>Основной</Text>
-                    </View>
-                  )}
                 </View>
 
                 {/* Кнопка редактирования */}
@@ -190,23 +185,6 @@ const styles = StyleSheet.create({
     color: Colors.light.textSecondary,
     marginTop: 2,
     lineHeight: 18,
-  },
-
-  // Бейдж "Основной"
-  badge: {
-    alignSelf: 'flex-start',
-    backgroundColor: Colors.light.primaryLight,
-    borderRadius: Radius.pill,
-    paddingHorizontal: Spacing.s,
-    paddingVertical: 2,
-    marginTop: Spacing.xs,
-    borderWidth: 1,
-    borderColor: Colors.light.primaryBorder,
-  },
-  badgeText: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: Colors.light.primary,
   },
 
   // Кнопка редактирования

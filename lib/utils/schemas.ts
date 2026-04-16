@@ -72,3 +72,43 @@ export const otpSchema = z
   .string()
   .length(4, 'Введен неполный код')
   .regex(/^\d{4}$/, 'Код должен содержать только цифры');
+
+// Опциональное числовое поле КБЖУ — пустая строка разрешена, при заполнении 0–9999
+const optionalNutrient = z.string().refine((v) => {
+  if (v.trim() === '') return true;
+  const n = parseFloat(v.trim());
+  return !isNaN(n) && n >= 0 && n <= 9999;
+}, 'Введите число от 0 до 9999');
+
+/**
+ * Схема валидации формы товара (admin)
+ */
+export const productSchema = z.object({
+  name: z
+    .string()
+    .min(2, 'Минимум 2 символа')
+    .max(100, 'Название слишком длинное'),
+  description: z.string().max(1000, 'Описание слишком длинное'),
+  price: z
+    .string()
+    .min(1, 'Обязательное поле')
+    .refine(
+      (v) => !isNaN(parseFloat(v.trim())) && isFinite(parseFloat(v.trim())),
+      'Введите корректное число'
+    )
+    .refine((v) => parseFloat(v.trim()) > 0, 'Цена должна быть > 0'),
+  unit: z.string().max(20, 'Слишком длинное'),
+  stock: z.string().refine(
+    (v) => v.trim() === '' || (Number.isInteger(Number(v.trim())) && Number(v.trim()) >= 0),
+    'Целое число ≥ 0'
+  ),
+  isActive: z.boolean(),
+  tags: z.string().max(200, 'Слишком много символов'),
+  calories: optionalNutrient,
+  proteins: optionalNutrient,
+  fats: optionalNutrient,
+  carbohydrates: optionalNutrient,
+  categoryId: z.string().min(1, 'Выберите категорию'),
+});
+
+export type ProductFormData = z.infer<typeof productSchema>;

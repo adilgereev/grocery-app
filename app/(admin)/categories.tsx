@@ -34,6 +34,7 @@ export default function CategoriesScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [collapsedParents, setCollapsedParents] = useState<Set<string>>(new Set());
 
   useFocusEffect(
     useCallback(() => {
@@ -161,6 +162,24 @@ export default function CategoriesScreen() {
     }
   };
 
+  const handleToggleCollapse = useCallback((id: string) => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+    setCollapsedParents(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }, []);
+
+  // Скрываем дочерние категории свёрнутых родителей
+  const visibleCategories = categories.filter(
+    c => !c.parent_id || !collapsedParents.has(c.parent_id)
+  );
+
   const handleEdit = (category: Category) => {
     setEditingCategory(category);
     setModalVisible(true);
@@ -265,12 +284,14 @@ export default function CategoriesScreen() {
     <SafeAreaView edges={['bottom']} style={styles.container}>
       <ScreenHeader title="Категории" rightElement={addButton} />
       <FlatList
-        data={categories}
+        data={visibleCategories}
         keyExtractor={item => item.id}
         renderItem={({ item }) => (
           <CategoryItem
             item={item}
             parentCategory={categories.find(c => c.id === item.parent_id)}
+            isCollapsed={!item.parent_id ? collapsedParents.has(item.id) : undefined}
+            onToggleCollapse={!item.parent_id ? () => handleToggleCollapse(item.id) : undefined}
             onMove={handleMove}
             onEdit={handleEdit}
             onDelete={handleDeleteItem}

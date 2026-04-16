@@ -121,7 +121,7 @@ export default function AdminDashboard() {
               <Ionicons name="list" size={24} color={Colors.light.primary} />
             </View>
             <View style={styles.menuTextContainer}>
-              <Text style={styles.menuTitle}>Управление каталогом</Text>
+              <Text style={styles.menuTitle}>Товары</Text>
               <Text style={styles.menuSubtitle}>
                 Редактирование и удаление товаров
               </Text>
@@ -143,7 +143,7 @@ export default function AdminDashboard() {
               <Ionicons name="grid" size={24} color={Colors.light.primary} />
             </View>
             <View style={styles.menuTextContainer}>
-              <Text style={styles.menuTitle}>Управление категориями</Text>
+              <Text style={styles.menuTitle}>Категории</Text>
               <Text style={styles.menuSubtitle}>
                 Добавление и изменение разделов
               </Text>

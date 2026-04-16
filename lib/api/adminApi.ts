@@ -127,6 +127,10 @@ export async function createProduct(productData: {
   is_active?: boolean;
   stock?: number;
   tags?: string[];
+  calories?: number | null;
+  proteins?: number | null;
+  fats?: number | null;
+  carbohydrates?: number | null;
 }): Promise<void> {
   const { error } = await supabase
     .from('products')
