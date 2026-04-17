@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
     width: 84,
     height: 84,
     backgroundColor: Colors.light.primary,
-    borderRadius: Radius.xxl,
+    borderRadius: Radius.pill,
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: Spacing.m,

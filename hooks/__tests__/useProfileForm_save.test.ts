@@ -2,7 +2,6 @@ import { act, renderHook, waitFor } from '@testing-library/react-native';
 import { useProfileForm } from '../useProfileForm';
 import { useAuth } from '@/providers/AuthProvider';
 import * as authApi from '@/lib/api/authApi';
-import { Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 
 jest.mock('@/providers/AuthProvider', () => ({
@@ -17,6 +16,14 @@ jest.mock('@/lib/api/authApi', () => ({
 jest.mock('@/lib/utils/logger', () => ({
   logger: { error: jest.fn(), log: jest.fn() },
 }));
+
+jest.mock('@/store/toastStore', () => ({
+  useToastStore: { getState: jest.fn() },
+}));
+
+import { useToastStore } from '@/store/toastStore';
+
+const mockShowToast = jest.fn();
 
 const mockSession = {
   user: {
@@ -36,14 +43,10 @@ const mockProfileData = {
 describe('useProfileForm - Save & Validation', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.spyOn(Alert, 'alert');
+    (useToastStore.getState as jest.Mock).mockReturnValue({ showToast: mockShowToast });
     (useAuth as jest.Mock).mockReturnValue({
       session: mockSession,
     });
-  });
-
-  afterEach(() => {
-    (Alert.alert as jest.Mock).mockRestore();
   });
 
   it('успешно сохраняет профиль', async () => {
@@ -72,7 +75,7 @@ describe('useProfileForm - Save & Validation', () => {
       first_name: 'Петр',
     });
 
-    expect(Alert.alert).toHaveBeenCalledWith('Готово', 'Персональные данные сохранены!');
+    expect(mockShowToast).toHaveBeenCalledWith('success', 'Персональные данные сохранены!');
     expect(mockBack).toHaveBeenCalled();
   });
 
@@ -93,7 +96,7 @@ describe('useProfileForm - Save & Validation', () => {
       await result.current.onSave(formData);
     });
 
-    expect(Alert.alert).toHaveBeenCalledWith('Ошибка', errorMessage);
+    expect(mockShowToast).toHaveBeenCalledWith('error', errorMessage);
   });
 
   it('устанавливает saving=true во время сохранения', async () => {

@@ -14,7 +14,7 @@
     "test:watch": "jest --watch",
     "check:file-length": "node ./scripts/check-file-length.js",
     "prepare": "husky",
-    "supabase:types": "supabase gen types typescript --project-id gldhbgdlhsdtlncvkson > types/supabase.ts",
+    "supabase:types": "supabase gen types typescript --local > types/supabase.ts",
     "supabase:link": "supabase link --project-ref gldhbgdlhsdtlncvkson",
     "supabase:pull": "supabase db pull",
     "supabase:push": "supabase db push",

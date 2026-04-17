@@ -94,4 +94,6 @@ export interface Profile {
   avatar_url: string | null;
   is_admin: boolean | null;
   created_at?: string;
+  terms_accepted_at?: string | null;
+  terms_version?: string | null;
 }

@@ -1,5 +1,5 @@
 import Skeleton from '@/components/ui/Skeleton';
-import { ErrorToast } from '@/components/ui/ErrorToast';
+import { useToastStore } from '@/store/toastStore';
 import { logger } from '@/lib/utils/logger';
 import { Colors, Radius, Spacing } from '@/constants/theme';
 import { fetchProductById, fetchRelatedProducts } from '@/lib/api/productsApi';
@@ -56,7 +56,7 @@ export default function ProductDetailScreen() {
       const errorMessage = e instanceof Error ? e.message : 'Не удалось загрузить товар';
       logger.error('Ошибка загрузки продукта:', e);
       setError(errorMessage);
-      ErrorToast({ type: 'error', message: errorMessage });
+      useToastStore.getState().showToast('error', errorMessage);
     } finally {
       setLoading(false);
     }

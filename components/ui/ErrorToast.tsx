@@ -95,6 +95,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     right: 0,
+    bottom: 0,
     justifyContent: 'center',
     alignItems: 'center',
     pointerEvents: 'box-none',
@@ -123,5 +124,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: Colors.light.white,
     lineHeight: 20,
+    textAlign: 'center',
   },
 });

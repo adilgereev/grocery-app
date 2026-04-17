@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { fetchProductsByCategoryId } from '@/lib/api/productsApi';
-import { ErrorToast } from '@/components/ui/ErrorToast';
+import { useToastStore } from '@/store/toastStore';
 import { logger } from '@/lib/utils/logger';
 import { Product } from '@/types';
 
@@ -19,7 +19,7 @@ export function useCategoryProducts(categoryId: string | string[] | undefined) {
       const errorMessage = err instanceof Error ? err.message : 'Не удалось загрузить товары';
       logger.error('Ошибка загрузки товаров:', err);
       setError(errorMessage);
-      ErrorToast({ type: 'error', message: errorMessage });
+      useToastStore.getState().showToast('error', errorMessage);
     } finally {
       setLoading(false);
     }

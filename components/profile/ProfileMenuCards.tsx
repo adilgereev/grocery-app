@@ -90,6 +90,17 @@ export default function ProfileMenuCards({ isAdmin, onLogout, onNavigate }: Prof
         </TouchableOpacity>
         <View style={styles.divider} />
 
+        <TouchableOpacity
+          style={styles.menuItem}
+          onPress={() => onNavigate('/privacy-policy')}
+          testID="profile-menu-privacy"
+        >
+          <Ionicons name="document-text-outline" size={22} color={Colors.light.textSecondary} style={styles.menuItemIcon} />
+          <Text style={styles.menuText}>Политика конфиденциальности</Text>
+          <Ionicons name="chevron-forward" size={18} color={Colors.light.border} />
+        </TouchableOpacity>
+        <View style={styles.divider} />
+
         <View style={styles.menuItem}>
           <Ionicons name="information-circle-outline" size={22} color={Colors.light.textSecondary} style={styles.menuItemIcon} />
           <Text style={styles.menuText}>О приложении</Text>

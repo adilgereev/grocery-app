@@ -7,7 +7,8 @@ import * as Haptics from 'expo-haptics';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { Alert, TextInput } from 'react-native';
+import { TextInput } from 'react-native';
+import { useToastStore } from '@/store/toastStore';
 import { useState } from 'react';
 
 export function useManageAddress() {
@@ -88,16 +89,16 @@ export function useManageAddress() {
 
       if (isEditMode && id) {
         await updateAddress(id, payload);
-        Alert.alert('Готово', 'Адрес успешно обновлен');
+        useToastStore.getState().showToast('success', 'Адрес успешно обновлен');
       } else {
         await addAddress(payload);
-        Alert.alert('Готово', 'Адрес успешно добавлен');
+        useToastStore.getState().showToast('success', 'Адрес успешно добавлен');
       }
       router.back();
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : 'Не удалось добавить адрес';
       logger.error('Ошибка добавления адреса:', e);
-      Alert.alert('Ошибка', msg);
+      useToastStore.getState().showToast('error', msg);
     } finally {
       setIsSubmitting(false);
     }

@@ -76,11 +76,12 @@ export async function signOut(): Promise<void> {
 }
 
 /**
- * Создание или обновление профиля пользователя (upsert)
+ * Создание или обновление профиля пользователя (upsert).
+ * При первичной настройке фиксирует согласие с политикой конфиденциальности.
  */
 export async function upsertUserProfile(
   userId: string,
-  data: { first_name: string; phone: string }
+  data: { first_name: string; phone: string; terms_accepted_at?: string; terms_version?: string }
 ): Promise<void> {
   const { error } = await supabase
     .from('profiles')

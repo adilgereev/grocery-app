@@ -81,8 +81,9 @@ describe('SetupProfileScreen', () => {
 
     const { getByTestId } = render(<SetupProfileScreen />);
 
-    // Заполняем форму
+    // Заполняем форму и принимаем политику
     fireEvent.changeText(getByTestId('setup-firstname-input'), 'Иван');
+    fireEvent.press(getByTestId('setup-terms-checkbox'));
 
     // Нажимаем «Продолжить»
     await act(async () => {
@@ -90,11 +91,14 @@ describe('SetupProfileScreen', () => {
     });
 
     await waitFor(() => {
-      expect(mockUpsert).toHaveBeenCalledWith({
-        id: 'user-123',
-        first_name: 'Иван',
-        phone: '+79991234567',
-      });
+      expect(mockUpsert).toHaveBeenCalledWith(
+        expect.objectContaining({
+          id: 'user-123',
+          first_name: 'Иван',
+          phone: '+79991234567',
+          terms_version: '2026-04-18',
+        })
+      );
       expect(mockRefreshProfile).toHaveBeenCalledTimes(1);
     });
   });
@@ -109,14 +113,14 @@ describe('SetupProfileScreen', () => {
     const { getByTestId, getByText } = render(<SetupProfileScreen />);
 
     fireEvent.changeText(getByTestId('setup-firstname-input'), 'Иван');
+    fireEvent.press(getByTestId('setup-terms-checkbox'));
 
     await act(async () => {
       fireEvent.press(getByTestId('setup-continue-button'));
     });
 
-    // Ошибка Supabase — plain object, не Error → fallback текст
     await waitFor(() => {
-      expect(getByText('Произошла ошибка')).toBeTruthy();
+      expect(getByText('Network error')).toBeTruthy();
     });
   });
 

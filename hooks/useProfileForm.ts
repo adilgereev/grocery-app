@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Alert } from 'react-native';
+import { useToastStore } from '@/store/toastStore';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/providers/AuthProvider';
 import { fetchUserProfile, updateUserProfile } from '@/lib/api/authApi';
@@ -42,7 +42,7 @@ export function useProfileForm() {
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Ошибка загрузки профиля';
       logger.error('Ошибка в fetchProfile:', error);
-      Alert.alert('Ошибка', errorMessage);
+      useToastStore.getState().showToast('error', errorMessage);
     } finally {
       setLoading(false);
     }
@@ -64,11 +64,11 @@ export function useProfileForm() {
         first_name: formData.first_name,
       });
 
-      Alert.alert('Готово', 'Персональные данные сохранены!');
+      useToastStore.getState().showToast('success', 'Персональные данные сохранены!');
       router.back();
     } catch (error: unknown) {
       const errorMessage = error instanceof Error ? error.message : 'Неизвестная ошибка';
-      Alert.alert('Ошибка', errorMessage);
+      useToastStore.getState().showToast('error', errorMessage);
     } finally {
       setSaving(false);
     }

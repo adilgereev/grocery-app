@@ -1,23 +1,23 @@
 import React from 'react';
 import { StyleSheet, Text, TextInput, View } from 'react-native';
-import { Controller, Control, FieldErrors } from 'react-hook-form';
+import { Controller, Control, FieldErrors, FieldValues, Path } from 'react-hook-form';
 import { Colors, FontSize, Fonts, Radius, Spacing } from '@/constants/theme';
 import { ProfileFormData } from '@/lib/utils/schemas';
 
-interface NameInputsProps {
-  control: Control<ProfileFormData>;
+interface NameInputsProps<T extends FieldValues> {
+  control: Control<T>;
   errors: FieldErrors<ProfileFormData>;
   testIdPrefix?: string;
 }
 
-export default function NameInputs({ control, errors, testIdPrefix = 'profile' }: NameInputsProps) {
+export default function NameInputs<T extends FieldValues>({ control, errors, testIdPrefix = 'profile' }: NameInputsProps<T>) {
   return (
     <>
       <View style={styles.inputGroup}>
         <Text style={styles.label}>Имя</Text>
         <Controller
           control={control}
-          name="first_name"
+          name={"first_name" as Path<T>}
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
               testID={`${testIdPrefix}-firstname-input`}

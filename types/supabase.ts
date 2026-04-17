@@ -353,6 +353,8 @@ export type Database = {
           id: string
           is_admin: boolean | null
           phone: string
+          terms_accepted_at: string | null
+          terms_version: string | null
         }
         Insert: {
           avatar_url?: string | null
@@ -361,6 +363,8 @@ export type Database = {
           id: string
           is_admin?: boolean | null
           phone: string
+          terms_accepted_at?: string | null
+          terms_version?: string | null
         }
         Update: {
           avatar_url?: string | null
@@ -369,6 +373,8 @@ export type Database = {
           id?: string
           is_admin?: boolean | null
           phone?: string
+          terms_accepted_at?: string | null
+          terms_version?: string | null
         }
         Relationships: []
       }

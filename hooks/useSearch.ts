@@ -3,7 +3,7 @@ import { useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
 import { searchProducts, fetchRecommendedProducts } from '@/lib/api/productsApi';
 import { logger } from '@/lib/utils/logger';
-import { ErrorToast } from '@/components/ui/ErrorToast';
+import { useToastStore } from '@/store/toastStore';
 import { Spacing } from '@/constants/theme';
 import { Product } from '@/types';
 
@@ -56,7 +56,7 @@ export function useSearch() {
       const errorMessage = e instanceof Error ? e.message : 'Не удалось выполнить поиск';
       logger.error('Ошибка поиска:', e);
       setError(errorMessage);
-      ErrorToast({ type: 'error', message: errorMessage });
+      useToastStore.getState().showToast('error', errorMessage);
       setResults([]);
     } finally {
       setHasSearched(true);

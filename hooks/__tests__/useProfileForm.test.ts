@@ -2,8 +2,6 @@ import { renderHook, waitFor } from '@testing-library/react-native';
 import { useProfileForm } from '../useProfileForm';
 import { useAuth } from '@/providers/AuthProvider';
 import * as authApi from '@/lib/api/authApi';
-import { Alert } from 'react-native';
-
 jest.mock('@/providers/AuthProvider', () => ({
   useAuth: jest.fn(),
 }));
@@ -16,6 +14,14 @@ jest.mock('@/lib/api/authApi', () => ({
 jest.mock('@/lib/utils/logger', () => ({
   logger: { error: jest.fn(), log: jest.fn() },
 }));
+
+jest.mock('@/store/toastStore', () => ({
+  useToastStore: { getState: jest.fn() },
+}));
+
+import { useToastStore } from '@/store/toastStore';
+
+const mockShowToast = jest.fn();
 
 const mockSession = {
   user: {
@@ -32,14 +38,10 @@ const mockProfileData = {
 describe('useProfileForm', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    jest.spyOn(Alert, 'alert');
+    (useToastStore.getState as jest.Mock).mockReturnValue({ showToast: mockShowToast });
     (useAuth as jest.Mock).mockReturnValue({
       session: mockSession,
     });
-  });
-
-  afterEach(() => {
-    (Alert.alert as jest.Mock).mockRestore();
   });
 
   // --- Начальное состояние ---

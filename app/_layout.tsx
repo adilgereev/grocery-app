@@ -11,7 +11,7 @@ import { useAppStore } from '@/store/appStore';
 import { useAddressStore } from '@/store/addressStore';
 import { registerForPushNotificationsAsync } from '@/lib/services/NotificationService';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
-
+import { ToastContainer } from '@/components/ui/ToastContainer';
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -38,11 +38,12 @@ function RootLayoutNav() {
 
     const inAuthGroup = segments[0] === '(auth)';
     const inSetupProfile = segments[0] === 'setup-profile';
+    const inPrivacyPolicy = segments[0] === 'privacy-policy';
 
     if (session) {
       // Первый вход — нужно заполнить имя
       if (needsProfileSetup) {
-        if (!inSetupProfile) {
+        if (!inSetupProfile && !inPrivacyPolicy) {
           router.replace('/setup-profile' as any);
         }
       } else if (inAuthGroup || inSetupProfile) {
@@ -69,6 +70,7 @@ function RootLayoutNav() {
         <Stack.Screen name="checkout" />
         <Stack.Screen name="orders" />
         <Stack.Screen name="order-success" />
+        <Stack.Screen name="privacy-policy" />
       </Stack>
       <StatusBar style="dark" />
     </ThemeProvider>
@@ -81,6 +83,7 @@ export default function RootLayout() {
       <ErrorBoundary>
         <RootLayoutNav />
       </ErrorBoundary>
+      <ToastContainer />
     </AuthProvider>
   );
 }

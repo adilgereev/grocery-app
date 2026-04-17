@@ -4,7 +4,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '@/providers/AuthProvider';
 import { upsertUserProfile } from '@/lib/api/authApi';
 import { logger } from '@/lib/utils/logger';
-import { profileSchema, ProfileFormData } from '@/lib/utils/schemas';
+import { setupProfileSchema, SetupProfileFormData } from '@/lib/utils/schemas';
+import { PRIVACY_POLICY_VERSION } from '@/constants/legal';
 
 export function useSetupProfileForm() {
   const { session, refreshProfile } = useAuth();
@@ -15,12 +16,12 @@ export function useSetupProfileForm() {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<ProfileFormData>({
-    resolver: zodResolver(profileSchema),
-    defaultValues: { first_name: '' },
+  } = useForm<SetupProfileFormData>({
+    resolver: zodResolver(setupProfileSchema),
+    defaultValues: { first_name: '', terms_accepted: false },
   });
 
-  const onSave = async (formData: ProfileFormData) => {
+  const onSave = async (formData: SetupProfileFormData) => {
     if (!session?.user?.id) return;
     try {
       setSaving(true);
@@ -32,11 +33,13 @@ export function useSetupProfileForm() {
       await upsertUserProfile(session.user.id, {
         first_name: formData.first_name,
         phone,
+        terms_accepted_at: new Date().toISOString(),
+        terms_version: PRIVACY_POLICY_VERSION,
       });
       // Обновляем профиль в контексте → layout перенаправит в табы
       await refreshProfile();
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Произошла ошибка';
+      const msg = err instanceof Error ? err.message : (err as { message?: string })?.message ?? 'Произошла ошибка';
       setError(msg);
       logger.error('Ошибка сохранения профиля:', err);
     } finally {

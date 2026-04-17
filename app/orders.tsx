@@ -6,7 +6,7 @@ import { fetchOrders as fetchOrdersApi } from '@/lib/api/orderApi';
 import { useAuth } from '@/providers/AuthProvider';
 import { Ionicons } from '@expo/vector-icons';
 import Skeleton from '@/components/ui/Skeleton';
-import { ErrorToast } from '@/components/ui/ErrorToast';
+import { useToastStore } from '@/store/toastStore';
 import { logger } from '@/lib/utils/logger';
 import { Colors, Spacing, Radius } from '@/constants/theme';
 import { Order } from '@/types';
@@ -32,7 +32,7 @@ export default function OrdersScreen() {
       const errorMessage = err instanceof Error ? err.message : 'Не удалось загрузить заказы';
       logger.error('Ошибка загрузки заказов:', err);
       setError(errorMessage);
-      ErrorToast({ type: 'error', message: errorMessage });
+      useToastStore.getState().showToast('error', errorMessage);
     } finally {
       setLoading(false);
       setRefreshing(false);
