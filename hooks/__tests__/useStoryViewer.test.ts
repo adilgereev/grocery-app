@@ -102,7 +102,7 @@ describe('useStoryViewer', () => {
 
   it('при visible: false → true сбрасывает currentIndex до initialIndex', () => {
     const { result, rerender } = renderHook(
-      (props) => useStoryViewer(props),
+      (props: Parameters<typeof useStoryViewer>[0]) => useStoryViewer(props),
       { initialProps: { ...defaultProps, visible: false } }
     );
 

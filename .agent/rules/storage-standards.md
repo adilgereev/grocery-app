@@ -66,7 +66,7 @@ const placeholder = getPlaceholderUrl(product.image_url);
 ## 4. 🚫 Заглушки при отсутствии изображения
 
 - `getOptimizedImage(null)` и `getOptimizedImage('')` возвращают `''` — безопасно.
-- При пустом URL отображать `<Skeleton />` из `components/Skeleton.tsx`.
+- При пустом URL отображать `<Skeleton />` из `components/ui/Skeleton.tsx`.
 - Не показывать сломанные `<Image />` с пустым источником.
 
 ---
@@ -77,4 +77,4 @@ const placeholder = getPlaceholderUrl(product.image_url);
 |---|---|
 | `lib/utils/storageUtils.ts` | `uploadImage()` — загрузка через presigned URL в R2 |
 | `lib/utils/imageKit.ts` | `getOptimizedImage()`, `getPlaceholderUrl()` — CDN трансформации |
-| `components/Skeleton.tsx` | Заглушка при загрузке / отсутствии изображения |
+| `components/ui/Skeleton.tsx` | Заглушка при загрузке / отсутствии изображения |

@@ -88,3 +88,9 @@ jest.mock('@supabase/supabase-js', () => ({
 jest.mock('@/lib/services/supabase', () => ({
   supabase: createSupabaseMock(),
 }));
+
+// Mock dadataApi — axios fetch adapter crashes in Jest (expo/virtual/streams incompatibility)
+jest.mock('@/lib/api/dadataApi', () => ({
+  getAddressSuggestions: jest.fn().mockResolvedValue([]),
+  getAddressByCoords: jest.fn().mockResolvedValue(null),
+}));

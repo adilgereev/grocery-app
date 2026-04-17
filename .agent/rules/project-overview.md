@@ -48,6 +48,7 @@ npm run lint             # ESLint (--max-warnings 0, fails on any warning)
 npm run type-check       # tsc --noEmit
 npm test                 # Jest (preset: jest-expo)
 npm run test:watch       # Jest --watch
+npm run check:file-length  # Check no file exceeds 200 lines
 npm run supabase:types   # Regenerate Supabase types -> types/supabase.ts
 npm run supabase:link    # Link to remote Supabase project
 npm run supabase:pull    # Pull remote schema into migrations
@@ -74,3 +75,4 @@ npm run supabase:push    # Push local migrations to remote
 | `components/product/ProductCard.tsx` | Unified product card |
 | `components/ui/Skeleton.tsx` | Loading placeholder / missing image fallback |
 | `BACKLOG.md` | Project backlog |
+| `business-admin/src/types/supabase.ts` | Копия DB-типов для web-админки — синхронизировать после `supabase:types` |

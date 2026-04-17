@@ -43,3 +43,57 @@
 ## 6. 🔗 Связанные навыки и workflows
 - **Skill**: `.agent/skills/supabase/SKILL.md` — детальный протокол работы с миграциями, RLS и типами. Обязателен при любых изменениях схемы БД.
 - **Workflow**: `.agent/workflows/supabase-sync.md` — пошаговая синхронизация local ↔ remote (pull → push → types).
+
+## 7. ⚡ Оптимистичное обновление (Optimistic Update)
+
+Применять для всех toggle-операций и быстрых мутаций, где важен мгновенный отклик UI.
+
+```typescript
+// 1. Снимок до изменения
+const previous = get().field;
+// 2. Оптимистичное обновление UI
+set({ field: newValue });
+try {
+  // 3. API-вызов
+  await api.update(newValue);
+} catch {
+  // 4. Откат к снимку
+  set({ field: previous });
+  Alert.alert('Ошибка', 'Не удалось сохранить изменение');
+}
+```
+
+**Правила:**
+- Снимок — всегда **до** `set()`, иначе откатить нечем
+- Откат — через `set({ field: previous })`, не через инверсию `!newValue` — инверсия ломается при двойном нажатии
+- Исключение: сложное составное состояние (порядок N элементов) → rollback через `refetch()`, см. `handleMove` в `hooks/useCategories.ts`
+- Feedback обязателен: `Alert.alert` в admin-хуках, `Toast` в клиентской части
+
+**Применено в:** `store/favoriteStore.ts` → `toggleFavorite`, `hooks/useCatalog.ts` → `handleToggleActive`, `hooks/useCategories.ts` → `handleToggleVisibility`
+
+## 8. 🔄 Pull-to-Refresh
+
+```typescript
+// Всегда локальный useState — НЕ из Zustand store
+const [isRefreshing, setIsRefreshing] = useState(false);
+
+const handleRefresh = useCallback(async () => {
+  if (isRefreshing) return; // Guard от двойного refresh
+  setIsRefreshing(true);
+  try {
+    await Promise.all([
+      fetchA(true), // true = force refresh, игнорировать кеш
+      fetchB(true),
+    ]);
+  } finally {
+    setIsRefreshing(false); // finally — гарантирует сброс при ошибке
+  }
+}, [isRefreshing, fetchA, fetchB]);
+```
+
+**Правила:**
+- `isRefreshing` — только локальный `useState`. Store-state обновляется асинхронно → при переключении таба во время refresh FlatList теряет синхронизацию → контент зависает (воспроизведённый баг)
+- Несколько независимых запросов — `Promise.all`, не последовательно
+- Guard `if (isRefreshing) return` — защита от двойного tap
+
+**Применено в:** `app/(tabs)/(index)/index.tsx` → `handleRefresh`, `hooks/useFavorites.ts` → `onRefresh`, `app/orders.tsx` → `onRefresh`

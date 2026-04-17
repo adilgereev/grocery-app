@@ -16,40 +16,11 @@ Supabase + Zustand**. TypeScript strict mode.
 
 ## Commands
 
-```bash
-npm install              # Install dependencies
-npm run start            # Dev server (expo start)
-npm run lint             # ESLint (--max-warnings 0)
-npm run type-check       # tsc --noEmit
-npm test                 # Jest (jest-expo preset)
-npm run test:watch       # Jest --watch
-npm run supabase:types   # Regenerate types/supabase.ts
-npm run supabase:pull    # Pull remote schema
-npm run supabase:push    # Push local migrations
-```
-
-**Pre-commit hook** (Husky): `npm run lint && npm run type-check`. Must pass before committing.
-
-**Single test**: `npx jest path/to/test.test.tsx`
+→ Полный список в [`.agent/rules/project-overview.md`](.agent/rules/project-overview.md).
 
 ## Key Files
 
-| Path                                  | Purpose                                                    |
-| ------------------------------------- | ---------------------------------------------------------- |
-| `types/index.ts`                      | Core interfaces: `Category`, `Product`, `Order`, `Profile` |
-| `types/supabase.ts`                   | Auto-generated DB types — never edit manually              |
-| `constants/theme.ts`                  | Design tokens: Colors, Spacing, Radius, FontSize, Shadows  |
-| `lib/utils/storageUtils.ts`           | `uploadImage()` — R2 upload via presigned URL              |
-| `lib/utils/imageKit.ts`               | `getOptimizedImage()`, `getPlaceholderUrl()` — CDN         |
-| `lib/utils/schemas.ts`                | Zod validation schemas for forms (profile, address)        |
-| `lib/api/categoriesApi.ts`            | Supabase category hierarchy queries                        |
-| `lib/services/supabase.ts`            | Typed Supabase client (cross-platform storage)             |
-| `providers/AuthProvider.tsx`          | Auth context — `useAuth()` → `{ session, loading }`        |
-| `lib/services/NotificationService.ts` | Push notification registration                             |
-| `components/ui/ScreenHeader.tsx`      | Mandatory stack screen header                              |
-| `components/product/ProductCard.tsx`  | Unified product card component                             |
-| `components/ui/Skeleton.tsx`          | Loading placeholder / empty image fallback                 |
-| `BACKLOG.md`                          | Project backlog                                            |
+→ Полный список в [`.agent/rules/project-overview.md`](.agent/rules/project-overview.md).
 
 ## .agent/ Structure
 

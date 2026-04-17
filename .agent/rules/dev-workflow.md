@@ -42,7 +42,7 @@
 - Никогда не редактировать `types/supabase.ts` вручную.
 - Подробный протокол: `.agent/skills/supabase/SKILL.md`.
 
-## 4. 🔗 Связанные навыки и workflows
+## 5. 🔗 Связанные навыки и workflows
 
 - **Workflow**: `.agent/workflows/verify-task.md` — автоматическая проверка задачи (lint + knip + test).
 - **Workflow**: `.agent/workflows/supabase-sync.md` — синхронизация local ↔ remote БД.

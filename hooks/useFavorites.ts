@@ -1,0 +1,80 @@
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useWindowDimensions } from 'react-native';
+import { fetchFavoriteProducts as fetchFavoriteProductsByIds } from '@/lib/api/favoriteApi';
+import { fetchRecommendedProducts } from '@/lib/api/productsApi';
+import { logger } from '@/lib/utils/logger';
+import { useAuth } from '@/providers/AuthProvider';
+import { useFavoriteStore } from '@/store/favoriteStore';
+import { Spacing } from '@/constants/theme';
+import { Product } from '@/types';
+
+export function useFavorites() {
+  const { session } = useAuth();
+  const { width } = useWindowDimensions();
+
+  const [products, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [recommended, setRecommended] = useState<Product[]>([]);
+
+  const favoriteIds = useFavoriteStore(state => state.favoriteIds);
+  const favoriteIdsRef = useRef(favoriteIds);
+  favoriteIdsRef.current = favoriteIds;
+
+  const isRecommendedFetched = useRef(false);
+
+  const cardRowHeight = useMemo(() => {
+    const cardWidth = Math.round((width - Spacing.m * 2 - 16) / 2);
+    return cardWidth + 132;
+  }, [width]);
+
+  const getItemLayout = useCallback(
+    (_: unknown, index: number) => ({
+      length: cardRowHeight,
+      offset: Spacing.m + Math.floor(index / 2) * cardRowHeight,
+      index,
+    }),
+    [cardRowHeight]
+  );
+
+  const fetchRecommended = useCallback(async () => {
+    if (isRecommendedFetched.current) return;
+    isRecommendedFetched.current = true;
+    try {
+      const data = await fetchRecommendedProducts(6);
+      setRecommended(data);
+    } catch (error) {
+      isRecommendedFetched.current = false;
+      logger.error('Ошибка в fetchRecommended:', error);
+    }
+  }, []);
+
+  const fetchFavoriteProducts = useCallback(async () => {
+    const ids = favoriteIdsRef.current;
+    if (ids.length === 0) {
+      setProducts([]);
+      setLoading(false);
+      setRefreshing(false);
+      fetchRecommended();
+      return;
+    }
+
+    const data = await fetchFavoriteProductsByIds(ids);
+    setProducts(data);
+    setLoading(false);
+    setRefreshing(false);
+  }, [fetchRecommended]);
+
+  useEffect(() => {
+    if (session?.user) {
+      fetchFavoriteProducts();
+    }
+  }, [session, favoriteIds, fetchFavoriteProducts]);
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    fetchFavoriteProducts();
+  }, [fetchFavoriteProducts]);
+
+  return { products, loading, refreshing, recommended, onRefresh, cardRowHeight, getItemLayout };
+}
