@@ -1,0 +1,190 @@
+import { act, renderHook, waitFor } from '@testing-library/react-native';
+import { useProfileForm } from '../useProfileForm';
+import { useAuth } from '@/providers/AuthProvider';
+import * as authApi from '@/lib/api/authApi';
+import { Alert } from 'react-native';
+import { useRouter } from 'expo-router';
+
+jest.mock('@/providers/AuthProvider', () => ({
+  useAuth: jest.fn(),
+}));
+
+jest.mock('@/lib/api/authApi', () => ({
+  fetchUserProfile: jest.fn(),
+  updateUserProfile: jest.fn(),
+}));
+
+jest.mock('@/lib/utils/logger', () => ({
+  logger: { error: jest.fn(), log: jest.fn() },
+}));
+
+const mockSession = {
+  user: {
+    id: 'test-user-123',
+    email: 'test@example.com',
+  },
+};
+
+const mockProfileData = {
+  first_name: 'Иван',
+  last_name: 'Иванов',
+  phone: '+79991234567',
+};
+
+/**
+ * Часть 2 тестов useProfileForm: сохранение и валидация.
+ */
+describe('useProfileForm - Save & Validation', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    jest.spyOn(Alert, 'alert');
+    (useAuth as jest.Mock).mockReturnValue({
+      session: mockSession,
+    });
+  });
+
+  afterEach(() => {
+    (Alert.alert as jest.Mock).mockRestore();
+  });
+
+  it('успешно сохраняет профиль', async () => {
+    (authApi.fetchUserProfile as jest.Mock).mockResolvedValue(mockProfileData);
+    (authApi.updateUserProfile as jest.Mock).mockResolvedValue({});
+    const mockBack = jest.fn();
+    (useRouter as jest.Mock).mockReturnValue({
+      push: jest.fn(),
+      replace: jest.fn(),
+      back: mockBack,
+    });
+
+    const { result } = renderHook(() => useProfileForm());
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+
+    const formData = {
+      first_name: 'Петр',
+      last_name: 'Петров',
+    };
+
+    await act(async () => {
+      await result.current.onSave(formData);
+    });
+
+    expect(authApi.updateUserProfile).toHaveBeenCalledWith('test-user-123', {
+      first_name: 'Петр',
+      last_name: 'Петров',
+    });
+
+    expect(Alert.alert).toHaveBeenCalledWith('Готово', 'Персональные данные сохранены!');
+    expect(mockBack).toHaveBeenCalled();
+  });
+
+  it('обрабатывает null значение last_name при сохранении', async () => {
+    (authApi.fetchUserProfile as jest.Mock).mockResolvedValue(mockProfileData);
+    (authApi.updateUserProfile as jest.Mock).mockResolvedValue({});
+
+    const { result } = renderHook(() => useProfileForm());
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+
+    const formData = {
+      first_name: 'Петр',
+      last_name: '',
+    };
+
+    await act(async () => {
+      await result.current.onSave(formData);
+    });
+
+    expect(authApi.updateUserProfile).toHaveBeenCalledWith('test-user-123', {
+      first_name: 'Петр',
+      last_name: null,
+    });
+  });
+
+  it('показывает ошибку при неудачном сохранении', async () => {
+    (authApi.fetchUserProfile as jest.Mock).mockResolvedValue(mockProfileData);
+    const errorMessage = 'Ошибка сервера';
+    (authApi.updateUserProfile as jest.Mock).mockRejectedValue(new Error(errorMessage));
+
+    const { result } = renderHook(() => useProfileForm());
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+
+    const formData = {
+      first_name: 'Петр',
+      last_name: 'Петров',
+    };
+
+    await act(async () => {
+      await result.current.onSave(formData);
+    });
+
+    expect(Alert.alert).toHaveBeenCalledWith('Ошибка', errorMessage);
+  });
+
+  it('устанавливает saving=true во время сохранения', async () => {
+    (authApi.fetchUserProfile as jest.Mock).mockResolvedValue(mockProfileData);
+    (authApi.updateUserProfile as jest.Mock).mockImplementation(
+      () => new Promise(resolve => setTimeout(resolve, 100))
+    );
+
+    const { result } = renderHook(() => useProfileForm());
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+
+    const formData = {
+      first_name: 'Петр',
+      last_name: 'Петров',
+    };
+
+    act(() => {
+      result.current.onSave(formData);
+    });
+
+    expect(result.current.saving).toBe(true);
+
+    await waitFor(() => {
+      expect(result.current.saving).toBe(false);
+    });
+  });
+
+  it('не сохраняет если session отсутствует', async () => {
+    (useAuth as jest.Mock).mockReturnValue({
+      session: null,
+    });
+
+    const { result } = renderHook(() => useProfileForm());
+
+    const formData = {
+      first_name: 'Петр',
+      last_name: 'Петров',
+    };
+
+    await act(async () => {
+      await result.current.onSave(formData);
+    });
+
+    expect(authApi.updateUserProfile).not.toHaveBeenCalled();
+  });
+
+  it('возвращает объект с необходимыми полями', () => {
+    const { result } = renderHook(() => useProfileForm());
+
+    expect(result.current.control).toBeDefined();
+    expect(result.current.errors).toBeDefined();
+    expect(result.current.handleSubmit).toBeDefined();
+    expect(result.current.loading).toBeDefined();
+    expect(result.current.saving).toBeDefined();
+    expect(result.current.phone).toBeDefined();
+    expect(result.current.onSave).toBeDefined();
+  });
+});

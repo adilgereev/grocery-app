@@ -1,14 +1,12 @@
-import { useState } from 'react';
-import { Pencil, Trash2, ArrowUp, ArrowDown, ChevronRight } from 'lucide-react';
+import React, { useState } from 'react';
 import { toast } from 'sonner';
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
-import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 import { deleteCategory, updateCategorySortOrders, updateCategory } from '@/lib/adminApi';
 import type { Category } from '@/types';
+import { CategoryRow } from './CategoryRow';
 
 interface CategoriesTableProps {
   categories: Category[];
@@ -17,6 +15,10 @@ interface CategoriesTableProps {
   onReordered: (categories: Category[]) => void;
 }
 
+/**
+ * Таблица категорий в админ-панели.
+ * Декомпозирована: отрисовка строки вынесена в CategoryRow.
+ */
 export function CategoriesTable({ categories, onEdit, onDeleted, onReordered }: CategoriesTableProps) {
   const [deleteTarget, setDeleteTarget] = useState<Category | null>(null);
   const [togglingId, setTogglingId] = useState<string | null>(null);
@@ -95,89 +97,6 @@ export function CategoriesTable({ categories, onEdit, onDeleted, onReordered }: 
     }
   }
 
-  // Строка таблицы для одной категории
-  function renderRow(cat: Category, siblings: Category[], isSubcategory: boolean) {
-    const index = siblings.findIndex(c => c.id === cat.id);
-    return (
-      <TableRow
-        key={cat.id}
-        className={!cat.is_active ? 'opacity-50' : undefined}
-      >
-        {/* Изображение */}
-        <TableCell>
-          {cat.image_url ? (
-            <img src={cat.image_url} alt="" className="h-8 w-8 rounded-md object-cover" />
-          ) : (
-            <div className="h-8 w-8 rounded-md bg-muted" />
-          )}
-        </TableCell>
-
-        {/* Название с отступом для подкатегорий */}
-        <TableCell className="font-medium">
-          {isSubcategory ? (
-            <span className="flex items-center gap-1.5 text-muted-foreground">
-              <ChevronRight size={14} className="shrink-0 text-muted-foreground/50" />
-              {cat.name}
-            </span>
-          ) : (
-            <span className="font-semibold">{cat.name}</span>
-          )}
-        </TableCell>
-
-        {/* Slug */}
-        <TableCell className="font-mono text-sm text-muted-foreground">{cat.slug}</TableCell>
-
-        {/* Активность — инлайн тогл */}
-        <TableCell>
-          <Switch
-            checked={cat.is_active}
-            onCheckedChange={() => handleToggleActive(cat)}
-            disabled={togglingId === cat.id}
-          />
-        </TableCell>
-
-        {/* Кнопки сортировки — только среди одного уровня */}
-        <TableCell>
-          <div className="flex gap-1">
-            <Button
-              variant="ghost"
-              size="icon"
-              disabled={index === 0}
-              onClick={() => handleMove(cat, 'up')}
-            >
-              <ArrowUp size={14} />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              disabled={index === siblings.length - 1}
-              onClick={() => handleMove(cat, 'down')}
-            >
-              <ArrowDown size={14} />
-            </Button>
-          </div>
-        </TableCell>
-
-        {/* Действия */}
-        <TableCell>
-          <div className="flex gap-1">
-            <Button variant="ghost" size="icon" onClick={() => onEdit(cat)}>
-              <Pencil size={14} />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="text-destructive hover:text-destructive"
-              onClick={() => setDeleteTarget(cat)}
-            >
-              <Trash2 size={14} />
-            </Button>
-          </div>
-        </TableCell>
-      </TableRow>
-    );
-  }
-
   const totalCount = categories.length;
   const activeCount = categories.filter(c => c.is_active).length;
 
@@ -205,10 +124,33 @@ export function CategoriesTable({ categories, onEdit, onDeleted, onReordered }: 
             ) : rootCategories.map(root => {
               const subs = getSubcategories(root.id);
               return (
-                <>
-                  {renderRow(root, rootCategories, false)}
-                  {subs.map(sub => renderRow(sub, subs, true))}
-                </>
+                <React.Fragment key={root.id}>
+                  <CategoryRow
+                    category={root}
+                    index={rootCategories.findIndex(c => c.id === root.id)}
+                    siblingsCount={rootCategories.length}
+                    isSubcategory={false}
+                    isToggling={togglingId === root.id}
+                    onToggleActive={handleToggleActive}
+                    onMove={handleMove}
+                    onEdit={onEdit}
+                    onDelete={setDeleteTarget}
+                  />
+                  {subs.map(sub => (
+                    <CategoryRow
+                      key={sub.id}
+                      category={sub}
+                      index={subs.findIndex(c => c.id === sub.id)}
+                      siblingsCount={subs.length}
+                      isSubcategory={true}
+                      isToggling={togglingId === sub.id}
+                      onToggleActive={handleToggleActive}
+                      onMove={handleMove}
+                      onEdit={onEdit}
+                      onDelete={setDeleteTarget}
+                    />
+                  ))}
+                </React.Fragment>
               );
             })}
           </TableBody>

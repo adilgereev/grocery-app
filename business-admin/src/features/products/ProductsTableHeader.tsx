@@ -6,19 +6,14 @@ import {
 import { ArrowUpDown } from "lucide-react";
 
 type SortKey = "name" | "price" | "stock";
-type SortDir = "asc" | "desc";
-
-const COLS = 7;
 
 interface ProductsTableHeaderProps {
   sortKey: SortKey;
-  sortDir: SortDir;
   onSort: (key: SortKey) => void;
 }
 
 export function ProductsTableHeader({
   sortKey,
-  sortDir,
   onSort,
 }: ProductsTableHeaderProps) {
   return (

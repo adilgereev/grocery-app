@@ -98,28 +98,6 @@
 
 # 🛠️ БЛОК 3: Технический долг и Багфикс
 
-## 🧹 Декомпозиция файлов (в работе)
-
-Осталось 11 файлов (14 закрыто, перенесено в архив):
-
-**Admin Panel & Catalog:**
-
-- [x] `components/admin/CategoryFormModal.tsx` — 307 строк ✅
-- [ ] `business-admin/src/pages/LoginPage.tsx` — 271 строк
-- [ ] `business-admin/src/features/categories/CategoriesTable.tsx` — 236 строк
-- [ ] `business-admin/src/features\categories\CategoryFormModal.tsx` — 214 строк
-- [ ] `components/admin/CategoryItem.tsx` — 227 строк
-
-**Components & Utilities:**
-
-- [x] `components/address/AddressMainSection.tsx` — 216 строк ✅
-- [x] `lib/api/adminApi.ts` — 227 строк ✅
-- [ ] `business-admin/src/features/orders/OrdersTable.tsx` — 206 строк
-
-**Hooks:**
-
-- [ ] `hooks/useCategories.ts` — 290 строк
-
 ---
 
 # ✅ Архив — Закрытые задачи

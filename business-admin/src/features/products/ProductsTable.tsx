@@ -30,7 +30,6 @@ export function ProductsTable({
 }: ProductsTableProps) {
   const {
     sortKey,
-    sortDir,
     globalFilter,
     categoryFilter,
     deleteTarget,
@@ -79,7 +78,6 @@ export function ProductsTable({
         <Table>
           <ProductsTableHeader
             sortKey={sortKey}
-            sortDir={sortDir}
             onSort={toggleSort}
           />
           <TableBody>

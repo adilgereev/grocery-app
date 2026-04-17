@@ -1,12 +1,10 @@
 import { Ionicons } from '@expo/vector-icons';
 import React, { useEffect } from 'react';
 import {
-  ActivityIndicator,
   KeyboardAvoidingView,
   Modal,
   Platform,
   ScrollView,
-  StyleSheet,
   Switch,
   Text,
   TextInput,
@@ -14,7 +12,7 @@ import {
   View,
 } from 'react-native';
 
-import { Colors, Radius, Spacing } from '@/constants/theme';
+import { Colors } from '@/constants/theme';
 import { Category } from '@/types';
 import { useImagePicker } from '@/hooks/useImagePicker';
 import { showAlert } from '@/lib/utils/platformUtils';
@@ -22,6 +20,8 @@ import { slugify } from '@/lib/utils/slugify';
 
 import CategoryImagePicker from './category-form/CategoryImagePicker';
 import CategoryParentSelector from './category-form/CategoryParentSelector';
+import CategorySubmitButton from './category-form/CategorySubmitButton';
+import { styles } from './category-form/CategoryFormModal.styles';
 
 interface CategoryFormModalProps {
   visible: boolean;
@@ -34,7 +34,7 @@ interface CategoryFormModalProps {
 
 /**
  * Форма создания/редактирования категории в модальном окне.
- * Вынесена из app/(admin)/categories.tsx для декомпозиции.
+ * Декомпозирована: стили и кнопка вынесены в отдельные файлы.
  */
 export default function CategoryFormModal({
   visible,
@@ -97,7 +97,6 @@ export default function CategoryFormModal({
           </View>
 
           <ScrollView showsVerticalScrollIndicator={false}>
-            {/* Родительская категория */}
             <CategoryParentSelector
               selectedParent={selectedParent}
               onSelect={setSelectedParent}
@@ -105,7 +104,6 @@ export default function CategoryFormModal({
               currentCategoryId={initialData?.id}
             />
 
-            {/* Название */}
             <View style={styles.formGroup}>
               <Text style={styles.label}>Название категории *</Text>
               <TextInput
@@ -118,7 +116,6 @@ export default function CategoryFormModal({
               />
             </View>
 
-            {/* Изображение */}
             <CategoryImagePicker
               imageUrl={imageUrl}
               onChange={setImageUrl}
@@ -126,7 +123,6 @@ export default function CategoryFormModal({
               uploading={uploading}
             />
 
-            {/* Видимость */}
             <View style={styles.formGroup}>
               <View style={styles.switchRow}>
                 <Text style={styles.label}>Видна покупателям</Text>
@@ -139,90 +135,15 @@ export default function CategoryFormModal({
               </View>
             </View>
 
-            {/* Кнопка отправки */}
-            <TouchableOpacity
-              style={[styles.submitBtn, isSubmitting && styles.btnDisabled]}
+            <CategorySubmitButton
+              isSubmitting={isSubmitting}
               onPress={handleFormSubmit}
-              disabled={isSubmitting}
-              activeOpacity={0.8}
+              isEdit={!!initialData}
               testID="submit-category-btn"
-            >
-              {isSubmitting ? (
-                <ActivityIndicator color={Colors.light.white} />
-              ) : (
-                <Text style={styles.submitBtnText}>
-                  {initialData ? 'Сохранить изменения' : 'Создать категорию'}
-                </Text>
-              )}
-            </TouchableOpacity>
+            />
           </ScrollView>
         </View>
       </KeyboardAvoidingView>
     </Modal>
   );
 }
-
-const styles = StyleSheet.create({
-  modalOverlay: { 
-    flex: 1, 
-    backgroundColor: Colors.light.blackTransparent, 
-    justifyContent: 'flex-end' 
-  },
-  modalContent: { 
-    backgroundColor: Colors.light.card, 
-    borderTopLeftRadius: Radius.xxl, 
-    borderTopRightRadius: Radius.xxl, 
-    padding: Spacing.l, 
-    maxHeight: '80%' 
-  },
-  modalHeader: { 
-    flexDirection: 'row', 
-    justifyContent: 'space-between', 
-    alignItems: 'center', 
-    marginBottom: Spacing.xl 
-  },
-  modalTitle: { 
-    fontSize: 20, 
-    fontWeight: '800', 
-    color: Colors.light.text 
-  },
-  formGroup: { 
-    marginBottom: Spacing.l 
-  },
-  label: { 
-    fontSize: 14, 
-    fontWeight: '700', 
-    color: Colors.light.textSecondary,
-    marginBottom: Spacing.s
-  },
-  input: {
-    backgroundColor: Colors.light.background, 
-    height: 50, 
-    borderRadius: Radius.m, 
-    paddingHorizontal: Spacing.m,
-    fontSize: 16, 
-    color: Colors.light.text,
-  },
-  switchRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  submitBtn: {
-    backgroundColor: Colors.light.primary, 
-    height: 56, 
-    borderRadius: Radius.l,
-    justifyContent: 'center', 
-    alignItems: 'center', 
-    marginTop: Spacing.m, 
-    marginBottom: Spacing.xl,
-  },
-  submitBtnText: {
-    color: Colors.light.white,
-    fontSize: 16,
-    fontWeight: '700'
-  },
-  btnDisabled: { 
-    opacity: 0.6 
-  },
-});
