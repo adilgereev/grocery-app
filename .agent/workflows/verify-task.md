@@ -26,6 +26,9 @@ This workflow ensures your changes follow the project's quality standards.
    ```
 
 4. **Verify UI Standards**:
-   - Manually check that all interactive elements have `testID`.
-   - Ensure `ScreenHeader` and `SafeAreaView` are correctly implemented.
-   - Confirm colors use the `theme.ts` tokens.
+   - Все интерактивные элементы имеют `testID` в формате `{экран}-{элемент}-{модификатор}`.
+   - Каждый stack-экран использует `<ScreenHeader />` (исключения: `product/[id].tsx`, `setup-profile.tsx`).
+   - `<SafeAreaView edges={['bottom']}>` обёртывает контент stack-экранов.
+   - Нет прямых HEX/rgba значений в компонентах — только `Colors.light.*`, `Spacing.*`, `Radius.*`.
+   - Тени через `...Shadows.sm/md/lg` спред-токены, не прямые `shadowColor`.
+   - Кнопки главного действия используют `Colors.light.cta` (#059669), не `primary`.

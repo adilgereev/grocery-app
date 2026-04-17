@@ -18,29 +18,7 @@ This skill defines the high-standard workflow for managing the Supabase backend 
 
 ## ⚠️ Главное правило: миграции БД — только пользователь
 
-Claude **никогда** не запускает команды, изменяющие состояние БД: `supabase db push/pull/reset`, `supabase migration new`, `supabase start/stop`. Применение миграций выполняет пользователь вручную.
-
-Вспомогательные команды (`npm run supabase:types`, `npm run lint`, `npm run type-check`) Claude запускает самостоятельно.
-
-## 🛠️ Протокол изменений схемы
-
-**Роль Claude:**
-1. Создать SQL-файл миграции в `supabase/migrations/<timestamp>_<name>.sql` с нужным SQL.
-2. Проверить связанные Zustand-сторы на необходимость обновления типов.
-3. Сообщить пользователю: "Запусти `npm run supabase:push`, затем перезагрузи кеш PostgREST".
-4. После подтверждения пользователя — самостоятельно запустить `npm run supabase:types`.
-5. Напомнить скопировать: `types/supabase.ts` → `business-admin/src/types/supabase.ts`.
-
-**Роль пользователя (только эти команды):**
-1. `npm run supabase:push` — применить миграцию к облаку.
-2. При добавлении новых колонок — перезагрузить кеш PostgREST:
-   - Supabase Dashboard → SQL Editor → `NOTIFY pgrst, 'reload schema';`
-   - Или: Project Settings → API → Reload schema cache.
-
-## 🚀 Команды
-- `npm run supabase:types` — обновить `types/supabase.ts` (запускает **Claude** после подтверждения push). После — скопировать в `business-admin/`.
-- `npm run supabase:push` — задеплоить миграции в облако (запускает **пользователь**).
-- `npm run supabase:pull` — синхронизировать изменения из Dashboard в локальные миграции (запускает **пользователь**).
+Протокол ролей и команды — см. `.agent/rules/dev-workflow.md` (секция 3).
 
 ## 📋 Формат файла миграции
 

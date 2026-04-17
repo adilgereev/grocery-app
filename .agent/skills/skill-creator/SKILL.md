@@ -25,7 +25,7 @@ skill-name/
 ## Writing Guidelines
 - **Description**: Be specific and slightly "pushy" in the description to ensure proper triggering.
 - **Progressive Disclosure**: Keep instructions under 500 lines. Use external references if needed.
-- **Principles**: Follow the UI standards (Emerald Minimalism) and code standards defined in the project rules.
+- **Principles**: Follow the UI standards (Soft Minimalism) and code standards defined in the project rules.
 
 ## Using Templates
 When creating a new skill, check `.agent/skills/skill-creator/templates/` for:

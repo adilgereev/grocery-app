@@ -4,7 +4,7 @@
 -   **Framework**: Expo Router (v3+), React Native.
 -   **Backend**: Supabase (PostgreSQL, RLS, Auth).
 -   **State Management**: Zustand (with selective persistence).
--   **Form Handling**: Native components or standard inputs.
+-   **Form Handling**: `react-hook-form` + `zodResolver` (zod schemas in `lib/utils/schemas.ts`).
 -   **Styling**: Theme-aware styles from `theme.ts`.
 
 ## Core Directories
@@ -17,6 +17,7 @@
 -   `lib/`: Shared utilities like `supabase.ts`.
 -   `types/`: TypeScript interfaces/types.
 -   `supabase/`: Database migrations and seed data.
+-   `business-admin/`: Отдельное Vite/React веб-приложение (веб-админка). Содержит собственный `package.json`, `src/`. После `supabase:types` обязательно копировать `types/supabase.ts` → `business-admin/src/types/supabase.ts`.
 
 ## Authentication
 `AuthProvider` in `providers/AuthProvider.tsx` wraps the app. Root layout handles redirection:
@@ -49,6 +50,7 @@ npm run type-check       # tsc --noEmit
 npm test                 # Jest (preset: jest-expo)
 npm run test:watch       # Jest --watch
 npm run check:file-length  # Check no file exceeds 200 lines
+npm run knip             # Find unused exports, files, and dependencies
 npm run supabase:types   # Regenerate Supabase types -> types/supabase.ts
 npm run supabase:link    # Link to remote Supabase project
 npm run supabase:pull    # Pull remote schema into migrations

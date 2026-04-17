@@ -31,7 +31,7 @@ app/[entity]/[id].tsx          # динамический экран
 ### 3. Структура компонента экрана
 ```tsx
 import { SafeAreaView } from 'react-native-safe-area-context';
-import ScreenHeader from '@/components/ScreenHeader';
+import ScreenHeader from '@/components/ui/ScreenHeader';
 
 export default function MyScreen() {
   return (
@@ -124,4 +124,4 @@ router.back();                       // назад
 ## 🔗 Связанные файлы
 - `app/_layout.tsx` — корневой стек, регистрация stack-экранов
 - `app/(tabs)/_layout.tsx` — регистрация вкладок
-- `components/ScreenHeader.tsx` — обязательный компонент шапки
+- `components/ui/ScreenHeader.tsx` — обязательный компонент шапки

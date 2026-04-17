@@ -18,7 +18,8 @@
     "supabase:link": "supabase link --project-ref gldhbgdlhsdtlncvkson",
     "supabase:pull": "supabase db pull",
     "supabase:push": "supabase db push",
-    "supabase:status": "supabase db status"
+    "supabase:status": "supabase db status",
+    "knip": "knip"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",

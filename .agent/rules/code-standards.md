@@ -3,7 +3,7 @@
 ## 1. 🇷🇺 Кодекс Кода
 - **Комментарии**: Писать все комментарии к коду исключительно на **русском языке**.
 - **Чистота**: Всегда удалять неиспользуемые импорты, логи и закомментированный мусор перед коммитом.
-- **Документация**: Поддерживать `BACKLOG.md` и генерировать `walkthrough.md` после каждого внедрения.
+- **Документация**: Поддерживать `BACKLOG.md`.
 
 ## 2. 🏗️ Технические Стандарты Качества
 - **Мемоизация и Зависимости**:
@@ -43,17 +43,6 @@
 - **Skill**: `.agent/skills/testing/SKILL.md` — стандарты тестирования (Jest + RNTL), AI Regression Cycle, покрытие stores и UI. Обязателен при любых изменениях логики.
 - **Workflow**: `.agent/workflows/verify-task.md` — пошаговая проверка задачи (lint → knip → test → UI-стандарты).
 
-## 8. 🧪 Testing Setup
-
-- **Preset**: `jest-expo` + `@testing-library/react-native`.
-- **Setup file**: `jest.setup.js`.
-- **Path alias**: `@/` mapped via `moduleNameMapper` in Jest config.
-- **Test directory**: `components/__tests__/`.
-- **Existing tests**: `ProductCard`, `CartItem`, `OrderCard`, `SubcategoryCard`, `AddressSearchInput`.
-- Run `npm test` after any logic change — no regressions allowed.
-- **Tests as contracts**: перед изменением логики — анализировать существующие тесты. Текст теста = самое точное ТЗ.
-- **AI Regression**: если тест падает — исправлять код или моки самостоятельно до презентации пользователю.
-
-## 9. 🛡️ Валидация Данных (Zod)
+## 8. 🛡️ Валидация Данных (Zod)
 - **Переменные окружения**: Все ENV ключи (Supabase URL, Anon Key и пр.) в основном проекте и в `business-admin` **ОБЯЗАТЕЛЬНО** валидируются через Zod в `config/env.ts`. Запрещено напрямую обращаться к `process.env.*` или `import.meta.env.*` в бизнес-логике.
 - **Пользовательский ввод**: Запрещены ручные проверки длины или формата строк (напр. `if (str.length !== 11)`). Всегда использовать `Zod` (`.safeParse()` для одиночных полей или `zodResolver` для `react-hook-form`). Относится ко всем формам (Аутентификация, профиль, админка).

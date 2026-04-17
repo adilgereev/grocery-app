@@ -19,15 +19,7 @@
 - Исключение: пользователь явно просит сделать коммит (`"закоммить"`, `"push"` и т.п.).
 - Ветки: работа ведётся в feature/fix-ветках, не в `main`.
 
-## 3. 🤖 Antigravity Hooks
-
-Для синхронизации поведения с Claude Code, Antigravity использует конфигурацию в `.antigravity/settings.json`.
-- **PostToolUse**: После каждого действия `Edit` или `Write`, ИИ должен:
-    1. Запустить `npm run type-check` (tsc).
-    2. Если изменена логика — запустить `npm test` или `/verify-task`.
-- Это обеспечивает мгновенную обратную связь об ошибках типизации и регрессиях.
-
-## 4. 🗂️ Supabase Workflow
+## 3. 🗂️ Supabase Workflow
 
 ⚠️ **Применение миграций к БД — ТОЛЬКО пользователем вручную.** Claude не запускает команды, изменяющие состояние удалённой или локальной БД.
 
@@ -42,7 +34,7 @@
 - Никогда не редактировать `types/supabase.ts` вручную.
 - Подробный протокол: `.agent/skills/supabase/SKILL.md`.
 
-## 5. 🔗 Связанные навыки и workflows
+## 4. 🔗 Связанные навыки и workflows
 
 - **Workflow**: `.agent/workflows/verify-task.md` — автоматическая проверка задачи (lint + knip + test).
 - **Workflow**: `.agent/workflows/supabase-sync.md` — синхронизация local ↔ remote БД.

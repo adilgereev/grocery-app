@@ -36,3 +36,169 @@ Follow this loop for every non-trivial change:
 ## 🛡️ Best Practices
 - Use `StyleSheet.flatten` to verify computed styles in UI tests.
 - Keep tests isolated; reset mocks between test cases.
+
+---
+
+## 📦 Паттерн: Тест Zustand-стора
+
+Пример: `store/__tests__/cartStore.test.ts`
+
+```ts
+import { useCartStore } from '../cartStore';
+import { Product } from '@/types';
+
+// AsyncStorage мокается глобально в jest.setup.js — не дублировать
+
+const mockProduct: Product = {
+  id: 'prod-1',
+  name: 'Яблоки',
+  price: 100,
+  image_url: 'https://example.com/apple.png',
+  unit: 'кг',
+  category_id: 'cat-1',
+  description: 'Вкусные яблоки',
+  is_active: true,
+  stock: 100,
+  tags: [],
+  created_at: '',
+  calories: null,
+  proteins: null,
+  fats: null,
+  carbohydrates: null,
+};
+
+describe('useCartStore', () => {
+  beforeEach(() => {
+    // Сброс через экшен стора (для сторов с persist-middleware)
+    useCartStore.getState().clearCart();
+    // Для простых сторов без persist: useAppStore.setState({ isReady: false })
+  });
+
+  it('должен начинаться с пустого состояния', () => {
+    const state = useCartStore.getState();
+    expect(state.items).toEqual([]);
+    expect(state.totalPrice).toBe(0);
+  });
+
+  it('добавление товара пересчитывает computed state', () => {
+    useCartStore.getState().addItem(mockProduct);
+    const state = useCartStore.getState();
+
+    expect(state.items[0].quantity).toBe(1);
+    expect(state.totalPrice).toBe(190); // 100 + 90 ₽ доставка
+    expect(state.totalItems).toBe(1);
+  });
+
+  it('бесплатная доставка от 700 ₽', () => {
+    useCartStore.getState().addItem(mockProduct);
+    useCartStore.getState().updateQuantity(mockProduct.id, 7);
+    const state = useCartStore.getState();
+
+    expect(state.subtotal).toBe(700);
+    expect(state.deliveryFee).toBe(0);
+  });
+});
+```
+
+**Правила:**
+- Доступ к стейту — только через `.getState()`, не через хуки.
+- `beforeEach` — всегда сбрасывать стейт.
+- Тестировать computed state (производные значения), а не только raw data.
+
+---
+
+## 🕸️ Паттерн: Мок Supabase
+
+Глобальный мок `createSupabaseMock()` уже настроен в `jest.setup.js` — не дублировать в тест-файлах.
+
+По умолчанию `.single()` и `.maybeSingle()` возвращают `{ data: null, error: null }`.
+
+**Переопределить ответ для конкретного теста:**
+
+```ts
+import { supabase } from '@/lib/services/supabase';
+
+it('обрабатывает ошибку загрузки профиля', async () => {
+  (supabase.from as jest.Mock).mockReturnValueOnce({
+    select: jest.fn().mockReturnThis(),
+    eq: jest.fn().mockReturnThis(),
+    single: jest.fn().mockResolvedValueOnce({
+      data: null,
+      error: { message: 'Not found' },
+    }),
+  });
+
+  // ... вызов кода, который обращается к supabase
+});
+```
+
+**Структура ответа цепочки:**
+```
+supabase.from('table').select('*').eq('id', x).single()
+  → Promise<{ data: T | null, error: PostgrestError | null }>
+```
+
+---
+
+## 🖱️ Паттерн: UI-тест с fireEvent + мок стора
+
+Пример: `components/__tests__/ProductCard.test.tsx`
+
+```tsx
+import React from 'react';
+import { render, fireEvent } from '@testing-library/react-native';
+import ProductCard from '@/components/product/ProductCard';
+import { useCartStore } from '@/store/cartStore';
+
+// Мокаем стор целиком — только нужные поля
+jest.mock('@/store/cartStore', () => ({
+  useCartStore: jest.fn(),
+}));
+
+const mockProduct = { id: 'p1', name: 'Бананы', price: 150, unit: 'кг', /* ... */ };
+
+describe('ProductCard', () => {
+  const mockAddItem = jest.fn();
+  const mockUpdateQuantity = jest.fn();
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  // Хелпер имитирует selector-вызов: useCartStore(selector => selector(state))
+  const mockStore = (items: { product: typeof mockProduct; quantity: number }[]) => {
+    const state = { items, addItem: mockAddItem, updateQuantity: mockUpdateQuantity };
+    (useCartStore as unknown as jest.Mock).mockImplementation(
+      (selector: (s: typeof state) => unknown) => selector(state)
+    );
+  };
+
+  it('нет в корзине — кнопка "добавить" видна', () => {
+    mockStore([]);
+    const { getByTestId, queryByTestId } = render(
+      <ProductCard item={mockProduct} onPress={jest.fn()} />
+    );
+    expect(getByTestId('product-add-button')).toBeTruthy();
+    expect(queryByTestId('product-increase-button')).toBeNull();
+  });
+
+  it('нажатие "добавить" вызывает addItem', () => {
+    mockStore([]);
+    const { getByTestId } = render(<ProductCard item={mockProduct} onPress={jest.fn()} />);
+    fireEvent.press(getByTestId('product-add-button'));
+    expect(mockAddItem).toHaveBeenCalledWith(mockProduct);
+  });
+
+  it('в корзине — кнопки +/- меняют количество', () => {
+    mockStore([{ product: mockProduct, quantity: 3 }]);
+    const { getByTestId } = render(<ProductCard item={mockProduct} onPress={jest.fn()} />);
+    fireEvent.press(getByTestId('product-increase-button'));
+    expect(mockUpdateQuantity).toHaveBeenCalledWith('p1', 4);
+  });
+});
+```
+
+**Правила:**
+- `jest.mock()` на уровне модуля — не внутри `describe`.
+- `jest.clearAllMocks()` в `beforeEach` — сбрасывает счётчики вызовов.
+- `queryByTestId` возвращает `null` если элемента нет — используй для проверки отсутствия.
