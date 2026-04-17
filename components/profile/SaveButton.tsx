@@ -29,7 +29,7 @@ export default function SaveButton({ onPress, saving, loading, label = 'Сохр
 
 const styles = StyleSheet.create({
   saveButton: {
-    backgroundColor: Colors.light.primary,
+    backgroundColor: Colors.light.cta,
     borderRadius: Radius.xl,
     paddingVertical: Spacing.m + Spacing.s,
     alignItems: 'center',

@@ -6,9 +6,15 @@ import { Radius, Spacing } from '@/constants/theme';
 export default function EditProfileLoadingState() {
   return (
     <View>
-      <Skeleton width="100%" height={Spacing.xxxl} borderRadius={Radius.l} style={{ marginBottom: Spacing.m }} />
-      <Skeleton width="100%" height={Spacing.xxxl} borderRadius={Radius.l} style={{ marginBottom: Spacing.m }} />
-      <Skeleton width="100%" height={Spacing.xxxl} borderRadius={Radius.l} style={{ marginBottom: Spacing.m }} />
+      <View style={{ marginBottom: Spacing.m + Spacing.s }}>
+        <Skeleton width="100%" height={20} borderRadius={Radius.s} style={{ marginBottom: Spacing.s }} />
+        <Skeleton width="100%" height={44} borderRadius={Radius.xl} />
+      </View>
+
+      <View style={{ marginBottom: Spacing.m + Spacing.s }}>
+        <Skeleton width="100%" height={20} borderRadius={Radius.s} style={{ marginBottom: Spacing.s }} />
+        <Skeleton width="100%" height={44} borderRadius={Radius.xl} />
+      </View>
     </View>
   );
 }

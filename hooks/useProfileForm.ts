@@ -24,7 +24,6 @@ export function useProfileForm() {
     resolver: zodResolver(profileSchema),
     defaultValues: {
       first_name: '',
-      last_name: '',
     }
   });
 
@@ -37,12 +36,13 @@ export function useProfileForm() {
       if (data) {
         reset({
           first_name: data.first_name || '',
-          last_name: data.last_name || '',
         });
         setPhone(data.phone || '');
       }
     } catch (error: unknown) {
+      const errorMessage = error instanceof Error ? error.message : 'Ошибка загрузки профиля';
       logger.error('Ошибка в fetchProfile:', error);
+      Alert.alert('Ошибка', errorMessage);
     } finally {
       setLoading(false);
     }
@@ -62,7 +62,6 @@ export function useProfileForm() {
       setSaving(true);
       await updateUserProfile(session.user.id, {
         first_name: formData.first_name,
-        last_name: formData.last_name || null,
       });
 
       Alert.alert('Готово', 'Персональные данные сохранены!');

@@ -34,28 +34,6 @@ export default function NameInputs({ control, errors, testIdPrefix = 'profile' }
           <Text style={styles.errorText}>{errors.first_name.message}</Text>
         )}
       </View>
-
-      <View style={styles.inputGroup}>
-        <Text style={styles.label}>Фамилия (необязательно)</Text>
-        <Controller
-          control={control}
-          name="last_name"
-          render={({ field: { onChange, onBlur, value } }) => (
-            <TextInput
-              testID={`${testIdPrefix}-lastname-input`}
-              style={[styles.input, errors.last_name && styles.inputError]}
-              placeholder="Например, Иванов"
-              placeholderTextColor={Colors.light.textLight}
-              onBlur={onBlur}
-              onChangeText={onChange}
-              value={value || ''}
-            />
-          )}
-        />
-        {errors.last_name && (
-          <Text style={styles.errorText}>{errors.last_name.message}</Text>
-        )}
-      </View>
     </>
   );
 }
