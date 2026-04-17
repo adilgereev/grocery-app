@@ -4,20 +4,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { Colors, Spacing, Radius, Shadows } from '@/constants/theme';
 import { Order } from '@/types';
 import { cleanAddress } from '@/lib/utils/addressUtils';
+import { STATUS_CONFIG } from '@/components/order/orderConfig';
 
 interface OrderCardProps {
   order: Order;
   onPress: (orderId: string) => void;
 }
-
-// Конфигурация статусов
-const STATUS_CONFIG: Record<string, { label: string; emoji: string; color: string; bg: string }> = {
-  pending:    { label: 'Собираем',   emoji: '📦', color: Colors.light.info, bg: Colors.light.infoLight },
-  processing: { label: 'Собираем',   emoji: '📦', color: Colors.light.info, bg: Colors.light.infoLight },
-  shipped:    { label: 'В пути',     emoji: '🚗', color: Colors.light.info, bg: Colors.light.infoLight },
-  delivered:  { label: 'Доставлен',  emoji: '✅', color: Colors.light.success, bg: Colors.light.successLight },
-  cancelled:  { label: 'Отменён',    emoji: '❌', color: Colors.light.error, bg: Colors.light.errorLight },
-};
 
 const OrderCard: React.FC<OrderCardProps> = ({ order, onPress }) => {
   const status = order.status?.toLowerCase() || 'pending';
@@ -43,7 +35,7 @@ const OrderCard: React.FC<OrderCardProps> = ({ order, onPress }) => {
       <View style={styles.topRow}>
         <View style={[styles.statusBadge, { backgroundColor: config.bg }]}>  
           <Text style={styles.statusEmoji} testID="order-status-emoji">{config.emoji}</Text>
-          <Text style={[styles.statusLabel, { color: config.color }]} testID="order-status-label">{config.label}</Text>
+          <Text style={[styles.statusLabel, { color: config.color }]} testID="order-status-label">{config.shortLabel}</Text>
         </View>
         <Ionicons name="chevron-forward" size={20} color={Colors.light.textLight} />
       </View>

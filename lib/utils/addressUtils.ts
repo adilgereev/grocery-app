@@ -1,4 +1,5 @@
-import { DaDataSuggestion } from '@/lib/api/dadataApi';
+import { DaDataSuggestion, getAddressByCoords } from '@/lib/api/dadataApi';
+import { logger } from '@/lib/utils/logger';
 
 /**
  * Вспомогательная функция для красивого форматирования адреса из подсказки DaData
@@ -16,6 +17,28 @@ export const formatAddressString = (suggestion: DaDataSuggestion): string => {
 /**
  * Очищает строку адреса от лишних префиксов города, региона и (опционально) номера дома.
  */
+export interface ResolvedAddress {
+  text: string;
+  house?: string;
+}
+
+export const resolveAddressFromCoords = async (
+  lat: number,
+  lon: number
+): Promise<ResolvedAddress | null> => {
+  try {
+    const suggestion = await getAddressByCoords(lat, lon);
+    if (!suggestion) return null;
+    return {
+      text: formatAddressString(suggestion),
+      house: suggestion.data.house,
+    };
+  } catch (e) {
+    logger.error('Ошибка реверсивного геокодинга:', e);
+    return null;
+  }
+};
+
 export const cleanAddress = (raw: string, options: { removeHouse?: boolean } = {}): string => {
   if (!raw) return '';
   

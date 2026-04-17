@@ -2,118 +2,31 @@ import OrderItemRow from '@/components/order/OrderItemRow';
 import OrderSection from '@/components/order/OrderSection';
 import OrderStatusBanner from '@/components/order/OrderStatusBanner';
 import OrderTracker from '@/components/order/OrderTracker';
-import Skeleton from '@/components/ui/Skeleton';
-import { Colors, Radius, Spacing, Shadows } from '@/constants/theme';
+import OrderDetailsHeader from '@/components/order/OrderDetailsHeader';
+import OrderDetailsLoadingState from '@/components/order/OrderDetailsLoadingState';
+import OrderDetailsErrorState from '@/components/order/OrderDetailsErrorState';
+import OrderTotalCard from '@/components/order/OrderTotalCard';
+import { STATUS_CONFIG, PAYMENT_CONFIG, TRACKER_STEPS } from '@/components/order/orderConfig';
+import { Colors, Spacing, Shadows, Radius } from '@/constants/theme';
 import { cleanAddress } from '@/lib/utils/addressUtils';
-import { logger } from '@/lib/utils/logger';
-import { fetchOrderDetails as fetchOrderDetailsApi, OrderItem } from '@/lib/api/orderApi';
-import { supabase } from '@/lib/services/supabase';
-import { useCartStore } from '@/store/cartStore';
-import { Product, Order, PaymentMethod } from '@/types';
-import { Ionicons } from '@expo/vector-icons';
+import { useOrderDetails } from '@/hooks/useOrderDetails';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import React, { useCallback, useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React from 'react';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
-/**
- * Конфигурация статусов заказа. Описывает лейблы, иконки и цвета для UI.
- */
-const STATUS_CONFIG: Record<string, { label: string; icon: string; color: string; bg: string; emoji: string }> = {
-  pending:    { label: 'Собираем заказ', icon: 'cube-outline',           color: Colors.light.info, bg: Colors.light.infoLight, emoji: '📦' },
-  processing: { label: 'Собираем заказ', icon: 'cube-outline',           color: Colors.light.info, bg: Colors.light.infoLight, emoji: '📦' },
-  shipped:    { label: 'Курьер в пути',  icon: 'bicycle-outline',        color: Colors.light.info, bg: Colors.light.infoLight, emoji: '🚗' },
-  delivered:  { label: 'Доставлен',      icon: 'checkmark-done-outline', color: Colors.light.success, bg: Colors.light.successLight, emoji: '✅' },
-  cancelled:  { label: 'Отменён',        icon: 'close-circle-outline',   color: Colors.light.error, bg: Colors.light.errorLight, emoji: '❌' },
-};
-
-const PAYMENT_CONFIG: Record<PaymentMethod, { label: string; icon: string }> = {
-  cash: { label: 'Наличными курьеру', icon: 'cash-outline' },
-  online: { label: 'Онлайн', icon: 'card' },
-};
-
-const TRACKER_STEPS = ['processing', 'shipped', 'delivered'];
-
-
-
-/**
- * Страница деталей заказа.
- * Показывает статус, трекер, состав заказа и позволяет повторить покупку.
- */
 export default function OrderDetailsScreen() {
   const params = useLocalSearchParams();
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
   const router = useRouter();
-  const addItemsBatch = useCartStore(state => state.addItemsBatch);
 
-  const [order, setOrder] = useState<Order | null>(null);
-  const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchOrderDetails = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const result = await fetchOrderDetailsApi(id);
-      setOrder(result.order);
-      setOrderItems(result.items || []);
-    } catch (err: unknown) {
-      const errorMessage = err instanceof Error ? err.message : 'Не удалось загрузить детали заказа';
-      logger.error('Ошибка загрузки деталей заказа:', err);
-      setError(errorMessage);
-    } finally {
-      setLoading(false);
-    }
-  }, [id]);
-
-  useEffect(() => {
-    if (id) {
-      fetchOrderDetails();
-      const channel = supabase.channel(`order_details_${id}`)
-        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'orders', filter: `id=eq.${id}` }, fetchOrderDetails)
-        .subscribe();
-      return () => { supabase.removeChannel(channel); };
-    }
-  }, [id, fetchOrderDetails]);
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('ru-RU', {
-      day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
-    });
-  };
-
-  const handleRepeatOrder = () => {
-    if (!orderItems.length) return;
-    const batch = orderItems
-      .filter(item => item.product !== undefined)
-      .map(item => ({ product: item.product as Product, quantity: item.quantity }));
-    addItemsBatch(batch);
-    router.navigate('/(tabs)/(cart)' as any);
-  };
+  const { order, orderItems, loading, error, fetchOrderDetails, formatDate, handleRepeatOrder } = useOrderDetails(id);
 
   if (loading) {
-    return (
-      <View style={styles.container}>
-        <View style={styles.header}><Skeleton width={150} height={24} borderRadius={Radius.s} /></View>
-        <View style={styles.loadingContainer}>
-          <Skeleton width="100%" height={120} borderRadius={Radius.xl} style={styles.skeletonLarge} />
-          <Skeleton width="100%" height={80} borderRadius={Radius.l} style={styles.skeletonMedium} />
-        </View>
-      </View>
-    );
+    return <OrderDetailsLoadingState />;
   }
 
   if (!order) {
-    return (
-      <View style={styles.centerContainer}>
-        <Ionicons name="alert-circle-outline" size={64} color={Colors.light.error} />
-        <Text style={styles.errorText}>{error || 'Заказ не найден'}</Text>
-        <TouchableOpacity style={styles.retryButtonCenter} onPress={fetchOrderDetails}>
-          <Ionicons name="refresh-outline" size={20} color={Colors.light.white} style={styles.retryIcon} />
-          <Text style={styles.retryButtonText}>Повторить</Text>
-        </TouchableOpacity>
-      </View>
-    );
+    return <OrderDetailsErrorState error={error} onRetry={fetchOrderDetails} />;
   }
 
   const status = order.status?.toLowerCase() || 'pending';
@@ -123,20 +36,11 @@ export default function OrderDetailsScreen() {
 
   return (
     <View style={styles.container}>
-      {/* Кастомная шапка */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-          <Ionicons name="arrow-back" size={24} color={Colors.light.text} />
-        </TouchableOpacity>
-        <Text style={styles.title}>Заказ №{order.id.substring(0, 8).toUpperCase()}</Text>
-        <View style={styles.headerSpacer} />
-      </View>
+      <OrderDetailsHeader orderId={order.id} onBack={() => router.back()} />
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        {/* Баннер статуса */}
         <OrderStatusBanner status={status} config={config} date={formatDate(order.created_at ?? '')} />
 
-        {/* Трекер (если не отменен) */}
         {!isCancelled && (
           <OrderTracker
             steps={TRACKER_STEPS}
@@ -146,10 +50,8 @@ export default function OrderDetailsScreen() {
           />
         )}
 
-        {/* Адрес */}
         <OrderSection title="Адрес доставки" subtitle={cleanAddress(order.delivery_address)} icon="location" />
 
-        {/* Оплата */}
         {order.payment_method && (
           <OrderSection
             title="Способ оплаты"
@@ -158,12 +60,10 @@ export default function OrderDetailsScreen() {
           />
         )}
 
-        {/* Комментарий к заказу */}
         {order.comment ? (
           <OrderSection title="Комментарий к заказу" subtitle={order.comment} icon="chatbubble-ellipses-outline" />
         ) : null}
 
-        {/* Товары */}
         <Text style={styles.sectionTitle}>Товары · {orderItems.length} шт</Text>
         <View style={styles.itemsCard}>
           {orderItems.map((item, index) => (
@@ -171,20 +71,7 @@ export default function OrderDetailsScreen() {
           ))}
         </View>
 
-        {/* Итог и Повтор */}
-        <View style={styles.totalCard}>
-          <View style={styles.totalRow}>
-            <Text style={styles.totalItems}>Товары ({orderItems.length})</Text>
-            <Text style={styles.totalItemsPrice}>{Number(order.total_amount).toFixed(0)} ₽</Text>
-          </View>
-          <View style={styles.totalRow}><Text style={styles.totalItems}>Доставка</Text><Text style={styles.totalFree}>Бесплатно</Text></View>
-          <View style={styles.totalDivider} />
-          <View style={styles.totalRow}><Text style={styles.totalLabel}>Итого</Text><Text style={styles.totalPrice}>{Number(order.total_amount).toFixed(0)} ₽</Text></View>
-          <TouchableOpacity style={styles.repeatButton} onPress={handleRepeatOrder}>
-            <Ionicons name="bag-handle-outline" size={20} color={Colors.light.white} style={styles.repeatIcon} />
-            <Text style={styles.repeatButtonText}>Повторить покупку</Text>
-          </TouchableOpacity>
-        </View>
+        <OrderTotalCard totalAmount={order.total_amount} itemCount={orderItems.length} onRepeat={handleRepeatOrder} />
         <View style={styles.footerSpacer} />
       </ScrollView>
     </View>
@@ -193,51 +80,11 @@ export default function OrderDetailsScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: Colors.light.background },
-  centerContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: Spacing.xl },
-  loadingContainer: { padding: Spacing.m },
-  skeletonLarge: { marginBottom: Spacing.ml },
-  skeletonMedium: { marginBottom: 16 },
-
-  header: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    padding: Spacing.l, paddingTop: 60, backgroundColor: Colors.light.card,
-    borderBottomWidth: 1, borderBottomColor: Colors.light.borderLight,
-    ...Shadows.sm, zIndex: 10,
-  },
-  headerSpacer: { width: 24 },
-  backButton: { padding: Spacing.s, marginRight: Spacing.s },
-  title: { fontSize: 18, fontWeight: '700', color: Colors.light.text },
-
   scrollContent: { padding: Spacing.m },
   sectionTitle: { fontSize: 18, fontWeight: '700', color: Colors.light.text, marginBottom: Spacing.s },
-
   itemsCard: {
     backgroundColor: Colors.light.card, borderRadius: Radius.xl, padding: Spacing.m, marginBottom: Spacing.m,
     ...Shadows.sm,
   },
-
-  totalCard: {
-    backgroundColor: Colors.light.card, borderRadius: Radius.xl, padding: Spacing.l, marginBottom: Spacing.m,
-    ...Shadows.sm,
-  },
-  totalRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: Spacing.s },
-  totalItems: { fontSize: 14, color: Colors.light.textSecondary, fontWeight: '500' },
-  totalItemsPrice: { fontSize: 14, color: Colors.light.text, fontWeight: '600' },
-  totalFree: { fontSize: 14, color: Colors.light.primary, fontWeight: '600' },
-  totalDivider: { height: 1, backgroundColor: Colors.light.borderLight, marginVertical: Spacing.s },
-  totalLabel: { fontSize: 18, fontWeight: '700', color: Colors.light.text },
-  totalPrice: { fontSize: 20, fontWeight: '700', color: Colors.light.primary },
-
-  repeatButton: {
-    backgroundColor: Colors.light.cta, flexDirection: 'row', justifyContent: 'center', alignItems: 'center',
-    paddingVertical: 16, borderRadius: Radius.pill, marginTop: Spacing.l,
-  },
-  repeatIcon: { marginRight: 8 },
-  repeatButtonText: { color: Colors.light.white, fontSize: 16, fontWeight: '700' },
-
   footerSpacer: { height: Spacing.xl },
-  errorText: { fontSize: 18, color: Colors.light.textSecondary, marginTop: Spacing.m, marginBottom: Spacing.ml, fontWeight: '500', textAlign: 'center' },
-  retryButtonCenter: { backgroundColor: Colors.light.primary, flexDirection: 'row', alignItems: 'center', paddingHorizontal: Spacing.xl, paddingVertical: Spacing.m, borderRadius: Radius.l },
-  retryIcon: { marginRight: 8 },
-  retryButtonText: { color: Colors.light.white, fontSize: 16, fontWeight: '600' },
 });

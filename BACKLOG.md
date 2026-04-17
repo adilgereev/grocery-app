@@ -123,15 +123,15 @@
 
 **User Screens & Navigation:**
 
-- [ ] `app/(tabs)/(profile)/index.tsx` — 377 строк
-- [ ] `app/(tabs)/(index)/category/[id].tsx` — 319 строк
-- [ ] `app/(tabs)/(index)/search.tsx` — 322 строк
-- [ ] `components/home/StoryViewer.tsx` — 331 строк
-- [ ] `app/(tabs)/(profile)/edit-profile.tsx` — 265 строк
-- [ ] `app/setup-profile.tsx` — 265 строк
-- [ ] `app/(tabs)/(profile)/order/[id].tsx` — 244 строк
-- [ ] `app/addresses.tsx` — 250 строк
-- [ ] `app/manage-address.tsx` — 242 строк
+- [x] `app/(tabs)/(profile)/index.tsx` — 377 строк ✅
+- [x] `app/(tabs)/(index)/category/[id].tsx` — 319 строк → 75 строк (вынесены: useCategoryData, useCategoryProducts, useProductTags hooks; CategoryHeader, SubcategoriesSection, CategoryLoadingState, CategoryErrorState, CategoryEmptyState, TagFilter, CategoryProductsList компоненты) ✅
+- [x] `app/(tabs)/(index)/search.tsx` — 322 строк ✅
+- [x] `components/home/StoryViewer.tsx` — 331 строк → 136 строк (вынесены: useStoryViewer hook; StoryProgressBars, StoryBadge, StoryTextContent, StoryTapZones компоненты) ✅
+- [x] `app/(tabs)/(profile)/edit-profile.tsx` — 265 строк → 180 строк (вынесены: EditProfileLoadingState, PhoneSection, NameInputs, SaveButton компоненты) ✅
+- [x] `app/setup-profile.tsx` — 265 строк → 161 строк (вынесены: useSetupProfileForm hook; SetupProfileFormSkeleton, PhoneInput, NameInputs компоненты) ✅
+- [x] `app/(tabs)/(profile)/order/[id].tsx` — 244 строк → 182 строки (вынесены: useOrderDetails hook, SkeletonLoading, ErrorState, EmptyState, OrderItem, OrderStatusBadge, OrderActions компоненты) ✅
+- [x] `app/addresses.tsx` — 250 строк → 181 строка (вынесены: useAddresses hook; AddressCard, AddressEmptyState, AddressFooter компоненты) ✅
+- [x] `app/manage-address.tsx` — 242 ✅
 - [ ] `app/(tabs)/(profile)/favorites.tsx` — 241 строк
 - [ ] `app/(admin)/index.tsx` — 238 строк
 - [ ] `app/(tabs)/(cart)/index.tsx` — 249 строк
