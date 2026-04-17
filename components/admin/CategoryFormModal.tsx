@@ -2,8 +2,6 @@ import { Ionicons } from '@expo/vector-icons';
 import React, { useEffect } from 'react';
 import {
   ActivityIndicator,
-  Alert,
-  Image,
   KeyboardAvoidingView,
   Modal,
   Platform,
@@ -21,6 +19,9 @@ import { Category } from '@/types';
 import { useImagePicker } from '@/hooks/useImagePicker';
 import { showAlert } from '@/lib/utils/platformUtils';
 import { slugify } from '@/lib/utils/slugify';
+
+import CategoryImagePicker from './category-form/CategoryImagePicker';
+import CategoryParentSelector from './category-form/CategoryParentSelector';
 
 interface CategoryFormModalProps {
   visible: boolean;
@@ -74,22 +75,6 @@ export default function CategoryFormModal({
     });
   };
 
-  const selectParentCategory = () => {
-    // Исключаем саму редактируемую категорию из списка возможных родителей
-    const availableParents = rootCategories.filter(c => c.id !== initialData?.id);
-    
-    const options = [
-      { text: 'Без родителя (корневая)', onPress: () => setSelectedParent(null) },
-      ...availableParents.map(c => ({
-        text: c.name,
-        onPress: () => setSelectedParent(c.id)
-      })),
-      { text: 'Отмена', style: 'cancel' as const }
-    ];
-
-    Alert.alert('Выберите родительскую категорию', '', options);
-  };
-
   return (
     <Modal
       visible={visible}
@@ -113,21 +98,12 @@ export default function CategoryFormModal({
 
           <ScrollView showsVerticalScrollIndicator={false}>
             {/* Родительская категория */}
-            <View style={styles.formGroup}>
-              <Text style={styles.label}>Родительская категория</Text>
-              <TouchableOpacity
-                style={styles.input}
-                onPress={selectParentCategory}
-                testID="parent-category-selector"
-              >
-                <Text style={selectedParent ? styles.inputValue : styles.inputPlaceholder}>
-                  {selectedParent
-                    ? rootCategories.find(c => c.id === selectedParent)?.name || 'Родительская категория'
-                    : 'Без родителя (корневая категория)'}
-                </Text>
-                <Ionicons name="chevron-down" size={20} color={Colors.light.primary} />
-              </TouchableOpacity>
-            </View>
+            <CategoryParentSelector
+              selectedParent={selectedParent}
+              onSelect={setSelectedParent}
+              rootCategories={rootCategories}
+              currentCategoryId={initialData?.id}
+            />
 
             {/* Название */}
             <View style={styles.formGroup}>
@@ -143,36 +119,12 @@ export default function CategoryFormModal({
             </View>
 
             {/* Изображение */}
-            <View style={styles.formGroup}>
-              <View style={styles.labelRow}>
-                <Text style={styles.label}>Ссылка на фото или HEX-код</Text>
-                <TouchableOpacity onPress={pickImage} disabled={uploading} testID="pick-image-btn">
-                  <Text style={[styles.pickText, uploading && styles.pickTextDisabled]}>
-                    {uploading ? 'Загрузка...' : 'Выбрать файл'}
-                  </Text>
-                </TouchableOpacity>
-              </View>
-              <TextInput
-                style={styles.input}
-                value={imageUrl}
-                onChangeText={setImageUrl}
-                placeholder="https://... или #FF0000"
-                placeholderTextColor={Colors.light.textLight}
-                testID="category-image-input"
-              />
-            </View>
-
-            {/* Превью */}
-            {imageUrl ? (
-              <View style={styles.previewSection}>
-                <Text style={styles.label}>Превью в списке:</Text>
-                {imageUrl.startsWith('#') ? (
-                  <View style={[styles.previewBox, { backgroundColor: imageUrl }]} />
-                ) : (
-                  <Image source={{ uri: imageUrl }} style={styles.previewBox} />
-                )}
-              </View>
-            ) : null}
+            <CategoryImagePicker
+              imageUrl={imageUrl}
+              onChange={setImageUrl}
+              onPickImage={pickImage}
+              uploading={uploading}
+            />
 
             {/* Видимость */}
             <View style={styles.formGroup}>
@@ -237,24 +189,11 @@ const styles = StyleSheet.create({
   formGroup: { 
     marginBottom: Spacing.l 
   },
-  labelRow: { 
-    flexDirection: 'row', 
-    justifyContent: 'space-between', 
-    alignItems: 'center', 
-    marginBottom: Spacing.s 
-  },
   label: { 
     fontSize: 14, 
     fontWeight: '700', 
-    color: Colors.light.textSecondary 
-  },
-  pickText: { 
-    fontSize: 14, 
-    fontWeight: '700', 
-    color: Colors.light.primary 
-  },
-  pickTextDisabled: { 
-    opacity: 0.5 
+    color: Colors.light.textSecondary,
+    marginBottom: Spacing.s
   },
   input: {
     backgroundColor: Colors.light.background, 
@@ -263,29 +202,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.m,
     fontSize: 16, 
     color: Colors.light.text,
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    justifyContent: 'space-between',
-  },
-  inputValue: { 
-    color: Colors.light.text 
-  },
-  inputPlaceholder: { 
-    color: Colors.light.textLight 
   },
   switchRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-  },
-  previewSection: {
-    marginBottom: Spacing.l
-  },
-  previewBox: { 
-    width: 100, 
-    height: 100, 
-    borderRadius: Radius.l, 
-    marginTop: Spacing.s 
   },
   submitBtn: {
     backgroundColor: Colors.light.primary, 
