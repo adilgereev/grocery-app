@@ -25,9 +25,11 @@
 
 **Роль Claude:**
 1. Написать SQL для миграции и сохранить в `supabase/migrations/<timestamp>_<name>.sql`.
-2. Напомнить пользователю выполнить `npm run supabase:push` и при необходимости перезагрузить кеш PostgREST (`NOTIFY pgrst, 'reload schema'`).
+2. Напомнить пользователю применить миграцию локально (`supabase migration up`) и при необходимости перезагрузить кеш PostgREST (`NOTIFY pgrst, 'reload schema'`). `supabase db reset` — только в исключительных случаях (удаляет все данные).
 3. После подтверждения пользователя — самостоятельно запустить `npm run supabase:types`.
 4. Напомнить скопировать `types/supabase.ts` → `business-admin/src/types/supabase.ts`.
+
+⚠️ **Только локальная БД.** `supabase:push`, `supabase:pull`, `supabase:link` — не использовать, remote не подключён.
 
 **Никогда не запускать самостоятельно**: `supabase db push`, `supabase db pull`, `supabase db reset`, `supabase migration new`, `supabase start/stop`.
 
@@ -37,4 +39,4 @@
 ## 4. 🔗 Связанные навыки и workflows
 
 - **Workflow**: `.agent/workflows/verify-task.md` — автоматическая проверка задачи (lint + knip + test).
-- **Workflow**: `.agent/workflows/supabase-sync.md` — синхронизация local ↔ remote БД.
+- **Workflow**: `.agent/workflows/supabase-sync.md` — применение миграций локально + обновление типов.

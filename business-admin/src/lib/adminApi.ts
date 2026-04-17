@@ -144,15 +144,15 @@ export interface AdminOrderWithDetails {
   delivery_address: string;
   comment: string | null;
   created_at: string;
-  profiles: { first_name: string | null; last_name: string | null; phone: string }
-    | { first_name: string | null; last_name: string | null; phone: string }[];
+  profiles: { first_name: string | null; phone: string }
+    | { first_name: string | null; phone: string }[];
   items?: AdminOrderItem[];
 }
 
 export async function fetchAllOrdersWithDetails(): Promise<AdminOrderWithDetails[]> {
   const { data, error } = await supabase
     .from('orders')
-    .select('*, profiles:user_id (first_name, last_name, phone), items:order_items(*, product:products(*))')
+    .select('*, profiles:user_id (first_name, phone), items:order_items(*, product:products(*))')
     .order('created_at', { ascending: false });
 
   if (error) throw error;

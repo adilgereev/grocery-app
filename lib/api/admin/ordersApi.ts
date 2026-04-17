@@ -4,7 +4,7 @@ import { Order } from '@/types';
 /**
  * Тип заказа с данными клиента и позициями (для admin-экрана)
  */
-export interface AdminOrderItem {
+interface AdminOrderItem {
   id: string;
   quantity: number;
   price_at_time: number;
@@ -18,8 +18,8 @@ export interface AdminOrderWithDetails {
   delivery_address: string;
   comment: string | null;
   created_at: string;
-  profiles: { first_name: string | null; last_name: string | null; phone: string }
-    | { first_name: string | null; last_name: string | null; phone: string }[];
+  profiles: { first_name: string | null; phone: string }
+    | { first_name: string | null; phone: string }[];
   items?: AdminOrderItem[];
 }
 
@@ -29,7 +29,7 @@ export interface AdminOrderWithDetails {
 export async function fetchAllOrdersWithDetails(): Promise<AdminOrderWithDetails[]> {
   const { data, error } = await supabase
     .from('orders')
-    .select('*, profiles:user_id (first_name, last_name, phone), items:order_items(*, product:products(*))')
+    .select('*, profiles:user_id (first_name, phone), items:order_items(*, product:products(*))')
     .order('created_at', { ascending: false });
 
   if (error) throw error;

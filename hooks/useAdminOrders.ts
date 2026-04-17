@@ -8,7 +8,7 @@ import { STATUSES, OrderStatus } from "@/constants/orderStatuses";
 import { useCallback, useEffect, useState } from "react";
 import { Alert, Linking } from "react-native";
 
-export interface UseAdminOrdersReturn {
+interface UseAdminOrdersReturn {
   orders: AdminOrderWithDetails[];
   loading: boolean;
   expandedOrders: string[];

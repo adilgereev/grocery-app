@@ -17,7 +17,7 @@ export const formatAddressString = (suggestion: DaDataSuggestion): string => {
 /**
  * Очищает строку адреса от лишних префиксов города, региона и (опционально) номера дома.
  */
-export interface ResolvedAddress {
+interface ResolvedAddress {
   text: string;
   house?: string;
 }

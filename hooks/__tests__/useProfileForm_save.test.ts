@@ -27,7 +27,6 @@ const mockSession = {
 
 const mockProfileData = {
   first_name: 'Иван',
-  last_name: 'Иванов',
   phone: '+79991234567',
 };
 
@@ -63,10 +62,7 @@ describe('useProfileForm - Save & Validation', () => {
       expect(result.current.loading).toBe(false);
     });
 
-    const formData = {
-      first_name: 'Петр',
-      last_name: 'Петров',
-    };
+    const formData = { first_name: 'Петр' };
 
     await act(async () => {
       await result.current.onSave(formData);
@@ -74,36 +70,10 @@ describe('useProfileForm - Save & Validation', () => {
 
     expect(authApi.updateUserProfile).toHaveBeenCalledWith('test-user-123', {
       first_name: 'Петр',
-      last_name: 'Петров',
     });
 
     expect(Alert.alert).toHaveBeenCalledWith('Готово', 'Персональные данные сохранены!');
     expect(mockBack).toHaveBeenCalled();
-  });
-
-  it('обрабатывает null значение last_name при сохранении', async () => {
-    (authApi.fetchUserProfile as jest.Mock).mockResolvedValue(mockProfileData);
-    (authApi.updateUserProfile as jest.Mock).mockResolvedValue({});
-
-    const { result } = renderHook(() => useProfileForm());
-
-    await waitFor(() => {
-      expect(result.current.loading).toBe(false);
-    });
-
-    const formData = {
-      first_name: 'Петр',
-      last_name: '',
-    };
-
-    await act(async () => {
-      await result.current.onSave(formData);
-    });
-
-    expect(authApi.updateUserProfile).toHaveBeenCalledWith('test-user-123', {
-      first_name: 'Петр',
-      last_name: null,
-    });
   });
 
   it('показывает ошибку при неудачном сохранении', async () => {
@@ -117,10 +87,7 @@ describe('useProfileForm - Save & Validation', () => {
       expect(result.current.loading).toBe(false);
     });
 
-    const formData = {
-      first_name: 'Петр',
-      last_name: 'Петров',
-    };
+    const formData = { first_name: 'Петр' };
 
     await act(async () => {
       await result.current.onSave(formData);
@@ -141,10 +108,7 @@ describe('useProfileForm - Save & Validation', () => {
       expect(result.current.loading).toBe(false);
     });
 
-    const formData = {
-      first_name: 'Петр',
-      last_name: 'Петров',
-    };
+    const formData = { first_name: 'Петр' };
 
     act(() => {
       result.current.onSave(formData);
@@ -164,10 +128,7 @@ describe('useProfileForm - Save & Validation', () => {
 
     const { result } = renderHook(() => useProfileForm());
 
-    const formData = {
-      first_name: 'Петр',
-      last_name: 'Петров',
-    };
+    const formData = { first_name: 'Петр' };
 
     await act(async () => {
       await result.current.onSave(formData);

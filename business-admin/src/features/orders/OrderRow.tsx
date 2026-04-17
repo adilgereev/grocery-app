@@ -50,7 +50,7 @@ export function OrderRow({ order, isUpdating, onStatusChange }: OrderRowProps) {
         <TableCell>
           <div className="text-sm font-medium">
             {profile
-              ? [profile.first_name, profile.last_name].filter(Boolean).join(' ') || 'Без имени'
+              ? profile.first_name || 'Без имени'
               : '—'}
           </div>
           {profile?.phone && (

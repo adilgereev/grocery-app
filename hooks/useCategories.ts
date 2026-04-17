@@ -6,7 +6,7 @@ import { Category } from '@/types';
 import { sortHierarchically } from './categories/utils';
 import { useCategoryMutations } from './categories/useCategoryMutations';
 
-export interface UseCategoriesReturn {
+interface UseCategoriesReturn {
   loading: boolean;
   categories: Category[];
   visibleCategories: Category[];

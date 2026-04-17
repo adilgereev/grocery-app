@@ -80,7 +80,7 @@ export async function signOut(): Promise<void> {
  */
 export async function upsertUserProfile(
   userId: string,
-  data: { first_name: string; last_name: string | null; phone: string }
+  data: { first_name: string; phone: string }
 ): Promise<void> {
   const { error } = await supabase
     .from('profiles')

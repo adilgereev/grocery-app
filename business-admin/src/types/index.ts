@@ -88,7 +88,6 @@ export interface Story {
 export interface Profile {
   id: string;
   first_name: string | null;
-  last_name: string | null;
   phone: string;
   avatar_url: string | null;
   is_admin: boolean | null;

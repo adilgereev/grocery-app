@@ -26,9 +26,7 @@ export default function AdminOrderCard({
   const profile = Array.isArray(order.profiles)
     ? order.profiles[0]
     : order.profiles;
-  const customerName = profile?.first_name
-    ? `${profile.first_name} ${profile.last_name || ""}`
-    : "Клиент";
+  const customerName = profile?.first_name || "Клиент";
 
   const date = new Date(order.created_at).toLocaleString("ru-RU", {
     day: "2-digit",

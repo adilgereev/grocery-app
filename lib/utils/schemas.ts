@@ -9,12 +9,6 @@ export const profileSchema = z.object({
     .min(2, 'Имя должно быть не короче 2 символов')
     .max(50, 'Имя слишком длинное')
     .trim(),
-  last_name: z
-    .string()
-    .max(50, 'Фамилия слишком длинная')
-    .trim()
-    .nullable()
-    .or(z.literal('')),
 });
 
 // Тип данных на основе схемы

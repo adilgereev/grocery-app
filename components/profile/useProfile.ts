@@ -7,7 +7,7 @@ import { useCartStore } from '@/store/cartStore';
 import { logger } from '@/lib/utils/logger';
 import { Profile } from '@/types';
 
-export interface UseProfileReturn {
+interface UseProfileReturn {
   loading: boolean;
   profile: Profile | null;
   initials: string;

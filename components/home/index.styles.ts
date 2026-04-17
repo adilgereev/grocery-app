@@ -100,6 +100,12 @@ export const homeStyles = StyleSheet.create({
 
   // Популярное
   popularSection: { marginBottom: Spacing.xl },
+  emptyText: {
+    fontSize: 14,
+    color: Colors.light.textSecondary,
+    paddingHorizontal: Spacing.m,
+    paddingVertical: Spacing.s,
+  },
   sectionHeader: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
     paddingHorizontal: Spacing.m, marginBottom: Spacing.s,

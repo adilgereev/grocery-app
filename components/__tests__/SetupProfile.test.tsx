@@ -51,7 +51,6 @@ describe('SetupProfileScreen', () => {
     expect(getByText('Как вас зовут?')).toBeTruthy();
     expect(getByText('Представьтесь, чтобы мы могли обращаться к вам по имени')).toBeTruthy();
     expect(getByTestId('setup-firstname-input')).toBeTruthy();
-    expect(getByTestId('setup-lastname-input')).toBeTruthy();
     expect(getByTestId('setup-continue-button')).toBeTruthy();
   });
 
@@ -84,7 +83,6 @@ describe('SetupProfileScreen', () => {
 
     // Заполняем форму
     fireEvent.changeText(getByTestId('setup-firstname-input'), 'Иван');
-    fireEvent.changeText(getByTestId('setup-lastname-input'), 'Иванов');
 
     // Нажимаем «Продолжить»
     await act(async () => {
@@ -95,7 +93,6 @@ describe('SetupProfileScreen', () => {
       expect(mockUpsert).toHaveBeenCalledWith({
         id: 'user-123',
         first_name: 'Иван',
-        last_name: 'Иванов',
         phone: '+79991234567',
       });
       expect(mockRefreshProfile).toHaveBeenCalledTimes(1);
@@ -123,30 +120,4 @@ describe('SetupProfileScreen', () => {
     });
   });
 
-  it('сохраняет без фамилии (опциональное поле)', async () => {
-    const mockUpsert = jest.fn().mockReturnValue({
-      data: null,
-      error: null,
-    });
-    (supabase.from as jest.Mock).mockReturnValue({ upsert: mockUpsert });
-    mockRefreshProfile.mockResolvedValue(undefined);
-
-    const { getByTestId } = render(<SetupProfileScreen />);
-
-    // Заполняем только имя
-    fireEvent.changeText(getByTestId('setup-firstname-input'), 'Мария');
-
-    await act(async () => {
-      fireEvent.press(getByTestId('setup-continue-button'));
-    });
-
-    await waitFor(() => {
-      expect(mockUpsert).toHaveBeenCalledWith({
-        id: 'user-123',
-        first_name: 'Мария',
-        last_name: null,
-        phone: '+79991234567',
-      });
-    });
-  });
 });

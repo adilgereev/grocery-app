@@ -17,7 +17,7 @@ export function useSetupProfileForm() {
     formState: { errors },
   } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
-    defaultValues: { first_name: '', last_name: '' },
+    defaultValues: { first_name: '' },
   });
 
   const onSave = async (formData: ProfileFormData) => {
@@ -31,7 +31,6 @@ export function useSetupProfileForm() {
       // Используем upsert — профиль может ещё не существовать в БД
       await upsertUserProfile(session.user.id, {
         first_name: formData.first_name,
-        last_name: formData.last_name || null,
         phone,
       });
       // Обновляем профиль в контексте → layout перенаправит в табы

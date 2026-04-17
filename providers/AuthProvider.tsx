@@ -86,7 +86,6 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         const { error: upsertError } = await supabase.from('profiles').upsert({
           id: userId,
           first_name: null,
-          last_name: null,
           phone,
         });
         if (upsertError) throw upsertError;

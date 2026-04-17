@@ -1,34 +1,34 @@
 ---
 name: supabase-sync
-description: Pull current Supabase DB structure, apply local migrations, and update TypeScript types.
+description: Apply local migrations and update TypeScript types. Local DB only — no remote sync.
 ---
-# Supabase Sync Workflow
+# Supabase Local Workflow
+
+⚠️ **Только локальная БД. Remote sync не используется.**
 
 ⚠️ **Все шаги строго последовательны — каждый зависит от предыдущего.**
 
-This workflow ensures your local development state is in sync with the current Supabase database.
+1. **Написать миграцию** — Claude создаёт файл `supabase/migrations/<timestamp>_<name>.sql`.
 
-1. **Check current status**:
-   ```powershell
-   npx supabase status
+2. **Применить миграцию локально** — ⚠️ **только пользователь вручную**:
+   ```bash
+   npx supabase migration up
    ```
+   > Применяет только новые миграции, данные сохраняются.
 
-2. **Pull structural changes** (only if modified via Dashboard UI):
-   ```powershell
-   npm run supabase:pull
-   ```
+   > ⚠️ `supabase db reset` — только в исключительных случаях (сломана БД, нужен чистый старт). Удаляет все данные и пересоздаёт БД из миграций + `seed.sql`.
 
-3. **Apply local migrations to the cloud** — ⚠️ **только пользователь вручную, не Claude**:
-   ```powershell
-   npm run supabase:push
-   ```
-
-4. **Update TypeScript types** — после подтверждения шага 3:
-   ```powershell
+3. **Обновить TypeScript типы** — после подтверждения шага 2 Claude запускает самостоятельно:
+   ```bash
    npm run supabase:types
    ```
 
-5. **Verify schema update**:
-   ```powershell
-   npx supabase migration list
+4. **Синхронизировать типы с business-admin** — вручную скопировать:
+   ```
+   types/supabase.ts → business-admin/src/types/supabase.ts
+   ```
+
+5. **Перезагрузить кеш PostgREST** (при добавлении новых колонок):
+   ```sql
+   NOTIFY pgrst, 'reload schema';
    ```

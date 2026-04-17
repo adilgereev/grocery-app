@@ -26,7 +26,6 @@ const mockSession = {
 
 const mockProfileData = {
   first_name: 'Иван',
-  last_name: 'Иванов',
   phone: '+79991234567',
 };
 
@@ -117,10 +116,9 @@ describe('useProfileForm', () => {
     expect(authApi.fetchUserProfile).not.toHaveBeenCalled();
   });
 
-  it('обновляет phone при загрузке профиля без first_name и last_name', async () => {
+  it('обновляет phone при загрузке профиля без first_name', async () => {
     (authApi.fetchUserProfile as jest.Mock).mockResolvedValue({
       first_name: null,
-      last_name: null,
       phone: '+79999999999',
     });
 

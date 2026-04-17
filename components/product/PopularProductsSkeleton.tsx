@@ -1,13 +1,16 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView, useWindowDimensions } from 'react-native';
 import Skeleton from '@/components/ui/Skeleton';
-import { Spacing, Radius, Colors } from '@/constants/theme';
+import { Spacing, Radius, Colors, Shadows } from '@/constants/theme';
 
 interface PopularProductsSkeletonProps {
   count?: number;
 }
 
 export default function PopularProductsSkeleton({ count = 4 }: PopularProductsSkeletonProps) {
+  const { width } = useWindowDimensions();
+  const cardWidth = Math.round((width - 32 - 16) / 2);
+
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -20,21 +23,17 @@ export default function PopularProductsSkeleton({ count = 4 }: PopularProductsSk
         contentContainerStyle={styles.scrollContent}
       >
         {Array.from({ length: count }).map((_, i) => (
-          <View key={i} style={styles.card}>
-            {/* Имитация картинки с плавающей кнопкой */}
-            <View style={styles.imageWrapper}>
-              <Skeleton width="100%" height={110} borderRadius={0} />
-              <View style={styles.floatingButton}>
-                <Skeleton width={32} height={32} borderRadius={16} />
-              </View>
+          <View key={i} style={[styles.card, { width: cardWidth }]}>
+            <View style={[styles.imageWrapper, { height: cardWidth }]}>
+              <Skeleton width="100%" height="100%" borderRadius={Radius.l} />
             </View>
-            
             <View style={styles.info}>
-              {/* Имитация названия (1 строка для чистоты) */}
-              <Skeleton width="90%" height={14} borderRadius={4} style={styles.skeletonText} />
-              
-              {/* Футер: только цена */}
-              <Skeleton width="50%" height={16} borderRadius={4} />
+              <Skeleton width="50%" height={18} borderRadius={4} style={styles.skeletonPrice} />
+              <Skeleton width="90%" height={14} borderRadius={4} style={styles.skeletonName} />
+              <Skeleton width="85%" height={14} borderRadius={4} style={styles.skeletonName} />
+            </View>
+            <View style={styles.action}>
+              <Skeleton width="100%" height={40} borderRadius={Radius.pill} />
             </View>
           </View>
         ))}
@@ -58,28 +57,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.m,
   },
   card: {
-    width: 140,
-    height: 180,
     marginRight: Spacing.m,
     backgroundColor: Colors.light.card,
-    borderRadius: Radius.l,
-    padding: 0,
-    overflow: 'hidden',
+    borderRadius: Radius.xxl,
+    padding: Spacing.m,
+    marginBottom: Spacing.m,
+    ...Shadows.md,
   },
   imageWrapper: {
-    position: 'relative',
-    height: 110,
     width: '100%',
-  },
-  floatingButton: {
-    position: 'absolute',
-    bottom: 8,
-    right: 8,
+    borderRadius: Radius.l,
+    overflow: 'hidden',
+    marginBottom: Spacing.s,
   },
   info: {
-    padding: Spacing.s,
     flex: 1,
-    justifyContent: 'center',
+    marginBottom: Spacing.s,
   },
-  skeletonText: { marginBottom: 8 },
+  skeletonPrice: { marginBottom: 4 },
+  skeletonName: { marginBottom: 4 },
+  action: {},
 });

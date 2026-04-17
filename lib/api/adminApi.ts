@@ -9,4 +9,4 @@ export * from './admin/productsApi';
 export * from './admin/ordersApi';
 
 // Реэкспорт типов
-export type { AdminOrderItem, AdminOrderWithDetails } from './admin/ordersApi';
+export type { AdminOrderWithDetails } from './admin/ordersApi';

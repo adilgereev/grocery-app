@@ -134,6 +134,7 @@ export default function HomeScreen() {
         products={popularProducts}
         loading={popularLoading}
         onProductPress={(id) => router.push(`/product/${id}`)}
+        onSeeAll={() => router.push('/search')}
       />
       {categoriesSection}
     </>
