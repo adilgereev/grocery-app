@@ -6,7 +6,6 @@ import { Colors, Radius, Shadows, Spacing } from '@/constants/theme';
 import { useSetupProfileForm } from '@/hooks/useSetupProfileForm';
 import SetupProfileHeader from '@/components/profile/SetupProfileHeader';
 import NameInputs from '@/components/profile/NameInputs';
-import ConsentCheckbox from '@/components/profile/ConsentCheckbox';
 import SaveButton from '@/components/profile/SaveButton';
 
 export default function SetupProfileScreen() {
@@ -31,7 +30,6 @@ export default function SetupProfileScreen() {
             <SetupProfileHeader />
             <View style={styles.card}>
               <NameInputs control={control} errors={errors} testIdPrefix="setup" />
-              <ConsentCheckbox control={control} error={errors.terms_accepted} />
               {error && <Text style={styles.errorText}>{error}</Text>}
               <SaveButton
                 testID="setup-continue-button"

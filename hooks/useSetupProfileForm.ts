@@ -4,7 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useAuth } from '@/providers/AuthProvider';
 import { upsertUserProfile } from '@/lib/api/authApi';
 import { logger } from '@/lib/utils/logger';
-import { setupProfileSchema, SetupProfileFormData } from '@/lib/utils/schemas';
+import { profileSchema, ProfileFormData } from '@/lib/utils/schemas';
 import { PRIVACY_POLICY_VERSION } from '@/constants/legal';
 
 export function useSetupProfileForm() {
@@ -16,12 +16,12 @@ export function useSetupProfileForm() {
     control,
     handleSubmit,
     formState: { errors },
-  } = useForm<SetupProfileFormData>({
-    resolver: zodResolver(setupProfileSchema),
-    defaultValues: { first_name: '', terms_accepted: false },
+  } = useForm<ProfileFormData>({
+    resolver: zodResolver(profileSchema),
+    defaultValues: { first_name: '' },
   });
 
-  const onSave = async (formData: SetupProfileFormData) => {
+  const onSave = async (formData: ProfileFormData) => {
     if (!session?.user?.id) return;
     try {
       setSaving(true);

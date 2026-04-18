@@ -7,7 +7,7 @@ export const loginStyles = StyleSheet.create({
     position: 'absolute',
     top: Platform.OS === 'ios' ? 50 : 30,
     left: 10,
-    padding: 10,
+    padding: Spacing.s,
     zIndex: 100,
   },
   keyboardView: { flex: 1 },
@@ -17,13 +17,6 @@ export const loginStyles = StyleSheet.create({
   header: {
     alignItems: 'center',
     marginBottom: Spacing.xl,
-  },
-  logoContainer: {
-    width: 84, height: 84,
-    backgroundColor: Colors.light.primary,
-    borderRadius: Radius.xxl, justifyContent: 'center', alignItems: 'center',
-    marginBottom: Spacing.m,
-    ...Shadows.md,
   },
   appName: {
     fontSize: 28, fontWeight: '700', color: Colors.light.text,
@@ -43,7 +36,7 @@ export const loginStyles = StyleSheet.create({
     borderColor: Colors.light.glassBorder,
   },
   formTitle: {
-    fontSize: 24, fontWeight: '700', color: Colors.light.text, marginBottom: 8,
+    fontSize: 24, fontWeight: '700', color: Colors.light.text, marginBottom: Spacing.xs,
   },
   formHint: {
     fontSize: 14, color: Colors.light.textSecondary, lineHeight: 20,
@@ -55,7 +48,7 @@ export const loginStyles = StyleSheet.create({
     backgroundColor: Colors.light.background,
     borderWidth: 1.5,
     borderColor: Colors.light.border,
-    borderRadius: Radius.m,
+    borderRadius: Radius.pill,
     paddingHorizontal: Spacing.m,
     height: 56,
     marginBottom: Spacing.m,
@@ -70,7 +63,7 @@ export const loginStyles = StyleSheet.create({
   countryCode: { color: Colors.light.text, fontWeight: '700' },
 
   primaryButton: {
-    backgroundColor: Colors.light.primary, borderRadius: Radius.m,
+    backgroundColor: Colors.light.primary, borderRadius: Radius.pill,
     height: 54, justifyContent: 'center', alignItems: 'center',
     ...Shadows.sm,
   },
@@ -80,13 +73,13 @@ export const loginStyles = StyleSheet.create({
   otpBackButton: {
     flexDirection: 'row', alignItems: 'center', marginBottom: Spacing.m,
   },
-  backButtonText: { marginLeft: 8, color: Colors.light.textSecondary, fontWeight: '600' },
+  backButtonText: { marginLeft: Spacing.xs, color: Colors.light.textSecondary, fontWeight: '600' },
   otpContainer: {
     flexDirection: 'row', justifyContent: 'space-between', marginTop: Spacing.s,
   },
   otpInput: {
     width: 60, height: 64,
-    borderWidth: 2, borderColor: Colors.light.border, borderRadius: Radius.m,
+    borderWidth: 2, borderColor: Colors.light.border, borderRadius: Radius.l,
     fontSize: 24, fontWeight: '700', color: Colors.light.text,
     textAlign: 'center', backgroundColor: Colors.light.borderLight,
   },
@@ -96,4 +89,15 @@ export const loginStyles = StyleSheet.create({
   resendTextActive: { color: Colors.light.primary },
   resendTextDisabled: { color: Colors.light.textLight },
   otpLoader: { marginTop: Spacing.m },
+  consentText: {
+    fontSize: 12,
+    color: Colors.light.textLight,
+    textAlign: 'center',
+    marginTop: Spacing.s,
+    lineHeight: 18,
+  },
+  consentLink: {
+    color: Colors.light.primary,
+    textDecorationLine: 'underline',
+  },
 });

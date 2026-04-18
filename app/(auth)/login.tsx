@@ -135,9 +135,6 @@ export default function Login() {
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
             <View style={[styles.innerContainer, { paddingBottom: insets.bottom }]}>
               <View style={[styles.header, { paddingTop: insets.top }]}>
-                <View style={styles.logoContainer}>
-                  <Ionicons name="basket" size={48} color={Colors.light.white} />
-                </View>
                 <Text style={styles.appName}>DELIVA</Text>
                 <Text style={styles.subtitle}>
                   Ваш личный маркет

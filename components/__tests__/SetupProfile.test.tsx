@@ -81,9 +81,8 @@ describe('SetupProfileScreen', () => {
 
     const { getByTestId } = render(<SetupProfileScreen />);
 
-    // Заполняем форму и принимаем политику
+    // Заполняем форму (согласие — clickwrap на экране телефона)
     fireEvent.changeText(getByTestId('setup-firstname-input'), 'Иван');
-    fireEvent.press(getByTestId('setup-terms-checkbox'));
 
     // Нажимаем «Продолжить»
     await act(async () => {
@@ -113,7 +112,6 @@ describe('SetupProfileScreen', () => {
     const { getByTestId, getByText } = render(<SetupProfileScreen />);
 
     fireEvent.changeText(getByTestId('setup-firstname-input'), 'Иван');
-    fireEvent.press(getByTestId('setup-terms-checkbox'));
 
     await act(async () => {
       fireEvent.press(getByTestId('setup-continue-button'));

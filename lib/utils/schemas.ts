@@ -13,16 +13,6 @@ export const profileSchema = z.object({
 
 export type ProfileFormData = z.infer<typeof profileSchema>;
 
-/**
- * Схема первичной настройки профиля — включает обязательное согласие с политикой
- */
-export const setupProfileSchema = profileSchema.extend({
-  terms_accepted: z.boolean().refine(v => v === true, {
-    message: 'Необходимо принять политику конфиденциальности',
-  }),
-});
-
-export type SetupProfileFormData = z.infer<typeof setupProfileSchema>;
 
 /**
  * Схема валидации адреса
