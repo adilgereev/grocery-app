@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
-import { searchProducts, fetchRecommendedProducts } from '@/lib/api/productsApi';
+import { searchProducts, fetchPopularProducts } from '@/lib/api/productsApi';
 import { logger } from '@/lib/utils/logger';
 import { useToastStore } from '@/store/toastStore';
 import { Spacing } from '@/constants/theme';
@@ -37,7 +37,7 @@ export function useSearch() {
 
   const fetchRecommended = useCallback(async () => {
     try {
-      const data = await fetchRecommendedProducts(6);
+      const data = await fetchPopularProducts(6);
       setRecommended(data);
     } catch (e: unknown) {
       const errorMessage = e instanceof Error ? e.message : 'Не удалось загрузить рекомендации';
@@ -81,23 +81,21 @@ export function useSearch() {
     return () => clearTimeout(delayDebounceFn);
   }, [query, performSearch]);
 
-  const handleSearchSubmit = (text: string) => {
+  const handleSearchSubmit = useCallback((text: string) => {
     const trimmed = text.trim();
-    if (trimmed) {
-      performSearch(trimmed);
-    }
-  };
+    if (trimmed) performSearch(trimmed);
+  }, [performSearch]);
 
-  const handleTagPress = (text: string) => {
+  const handleTagPress = useCallback((text: string) => {
     setQuery(text);
-    handleSearchSubmit(text);
-  };
+    performSearch(text.trim());
+  }, [performSearch]);
 
-  const handleClear = () => {
+  const handleClear = useCallback(() => {
     setQuery('');
     setResults([]);
     setHasSearched(false);
-  };
+  }, []);
 
   return {
     query,

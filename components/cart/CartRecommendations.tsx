@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, Text, View, FlatList, ActivityIndicator } from 'react-native';
 import { useRouter } from 'expo-router';
-import { fetchRecommendedProducts } from '@/lib/api/productsApi';
+import { fetchPopularProducts } from '@/lib/api/productsApi';
 import { Product } from '@/types';
 import { logger } from '@/lib/utils/logger';
 import ProductCard from '@/components/product/ProductCard';
@@ -20,20 +20,20 @@ export default function CartRecommendations() {
     router.push(`/product/${item.id}?name=${encodeURIComponent(item.name)}`);
   }, [router]);
 
-  useEffect(() => {
-    fetchRecommended();
-  }, []);
-
-  const fetchRecommended = async () => {
+  const fetchRecommended = useCallback(async () => {
     try {
-      const data = await fetchRecommendedProducts(6);
+      const data = await fetchPopularProducts(6);
       setRecommended(data);
     } catch (err) {
       logger.error('Ошибка загрузки рекомендаций в корзине:', err);
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchRecommended();
+  }, [fetchRecommended]);
 
   if (isLoading) {
     return (
@@ -43,7 +43,14 @@ export default function CartRecommendations() {
     );
   }
 
-  if (recommended.length === 0) return null;
+  if (recommended.length === 0) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.title}>Может быть интересно?</Text>
+        <Text style={styles.empty}>Скоро здесь появятся рекомендации</Text>
+      </View>
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -83,7 +90,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.ml,
   },
   listContent: {
-    paddingHorizontal: 15,
+    paddingHorizontal: Spacing.m,
+  },
+  empty: {
+    color: Colors.light.textSecondary,
+    fontSize: FontSize.m,
+    paddingHorizontal: Spacing.ml,
   },
   cardWrapper: {
     width: 170,

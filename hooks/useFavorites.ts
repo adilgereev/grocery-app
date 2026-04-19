@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useWindowDimensions } from 'react-native';
 import { fetchFavoriteProducts as fetchFavoriteProductsByIds } from '@/lib/api/favoriteApi';
-import { fetchRecommendedProducts } from '@/lib/api/productsApi';
+import { fetchPopularProducts } from '@/lib/api/productsApi';
 import { logger } from '@/lib/utils/logger';
 import { useAuth } from '@/providers/AuthProvider';
 import { useFavoriteStore } from '@/store/favoriteStore';
@@ -41,7 +41,7 @@ export function useFavorites() {
     if (isRecommendedFetched.current) return;
     isRecommendedFetched.current = true;
     try {
-      const data = await fetchRecommendedProducts(6);
+      const data = await fetchPopularProducts(6);
       setRecommended(data);
     } catch (error) {
       isRecommendedFetched.current = false;
@@ -59,10 +59,15 @@ export function useFavorites() {
       return;
     }
 
-    const data = await fetchFavoriteProductsByIds(ids);
-    setProducts(data);
-    setLoading(false);
-    setRefreshing(false);
+    try {
+      const data = await fetchFavoriteProductsByIds(ids);
+      setProducts(data);
+    } catch (error) {
+      logger.error('Ошибка загрузки избранного:', error);
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
   }, [fetchRecommended]);
 
   useEffect(() => {

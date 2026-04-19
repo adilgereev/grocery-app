@@ -17,20 +17,6 @@ export async function searchProducts(query: string, limit: number = 30): Promise
 }
 
 /**
- * Получение рекомендованных товаров
- */
-export async function fetchRecommendedProducts(limit: number = 6): Promise<Product[]> {
-  const { data, error } = await supabase
-    .from('products')
-    .select('*')
-    .eq('is_active', true)
-    .limit(limit);
-
-  if (error) throw error;
-  return data || [];
-}
-
-/**
  * Получение товара по ID
  */
 export async function fetchProductById(id: string): Promise<Product | null> {
@@ -83,9 +69,11 @@ export async function fetchPopularProducts(limit: number = 10): Promise<Product[
   const { data, error } = await supabase
     .from('products')
     .select('*')
-    .order('price', { ascending: false })
-    .limit(limit);
+    .eq('is_active', true)
+    .order('created_at', { ascending: false })
+    .limit(limit * 3);
 
   if (error) throw error;
-  return data || [];
+  const all = data || [];
+  return all.sort(() => Math.random() - 0.5).slice(0, limit);
 }
