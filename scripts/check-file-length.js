@@ -14,6 +14,8 @@ const IGNORE_PATTERNS = [
   '.expo',
   'supabase/migrations',
   'supabase/seed.sql',
+  'app/privacy-policy.tsx',
+  'app/public-offer.tsx',
 ];
 
 function isIgnored(filePath) {

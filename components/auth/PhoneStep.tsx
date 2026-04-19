@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { View, Text, TextInput, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
 import { Colors } from '@/constants/theme';
 import { loginStyles as styles } from '@/components/auth/login.styles';
+import { LoginConsentText } from '@/components/auth/LoginConsentText';
 
 interface PhoneStepProps {
   phone: string;
@@ -13,7 +13,6 @@ interface PhoneStepProps {
 }
 
 export const PhoneStep: React.FC<PhoneStepProps> = ({ phone, loading, onPhoneChange, onContinue }) => {
-  const router = useRouter();
   const inputRef = useRef<TextInput>(null);
 
   // Храним только чистые цифры номера (без форматирования)
@@ -179,16 +178,7 @@ export const PhoneStep: React.FC<PhoneStepProps> = ({ phone, loading, onPhoneCha
         )}
       </TouchableOpacity>
 
-      <Text style={styles.consentText}>
-        Нажимая «Продолжить», вы даёте согласие на обработку персональных данных согласно{' '}
-        <Text
-          style={styles.consentLink}
-          onPress={() => router.push('/privacy-policy' as any)}
-          testID="login-terms-policy-link"
-        >
-          Политике конфиденциальности
-        </Text>
-      </Text>
+      <LoginConsentText />
     </>
   );
 };

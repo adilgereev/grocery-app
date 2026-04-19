@@ -101,6 +101,17 @@ export default function ProfileMenuCards({ isAdmin, onLogout, onNavigate }: Prof
         </TouchableOpacity>
         <View style={styles.divider} />
 
+        <TouchableOpacity
+          style={styles.menuItem}
+          onPress={() => onNavigate('/public-offer')}
+          testID="profile-menu-public-offer"
+        >
+          <Ionicons name="reader-outline" size={22} color={Colors.light.textSecondary} style={styles.menuItemIcon} />
+          <Text style={styles.menuText}>Публичная оферта</Text>
+          <Ionicons name="chevron-forward" size={18} color={Colors.light.border} />
+        </TouchableOpacity>
+        <View style={styles.divider} />
+
         <View style={styles.menuItem}>
           <Ionicons name="information-circle-outline" size={22} color={Colors.light.textSecondary} style={styles.menuItemIcon} />
           <Text style={styles.menuText}>О приложении</Text>

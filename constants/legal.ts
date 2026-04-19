@@ -1,1 +1,2 @@
 export const PRIVACY_POLICY_VERSION = '2026-04-18';
+export const PUBLIC_OFFER_VERSION = '2026-04-20';

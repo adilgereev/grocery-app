@@ -71,6 +71,7 @@ function RootLayoutNav() {
         <Stack.Screen name="orders" />
         <Stack.Screen name="order-success" />
         <Stack.Screen name="privacy-policy" />
+        <Stack.Screen name="public-offer" />
       </Stack>
       <StatusBar style="dark" />
     </ThemeProvider>

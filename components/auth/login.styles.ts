@@ -92,7 +92,7 @@ export const loginStyles = StyleSheet.create({
   consentText: {
     fontSize: 12,
     color: Colors.light.textLight,
-    textAlign: 'center',
+    textAlign: 'left',
     marginTop: Spacing.s,
     lineHeight: 18,
   },
