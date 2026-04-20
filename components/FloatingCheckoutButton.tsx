@@ -11,6 +11,7 @@ interface FloatingCheckoutButtonProps {
   scrollY: SharedValue<number>;
   layoutHeight: SharedValue<number>;
   contentHeight: SharedValue<number>;
+  checkoutButtonY: SharedValue<number>;
 }
 
 /**
@@ -24,16 +25,17 @@ export default function FloatingCheckoutButton({
   onCheckout,
   scrollY,
   layoutHeight,
-  contentHeight
+  contentHeight,
+  checkoutButtonY,
 }: FloatingCheckoutButtonProps) {
-  
+
   const floatingButtonStyle = useAnimatedStyle(() => {
-    // Если размеры еще не определены, скрываем кнопку
-    if (contentHeight.value === 0 || layoutHeight.value === 0) {
+    // Ждём первого layout
+    if (contentHeight.value === 0 || layoutHeight.value === 0 || checkoutButtonY.value === 0) {
       return { opacity: 0, transform: [{ translateY: 150 }] };
     }
 
-    // Если всё содержимое влезает на экран, плавающая кнопка не нужна
+    // Всё содержимое влезает на экран — плавающая кнопка не нужна
     if (contentHeight.value <= layoutHeight.value + 20) {
       return {
         opacity: withTiming(0, { duration: Duration.fast }),
@@ -41,12 +43,12 @@ export default function FloatingCheckoutButton({
       };
     }
 
-    // Скрываем, если дошли до низа (осталось меньше 120 пикселей)
-    const isAtBottom = scrollY.value + layoutHeight.value >= contentHeight.value - 120;
+    // Скрываем, когда статичная кнопка "Оформить заказ" входит в зону видимости
+    const isStaticButtonVisible = checkoutButtonY.value < scrollY.value + layoutHeight.value;
 
     return {
-      opacity: withTiming(isAtBottom ? 0 : 1, { duration: Duration.fast }),
-      transform: [{ translateY: withTiming(isAtBottom ? 150 : 0, { duration: Duration.default }) }],
+      opacity: withTiming(isStaticButtonVisible ? 0 : 1, { duration: Duration.fast }),
+      transform: [{ translateY: withTiming(isStaticButtonVisible ? 150 : 0, { duration: Duration.default }) }],
     };
   });
 

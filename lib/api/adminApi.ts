@@ -4,7 +4,7 @@
  * Файл декомпозирован на модули: categories, products, orders.
  */
 
-export * from './admin/categoriesApi';
-export * from './admin/productsApi';
-export * from './admin/ordersApi';
+export * from "./admin/categoriesApi";
+export * from "./admin/ordersApi";
+export * from "./admin/productsApi";
 

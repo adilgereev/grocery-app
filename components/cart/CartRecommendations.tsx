@@ -1,29 +1,33 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { StyleSheet, Text, View, FlatList, ActivityIndicator } from 'react-native';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { ActivityIndicator, FlatList, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { fetchPopularProducts } from '@/lib/api/productsApi';
 import { Product } from '@/types';
 import { logger } from '@/lib/utils/logger';
 import ProductCard from '@/components/product/ProductCard';
-import { Spacing, FontSize, Colors } from '@/constants/theme';
+import { Colors, FontSize, Spacing } from '@/constants/theme';
 
-/**
- * Блок рекомендаций для пустой корзины.
- * Вынесен из основного экрана для оптимизации и чистоты кода.
- */
-export default function CartRecommendations() {
+interface Props {
+  excludeIds?: string[];
+}
+
+export default function CartRecommendations({ excludeIds }: Props) {
   const router = useRouter();
-  const [recommended, setRecommended] = useState<Product[]>([]);
+  const { width: screenWidth } = useWindowDimensions();
+  const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const handleProductPress = useCallback((item: Product) => {
-    router.push(`/product/${item.id}?name=${encodeURIComponent(item.name)}`);
-  }, [router]);
+  const handleProductPress = useCallback(
+    (item: Product) => {
+      router.push(`/product/${item.id}?name=${encodeURIComponent(item.name)}`);
+    },
+    [router],
+  );
 
   const fetchRecommended = useCallback(async () => {
     try {
-      const data = await fetchPopularProducts(6);
-      setRecommended(data);
+      const data = await fetchPopularProducts(12);
+      setProducts(data);
     } catch (err) {
       logger.error('Ошибка загрузки рекомендаций в корзине:', err);
     } finally {
@@ -34,6 +38,28 @@ export default function CartRecommendations() {
   useEffect(() => {
     fetchRecommended();
   }, [fetchRecommended]);
+
+  const recommended = useMemo(() => {
+    const filtered = excludeIds?.length
+      ? products.filter((p) => !excludeIds.includes(p.id))
+      : products;
+    return filtered.slice(0, 6);
+  }, [products, excludeIds]);
+
+  // Spacing.ml * 2 — отступы родителя, Spacing.s — зазор между колонками
+  const cardWidth = useMemo(
+    () => (screenWidth - Spacing.ml * 2 - Spacing.s) / 2,
+    [screenWidth],
+  );
+
+  const renderItem = useCallback(
+    ({ item, index }: { item: Product; index: number }) => (
+      <View style={{ width: cardWidth }}>
+        <ProductCard item={item} index={index} onPress={() => handleProductPress(item)} />
+      </View>
+    ),
+    [cardWidth, handleProductPress],
+  );
 
   if (isLoading) {
     return (
@@ -58,16 +84,11 @@ export default function CartRecommendations() {
       <FlatList
         data={recommended}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <View style={styles.cardWrapper}>
-            <ProductCard item={item} onPress={() => handleProductPress(item)} />
-          </View>
-        )}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.listContent}
-        snapToInterval={170 + Spacing.m} // Ширина карточки + отступ
-        decelerationRate="fast"
+        numColumns={2}
+        scrollEnabled={false}
+        columnWrapperStyle={styles.row}
+        renderItem={renderItem}
+        showsVerticalScrollIndicator={false}
       />
     </View>
   );
@@ -87,18 +108,13 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: Colors.light.text,
     marginBottom: Spacing.m,
-    paddingHorizontal: Spacing.ml,
   },
-  listContent: {
-    paddingHorizontal: Spacing.m,
+  row: {
+    justifyContent: 'space-between',
+    marginBottom: Spacing.s,
   },
   empty: {
     color: Colors.light.textSecondary,
     fontSize: FontSize.m,
-    paddingHorizontal: Spacing.ml,
-  },
-  cardWrapper: {
-    width: 170,
-    marginHorizontal: 5,
   },
 });

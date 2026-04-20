@@ -1,13 +1,14 @@
 import CartItem from '@/components/cart/CartItem';
 import CartPriceSummary from '@/components/cart/CartPriceSummary';
+import CartRecommendations from '@/components/cart/CartRecommendations';
 import EmptyCart from '@/components/cart/EmptyCart';
 import UndoToast from '@/components/cart/UndoToast';
 import FloatingCheckoutButton from '@/components/FloatingCheckoutButton';
 import { Colors, FontSize, Radius, Shadows, Spacing } from '@/constants/theme';
 import { useCart } from '@/hooks/useCart';
 import { Ionicons } from '@expo/vector-icons';
-import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useCallback } from 'react';
+import { LayoutChangeEvent, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Animated, { useAnimatedScrollHandler, useSharedValue } from 'react-native-reanimated';
 
 export default function CartScreen() {
@@ -32,6 +33,14 @@ export default function CartScreen() {
   const scrollY = useSharedValue(0);
   const layoutHeight = useSharedValue(0);
   const contentHeight = useSharedValue(0);
+  const checkoutButtonY = useSharedValue(0);
+
+  const handleCheckoutButtonLayout = useCallback(
+    (e: LayoutChangeEvent) => {
+      checkoutButtonY.value = e.nativeEvent.layout.y;
+    },
+    [checkoutButtonY],
+  );
 
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (event) => {
@@ -93,9 +102,12 @@ export default function CartScreen() {
           onPress={navigateToCheckout}
           activeOpacity={0.9}
           testID="cart-checkout-btn"
+          onLayout={handleCheckoutButtonLayout}
         >
           <Text style={styles.checkoutText}>Оформить заказ</Text>
         </TouchableOpacity>
+
+        <CartRecommendations excludeIds={items.map((i) => i.product.id)} />
       </Animated.ScrollView>
 
       <FloatingCheckoutButton
@@ -105,6 +117,7 @@ export default function CartScreen() {
         scrollY={scrollY}
         layoutHeight={layoutHeight}
         contentHeight={contentHeight}
+        checkoutButtonY={checkoutButtonY}
       />
 
       {pendingRemoval && (
