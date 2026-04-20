@@ -6,7 +6,7 @@ import { authPhoneSchema, otpSchema } from '@/lib/schemas';
 import { normalizePhone, formatPhoneDisplay, generatePasswordFromPhone, phoneToEmail } from '@/lib/authUtils';
 import { useAuth } from '@/contexts/AuthContext';
 
-export type Step = 'phone' | 'otp';
+type Step = 'phone' | 'otp';
 
 /**
  * Хук логики авторизации для декомпозиции LoginPage.

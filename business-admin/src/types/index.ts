@@ -1,21 +1,5 @@
 import type { Enums } from './supabase';
 
-export type PaymentMethod = Enums<'payment_method'>;
-
-export interface Address {
-  id: string;
-  text: string;
-  house?: string;
-  entrance?: string;
-  floor?: string;
-  intercom?: string;
-  apartment?: string;
-  comment?: string;
-  is_selected: boolean;
-  lat?: number;
-  lon?: number;
-}
-
 export interface Category {
   id: string;
   name: string;
@@ -25,19 +9,6 @@ export interface Category {
   sort_order: number;
   is_active: boolean;
   image_transformations?: string | null;
-  created_at?: string;
-}
-
-export interface CategoryWithSubcategories extends Category {
-  subcategories: Category[];
-}
-
-export interface CategoryWithHierarchy extends Category {
-  parent_name: string | null;
-  parent_slug: string | null;
-  parent_image_url: string | null;
-  is_root: boolean | null;
-  subcategory_count: number | null;
   created_at?: string;
 }
 
@@ -74,18 +45,6 @@ export interface Order {
 
 export interface ProductWithCategory extends Product {
   category?: { name: string } | null;
-}
-
-export interface Story {
-  id: string;
-  title: string;
-  subtitle: string | null;
-  image_url: string;
-  type: 'promo' | 'new_product';
-  is_active: boolean;
-  sort_order: number;
-  expires_at: string | null;
-  created_at?: string;
 }
 
 export interface Profile {

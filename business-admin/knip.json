@@ -4,6 +4,7 @@
   "ignoreDependencies": [
     "tailwindcss-animate"
   ],
+  "ignore": ["src/types/supabase.ts"],
   "rules": {
     "files": "warn",
     "dependencies": "error",
