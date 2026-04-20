@@ -6,6 +6,7 @@ import OrderDetailsHeader from '@/components/order/OrderDetailsHeader';
 import OrderDetailsLoadingState from '@/components/order/OrderDetailsLoadingState';
 import OrderDetailsErrorState from '@/components/order/OrderDetailsErrorState';
 import OrderTotalCard from '@/components/order/OrderTotalCard';
+import OrderStatusHistory from '@/components/order/OrderStatusHistory';
 import { STATUS_CONFIG, PAYMENT_CONFIG, TRACKER_STEPS } from '@/components/order/orderConfig';
 import { Colors, Spacing, Shadows, Radius } from '@/constants/theme';
 import { cleanAddress } from '@/lib/utils/addressUtils';
@@ -13,13 +14,14 @@ import { useOrderDetails } from '@/hooks/useOrderDetails';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function OrderDetailsScreen() {
   const params = useLocalSearchParams();
   const id = Array.isArray(params.id) ? params.id[0] : params.id;
   const router = useRouter();
 
-  const { order, orderItems, loading, error, fetchOrderDetails, formatDate, handleRepeatOrder } = useOrderDetails(id);
+  const { order, orderItems, statusHistory, loading, error, fetchOrderDetails, formatDate, handleRepeatOrder } = useOrderDetails(id);
 
   if (loading) {
     return <OrderDetailsLoadingState />;
@@ -35,7 +37,7 @@ export default function OrderDetailsScreen() {
   const currentStepIndex = status === 'pending' ? 0 : TRACKER_STEPS.indexOf(status);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView edges={['bottom']} style={styles.container}>
       <OrderDetailsHeader orderId={order.id} onBack={() => router.back()} />
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
@@ -56,13 +58,13 @@ export default function OrderDetailsScreen() {
           <OrderSection
             title="Способ оплаты"
             subtitle={PAYMENT_CONFIG[order.payment_method].label}
-            icon={PAYMENT_CONFIG[order.payment_method].icon as any}
+            icon={PAYMENT_CONFIG[order.payment_method].icon}
           />
         )}
 
-        {order.comment ? (
+        {order.comment && (
           <OrderSection title="Комментарий к заказу" subtitle={order.comment} icon="chatbubble-ellipses-outline" />
-        ) : null}
+        )}
 
         <Text style={styles.sectionTitle}>Товары · {orderItems.length} шт</Text>
         <View style={styles.itemsCard}>
@@ -72,9 +74,10 @@ export default function OrderDetailsScreen() {
         </View>
 
         <OrderTotalCard totalAmount={order.total_amount} itemCount={orderItems.length} onRepeat={handleRepeatOrder} />
+        {statusHistory.length > 0 && <OrderStatusHistory history={statusHistory} />}
         <View style={styles.footerSpacer} />
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 }
 

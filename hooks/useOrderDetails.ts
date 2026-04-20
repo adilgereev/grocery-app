@@ -3,12 +3,13 @@ import { useRouter } from 'expo-router';
 import { fetchOrderDetails as fetchOrderDetailsApi, OrderItem } from '@/lib/api/orderApi';
 import { supabase } from '@/lib/services/supabase';
 import { useCartStore } from '@/store/cartStore';
-import { Product, Order } from '@/types';
+import { Product, Order, OrderStatusHistory } from '@/types';
 import { logger } from '@/lib/utils/logger';
 
 interface UseOrderDetailsReturn {
   order: Order | null;
   orderItems: OrderItem[];
+  statusHistory: OrderStatusHistory[];
   loading: boolean;
   error: string | null;
   fetchOrderDetails: () => Promise<void>;
@@ -22,6 +23,7 @@ export function useOrderDetails(id: string): UseOrderDetailsReturn {
 
   const [order, setOrder] = useState<Order | null>(null);
   const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
+  const [statusHistory, setStatusHistory] = useState<OrderStatusHistory[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -32,6 +34,7 @@ export function useOrderDetails(id: string): UseOrderDetailsReturn {
       const result = await fetchOrderDetailsApi(id);
       setOrder(result.order);
       setOrderItems(result.items || []);
+      setStatusHistory(result.history || []);
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'Не удалось загрузить детали заказа';
       logger.error('Ошибка загрузки деталей заказа:', err);
@@ -51,20 +54,20 @@ export function useOrderDetails(id: string): UseOrderDetailsReturn {
     }
   }, [id, fetchOrderDetails]);
 
-  const formatDate = (dateString: string) => {
+  const formatDate = useCallback((dateString: string) => {
     return new Date(dateString).toLocaleDateString('ru-RU', {
       day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit'
     });
-  };
+  }, []);
 
-  const handleRepeatOrder = () => {
+  const handleRepeatOrder = useCallback(() => {
     if (!orderItems.length) return;
     const batch = orderItems
       .filter(item => item.product !== undefined)
       .map(item => ({ product: item.product as Product, quantity: item.quantity }));
     addItemsBatch(batch);
-    router.navigate('/(tabs)/(cart)' as any);
-  };
+    router.push('/(tabs)/(cart)');
+  }, [orderItems, addItemsBatch, router]);
 
-  return { order, orderItems, loading, error, fetchOrderDetails, formatDate, handleRepeatOrder };
+  return { order, orderItems, statusHistory, loading, error, fetchOrderDetails, formatDate, handleRepeatOrder };
 }

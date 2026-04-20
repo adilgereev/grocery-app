@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/theme';
 import { PaymentMethod } from '@/types';
 
@@ -9,7 +10,7 @@ export const STATUS_CONFIG: Record<string, { label: string; shortLabel: string; 
   cancelled:  { label: 'Отменён',        shortLabel: 'Отменён',  icon: 'close-circle-outline',   color: Colors.light.error,   bg: Colors.light.errorLight,   emoji: '❌' },
 };
 
-export const PAYMENT_CONFIG: Record<PaymentMethod, { label: string; icon: string }> = {
+export const PAYMENT_CONFIG: Record<PaymentMethod, { label: string; icon: keyof typeof Ionicons.glyphMap }> = {
   cash: { label: 'Наличными курьеру', icon: 'cash-outline' },
   online: { label: 'Онлайн', icon: 'card' },
 };

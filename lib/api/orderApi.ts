@@ -1,12 +1,10 @@
 import { supabase } from '@/lib/services/supabase';
-import { Order } from '@/types';
+import { Order, OrderStatusHistory } from '@/types';
 
-/**
- * Тип заказа с его позициями для экрана деталей
- */
 interface OrderWithItems {
   order: Order;
   items: OrderItem[];
+  history: OrderStatusHistory[];
 }
 
 /**
@@ -86,20 +84,26 @@ export async function fetchOrders(userId: string): Promise<Order[]> {
   return (data || []) as Order[];
 }
 
-/**
- * Получение деталей заказа и его позиций
- */
 export async function fetchOrderDetails(orderId: string): Promise<OrderWithItems> {
   const [orderQuery, itemsQuery] = await Promise.all([
-    supabase.from('orders').select('*').eq('id', orderId).single(),
-    supabase.from('order_items').select('*, product:product_id(*)').eq('order_id', orderId)
+    supabase
+      .from('orders')
+      .select('*, history:order_status_history(*)')
+      .eq('id', orderId)
+      .single(),
+    supabase.from('order_items').select('*, product:product_id(*)').eq('order_id', orderId),
   ]);
 
   if (orderQuery.error) throw orderQuery.error;
   if (itemsQuery.error) throw itemsQuery.error;
 
+  const { history, ...order } = orderQuery.data as any;
+  const sortedHistory = ((history as OrderStatusHistory[]) || [])
+    .sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime());
+
   return {
-    order: orderQuery.data,
-    items: itemsQuery.data || []
+    order: order as Order,
+    items: itemsQuery.data || [],
+    history: sortedHistory,
   };
 }

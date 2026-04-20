@@ -73,6 +73,16 @@ export interface Order {
   created_at?: string;
 }
 
+export interface OrderStatusHistory {
+  id: string;
+  order_id: string;
+  status: Enums<'order_status'>;
+  changed_by: string | null;
+  changed_by_role: string;
+  note: string | null;
+  created_at: string;
+}
+
 export interface ProductWithCategory extends Product {
   category?: { name: string } | null;
 }
