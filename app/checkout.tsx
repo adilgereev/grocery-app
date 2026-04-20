@@ -16,6 +16,7 @@ import CheckoutAddress from '@/components/checkout/CheckoutAddress';
 import CheckoutComment from '@/components/checkout/CheckoutComment';
 import PaymentSelector from '@/components/cart/PaymentSelector';
 import OrderReceipt from '@/components/cart/OrderReceipt';
+import PromoCodeInput from '@/components/cart/PromoCodeInput';
 
 import { Colors, FontSize, Radius, Shadows, Spacing } from '@/constants/theme';
 import { useCheckout } from '@/hooks/useCheckout';
@@ -37,6 +38,8 @@ export default function CheckoutScreen() {
   const subtotal = useCartStore(state => state.subtotal);
   const deliveryFee = useCartStore(state => state.deliveryFee);
   const totalPrice = useCartStore(state => state.totalPrice);
+  const discount = useCartStore(state => state.discount);
+  const promoCode = useCartStore(state => state.promoCode);
 
   const { handleCheckout, handleSelectAddress, isSubmitting, selectedAddress } = useCheckout();
 
@@ -78,6 +81,8 @@ export default function CheckoutScreen() {
             disabled={isSubmitting}
           />
 
+          <PromoCodeInput />
+
           <View style={styles.paymentWrapper}>
             <Text style={styles.sectionLabel}>СПОСОБ ОПЛАТЫ</Text>
             <PaymentSelector
@@ -92,6 +97,8 @@ export default function CheckoutScreen() {
             subtotal={subtotal}
             deliveryFee={deliveryFee}
             totalPrice={totalPrice}
+            discount={discount}
+            promoCode={promoCode}
           />
         </ScrollView>
 

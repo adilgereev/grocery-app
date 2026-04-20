@@ -6,6 +6,7 @@ import { createOrder, createOrderItems } from '@/lib/api/orderApi';
 import { useAuth } from '@/providers/AuthProvider';
 import { useCartStore } from '@/store/cartStore';
 import { useAddressStore } from '@/store/addressStore';
+import { supabase } from '@/lib/services/supabase';
 import { formatFullAddress } from '@/lib/utils/addressFormatter';
 import { schedulePushNotification } from '@/lib/services/NotificationService';
 import { logger } from '@/lib/utils/logger';
@@ -20,13 +21,15 @@ export function useCheckout() {
   const { session } = useAuth();
   const items = useCartStore(state => state.items);
   const totalPrice = useCartStore(state => state.totalPrice);
+  const discount = useCartStore(state => state.discount);
+  const promoCode = useCartStore(state => state.promoCode);
   const clearCart = useCartStore(state => state.clearCart);
   const selectedAddress = useAddressStore(
     state => state.addresses.find(a => a.id === state.selectedAddressId)
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleCheckout = async (paymentMethod: PaymentMethod, comment?: string) => {
+  const handleCheckout = useCallback(async (paymentMethod: PaymentMethod, comment?: string) => {
     if (!session?.user) {
       router.push('/(auth)/login');
       return;
@@ -46,7 +49,9 @@ export function useCheckout() {
         totalPrice,
         formatFullAddress(selectedAddress),
         paymentMethod,
-        comment
+        comment,
+        promoCode,
+        discount,
       );
 
       // 2. Создаем позиции заказа через API
@@ -59,7 +64,16 @@ export function useCheckout() {
 
       await createOrderItems(orderItems);
 
-      // 3. Обработка успеха: хаптика, уведомления и редирект
+      // 3. Инкрементируем счётчик использований промокода
+      if (promoCode) {
+        try {
+          await supabase.rpc('increment_promo_used_count', { promo_code_text: promoCode });
+        } catch (rpcErr) {
+          logger.error('Не удалось обновить счётчик промокода:', rpcErr);
+        }
+      }
+
+      // 4. Обработка успеха: хаптика, уведомления и редирект
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
 
       // Планируем уведомления для имитации процесса доставки
@@ -74,7 +88,7 @@ export function useCheckout() {
         15
       );
 
-      // 4. Очистка и переход
+      // 5. Очистка и переход
       clearCart();
       router.replace({ pathname: '/order-success', params: { id: orderData.id } });
     } catch (err: unknown) {
@@ -91,7 +105,7 @@ export function useCheckout() {
     } finally {
       setIsSubmitting(false);
     }
-  };
+  }, [session?.user, items, selectedAddress, discount, promoCode, clearCart, router]);
 
   const handleSelectAddress = () => {
     if (!session?.user) {

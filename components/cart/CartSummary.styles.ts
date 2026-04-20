@@ -118,6 +118,11 @@ export const cartSummaryStyles = StyleSheet.create({
     color: Colors.light.primary,
     fontWeight: '700',
   },
+  receiptTextDiscount: {
+    fontSize: 15,
+    color: Colors.light.primary,
+    fontWeight: '700',
+  },
   receiptDivider: {
     height: 1,
     backgroundColor: Colors.light.borderLight,

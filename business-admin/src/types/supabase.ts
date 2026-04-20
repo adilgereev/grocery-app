@@ -213,8 +213,10 @@ export type Database = {
           comment: string | null
           created_at: string
           delivery_address: string
+          discount_amount: number | null
           id: string
           payment_method: Database["public"]["Enums"]["payment_method"]
+          promo_code: string | null
           status: Database["public"]["Enums"]["order_status"]
           total_amount: number
           user_id: string
@@ -223,8 +225,10 @@ export type Database = {
           comment?: string | null
           created_at?: string
           delivery_address: string
+          discount_amount?: number | null
           id?: string
           payment_method?: Database["public"]["Enums"]["payment_method"]
+          promo_code?: string | null
           status?: Database["public"]["Enums"]["order_status"]
           total_amount: number
           user_id: string
@@ -233,8 +237,10 @@ export type Database = {
           comment?: string | null
           created_at?: string
           delivery_address?: string
+          discount_amount?: number | null
           id?: string
           payment_method?: Database["public"]["Enums"]["payment_method"]
+          promo_code?: string | null
           status?: Database["public"]["Enums"]["order_status"]
           total_amount?: number
           user_id?: string
@@ -378,6 +384,45 @@ export type Database = {
         }
         Relationships: []
       }
+      promo_codes: {
+        Row: {
+          code: string
+          created_at: string | null
+          discount_type: string
+          discount_value: number
+          expires_at: string | null
+          id: string
+          is_active: boolean | null
+          max_uses: number | null
+          min_order_amount: number | null
+          used_count: number | null
+        }
+        Insert: {
+          code: string
+          created_at?: string | null
+          discount_type: string
+          discount_value: number
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_uses?: number | null
+          min_order_amount?: number | null
+          used_count?: number | null
+        }
+        Update: {
+          code?: string
+          created_at?: string | null
+          discount_type?: string
+          discount_value?: number
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          max_uses?: number | null
+          min_order_amount?: number | null
+          used_count?: number | null
+        }
+        Relationships: []
+      }
       stories: {
         Row: {
           created_at: string
@@ -451,6 +496,10 @@ export type Database = {
       }
     }
     Functions: {
+      increment_promo_used_count: {
+        Args: { promo_code_text: string }
+        Returns: undefined
+      }
       select_delivery_address: {
         Args: { p_address_id: string; p_user_id: string }
         Returns: undefined

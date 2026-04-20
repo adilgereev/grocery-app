@@ -29,7 +29,19 @@ export interface OrderItem {
 /**
  * Создание нового заказа
  */
-export async function createOrder(userId: string, totalAmount: number, address: string, paymentMethod: 'online' | 'cash', comment?: string): Promise<Order> {
+export async function createOrder(
+  userId: string,
+  totalAmount: number,
+  address: string,
+  paymentMethod: 'online' | 'cash',
+  comment?: string,
+  promoCode?: string | null,
+  discountAmount?: number,
+): Promise<Order> {
+  if (discountAmount && discountAmount > totalAmount) {
+    throw new Error('Скидка превышает сумму заказа');
+  }
+
   const { data, error } = await supabase
     .from('orders')
     .insert({
@@ -39,6 +51,8 @@ export async function createOrder(userId: string, totalAmount: number, address: 
       status: 'pending' as const,
       payment_method: paymentMethod,
       comment: comment?.trim() || null,
+      promo_code: promoCode ?? null,
+      discount_amount: discountAmount ?? 0,
     })
     .select()
     .single();

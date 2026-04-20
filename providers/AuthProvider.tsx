@@ -5,6 +5,7 @@ import { logger } from '@/lib/utils/logger';
 import { Profile } from '@/types';
 import { fetchUserProfile } from '@/lib/api/authApi';
 import { useAddressStore } from '@/store/addressStore';
+import { useCartStore } from '@/store/cartStore';
 
 type AuthContextType = {
   session: Session | null;
@@ -120,6 +121,9 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
       if (session) {
         // Загружаем профиль
         loadProfile(session.user.id);
+
+        // Проверяем сохранённый промокод — мог истечь пока приложение было закрыто
+        useCartStore.getState().revalidatePromoCode();
 
         // Асинхронно сверяем с сервером (вдруг юзер удален из базы)
         supabase.auth.getUser().then(({ error, data: { user } }) => {

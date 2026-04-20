@@ -66,6 +66,9 @@ export interface Order {
   total_amount: number;
   delivery_address: string;
   payment_method: Enums<'payment_method'>;
+  comment?: string | null;
+  promo_code?: string | null;
+  discount_amount?: number | null;
   created_at?: string;
 }
 

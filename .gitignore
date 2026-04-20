@@ -47,3 +47,9 @@ app-example
 /ios
 /android
 coverage/
+
+# Supabase SQL editor snippets
+supabase/snippets/
+
+# Supabase database dumps
+supabase/damps/

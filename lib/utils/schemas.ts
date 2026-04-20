@@ -106,3 +106,9 @@ export const productSchema = z.object({
 });
 
 export type ProductFormData = z.infer<typeof productSchema>;
+
+export const promoCodeSchema = z
+  .string()
+  .min(3, 'Минимум 3 символа')
+  .max(20, 'Максимум 20 символов')
+  .regex(/^[A-Z0-9_-]+$/, 'Только заглавные буквы, цифры, _ и -');
