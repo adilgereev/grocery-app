@@ -28,8 +28,8 @@ export interface CartState {
   revalidatePromoCode: () => Promise<void>;
 }
 
-export const DELIVERY_THRESHOLD = 700;
-export const DELIVERY_FEE = 90;
+const DELIVERY_THRESHOLD = 700;
+const DELIVERY_FEE = 90;
 
 export const calculateTotals = (items: CartItem[], discount: number = 0) => {
   const subtotal = items.reduce((total, item) => total + (Number(item.product.price) || 0) * item.quantity, 0);
