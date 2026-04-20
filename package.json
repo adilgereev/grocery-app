@@ -19,7 +19,7 @@
     "supabase:pull": "supabase db pull",
     "supabase:push": "supabase db push",
     "supabase:status": "supabase db status",
-    "knip": "knip"
+    "knip": "knip && npm run knip --prefix business-admin"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
@@ -79,8 +79,7 @@
     "knip": "^6.0.6",
     "react-test-renderer": "^19.1.0",
     "supabase": "^2.91.1",
-    "typescript": "~5.9.2",
-    "typescript-eslint": "^8.58.2"
+    "typescript": "~5.9.2"
   },
   "private": true
 }
