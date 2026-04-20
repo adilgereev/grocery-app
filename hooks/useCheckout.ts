@@ -105,7 +105,7 @@ export function useCheckout() {
     } finally {
       setIsSubmitting(false);
     }
-  }, [session?.user, items, selectedAddress, discount, promoCode, clearCart, router]);
+  }, [session?.user, items, totalPrice, selectedAddress, discount, promoCode, clearCart, router]);
 
   const handleSelectAddress = () => {
     if (!session?.user) {

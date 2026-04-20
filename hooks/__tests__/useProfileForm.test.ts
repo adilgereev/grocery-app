@@ -2,6 +2,8 @@ import { renderHook, waitFor } from '@testing-library/react-native';
 import { useProfileForm } from '../useProfileForm';
 import { useAuth } from '@/providers/AuthProvider';
 import * as authApi from '@/lib/api/authApi';
+
+import { useToastStore } from '@/store/toastStore';
 jest.mock('@/providers/AuthProvider', () => ({
   useAuth: jest.fn(),
 }));
@@ -18,8 +20,6 @@ jest.mock('@/lib/utils/logger', () => ({
 jest.mock('@/store/toastStore', () => ({
   useToastStore: { getState: jest.fn() },
 }));
-
-import { useToastStore } from '@/store/toastStore';
 
 const mockShowToast = jest.fn();
 

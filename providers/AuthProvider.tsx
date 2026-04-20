@@ -168,7 +168,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     });
 
     return () => subscription.unsubscribe();
-  }, []);
+  }, [loadProfile]);
 
   return (
     <AuthContext.Provider value={{ session, loading, profile, profileLoading, needsProfileSetup, refreshProfile }}>

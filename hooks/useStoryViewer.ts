@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Animated, Dimensions, PanResponder, PanResponderInstance } from 'react-native';
 import { Story } from '@/types';
 
-const { width: W, height: H } = Dimensions.get('window');
+const { height: H } = Dimensions.get('window');
 const STORY_DURATION = 5000;
 const SWIPE_CLOSE_THRESHOLD = 100;
 

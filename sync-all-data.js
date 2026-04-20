@@ -1,6 +1,4 @@
 const { createClient } = require('@supabase/supabase-js');
-const fs = require('fs');
-const { execSync } = require('child_process');
 
 require('dotenv').config({ path: '.env' });
 const remoteUrl = process.env.EXPO_PUBLIC_SUPABASE_URL;

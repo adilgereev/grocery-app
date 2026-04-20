@@ -4,7 +4,7 @@ import {
   updateOrderStatus,
 } from "@/lib/api/adminApi";
 import { supabase } from "@/lib/services/supabase";
-import { STATUSES, OrderStatus } from "@/constants/orderStatuses";
+import { OrderStatus } from "@/constants/orderStatuses";
 import { useCallback, useEffect, useState } from "react";
 import { Alert, Linking } from "react-native";
 

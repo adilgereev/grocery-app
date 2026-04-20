@@ -9,7 +9,8 @@
   ],
   "ignoreDependencies": [
     "expo-router/entry",
-    "babel-plugin-transform-import-meta"
+    "babel-plugin-transform-import-meta",
+    "typescript-eslint"
   ],
   "ignore": [
     "node_modules/**",

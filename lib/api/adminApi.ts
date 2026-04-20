@@ -8,5 +8,3 @@ export * from './admin/categoriesApi';
 export * from './admin/productsApi';
 export * from './admin/ordersApi';
 
-// Реэкспорт типов
-export type { AdminOrderWithDetails } from './admin/ordersApi';

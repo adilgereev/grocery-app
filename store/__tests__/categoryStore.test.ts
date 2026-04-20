@@ -1,4 +1,5 @@
 import { useCategoryStore } from '../categoryStore';
+import * as categoriesApi from '@/lib/api/categoriesApi';
 
 // Моки AsyncStorage теперь в jest.setup.js
 
@@ -23,11 +24,10 @@ const mockCategory = {
 };
 
 describe('useCategoryStore', () => {
-  let categoriesApi: any;
+
 
   beforeAll(() => {
-    // В Jest mock-модули можно получить через require
-    categoriesApi = require('@/lib/api/categoriesApi');
+    // В Jest mock-модули можно получить через импорт
   });
 
   beforeEach(() => {

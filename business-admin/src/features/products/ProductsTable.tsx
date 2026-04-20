@@ -5,13 +5,13 @@ import {
   TableCell,
   TableRow,
 } from "@/components/ui/table";
-import type { ProductWithCategory } from "@/types";
+import type { ProductWithCategory , Category } from "@/types";
 import { ProductTableRow } from "./ProductTableRow";
 import { ProductsTableFilters } from "./ProductsTableFilters";
 import { ProductsTableHeader } from "./ProductsTableHeader";
 import { ProductsCategoryRows } from "./ProductsCategoryRows";
 import { useProductsTableLogic } from "./useProductsTableLogic";
-import type { Category } from "@/types";
+
 
 interface ProductsTableProps {
   products: ProductWithCategory[];

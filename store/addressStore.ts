@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import { supabase } from '@/lib/services/supabase';
 import { fetchAddresses, createAddress, updateAddress, deleteAddress, markAddressAsSelected } from '@/lib/api/addressApi';
 import { getSession } from '@/lib/api/authApi';
 import { logger } from '@/lib/utils/logger';

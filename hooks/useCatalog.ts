@@ -3,7 +3,7 @@ import { Alert, LayoutAnimation } from 'react-native';
 import { useRouter } from 'expo-router';
 import { fetchAllProductsWithCategory, fetchAllCategories, deleteProduct, updateProduct } from '@/lib/api/adminApi';
 import { buildHierarchy, CatalogItem, RootHeaderItem, SubHeaderItem, ProductItem } from '@/lib/utils/catalogHierarchy';
-import { Category, ProductWithCategory } from '@/types';
+import { Category } from '@/types';
 
 export function useCatalog() {
   const router = useRouter();

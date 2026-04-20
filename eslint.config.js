@@ -15,10 +15,16 @@ module.exports = defineConfig([
       'react-native/no-inline-styles': 'error',
       'react-native/no-color-literals': 'error',
       'react-native/no-raw-text': 'off',
-      '@typescript-eslint/no-unused-vars': 'error',
     },
   },
   {
-    ignores: ['dist/*', '.expo/*'],
+    ignores: [
+      'dist/*',
+      '.expo/*',
+      'business-admin/*',
+      'supabase/functions/*',
+      'scripts/*',
+      'jest.setup.js'
+    ],
   },
 ]);

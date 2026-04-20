@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import { supabase } from '@/lib/services/supabase';
 import { fetchFavoriteIds, addToFavorites, removeFromFavorites } from '@/lib/api/favoriteApi';
 import { Product } from '@/types';
 import { logger } from '@/lib/utils/logger';
