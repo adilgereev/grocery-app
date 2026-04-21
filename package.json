@@ -19,7 +19,8 @@
     "supabase:pull": "supabase db pull",
     "supabase:push": "supabase db push",
     "supabase:status": "supabase db status",
-    "knip": "knip && npm run knip --prefix business-admin"
+    "knip": "knip && npm run knip --prefix business-admin",
+    "db:dump": "node ./scripts/db-dump.js"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",

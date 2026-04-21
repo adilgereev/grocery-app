@@ -534,8 +534,33 @@ export type Database = {
       }
     }
     Functions: {
+      delete_order_item: {
+        Args: {
+          p_admin_id: string
+          p_current_status: string
+          p_item_id: string
+          p_new_total: number
+          p_order_id: string
+          p_product_name: string
+        }
+        Returns: undefined
+      }
       increment_promo_used_count: {
         Args: { promo_code_text: string }
+        Returns: undefined
+      }
+      replace_order_item: {
+        Args: {
+          p_admin_id: string
+          p_current_status: string
+          p_item_id: string
+          p_new_price: number
+          p_new_product_id: string
+          p_new_product_name: string
+          p_new_total: number
+          p_order_id: string
+          p_original_product_name: string
+        }
         Returns: undefined
       }
       select_delivery_address: {

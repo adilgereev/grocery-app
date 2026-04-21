@@ -134,7 +134,14 @@ export interface AdminOrderItem {
   id: string;
   quantity: number;
   price_at_time: number;
-  product?: { name: string; unit: string; image_url: string | null } | null;
+  product?: {
+    id: string;
+    name: string;
+    unit: string;
+    image_url: string | null;
+    category_id: string | null;
+    price: number;
+  } | null;
 }
 
 export interface AdminOrderWithDetails {
@@ -152,7 +159,7 @@ export interface AdminOrderWithDetails {
 export async function fetchAllOrdersWithDetails(): Promise<AdminOrderWithDetails[]> {
   const { data, error } = await supabase
     .from('orders')
-    .select('*, profiles:user_id (first_name, phone), items:order_items(*, product:products(*))')
+    .select('*, profiles:user_id (first_name, phone), items:order_items(*, product:products(id, name, unit, image_url, category_id, price))')
     .order('created_at', { ascending: false });
 
   if (error) throw error;

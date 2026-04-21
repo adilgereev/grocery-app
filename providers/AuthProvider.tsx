@@ -89,7 +89,13 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
           first_name: null,
           phone,
         });
-        if (upsertError) throw upsertError;
+        if (upsertError?.code === '23505') {
+          // Этот номер уже привязан к другому аккаунту — ghost-юзер, разлогиниваем
+          await supabase.auth.signOut();
+          throw new Error('Этот номер уже привязан к другому аккаунту. Войдите заново.');
+        } else if (upsertError) {
+          throw upsertError;
+        }
         data = await fetchUserProfile(userId);
       }
 

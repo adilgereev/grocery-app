@@ -1,10 +1,11 @@
-import { AdminOrderWithDetails } from "@/lib/api/adminApi";
+import { AdminOrderItem, AdminOrderWithDetails } from "@/lib/api/adminApi";
 import { cleanAddress } from "@/lib/utils/addressUtils";
 import { Ionicons } from "@expo/vector-icons";
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { Colors } from "@/constants/theme";
 import { STATUSES } from "@/constants/orderStatuses";
+import AdminOrderItems from "./AdminOrderItems";
 import { s } from "./AdminOrderCard.styles";
 
 interface Props {
@@ -13,6 +14,7 @@ interface Props {
   onToggleExpand: (id: string) => void;
   onCallCustomer: (phone: string | null) => void;
   onShowStatusOptions: (orderId: string, currentStatus: string) => void;
+  onShowItemOptions: (item: AdminOrderItem, order: AdminOrderWithDetails) => void;
 }
 
 export default function AdminOrderCard({
@@ -21,11 +23,10 @@ export default function AdminOrderCard({
   onToggleExpand,
   onCallCustomer,
   onShowStatusOptions,
+  onShowItemOptions,
 }: Props) {
   const statusInfo = STATUSES[order.status] || STATUSES.pending;
-  const profile = Array.isArray(order.profiles)
-    ? order.profiles[0]
-    : order.profiles;
+  const profile = Array.isArray(order.profiles) ? order.profiles[0] : order.profiles;
   const customerName = profile?.first_name || "Клиент";
 
   const date = new Date(order.created_at).toLocaleString("ru-RU", {
@@ -39,12 +40,7 @@ export default function AdminOrderCard({
     <View style={s.card}>
       <View style={s.cardHeader}>
         <Text style={s.orderId}>Заказ #{order.id.split("-")[0]}</Text>
-        <View
-          style={[
-            s.statusBadge,
-            { backgroundColor: statusInfo.color + "20" },
-          ]}
-        >
+        <View style={[s.statusBadge, { backgroundColor: statusInfo.color + "20" }]}>
           <Text style={[s.statusText, { color: statusInfo.color }]}>
             {statusInfo.label}
           </Text>
@@ -57,27 +53,17 @@ export default function AdminOrderCard({
           onPress={() => onCallCustomer(profile?.phone)}
           testID="admin-order-call-btn"
         >
-          <Ionicons
-            name="person-circle"
-            size={24}
-            color={Colors.light.textSecondary}
-          />
+          <Ionicons name="person-circle" size={24} color={Colors.light.textSecondary} />
           <View style={s.customerInfoContainer}>
             <Text style={s.customerName}>{customerName}</Text>
-            <Text style={s.customerPhone}>
-              {profile?.phone || "Телефон не указан"}
-            </Text>
+            <Text style={s.customerPhone}>{profile?.phone || "Телефон не указан"}</Text>
           </View>
           <Ionicons name="call" size={20} color={Colors.light.primary} />
         </TouchableOpacity>
       </View>
 
       <View style={s.addressBox}>
-        <Ionicons
-          name="location"
-          size={16}
-          color={Colors.light.textSecondary}
-        />
+        <Ionicons name="location" size={16} color={Colors.light.textSecondary} />
         <Text style={s.addressText} numberOfLines={2}>
           {cleanAddress(order.delivery_address)}
         </Text>
@@ -85,17 +71,13 @@ export default function AdminOrderCard({
 
       {order.comment ? (
         <View style={s.commentBox}>
-          <Ionicons
-            name="chatbubble-ellipses-outline"
-            size={15}
-            color={Colors.light.textSecondary}
-          />
+          <Ionicons name="chatbubble-ellipses-outline" size={15} color={Colors.light.textSecondary} />
           <Text style={s.commentText}>{order.comment}</Text>
         </View>
       ) : null}
 
       <View style={s.footer}>
-        <Text style={s.price}>{order.total_amount} ₽</Text>
+        <Text style={s.price}>{order.total_amount.toLocaleString("ru")} ₽</Text>
         <Text style={s.date}>{date}</Text>
       </View>
 
@@ -105,9 +87,7 @@ export default function AdminOrderCard({
         testID="admin-order-expand-btn"
       >
         <Text style={s.expandButtonText}>
-          {isExpanded
-            ? "Скрыть состав заказа"
-            : `Показать товары (${order.items?.length || 0})`}
+          {isExpanded ? "Скрыть состав заказа" : `Показать товары (${order.items?.length || 0})`}
         </Text>
         <Ionicons
           name={isExpanded ? "chevron-up" : "chevron-down"}
@@ -117,19 +97,11 @@ export default function AdminOrderCard({
       </TouchableOpacity>
 
       {isExpanded && order.items && (
-        <View style={s.itemsContainer}>
-          {order.items.map((orderItem) => (
-            <View key={orderItem.id} style={s.itemRow} testID={`admin-order-item-${orderItem.id}`}>
-              <Text style={s.itemName} numberOfLines={2}>
-                {orderItem.product?.name || "Неизвестный товар"}{" "}
-                <Text style={s.itemQty}>x{orderItem.quantity}</Text>
-              </Text>
-              <Text style={s.itemPrice}>
-                {orderItem.price_at_time * orderItem.quantity} ₽
-              </Text>
-            </View>
-          ))}
-        </View>
+        <AdminOrderItems
+          items={order.items}
+          orderStatus={order.status}
+          onItemOptions={(item) => onShowItemOptions(item, order)}
+        />
       )}
 
       <TouchableOpacity

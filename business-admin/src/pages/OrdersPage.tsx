@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { toast } from 'sonner';
 import { OrdersTable } from '@/features/orders/OrdersTable';
 import { fetchAllOrdersWithDetails } from '@/lib/adminApi';
-import type { AdminOrderWithDetails } from '@/lib/adminApi';
+import type { AdminOrderItem, AdminOrderWithDetails } from '@/lib/adminApi';
 import type { Order } from '@/types';
 import { supabase } from '@/lib/supabase';
 
@@ -40,6 +40,12 @@ export function OrdersPage() {
     setOrders(prev => prev.map(o => o.id === id ? { ...o, status } : o));
   }
 
+  function handleItemsChanged(orderId: string, updatedItems: AdminOrderItem[], newTotal: number) {
+    setOrders(prev =>
+      prev.map(o => o.id === orderId ? { ...o, items: updatedItems, total_amount: newTotal } : o)
+    );
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -54,7 +60,7 @@ export function OrdersPage() {
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
         </div>
       ) : (
-        <OrdersTable orders={orders} onUpdated={handleUpdated} />
+        <OrdersTable orders={orders} onUpdated={handleUpdated} onItemsChanged={handleItemsChanged} />
       )}
     </div>
   );

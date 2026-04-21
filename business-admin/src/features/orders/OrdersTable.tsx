@@ -3,7 +3,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { updateOrderStatus } from '@/lib/adminApi';
-import type { AdminOrderWithDetails } from '@/lib/adminApi';
+import type { AdminOrderItem, AdminOrderWithDetails } from '@/lib/adminApi';
 import type { Order } from '@/types';
 import { toast } from 'sonner';
 import { OrderRow } from './OrderRow';
@@ -11,13 +11,10 @@ import { OrderRow } from './OrderRow';
 interface OrdersTableProps {
   orders: AdminOrderWithDetails[];
   onUpdated: (id: string, status: Order['status']) => void;
+  onItemsChanged: (orderId: string, updatedItems: AdminOrderItem[], newTotal: number) => void;
 }
 
-/**
- * Таблица заказов в админ-панели.
- * Декомпозирована: отрисовка строки вынесена в OrderRow.
- */
-export function OrdersTable({ orders, onUpdated }: OrdersTableProps) {
+export function OrdersTable({ orders, onUpdated, onItemsChanged }: OrdersTableProps) {
   const [updating, setUpdating] = useState<string | null>(null);
 
   async function handleStatusChange(orderId: string, status: Order['status']) {
@@ -63,6 +60,7 @@ export function OrdersTable({ orders, onUpdated }: OrdersTableProps) {
                   order={order}
                   isUpdating={updating === order.id}
                   onStatusChange={handleStatusChange}
+                  onItemsChanged={onItemsChanged}
                 />
               ))
             )}
