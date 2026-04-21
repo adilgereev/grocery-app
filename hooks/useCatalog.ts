@@ -3,10 +3,12 @@ import { Alert, LayoutAnimation } from 'react-native';
 import { useRouter } from 'expo-router';
 import { fetchAllProductsWithCategory, fetchAllCategories, deleteProduct, updateProduct } from '@/lib/api/adminApi';
 import { buildHierarchy, CatalogItem, RootHeaderItem, SubHeaderItem, ProductItem } from '@/lib/utils/catalogHierarchy';
+import { usePopularProductsStore } from '@/store/popularProductsStore';
 import { Category } from '@/types';
 
 export function useCatalog() {
   const router = useRouter();
+  const invalidatePopular = usePopularProductsStore(state => state.invalidateCache);
   const [allItems, setAllItems] = useState<CatalogItem[]>([]);
   const [categories, setCategoriesState] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
@@ -122,6 +124,7 @@ export function useCatalog() {
           onPress: async () => {
             try {
               await deleteProduct(id);
+              invalidatePopular();
               setAllItems(prev => {
                 const prods = prev
                   .filter((i): i is ProductItem => i.type === 'product')
@@ -142,7 +145,7 @@ export function useCatalog() {
         },
       ],
     );
-  }, [categories]);
+  }, [categories, invalidatePopular]);
 
   const handleToggleActive = useCallback(async (id: string, currentValue: boolean) => {
     const newValue = !currentValue;
@@ -157,11 +160,12 @@ export function useCatalog() {
     rebuildWith(newValue);
     try {
       await updateProduct(id, { is_active: newValue });
+      invalidatePopular();
     } catch {
       rebuildWith(currentValue);
       Alert.alert('Ошибка', 'Не удалось изменить видимость товара');
     }
-  }, [categories]);
+  }, [categories, invalidatePopular]);
 
   return {
     allItems,

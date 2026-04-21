@@ -3,13 +3,12 @@ import StoriesSection from '@/components/home/StoriesSection';
 import HomeHeader from '@/components/home/HomeHeader';
 import PopularSection from '@/components/home/PopularSection';
 import SubcategoriesSkeleton from '@/components/category/SubcategoriesSkeleton';
-import { logger } from '@/lib/utils/logger';
-import { fetchPopularProducts } from '@/lib/api/productsApi';
 import { useAuth } from '@/providers/AuthProvider';
 import { useAddressStore } from '@/store/addressStore';
 import { useCategoryStore } from '@/store/categoryStore';
+import { usePopularProductsStore } from '@/store/popularProductsStore';
 import { useStoriesStore } from '@/store/storiesStore';
-import { Category, Product } from '@/types';
+import { Category } from '@/types';
 import { formatShortAddress } from '@/lib/utils/addressFormatter';
 import { useFocusEffect } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
@@ -30,8 +29,10 @@ export default function HomeScreen() {
   const categoriesLoading = useCategoryStore(state => state.isLoading);
   const fetchStories = useStoriesStore(state => state.fetchStories);
 
-  const [popularProducts, setPopularProducts] = useState<Product[]>([]);
-  const [popularLoading, setPopularLoading] = useState(true);
+  const popularProducts = usePopularProductsStore(state => state.products);
+  const popularLoading = usePopularProductsStore(state => state.isLoading);
+  const fetchPopularProducts = usePopularProductsStore(state => state.fetchProducts);
+
   const [isRefreshing, setIsRefreshing] = useState(false);
   // Имя из контекста (сбрасывается при выходе)
   const firstName = profile?.first_name || '';
@@ -55,18 +56,6 @@ export default function HomeScreen() {
     extrapolate: 'clamp',
   });
 
-  const loadPopularProducts = useCallback(async () => {
-    setPopularLoading(true);
-    try {
-      const data = await fetchPopularProducts(10);
-      setPopularProducts(data || []);
-    } catch (error: unknown) {
-      logger.error('Ошибка загрузки популярных:', error instanceof Error ? error.message : error);
-    } finally {
-      setPopularLoading(false);
-    }
-  }, []);
-
   // Обновление всех секций одновременно, спиннер ждёт завершения всех запросов
   const handleRefresh = useCallback(async () => {
     if (isRefreshing) return;
@@ -74,25 +63,25 @@ export default function HomeScreen() {
     try {
       await Promise.all([
         fetchFullHierarchy(true),
-        loadPopularProducts(),
+        fetchPopularProducts(true),
         fetchStories(true),
       ]);
     } finally {
       setIsRefreshing(false);
     }
-  }, [isRefreshing, fetchFullHierarchy, loadPopularProducts, fetchStories]);
+  }, [isRefreshing, fetchFullHierarchy, fetchPopularProducts, fetchStories]);
 
   // Загружаем данные при каждом фокусе на страницу
   useFocusEffect(
     useCallback(() => {
       fetchFullHierarchy();
-      loadPopularProducts();
+      fetchPopularProducts();
       fetchStories();
 
       if (session?.user) {
         loadAddresses();
       }
-    }, [session, loadAddresses, fetchFullHierarchy, loadPopularProducts, fetchStories])
+    }, [session, loadAddresses, fetchFullHierarchy, fetchPopularProducts, fetchStories])
   );
 
   // Определяем приветствие по времени суток
@@ -131,7 +120,7 @@ export default function HomeScreen() {
     <>
       <StoriesSection />
       <PopularSection
-        products={popularProducts}
+        products={popularProducts.slice(0, 10)}
         loading={popularLoading}
         onProductPress={(id) => router.push(`/product/${id}`)}
         onSeeAll={() => router.push('/search')}

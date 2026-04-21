@@ -1,4 +1,5 @@
 import { createProduct, fetchProductForEdit, updateProduct } from '@/lib/api/adminApi';
+import { usePopularProductsStore } from '@/store/popularProductsStore';
 import { showAlert } from '@/lib/utils/platformUtils';
 import { productSchema, ProductFormData } from '@/lib/utils/schemas';
 import { useCategoryList } from '@/hooks/useCategoryList';
@@ -35,6 +36,7 @@ interface UseProductFormReturn {
 export function useProductForm({ mode, productId }: UseProductFormProps): UseProductFormReturn {
   const router = useRouter();
   const { categories } = useCategoryList();
+  const invalidatePopular = usePopularProductsStore(state => state.invalidateCache);
   const { imageUrl, setImageUrl, uploading, pickImage } = useImagePicker('products');
 
   const [pickerVisible, setPickerVisible] = useState(false);
@@ -132,11 +134,13 @@ export function useProductForm({ mode, productId }: UseProductFormProps): UsePro
     try {
       if (mode === 'add') {
         await createProduct(payload);
+        invalidatePopular();
         showAlert('Успех', 'Товар успешно добавлен в каталог!', [
           { text: 'ОК', onPress: () => router.back() },
         ]);
       } else {
         await updateProduct(productId!, payload);
+        invalidatePopular();
         showAlert('Успех', 'Товар успешно обновлён!', [
           { text: 'ОК', onPress: () => router.back() },
         ]);
@@ -147,7 +151,7 @@ export function useProductForm({ mode, productId }: UseProductFormProps): UsePro
     } finally {
       setLoading(false);
     }
-  }, [imageUrl, mode, productId, router]);
+  }, [imageUrl, mode, productId, router, invalidatePopular]);
 
   return {
     control,

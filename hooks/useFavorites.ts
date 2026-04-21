@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useWindowDimensions } from 'react-native';
 import { fetchFavoriteProducts as fetchFavoriteProductsByIds } from '@/lib/api/favoriteApi';
-import { fetchPopularProducts } from '@/lib/api/productsApi';
 import { logger } from '@/lib/utils/logger';
 import { useAuth } from '@/providers/AuthProvider';
 import { useFavoriteStore } from '@/store/favoriteStore';
+import { usePopularProductsStore } from '@/store/popularProductsStore';
 import { Spacing } from '@/constants/theme';
 import { Product } from '@/types';
 
@@ -15,13 +15,14 @@ export function useFavorites() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [recommended, setRecommended] = useState<Product[]>([]);
 
   const favoriteIds = useFavoriteStore(state => state.favoriteIds);
   const favoriteIdsRef = useRef(favoriteIds);
   favoriteIdsRef.current = favoriteIds;
 
-  const isRecommendedFetched = useRef(false);
+  const popularProducts = usePopularProductsStore(state => state.products);
+  const fetchPopularProducts = usePopularProductsStore(state => state.fetchProducts);
+  const recommended = useMemo(() => popularProducts.slice(0, 6), [popularProducts]);
 
   const cardRowHeight = useMemo(() => {
     const cardWidth = Math.round((width - Spacing.m * 2 - 16) / 2);
@@ -37,17 +38,9 @@ export function useFavorites() {
     [cardRowHeight]
   );
 
-  const fetchRecommended = useCallback(async () => {
-    if (isRecommendedFetched.current) return;
-    isRecommendedFetched.current = true;
-    try {
-      const data = await fetchPopularProducts(6);
-      setRecommended(data);
-    } catch (error) {
-      isRecommendedFetched.current = false;
-      logger.error('Ошибка в fetchRecommended:', error);
-    }
-  }, []);
+  useEffect(() => {
+    fetchPopularProducts();
+  }, [fetchPopularProducts]);
 
   const fetchFavoriteProducts = useCallback(async () => {
     const ids = favoriteIdsRef.current;
@@ -55,7 +48,6 @@ export function useFavorites() {
       setProducts([]);
       setLoading(false);
       setRefreshing(false);
-      fetchRecommended();
       return;
     }
 
@@ -68,7 +60,7 @@ export function useFavorites() {
       setLoading(false);
       setRefreshing(false);
     }
-  }, [fetchRecommended]);
+  }, []);
 
   useEffect(() => {
     if (session?.user) {

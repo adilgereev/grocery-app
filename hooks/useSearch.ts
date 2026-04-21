@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useWindowDimensions } from 'react-native';
 import { useRouter } from 'expo-router';
-import { searchProducts, fetchPopularProducts } from '@/lib/api/productsApi';
+import { searchProducts } from '@/lib/api/productsApi';
 import { logger } from '@/lib/utils/logger';
 import { useToastStore } from '@/store/toastStore';
+import { usePopularProductsStore } from '@/store/popularProductsStore';
 import { Spacing } from '@/constants/theme';
 import { Product } from '@/types';
 
@@ -12,7 +13,6 @@ export function useSearch() {
   const { width } = useWindowDimensions();
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Product[]>([]);
-  const [recommended, setRecommended] = useState<Product[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
@@ -35,16 +35,13 @@ export function useSearch() {
     router.push(`/product/${id}?name=${encodeURIComponent(name)}`);
   }, [router]);
 
-  const fetchRecommended = useCallback(async () => {
-    try {
-      const data = await fetchPopularProducts(6);
-      setRecommended(data);
-    } catch (e: unknown) {
-      const errorMessage = e instanceof Error ? e.message : 'Не удалось загрузить рекомендации';
-      logger.error('Ошибка загрузки рекомендаций:', e);
-      setError(errorMessage);
-    }
-  }, []);
+  const popularProducts = usePopularProductsStore(state => state.products);
+  const fetchProducts = usePopularProductsStore(state => state.fetchProducts);
+  const recommended = useMemo(() => popularProducts.slice(0, 6), [popularProducts]);
+
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
 
   const performSearch = useCallback(async (searchQuery: string) => {
     setLoading(true);
@@ -63,10 +60,6 @@ export function useSearch() {
       setLoading(false);
     }
   }, []);
-
-  useEffect(() => {
-    fetchRecommended();
-  }, [fetchRecommended]);
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {

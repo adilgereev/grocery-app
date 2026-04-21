@@ -1,9 +1,8 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo } from 'react';
 import { ActivityIndicator, FlatList, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { fetchPopularProducts } from '@/lib/api/productsApi';
+import { usePopularProductsStore } from '@/store/popularProductsStore';
 import { Product } from '@/types';
-import { logger } from '@/lib/utils/logger';
 import ProductCard from '@/components/product/ProductCard';
 import { Colors, FontSize, Spacing } from '@/constants/theme';
 
@@ -14,8 +13,14 @@ interface Props {
 export default function CartRecommendations({ excludeIds }: Props) {
   const router = useRouter();
   const { width: screenWidth } = useWindowDimensions();
-  const [products, setProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+
+  const products = usePopularProductsStore(state => state.products);
+  const isLoading = usePopularProductsStore(state => state.isLoading);
+  const fetchProducts = usePopularProductsStore(state => state.fetchProducts);
+
+  useEffect(() => {
+    fetchProducts();
+  }, [fetchProducts]);
 
   const handleProductPress = useCallback(
     (item: Product) => {
@@ -23,21 +28,6 @@ export default function CartRecommendations({ excludeIds }: Props) {
     },
     [router],
   );
-
-  const fetchRecommended = useCallback(async () => {
-    try {
-      const data = await fetchPopularProducts(12);
-      setProducts(data);
-    } catch (err) {
-      logger.error('Ошибка загрузки рекомендаций в корзине:', err);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchRecommended();
-  }, [fetchRecommended]);
 
   const recommended = useMemo(() => {
     const filtered = excludeIds?.length
@@ -61,7 +51,7 @@ export default function CartRecommendations({ excludeIds }: Props) {
     [cardWidth, handleProductPress],
   );
 
-  if (isLoading) {
+  if (isLoading && products.length === 0) {
     return (
       <View style={styles.loaderContainer}>
         <ActivityIndicator color={Colors.light.primary} />
