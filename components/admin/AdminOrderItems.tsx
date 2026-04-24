@@ -20,7 +20,7 @@ export default function AdminOrderItems({ items, orderStatus, onItemOptions }: P
       {items.map((item) => (
         <View key={item.id} style={s.row} testID={`admin-order-item-${item.id}`}>
           <View style={s.info}>
-            <Text style={s.name} numberOfLines={2}>
+            <Text style={s.name}>
               {item.product?.name ?? "Неизвестный товар"}{" "}
               <Text style={s.qty}>x{item.quantity}</Text>
             </Text>
@@ -61,15 +61,15 @@ const s = StyleSheet.create({
   row: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
+    alignItems: "flex-start",
     marginBottom: Spacing.s,
   },
   info: { flex: 1, paddingRight: Spacing.s },
-  name: { fontSize: FontSize.s, color: Colors.light.text },
+  name: { fontSize: FontSize.m, fontWeight: "600", color: Colors.light.text },
   qty: { fontWeight: "700", color: Colors.light.textSecondary },
-  unit: { fontSize: FontSize.xs, color: Colors.light.textLight, marginTop: 2 },
+  unit: { fontSize: FontSize.s, color: Colors.light.textLight, marginTop: 2 },
   right: { flexDirection: "row", alignItems: "center", gap: Spacing.s },
-  price: { fontSize: FontSize.s, fontWeight: "700", color: Colors.light.text },
+  price: { fontSize: FontSize.m, fontWeight: "700", color: Colors.light.text },
   menuBtn: {
     padding: Spacing.xs,
     borderRadius: Radius.s,

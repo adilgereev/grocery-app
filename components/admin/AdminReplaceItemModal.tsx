@@ -64,14 +64,14 @@ export default function AdminReplaceItemModal({ item, visible, onClose, onSelect
     else setSuggestions([]);
   }, [visible, loadSuggestions]);
 
-  async function handleSelect(replacement: ReplacementSuggestion) {
+  const handleSelect = useCallback(async (replacement: ReplacementSuggestion) => {
     setSubmitting(true);
     try {
       await onSelect(replacement);
     } finally {
       setSubmitting(false);
     }
-  }
+  }, [onSelect]);
 
   const noCategoryId = !!item && !item.product?.category_id;
 
@@ -122,6 +122,11 @@ export default function AdminReplaceItemModal({ item, visible, onClose, onSelect
                       <PriceDelta original={item.price_at_time} current={suggestion.price} />
                     )}
                   </View>
+                  {item && item.quantity > 1 && (
+                    <Text style={s.totalPrice}>
+                      Итого: {(suggestion.price * item.quantity).toLocaleString("ru")} ₽
+                    </Text>
+                  )}
                 </View>
                 <TouchableOpacity
                   style={[s.selectBtn, submitting && s.selectBtnDisabled]}
@@ -166,10 +171,11 @@ const s = StyleSheet.create({
     ...Shadows.sm,
   },
   cardInfo: { flex: 1 },
-  cardName: { fontSize: FontSize.s, fontWeight: "600", color: Colors.light.text },
+  cardName: { fontSize: FontSize.m, fontWeight: "600", color: Colors.light.text },
   priceRow: { flexDirection: "row", alignItems: "center", gap: 6, marginTop: 4 },
-  cardPrice: { fontSize: FontSize.xs, color: Colors.light.textSecondary },
-  delta: { fontSize: FontSize.xs, fontWeight: "600" },
+  cardPrice: { fontSize: FontSize.s, color: Colors.light.textSecondary },
+  delta: { fontSize: FontSize.s, fontWeight: "600" },
+  totalPrice: { fontSize: FontSize.s, color: Colors.light.textSecondary, marginTop: 2 },
   selectBtn: {
     backgroundColor: Colors.light.cta,
     paddingHorizontal: Spacing.m,
@@ -177,5 +183,5 @@ const s = StyleSheet.create({
     borderRadius: Radius.pill,
   },
   selectBtnDisabled: { opacity: 0.5 },
-  selectBtnText: { color: Colors.light.white, fontSize: FontSize.s, fontWeight: "700" },
+  selectBtnText: { color: Colors.light.white, fontSize: FontSize.m, fontWeight: "700" },
 });

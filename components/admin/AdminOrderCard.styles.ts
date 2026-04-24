@@ -1,4 +1,4 @@
-import { Colors, Radius, Shadows, Spacing } from "@/constants/theme";
+import { Colors, FontSize, Radius, Shadows, Spacing } from "@/constants/theme";
 import { StyleSheet } from "react-native";
 
 export const s = StyleSheet.create({
@@ -15,13 +15,13 @@ export const s = StyleSheet.create({
     alignItems: "center",
     marginBottom: Spacing.m,
   },
-  orderId: { fontSize: 16, fontWeight: "700", color: Colors.light.text },
+  orderId: { fontSize: FontSize.l, fontWeight: "700", color: Colors.light.text },
   statusBadge: {
     paddingHorizontal: Spacing.sm,
-    paddingVertical: 4,
+    paddingVertical: Spacing.xs,
     borderRadius: Radius.m,
   },
-  statusText: { fontSize: 12, fontWeight: "700" },
+  statusText: { fontSize: FontSize.s, fontWeight: "700" },
   customerInfo: { marginBottom: Spacing.s },
   customerRow: {
     flexDirection: "row",
@@ -30,10 +30,10 @@ export const s = StyleSheet.create({
     padding: 10,
     borderRadius: Radius.m,
   },
-  customerName: { fontSize: 14, fontWeight: "600", color: Colors.light.text },
+  customerName: { fontSize: FontSize.m, fontWeight: "600", color: Colors.light.text },
   customerInfoContainer: { marginLeft: Spacing.s, flex: 1 },
   customerPhone: {
-    fontSize: 12,
+    fontSize: FontSize.s,
     color: Colors.light.textSecondary,
     marginTop: 2,
   },
@@ -43,7 +43,7 @@ export const s = StyleSheet.create({
     marginBottom: Spacing.s,
   },
   addressText: {
-    fontSize: 13,
+    fontSize: FontSize.m,
     color: Colors.light.textSecondary,
     marginLeft: 6,
     flex: 1,
@@ -60,7 +60,7 @@ export const s = StyleSheet.create({
   },
   commentText: {
     flex: 1,
-    fontSize: 13,
+    fontSize: FontSize.m,
     color: Colors.light.text,
     lineHeight: 18,
   },
@@ -73,8 +73,8 @@ export const s = StyleSheet.create({
     borderTopColor: Colors.light.borderLight,
     paddingTop: Spacing.s,
   },
-  price: { fontSize: 18, fontWeight: "800", color: Colors.light.text },
-  date: { fontSize: 12, color: Colors.light.textLight },
+  price: { fontSize: FontSize.xl, fontWeight: "800", color: Colors.light.text },
+  date: { fontSize: FontSize.s, color: Colors.light.textLight },
   expandButton: {
     flexDirection: "row",
     alignItems: "center",
@@ -86,9 +86,9 @@ export const s = StyleSheet.create({
   },
   expandButtonText: {
     color: Colors.light.primary,
-    fontSize: 13,
+    fontSize: FontSize.m,
     fontWeight: "600",
-    marginRight: 4,
+    marginRight: Spacing.xs,
   },
   itemsContainer: {
     backgroundColor: Colors.light.background,
@@ -99,17 +99,17 @@ export const s = StyleSheet.create({
   itemRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 8,
+    marginBottom: Spacing.s,
     alignItems: "flex-start",
   },
   itemName: {
     flex: 1,
-    fontSize: 13,
+    fontSize: FontSize.m,
     color: Colors.light.text,
     paddingRight: Spacing.m,
   },
   itemQty: { fontWeight: "700", color: Colors.light.textSecondary },
-  itemPrice: { fontSize: 13, fontWeight: "700", color: Colors.light.text },
+  itemPrice: { fontSize: FontSize.m, fontWeight: "700", color: Colors.light.text },
   actionButton: {
     paddingVertical: Spacing.sm,
     borderRadius: Radius.m,
@@ -117,7 +117,7 @@ export const s = StyleSheet.create({
   },
   actionButtonText: {
     color: Colors.light.white,
-    fontSize: 14,
+    fontSize: FontSize.m,
     fontWeight: "700",
   },
 });
