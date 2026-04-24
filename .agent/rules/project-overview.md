@@ -1,35 +1,46 @@
+---
+trigger: always_on
+---
+
 # Project Overview: Grocery App
 
 ## Tech Stack
--   **Framework**: Expo Router (v3+), React Native.
--   **Backend**: Supabase (PostgreSQL, RLS, Auth).
--   **State Management**: Zustand (with selective persistence).
--   **Form Handling**: `react-hook-form` + `zodResolver` (zod schemas in `lib/utils/schemas.ts`).
--   **Styling**: Theme-aware styles from `theme.ts`.
+
+- **Framework**: Expo Router (v3+), React Native.
+- **Backend**: Supabase (PostgreSQL, RLS, Auth).
+- **State Management**: Zustand (with selective persistence).
+- **Form Handling**: `react-hook-form` + `zodResolver` (zod schemas in `lib/utils/schemas.ts`).
+- **Styling**: Theme-aware styles from `theme.ts`.
 
 ## Core Directories
--   `app/`: File-based routes.
-    -   `app/(tabs)/`: Main navigation.
-    -   `app/(admin)/`: Product management.
-    -   `app/(auth)/`: Login and registration.
--   `store/`: Zustand state definitions.
--   `components/`: Reusable UI elements (`ProductCard`, `ScreenHeader`, etc.).
--   `lib/`: Shared utilities like `supabase.ts`.
--   `types/`: TypeScript interfaces/types.
--   `supabase/`: Database migrations and seed data.
--   `business-admin/`: Отдельное Vite/React веб-приложение (веб-админка). Содержит собственный `package.json`, `src/`. После `supabase:types` обязательно копировать `types/supabase.ts` → `business-admin/src/types/supabase.ts`.
+
+- `app/`: File-based routes.
+  - `app/(tabs)/`: Main navigation.
+  - `app/(admin)/`: Product management.
+  - `app/(auth)/`: Login and registration.
+- `store/`: Zustand state definitions.
+- `components/`: Reusable UI elements (`ProductCard`, `ScreenHeader`, etc.).
+- `lib/`: Shared utilities like `supabase.ts`.
+- `types/`: TypeScript interfaces/types.
+- `supabase/`: Database migrations and seed data.
+- `business-admin/`: Отдельное Vite/React веб-приложение (веб-админка). Содержит собственный `package.json`, `src/`. После `supabase:types` обязательно копировать `types/supabase.ts` → `business-admin/src/types/supabase.ts`.
 
 ## Authentication
+
 `AuthProvider` in `providers/AuthProvider.tsx` wraps the app. Root layout handles redirection:
--   Unauthenticated users -> `/onboarding` or `/login`.
--   Authenticated users -> `/(tabs)/(index)`.
+
+- Unauthenticated users -> `/onboarding` or `/login`.
+- Authenticated users -> `/(tabs)/(index)`.
 
 ## Environment Variables
--   `EXPO_PUBLIC_SUPABASE_URL`: Supabase API URL.
--   `EXPO_PUBLIC_SUPABASE_ANON_KEY`: Supabase Anonymous Key.
+
+- `EXPO_PUBLIC_SUPABASE_URL`: Supabase API URL.
+- `EXPO_PUBLIC_SUPABASE_ANON_KEY`: Supabase Anonymous Key.
 
 ## Skills & Workflows (`.agent/`)
+
 Дополнительные протоколы для специализированных задач:
+
 - **`.agent/skills/supabase/SKILL.md`** — миграции, RLS, типы БД. Подробности в `architecture.md`.
 - **`.agent/skills/testing/SKILL.md`** — тестирование и AI Regression Cycle. Подробности в `code-standards.md`.
 - **`.agent/skills/navigation/SKILL.md`** — создание экранов, вкладок и динамических маршрутов в Expo Router.
@@ -61,20 +72,20 @@ npm run supabase:push    # Push local migrations to remote
 
 ## Key Files
 
-| Path | Purpose |
-|---|---|
-| `types/index.ts` | Core interfaces: `Category`, `Product`, `Order`, `Profile`, etc. |
-| `types/supabase.ts` | Auto-generated DB types (via `npm run supabase:types`) |
-| `constants/theme.ts` | Design tokens: Colors, Spacing, Radius, FontSize, Shadows, Duration |
-| `lib/utils/schemas.ts` | Zod validation schemas for forms |
-| `lib/utils/storageUtils.ts` | `uploadImage()` — upload via presigned URL to R2 |
-| `lib/utils/imageKit.ts` | `getOptimizedImage()`, `getPlaceholderUrl()` — CDN transforms |
-| `lib/api/categoriesApi.ts` | Supabase queries for category hierarchy |
-| `lib/services/supabase.ts` | Typed Supabase client with cross-platform storage |
-| `lib/services/NotificationService.ts` | Push notification registration |
-| `providers/AuthProvider.tsx` | Auth context + phone sync |
-| `components/ui/ScreenHeader.tsx` | Mandatory screen header component |
-| `components/product/ProductCard.tsx` | Unified product card |
-| `components/ui/Skeleton.tsx` | Loading placeholder / missing image fallback |
-| `BACKLOG.md` | Project backlog |
+| Path                                   | Purpose                                                                  |
+| -------------------------------------- | ------------------------------------------------------------------------ |
+| `types/index.ts`                       | Core interfaces: `Category`, `Product`, `Order`, `Profile`, etc.         |
+| `types/supabase.ts`                    | Auto-generated DB types (via `npm run supabase:types`)                   |
+| `constants/theme.ts`                   | Design tokens: Colors, Spacing, Radius, FontSize, Shadows, Duration      |
+| `lib/utils/schemas.ts`                 | Zod validation schemas for forms                                         |
+| `lib/utils/storageUtils.ts`            | `uploadImage()` — upload via presigned URL to R2                         |
+| `lib/utils/imageKit.ts`                | `getOptimizedImage()`, `getPlaceholderUrl()` — CDN transforms            |
+| `lib/api/categoriesApi.ts`             | Supabase queries for category hierarchy                                  |
+| `lib/services/supabase.ts`             | Typed Supabase client with cross-platform storage                        |
+| `lib/services/NotificationService.ts`  | Push notification registration                                           |
+| `providers/AuthProvider.tsx`           | Auth context + phone sync                                                |
+| `components/ui/ScreenHeader.tsx`       | Mandatory screen header component                                        |
+| `components/product/ProductCard.tsx`   | Unified product card                                                     |
+| `components/ui/Skeleton.tsx`           | Loading placeholder / missing image fallback                             |
+| `BACKLOG.md`                           | Project backlog                                                          |
 | `business-admin/src/types/supabase.ts` | Копия DB-типов для web-админки — синхронизировать после `supabase:types` |
