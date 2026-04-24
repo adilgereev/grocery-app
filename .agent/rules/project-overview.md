@@ -32,6 +32,22 @@ trigger: always_on
 - Unauthenticated users -> `/onboarding` or `/login`.
 - Authenticated users -> `/(tabs)/(index)`.
 
+## File Upload Flow
+
+1. Call edge function `get-upload-url` → receive presigned URL
+2. Direct upload to Cloudflare R2
+3. Display via ImageKit CDN (`lib/utils/imageKit.ts`)
+
+Helpers: `uploadImage()` in `lib/utils/storageUtils.ts`, `getOptimizedImage()` / `getPlaceholderUrl()` in `lib/utils/imageKit.ts`.
+
+## Critical Constraints
+
+- **Edge Functions** run on Deno, not Node.js — imports via URL only.
+- **File size limit**: max 200 lines (`npm run check:file-length`).
+- **Lint**: zero warnings — any warning = build failure.
+- **`business-admin/`** — separate `node_modules`, runs independently.
+- **TypeScript strict mode** enabled.
+
 ## Environment Variables
 
 - `EXPO_PUBLIC_SUPABASE_URL`: Supabase API URL.
