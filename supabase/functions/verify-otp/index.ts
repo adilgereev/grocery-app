@@ -58,6 +58,34 @@ Deno.serve(async (req) => {
 
     if (updateError) throw updateError;
 
+    // Создаём юзера в Auth если не существует (первый вход)
+    const secretKey = Deno.env.get('AUTH_SECRET_KEY');
+    if (secretKey) {
+      const email = `phone${phone}@example.com`;
+      const cryptoKey = await crypto.subtle.importKey(
+        'raw',
+        new TextEncoder().encode(secretKey),
+        { name: 'HMAC', hash: 'SHA-256' },
+        false,
+        ['sign'],
+      );
+      const sig = await crypto.subtle.sign('HMAC', cryptoKey, new TextEncoder().encode(phone));
+      const password = Array.from(new Uint8Array(sig))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
+
+      const { error: createError } = await supabase.auth.admin.createUser({
+        email,
+        password,
+        email_confirm: true,
+        user_metadata: { phone },
+      });
+      // Игнорируем ошибку "уже существует" — юзер просто входит повторно
+      if (createError && !createError.message.includes('already been registered')) {
+        throw createError;
+      }
+    }
+
     return new Response(
       JSON.stringify({ verified: true }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } },

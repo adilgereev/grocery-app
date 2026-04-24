@@ -1,3 +1,4 @@
+import { Fragment } from "react";
 import { TableCell, TableRow } from "@/components/ui/table";
 import type { Category, ProductWithCategory } from "@/types";
 import { ChevronDown, ChevronRight } from "lucide-react";
@@ -35,7 +36,7 @@ export function ProductsCategoryRows({
         const direct = productMap.get(root.id) ?? [];
 
         return (
-          <div key={`root-${root.id}`}>
+          <Fragment key={`root-${root.id}`}>
             {/* Заголовок корневой категории */}
             <TableRow
               className="bg-muted/40 hover:bg-muted/50 cursor-pointer select-none"
@@ -75,7 +76,7 @@ export function ProductsCategoryRows({
                   const subProds = productMap.get(sub.id) ?? [];
                   if (subProds.length === 0) return null;
                   return (
-                    <div key={`sub-${sub.id}`}>
+                    <Fragment key={`sub-${sub.id}`}>
                       <TableRow
                         className="bg-muted/20 hover:bg-muted/30 cursor-pointer select-none"
                         onClick={() => onToggleSub(sub.id)}
@@ -101,12 +102,12 @@ export function ProductsCategoryRows({
                       </TableRow>
                       {!collapsedSubs.has(sub.id) &&
                         renderRows(subProds)}
-                    </div>
+                    </Fragment>
                   );
                 })}
               </>
             )}
-          </div>
+          </Fragment>
         );
       })}
 
