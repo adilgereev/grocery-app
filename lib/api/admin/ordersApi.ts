@@ -1,6 +1,8 @@
 import { supabase } from '@/lib/services/supabase';
 import { Order } from '@/types';
 
+const ORDER_DETAILS_SELECT = '*, profiles:user_id(first_name, phone), items:order_items(*, product:products(id, name, unit, image_url, category_id, price)), assignments:staff_assignments(staff_type, staff_id, status, staff:profiles!staff_assignments_staff_id_fkey(first_name, phone))';
+
 export interface AdminOrderItem {
   id: string;
   quantity: number;
@@ -15,6 +17,13 @@ export interface AdminOrderItem {
   } | null;
 }
 
+export interface AdminOrderAssignment {
+  staff_type: 'picker' | 'courier';
+  staff_id: string;
+  status: 'active' | 'completed' | 'cancelled';
+  staff?: { first_name: string | null; phone: string } | null;
+}
+
 export interface AdminOrderWithDetails {
   id: string;
   status: Order['status'];
@@ -25,6 +34,7 @@ export interface AdminOrderWithDetails {
   profiles: { first_name: string | null; phone: string }
     | { first_name: string | null; phone: string }[];
   items?: AdminOrderItem[];
+  assignments?: AdminOrderAssignment[];
 }
 
 export interface ReplacementSuggestion {
@@ -35,10 +45,42 @@ export interface ReplacementSuggestion {
   price: number;
 }
 
-export async function fetchAllOrdersWithDetails(): Promise<AdminOrderWithDetails[]> {
+export async function fetchAllOrdersWithDetails(statusFilter?: readonly Order['status'][]): Promise<AdminOrderWithDetails[]> {
+  let query = supabase
+    .from('orders')
+    .select(ORDER_DETAILS_SELECT)
+    .order('created_at', { ascending: false });
+
+  if (statusFilter && statusFilter.length > 0) {
+    query = query.in('status', statusFilter);
+  }
+
+  const { data, error } = await query;
+  if (error) throw error;
+  return (data || []) as AdminOrderWithDetails[];
+}
+
+export async function fetchStaffHistoryOrders(
+  staffId: string,
+  staffType: 'picker' | 'courier',
+): Promise<AdminOrderWithDetails[]> {
+  const { data: assignments, error: aErr } = await supabase
+    .from('staff_assignments')
+    .select('order_id')
+    .eq('staff_id', staffId)
+    .eq('staff_type', staffType);
+
+  if (aErr) throw aErr;
+  const orderIds = (assignments || []).map((a: { order_id: string }) => a.order_id);
+  if (orderIds.length === 0) return [];
+
+  const historicalStatuses = ['delivered', 'cancelled'] as const;
+
   const { data, error } = await supabase
     .from('orders')
-    .select('*, profiles:user_id (first_name, phone), items:order_items(*, product:products(id, name, unit, image_url, category_id, price))')
+    .select(ORDER_DETAILS_SELECT)
+    .in('id', orderIds)
+    .in('status', historicalStatuses)
     .order('created_at', { ascending: false });
 
   if (error) throw error;
@@ -58,7 +100,7 @@ export async function fetchPendingOrdersCount(): Promise<number> {
   const { count, error } = await supabase
     .from('orders')
     .select('id', { count: 'exact', head: true })
-    .in('status', ['pending', 'processing', 'shipped']);
+    .in('status', ['pending', 'processing', 'assembled', 'shipped']);
 
   if (error) throw error;
   return count ?? 0;

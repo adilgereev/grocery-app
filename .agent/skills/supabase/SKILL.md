@@ -42,3 +42,19 @@ ALTER TABLE table_name ADD COLUMN IF NOT EXISTS column_name TYPE;
 - **Local Testing**: Verify migrations locally using Docker (`npx supabase start`) before pushing.
 - **Git Hygiene**: Always commit migration files.
 - **Type Sync**: `types/supabase.ts` и `business-admin/src/types/supabase.ts` — две независимые копии одного файла. После каждого `supabase:types` обязательно копировать в `business-admin/`.
+
+## 🎭 Определение роли пользователя в триггерах
+
+Никогда не хардкодить `'admin'` как fallback без проверки ролей персонала. Стандартный CASE для любого триггера, которому нужна роль:
+
+```sql
+CASE
+  WHEN auth.uid() IS NULL       THEN 'system'
+  WHEN NEW.user_id = auth.uid() THEN 'customer'
+  WHEN (SELECT is_picker  FROM public.profiles WHERE id = auth.uid()) THEN 'picker'
+  WHEN (SELECT is_courier FROM public.profiles WHERE id = auth.uid()) THEN 'courier'
+  ELSE 'admin'
+END
+```
+
+**Почему:** Все RPC сборщика и курьера обновляют таблицу `orders` напрямую — триггер срабатывает с `auth.uid()` персонала, и без этих проверок роль теряется. Применено в `log_order_status_change()` (миграция `20260426000003`).

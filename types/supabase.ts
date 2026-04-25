@@ -396,6 +396,8 @@ export type Database = {
           first_name: string | null
           id: string
           is_admin: boolean | null
+          is_courier: boolean | null
+          is_picker: boolean | null
           phone: string
           terms_accepted_at: string | null
           terms_version: string | null
@@ -406,6 +408,8 @@ export type Database = {
           first_name?: string | null
           id: string
           is_admin?: boolean | null
+          is_courier?: boolean | null
+          is_picker?: boolean | null
           phone: string
           terms_accepted_at?: string | null
           terms_version?: string | null
@@ -416,6 +420,8 @@ export type Database = {
           first_name?: string | null
           id?: string
           is_admin?: boolean | null
+          is_courier?: boolean | null
+          is_picker?: boolean | null
           phone?: string
           terms_accepted_at?: string | null
           terms_version?: string | null
@@ -460,6 +466,61 @@ export type Database = {
           used_count?: number | null
         }
         Relationships: []
+      }
+      staff_assignments: {
+        Row: {
+          assigned_at: string
+          assigned_by: string | null
+          completed_at: string | null
+          id: string
+          order_id: string
+          staff_id: string
+          staff_type: string
+          status: string
+        }
+        Insert: {
+          assigned_at?: string
+          assigned_by?: string | null
+          completed_at?: string | null
+          id?: string
+          order_id: string
+          staff_id: string
+          staff_type: string
+          status?: string
+        }
+        Update: {
+          assigned_at?: string
+          assigned_by?: string | null
+          completed_at?: string | null
+          id?: string
+          order_id?: string
+          staff_id?: string
+          staff_type?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "staff_assignments_assigned_by_fkey"
+            columns: ["assigned_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "staff_assignments_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "staff_assignments_staff_id_fkey"
+            columns: ["staff_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       stories: {
         Row: {
@@ -534,6 +595,14 @@ export type Database = {
       }
     }
     Functions: {
+      complete_courier_delivery: {
+        Args: { p_order_id: string; p_staff_id: string }
+        Returns: undefined
+      }
+      complete_picker_assembly: {
+        Args: { p_order_id: string; p_staff_id: string }
+        Returns: undefined
+      }
       delete_order_item: {
         Args: {
           p_admin_id: string
@@ -567,11 +636,20 @@ export type Database = {
         Args: { p_address_id: string; p_user_id: string }
         Returns: undefined
       }
+      take_order_courier: {
+        Args: { p_order_id: string; p_staff_id: string }
+        Returns: undefined
+      }
+      take_order_picker: {
+        Args: { p_order_id: string; p_staff_id: string }
+        Returns: undefined
+      }
     }
     Enums: {
       order_status:
         | "pending"
         | "processing"
+        | "assembled"
         | "shipped"
         | "delivered"
         | "cancelled"
@@ -709,6 +787,7 @@ export const Constants = {
       order_status: [
         "pending",
         "processing",
+        "assembled",
         "shipped",
         "delivered",
         "cancelled",

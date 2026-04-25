@@ -3,18 +3,20 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/components/ui/table';
 import { updateOrderStatus } from '@/lib/adminApi';
-import type { AdminOrderItem, AdminOrderWithDetails } from '@/lib/adminApi';
+import type { AdminOrderItem, AdminOrderWithDetails, StaffMember } from '@/lib/adminApi';
 import type { Order } from '@/types';
 import { toast } from 'sonner';
 import { OrderRow } from './OrderRow';
 
 interface OrdersTableProps {
   orders: AdminOrderWithDetails[];
+  pickers: StaffMember[];
+  couriers: StaffMember[];
   onUpdated: (id: string, status: Order['status']) => void;
   onItemsChanged: (orderId: string, updatedItems: AdminOrderItem[], newTotal: number) => void;
 }
 
-export function OrdersTable({ orders, onUpdated, onItemsChanged }: OrdersTableProps) {
+export function OrdersTable({ orders, pickers, couriers, onUpdated, onItemsChanged }: OrdersTableProps) {
   const [updating, setUpdating] = useState<string | null>(null);
 
   async function handleStatusChange(orderId: string, status: Order['status']) {
@@ -58,6 +60,8 @@ export function OrdersTable({ orders, onUpdated, onItemsChanged }: OrdersTablePr
                 <OrderRow
                   key={order.id}
                   order={order}
+                  pickers={pickers}
+                  couriers={couriers}
                   isUpdating={updating === order.id}
                   onStatusChange={handleStatusChange}
                   onItemsChanged={onItemsChanged}

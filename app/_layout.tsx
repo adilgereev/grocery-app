@@ -19,7 +19,7 @@ export const unstable_settings = {
 
 function RootLayoutNav() {
   const colorScheme = useColorScheme();
-  const { session, loading, needsProfileSetup, profileLoading } = useAuth();
+  const { session, loading, needsProfileSetup, profileLoading, profile } = useAuth();
   const segments = useSegments();
   const router = useRouter();
 
@@ -48,14 +48,14 @@ function RootLayoutNav() {
         }
       } else if (inAuthGroup || inSetupProfile) {
         // Авторизованный пользователь с заполненным профилем на экране авторизации/setup
-        if (router.canGoBack()) {
-          router.back();
+        if (profile?.is_admin) {
+          router.replace('/(admin)' as any);
         } else {
           router.replace('/(tabs)/(index)' as any);
         }
       }
     }
-  }, [session, loading, segments, isReady, router, needsProfileSetup, profileLoading]);
+  }, [session, loading, segments, isReady, router, needsProfileSetup, profileLoading, profile]);
 
   if (loading || !isReady || (session && profileLoading)) return null;
 

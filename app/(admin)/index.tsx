@@ -2,6 +2,7 @@ import AdminMenuItem from '@/components/admin/AdminMenuItem';
 import ScreenHeader from '@/components/ui/ScreenHeader';
 import { Colors, Radius, Shadows, Spacing } from '@/constants/theme';
 import { useAdminDashboard } from '@/hooks/useAdminDashboard';
+import { useAuth } from '@/providers/AuthProvider';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
@@ -10,6 +11,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 export default function AdminDashboard() {
   const router = useRouter();
   const { pendingCount } = useAdminDashboard();
+  const { profile } = useAuth();
+  const isAdmin = profile?.is_admin;
 
   return (
     <SafeAreaView edges={['bottom']} style={styles.safeArea}>
@@ -26,31 +29,33 @@ export default function AdminDashboard() {
           />
         </View>
 
-        <View style={styles.menuContainer}>
-          <AdminMenuItem
-            icon="add-circle"
-            title="Добавить товар"
-            subtitle="Создать новую карточку товара"
-            onPress={() => router.push('/(admin)/add-product')}
-            testID="admin-add-product-button"
-          />
-          <View style={styles.divider} />
-          <AdminMenuItem
-            icon="list"
-            title="Товары"
-            subtitle="Редактирование и удаление товаров"
-            onPress={() => router.push('/(admin)/catalog')}
-            testID="admin-catalog-button"
-          />
-          <View style={styles.divider} />
-          <AdminMenuItem
-            icon="grid"
-            title="Категории"
-            subtitle="Добавление и изменение разделов"
-            onPress={() => router.push('/(admin)/categories')}
-            testID="admin-categories-button"
-          />
-        </View>
+        {isAdmin && (
+          <View style={styles.menuContainer}>
+            <AdminMenuItem
+              icon="add-circle"
+              title="Добавить товар"
+              subtitle="Создать новую карточку товара"
+              onPress={() => router.push('/(admin)/add-product')}
+              testID="admin-add-product-button"
+            />
+            <View style={styles.divider} />
+            <AdminMenuItem
+              icon="list"
+              title="Товары"
+              subtitle="Редактирование и удаление товаров"
+              onPress={() => router.push('/(admin)/catalog')}
+              testID="admin-catalog-button"
+            />
+            <View style={styles.divider} />
+            <AdminMenuItem
+              icon="grid"
+              title="Категории"
+              subtitle="Добавление и изменение разделов"
+              onPress={() => router.push('/(admin)/categories')}
+              testID="admin-categories-button"
+            />
+          </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );

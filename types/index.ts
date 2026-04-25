@@ -105,7 +105,16 @@ export interface Profile {
   phone: string;
   avatar_url: string | null;
   is_admin: boolean | null;
+  is_picker: boolean | null;
+  is_courier: boolean | null;
   created_at?: string;
   terms_accepted_at?: string | null;
   terms_version?: string | null;
 }
+
+export interface StaffMember {
+  id: string;
+  first_name: string | null;
+  phone: string;
+}
+

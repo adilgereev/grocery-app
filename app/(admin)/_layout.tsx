@@ -8,14 +8,14 @@ import { Colors } from '@/constants/theme';
 export default function AdminLayout() {
   const { session } = useAuth();
   const router = useRouter();
-  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
+  const [hasAccess, setHasAccess] = useState<boolean | null>(null);
 
   useEffect(() => {
-    checkAdmin();
+    checkAccess();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session]);
 
-  const checkAdmin = async () => {
+  const checkAccess = async () => {
     if (!session?.user) {
       router.replace('/');
       return;
@@ -23,19 +23,19 @@ export default function AdminLayout() {
 
     const { data } = await supabase
       .from('profiles')
-      .select('is_admin')
+      .select('is_admin, is_picker, is_courier')
       .eq('id', session.user.id)
       .single();
 
-    if (data?.is_admin) {
-      setIsAdmin(true);
+    if (data?.is_admin || data?.is_picker || data?.is_courier) {
+      setHasAccess(true);
     } else {
-      setIsAdmin(false);
-      router.replace('/'); // Отправляем обратно, если не админ
+      setHasAccess(false);
+      router.replace('/');
     }
   };
 
-  if (isAdmin === null) {
+  if (!hasAccess) {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color={Colors.light.primary} />

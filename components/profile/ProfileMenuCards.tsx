@@ -5,11 +5,12 @@ import { Colors, Spacing, Radius, Shadows } from '@/constants/theme';
 
 interface ProfileMenuCardsProps {
   isAdmin: boolean;
+  isStaff: boolean;
   onLogout: () => void;
   onNavigate: (route: string) => void;
 }
 
-export default function ProfileMenuCards({ isAdmin, onLogout, onNavigate }: ProfileMenuCardsProps) {
+export default function ProfileMenuCards({ isAdmin, isStaff, onLogout, onNavigate }: ProfileMenuCardsProps) {
   return (
     <>
       {/* Global Menu Card */}
@@ -28,13 +29,13 @@ export default function ProfileMenuCards({ isAdmin, onLogout, onNavigate }: Prof
         </TouchableOpacity>
         <View style={styles.divider} />
 
-        {/* Admin Tools */}
-        {isAdmin && (
+        {/* Staff/Admin Dashboard */}
+        {(isAdmin || isStaff) && (
           <>
             <TouchableOpacity
               style={styles.menuItem}
-              onPress={() => onNavigate('/(admin)' as any)}
-              testID="profile-menu-admin"
+              onPress={() => onNavigate('/(admin)')}
+              testID="profile-menu-dashboard"
             >
               <Ionicons name="shield-checkmark-outline" size={22} color={Colors.light.textSecondary} style={styles.menuItemIcon} />
               <Text style={styles.menuText}>Панель управления</Text>

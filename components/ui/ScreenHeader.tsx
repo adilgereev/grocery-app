@@ -1,6 +1,7 @@
 import React, { ReactNode } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import { Colors, FontSize, Fonts, Spacing, Shadows } from '@/constants/theme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -14,12 +15,15 @@ interface ScreenHeaderProps {
 
 export default function ScreenHeader({
   title,
-  showBackBtn = true,
+  showBackBtn,
   onBackPress,
   rightElement,
 }: ScreenHeaderProps) {
   const router = useRouter();
+  const navigation = useNavigation();
   const insets = useSafeAreaInsets();
+
+  const canGoBack = showBackBtn ?? navigation.canGoBack();
 
   const handleBack = () => {
     if (onBackPress) {
@@ -31,7 +35,7 @@ export default function ScreenHeader({
 
   return (
     <View style={[styles.header, { paddingTop: insets.top + Spacing.m }]}>
-      {showBackBtn ? (
+      {canGoBack ? (
         <TouchableOpacity testID="header-back-button" onPress={handleBack} style={styles.backButton}>
           <Ionicons name="arrow-back" size={24} color={Colors.light.text} />
         </TouchableOpacity>

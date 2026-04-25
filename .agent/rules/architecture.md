@@ -97,3 +97,35 @@ const handleRefresh = useCallback(async () => {
 - Guard `if (isRefreshing) return` — защита от двойного tap
 
 **Применено в:** `app/(tabs)/(index)/index.tsx` → `handleRefresh`, `hooks/useFavorites.ts` → `onRefresh`, `app/orders.tsx` → `onRefresh`
+
+## 9. 🗂️ Staff-scoped запросы к истории заказов
+
+Для получения истории заказов конкретного сотрудника — двухшаговый запрос. Прямой JOIN через Supabase-клиент ненадёжен для фильтрации по вложенной таблице.
+
+```typescript
+// 1. Получить order_id сотрудника из staff_assignments
+const { data: assignments } = await supabase
+  .from('staff_assignments')
+  .select('order_id')
+  .eq('staff_id', staffId)
+  .eq('staff_type', staffType); // 'picker' | 'courier'
+
+const orderIds = (assignments || []).map((a) => a.order_id);
+if (orderIds.length === 0) return [];
+
+// 2. Получить заказы с полными деталями
+const { data } = await supabase
+  .from('orders')
+  .select(ORDER_DETAILS_SELECT)
+  .in('id', orderIds)
+  .in('status', historicalStatuses)
+  .order('created_at', { ascending: false });
+```
+
+**Правила:**
+- Не фильтровать `.in('status', ...)` без шага 1 — иначе сотрудник увидит чужие завершённые заказы
+- Для истории сборщика: `historicalStatuses = ['assembled', 'delivered', 'cancelled']`
+- Для истории курьера: `historicalStatuses = ['delivered', 'cancelled']`
+- Запрос к `staff_assignments` без фильтра по `status` — чтобы не пропустить заказы, отменённые пока назначение ещё было `active`
+
+**Применено в:** `lib/api/admin/ordersApi.ts` → `fetchStaffHistoryOrders`

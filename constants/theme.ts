@@ -27,6 +27,7 @@ export const Colors = {
     errorLight: '#FEF2F2',
     warning: '#F97316',
     warningLight: '#FFF7ED',
+    warningText: '#92400e',
     info: '#3B82F6',
     infoLight: '#EEF2FF',
     success: '#16A34A',

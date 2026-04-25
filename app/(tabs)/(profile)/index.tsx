@@ -44,6 +44,7 @@ export default function ProfileScreen() {
 
         <ProfileMenuCards
           isAdmin={profile?.is_admin ?? false}
+          isStaff={(profile?.is_picker ?? false) || (profile?.is_courier ?? false)}
           onLogout={handleLogout}
           onNavigate={(route) => router.push(route as any)}
         />

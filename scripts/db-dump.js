@@ -1,7 +1,7 @@
 const { execSync } = require('child_process');
 const date = new Date().toISOString().slice(0, 10);
 const container = 'supabase_db_grocery-app';
-const out = 'supabase/damps';
+const out = 'supabase/dumps';
 
 const run = (cmd) => execSync(cmd, { stdio: 'inherit' });
 

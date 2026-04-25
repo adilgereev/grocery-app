@@ -1,20 +1,31 @@
 import { useEffect, useState, useCallback } from 'react';
 import { toast } from 'sonner';
 import { OrdersTable } from '@/features/orders/OrdersTable';
-import { fetchAllOrdersWithDetails } from '@/lib/adminApi';
-import type { AdminOrderItem, AdminOrderWithDetails } from '@/lib/adminApi';
+import {
+  fetchAllOrdersWithDetails,
+  fetchStaffByType,
+} from '@/lib/adminApi';
+import type { AdminOrderItem, AdminOrderWithDetails, StaffMember } from '@/lib/adminApi';
 import type { Order } from '@/types';
 import { supabase } from '@/lib/supabase';
 
 export function OrdersPage() {
   const [orders, setOrders] = useState<AdminOrderWithDetails[]>([]);
   const [loading, setLoading] = useState(true);
+  const [pickers, setPickers] = useState<StaffMember[]>([]);
+  const [couriers, setCouriers] = useState<StaffMember[]>([]);
 
   const loadData = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await fetchAllOrdersWithDetails();
+      const [data, pickerList, courierList] = await Promise.all([
+        fetchAllOrdersWithDetails(),
+        fetchStaffByType('picker'),
+        fetchStaffByType('courier'),
+      ]);
       setOrders(data);
+      setPickers(pickerList);
+      setCouriers(courierList);
     } catch {
       toast.error('Ошибка загрузки заказов');
     } finally {
@@ -25,7 +36,6 @@ export function OrdersPage() {
   useEffect(() => {
     loadData();
 
-    // Real-time подписка на изменения заказов
     const channel = supabase
       .channel('admin_orders_biz')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => {
@@ -60,7 +70,13 @@ export function OrdersPage() {
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent" />
         </div>
       ) : (
-        <OrdersTable orders={orders} onUpdated={handleUpdated} onItemsChanged={handleItemsChanged} />
+        <OrdersTable
+          orders={orders}
+          pickers={pickers}
+          couriers={couriers}
+          onUpdated={handleUpdated}
+          onItemsChanged={handleItemsChanged}
+        />
       )}
     </div>
   );

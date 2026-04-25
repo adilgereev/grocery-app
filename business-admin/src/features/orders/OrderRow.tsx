@@ -1,15 +1,19 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 import { ChevronDown, MessageSquare } from 'lucide-react';
 import { TableCell, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { OrderStatusBadge, STATUS_CONFIG } from './OrderStatusBadge';
 import { OrderItemsTable } from './OrderItemsTable';
-import type { AdminOrderItem, AdminOrderWithDetails } from '@/lib/adminApi';
+import { assignStaff, unassignStaff } from '@/lib/adminApi';
+import type { AdminOrderAssignment, AdminOrderItem, AdminOrderWithDetails, StaffMember } from '@/lib/adminApi';
 import type { Order } from '@/types';
+import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
 interface OrderRowProps {
   order: AdminOrderWithDetails;
+  pickers: StaffMember[];
+  couriers: StaffMember[];
   isUpdating: boolean;
   onStatusChange: (orderId: string, status: Order['status']) => Promise<void>;
   onItemsChanged: (orderId: string, updatedItems: AdminOrderItem[], newTotal: number) => void;
@@ -19,9 +23,46 @@ function getProfile(profiles: AdminOrderWithDetails['profiles']) {
   return Array.isArray(profiles) ? profiles[0] : profiles;
 }
 
-export function OrderRow({ order, isUpdating, onStatusChange, onItemsChanged }: OrderRowProps) {
+const UNASSIGNED = '';
+
+export function OrderRow({ order, pickers, couriers, isUpdating, onStatusChange, onItemsChanged }: OrderRowProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [assignments, setAssignments] = useState<AdminOrderAssignment[]>(order.assignments ?? []);
   const profile = getProfile(order.profiles);
+
+  const activeAssignments = assignments.filter(a => a.status === 'active');
+  const pickerAssignment = activeAssignments.find(a => a.staff_type === 'picker');
+  const courierAssignment = activeAssignments.find(a => a.staff_type === 'courier');
+
+  const handleAssign = useCallback(async (staffType: 'picker' | 'courier', staffId: string) => {
+    const prev = assignments;
+
+    if (staffId === UNASSIGNED) {
+      setAssignments(a => a.filter(x => !(x.staff_type === staffType && x.status === 'active')));
+    } else {
+      const staff = (staffType === 'picker' ? pickers : couriers).find(s => s.id === staffId);
+      const next: AdminOrderAssignment = {
+        staff_type: staffType,
+        staff_id: staffId,
+        status: 'active',
+        staff: staff ? { first_name: staff.first_name, phone: staff.phone } : null,
+      };
+      setAssignments(a => [...a.filter(x => x.staff_type !== staffType), next]);
+    }
+
+    try {
+      if (staffId === UNASSIGNED) {
+        await unassignStaff(order.id, staffType);
+        toast.success('Назначение снято');
+      } else {
+        await assignStaff(order.id, staffType, staffId);
+        toast.success('Сотрудник назначен');
+      }
+    } catch {
+      setAssignments(prev);
+      toast.error('Ошибка назначения');
+    }
+  }, [assignments, order.id, pickers, couriers]);
 
   return (
     <>
@@ -99,6 +140,46 @@ export function OrderRow({ order, isUpdating, onStatusChange, onItemsChanged }: 
                   onItemsChanged(order.id, updatedItems, newTotal)
                 }
               />
+              <div className="mt-4 grid grid-cols-2 gap-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground w-16 shrink-0">Сборщик:</span>
+                  <Select
+                    value={pickerAssignment?.staff_id ?? UNASSIGNED}
+                    onValueChange={v => handleAssign('picker', v)}
+                  >
+                    <SelectTrigger className="h-8 text-xs flex-1">
+                      <SelectValue placeholder="— не назначен —" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={UNASSIGNED}>— не назначен —</SelectItem>
+                      {pickers.map(p => (
+                        <SelectItem key={p.id} value={p.id}>
+                          {p.first_name || p.phone}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-muted-foreground w-16 shrink-0">Курьер:</span>
+                  <Select
+                    value={courierAssignment?.staff_id ?? UNASSIGNED}
+                    onValueChange={v => handleAssign('courier', v)}
+                  >
+                    <SelectTrigger className="h-8 text-xs flex-1">
+                      <SelectValue placeholder="— не назначен —" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value={UNASSIGNED}>— не назначен —</SelectItem>
+                      {couriers.map(c => (
+                        <SelectItem key={c.id} value={c.id}>
+                          {c.first_name || c.phone}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
             </div>
           </TableCell>
         </TableRow>

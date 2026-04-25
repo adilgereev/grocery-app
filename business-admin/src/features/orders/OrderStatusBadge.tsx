@@ -12,6 +12,10 @@ const STATUS_CONFIG: Record<OrderStatus, { label: string; className: string }> =
     label: 'Сборка',
     className: 'bg-blue-100 text-blue-800 border-blue-200',
   },
+  assembled: {
+    label: 'Собран',
+    className: 'bg-teal-100 text-teal-800 border-teal-200',
+  },
   shipped: {
     label: 'В пути',
     className: 'bg-purple-100 text-purple-800 border-purple-200',
