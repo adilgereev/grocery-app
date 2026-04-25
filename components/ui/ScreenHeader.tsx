@@ -1,7 +1,6 @@
 import React, { ReactNode } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useNavigation } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
 import { Colors, FontSize, Fonts, Spacing, Shadows } from '@/constants/theme';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -20,10 +19,9 @@ export default function ScreenHeader({
   rightElement,
 }: ScreenHeaderProps) {
   const router = useRouter();
-  const navigation = useNavigation();
   const insets = useSafeAreaInsets();
 
-  const canGoBack = showBackBtn ?? navigation.canGoBack();
+  const canGoBack = showBackBtn ?? true;
 
   const handleBack = () => {
     if (onBackPress) {
