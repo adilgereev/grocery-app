@@ -41,8 +41,8 @@ describe('OrderCard', () => {
       <OrderCard order={pendingOrder} onPress={mockOnPress} />
     );
 
-    expect(getByText('📦')).toBeTruthy();
-    expect(getByText('Собираем')).toBeTruthy();
+    expect(getByText('🕐')).toBeTruthy();
+    expect(getByText('Новый')).toBeTruthy();
   });
 
   it('calls onPress when the card is pressed', () => {
@@ -60,6 +60,6 @@ describe('OrderCard', () => {
       <OrderCard order={brokenOrder as any} onPress={mockOnPress} />
     );
 
-    expect(getByText('Собираем')).toBeTruthy();
+    expect(getByText('Новый')).toBeTruthy();
   });
 });
