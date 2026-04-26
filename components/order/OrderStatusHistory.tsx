@@ -92,12 +92,12 @@ const styles = StyleSheet.create({
   date: {
     fontSize: FontSize.xs,
     color: Colors.light.textSecondary,
-    marginTop: 2,
+    marginTop: Spacing.xxs,
   },
   note: {
     fontSize: FontSize.xs,
     color: Colors.light.textSecondary,
-    marginTop: 2,
+    marginTop: Spacing.xxs,
     fontStyle: 'italic',
   },
 });

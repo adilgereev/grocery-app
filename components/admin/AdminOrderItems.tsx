@@ -4,7 +4,6 @@ import React from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Colors, FontSize, Radius, Spacing } from "@/constants/theme";
 import { getOptimizedImage } from "@/lib/utils/imageKit";
-import Skeleton from "@/components/ui/Skeleton";
 
 const EDITABLE_STATUSES = new Set(["pending", "processing"]);
 const THUMB_SIZE = 44;
@@ -29,7 +28,9 @@ export default function AdminOrderItems({ items, orderStatus, onItemOptions }: P
                 style={s.thumb}
               />
             ) : (
-              <Skeleton width={THUMB_SIZE} height={THUMB_SIZE} borderRadius={Radius.s} />
+              <View style={s.thumbPlaceholder}>
+                <Ionicons name="image-outline" size={20} color={Colors.light.textLight} />
+              </View>
             )}
 
             <View style={s.content}>
@@ -91,6 +92,14 @@ const s = StyleSheet.create({
     borderRadius: Radius.s,
     backgroundColor: Colors.light.borderLight,
   },
+  thumbPlaceholder: {
+    width: THUMB_SIZE,
+    height: THUMB_SIZE,
+    borderRadius: Radius.s,
+    backgroundColor: Colors.light.borderLight,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   content: {
     flex: 1,
     marginLeft: Spacing.sm,
@@ -121,7 +130,7 @@ const s = StyleSheet.create({
     backgroundColor: Colors.light.primaryLight,
     borderRadius: Radius.pill,
     paddingHorizontal: Spacing.s,
-    paddingVertical: 2,
+    paddingVertical: Spacing.xxs,
   },
   qtyPillText: {
     fontSize: FontSize.s,
