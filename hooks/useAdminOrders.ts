@@ -53,17 +53,14 @@ export function useAdminOrders(): UseAdminOrdersReturn {
   const fetchOrders = useCallback(async () => {
     setLoading(true);
     try {
-      const statusFilter =
-        (role === 'picker' || role === 'courier')
-          ? (['pending', 'processing', 'assembled', 'shipped'] as const)
-          : undefined;
+      const statusFilter = ['pending', 'processing', 'assembled', 'shipped'] as const;
       const data = await fetchAllOrdersWithDetails(statusFilter);
       setOrders(data);
     } catch (e: unknown) {
       Alert.alert('Ошибка', e instanceof Error ? e.message : 'Не удалось загрузить заказы');
     }
     setLoading(false);
-  }, [role]);
+  }, []);
 
   const fetchHistory = useCallback(async () => {
     try {

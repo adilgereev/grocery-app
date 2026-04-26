@@ -50,6 +50,7 @@ export const Colors = {
 };
 
 export const Spacing = {
+  xxs: 2,
   xs: 4,
   s: 8,
   sm: 12,

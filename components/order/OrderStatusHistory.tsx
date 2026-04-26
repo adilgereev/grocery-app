@@ -30,6 +30,7 @@ export default function OrderStatusHistory({ history }: Props) {
             <View style={[styles.content, !isLast && styles.contentWithBorder]}>
               <Text style={[styles.label, { color: config.color }]}>{config.shortLabel}</Text>
               <Text style={styles.date}>{formatDate(entry.created_at)}</Text>
+              {entry.note && <Text style={styles.note}>{entry.note}</Text>}
             </View>
           </View>
         );
@@ -91,6 +92,12 @@ const styles = StyleSheet.create({
   date: {
     fontSize: FontSize.xs,
     color: Colors.light.textSecondary,
-    marginTop: 2,
+    marginTop: Spacing.xxs,
+  },
+  note: {
+    fontSize: FontSize.xs,
+    color: Colors.light.textSecondary,
+    marginTop: Spacing.xxs,
+    fontStyle: 'italic',
   },
 });
