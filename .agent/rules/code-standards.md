@@ -41,6 +41,8 @@
 
 ## 7. 🔗 Связанные навыки и workflows
 - **Skill**: `.agent/skills/testing/SKILL.md` — стандарты тестирования (Jest + RNTL), AI Regression Cycle, покрытие stores и UI. Обязателен при любых изменениях логики.
+- **Skill**: `.agent/skills/review/SKILL.md` — code review под стандарты проекта (AUTO-FIX vs ASK, токены, testID, useCallback). Использовать перед мержем.
+- **Skill**: `.agent/skills/investigate/SKILL.md` — систематическая отладка (4 фазы, scope lock). Использовать при любом баге до написания кода.
 - **Workflow**: `.agent/workflows/verify-task.md` — пошаговая проверка задачи (lint → knip → test → UI-стандарты).
 
 ## 8. 🛡️ Валидация Данных (Zod)

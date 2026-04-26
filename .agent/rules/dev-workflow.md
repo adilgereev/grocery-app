@@ -49,3 +49,7 @@
 
 - **Workflow**: `.agent/workflows/verify-task.md` — автоматическая проверка задачи (lint + knip + test).
 - **Workflow**: `.agent/workflows/supabase-sync.md` — применение миграций локально + обновление типов.
+- **Skill**: `.agent/skills/review/SKILL.md` — code review под стандарты проекта перед мержем.
+- **Skill**: `.agent/skills/investigate/SKILL.md` — систематическая отладка при любом баге.
+- **Skill**: `.agent/skills/design-review/SKILL.md` — аудит UI-токенов и Soft Minimalism стандартов.
+- **Skill**: `.agent/skills/retro/SKILL.md` — еженедельная ретроспектива по git-истории.
