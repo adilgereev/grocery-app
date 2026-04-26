@@ -36,7 +36,16 @@
 - Никогда не редактировать `types/supabase.ts` вручную.
 - Подробный протокол: `.agent/skills/supabase/SKILL.md`.
 
-## 4. 🔗 Связанные навыки и workflows
+## 4. 📚 Документация библиотек (context7)
+
+Когда нужна документация по любой внешней библиотеке (Expo, Supabase, React Native, React Hook Form и т.д.) — **всегда использовать context7 MCP**, не опираться на знания из обучения. API меняется быстро, context7 даёт актуальную версию.
+
+Когда использовать:
+- Незнакомый или редко используемый API библиотеки
+- Сомнения в сигнатуре функции или опциях
+- Вопросы про конфигурацию (Expo config, Supabase client options и т.д.)
+
+## 5. 🔗 Связанные навыки и workflows
 
 - **Workflow**: `.agent/workflows/verify-task.md` — автоматическая проверка задачи (lint + knip + test).
 - **Workflow**: `.agent/workflows/supabase-sync.md` — применение миграций локально + обновление типов.
