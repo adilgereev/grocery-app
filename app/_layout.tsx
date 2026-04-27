@@ -10,6 +10,7 @@ import AuthProvider, { useAuth } from '@/providers/AuthProvider';
 import { useAppStore } from '@/store/appStore';
 import { useAddressStore } from '@/store/addressStore';
 import { registerForPushNotificationsAsync } from '@/lib/services/NotificationService';
+import { useOrderStatusListener } from '@/hooks/useOrderStatusListener';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { ToastContainer } from '@/components/ui/ToastContainer';
 
@@ -25,6 +26,8 @@ function RootLayoutNav() {
 
   const { isReady, initialize } = useAppStore();
   const loadAddresses = useAddressStore(state => state.loadAddresses);
+
+  useOrderStatusListener();
 
   useEffect(() => {
     initialize();

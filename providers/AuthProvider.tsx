@@ -6,6 +6,7 @@ import { Profile } from '@/types';
 import { fetchUserProfile } from '@/lib/api/authApi';
 import { useAddressStore } from '@/store/addressStore';
 import { useCartStore } from '@/store/cartStore';
+import { registerExpoPushToken } from '@/lib/services/NotificationService';
 
 type AuthContextType = {
   session: Session | null;
@@ -100,6 +101,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
       }
 
       setProfile(data);
+      if (data) void registerExpoPushToken(userId);
     } catch (error) {
       logger.error('Ошибка загрузки профиля:', error);
       setProfile(null);

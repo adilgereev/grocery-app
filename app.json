@@ -8,6 +8,7 @@
     "scheme": "groceryapp",
     "userInterfaceStyle": "automatic",
     "ios": {
+      "bundleIdentifier": "com.adil_sh.groceryapp",
       "supportsTablet": true
     },
     "android": {
@@ -22,6 +23,15 @@
     },
     "plugins": [
       "expo-router",
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/images/icon.png",
+          "color": "#10B981",
+          "sounds": [],
+          "mode": "production"
+        }
+      ],
       [
         "expo-splash-screen",
         {

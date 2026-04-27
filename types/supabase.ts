@@ -399,6 +399,7 @@ export type Database = {
           is_courier: boolean | null
           is_picker: boolean | null
           phone: string
+          push_token: string | null
           terms_accepted_at: string | null
           terms_version: string | null
         }
@@ -411,6 +412,7 @@ export type Database = {
           is_courier?: boolean | null
           is_picker?: boolean | null
           phone: string
+          push_token?: string | null
           terms_accepted_at?: string | null
           terms_version?: string | null
         }
@@ -423,6 +425,7 @@ export type Database = {
           is_courier?: boolean | null
           is_picker?: boolean | null
           phone?: string
+          push_token?: string | null
           terms_accepted_at?: string | null
           terms_version?: string | null
         }
