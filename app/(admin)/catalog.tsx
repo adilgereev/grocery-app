@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import { FlatList, Platform, StyleSheet, Text, UIManager } from 'react-native';
+import { FlatList, StyleSheet, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Colors, Spacing } from '@/constants/theme';
 import ScreenHeader from '@/components/ui/ScreenHeader';
@@ -9,10 +9,6 @@ import { CatalogSkeleton } from '@/components/admin/CatalogSkeleton';
 import { CatalogSearchBar } from '@/components/admin/CatalogSearchBar';
 import { useCatalog } from '@/hooks/useCatalog';
 import { CatalogItem } from '@/lib/utils/catalogHierarchy';
-
-if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
-  UIManager.setLayoutAnimationEnabledExperimental(true);
-}
 
 export default function CatalogScreen() {
   const {

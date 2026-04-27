@@ -8,7 +8,6 @@ import { useCartStore } from '@/store/cartStore';
 import { useAddressStore } from '@/store/addressStore';
 import { supabase } from '@/lib/services/supabase';
 import { formatFullAddress } from '@/lib/utils/addressFormatter';
-import { schedulePushNotification } from '@/lib/services/NotificationService';
 import { logger } from '@/lib/utils/logger';
 import { PaymentMethod } from '@/types';
 
@@ -73,20 +72,8 @@ export function useCheckout() {
         }
       }
 
-      // 4. Обработка успеха: хаптика, уведомления и редирект
+      // 4. Обработка успеха: хаптика и редирект
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
-
-      // Планируем уведомления для имитации процесса доставки
-      schedulePushNotification(
-        "Заказ оформлен! ✅",
-        "Ваш продуктовый набор уже начали собирать на складе.",
-        2
-      );
-      schedulePushNotification(
-        "Курьер в пути! 🚴‍♂️",
-        "Ожидайте доставку примерно через 15 минут. Вы можете отслеживать статус в приложении.",
-        15
-      );
 
       // 5. Очистка и переход
       clearCart();

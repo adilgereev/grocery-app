@@ -122,7 +122,17 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 
   useEffect(() => {
     // Сначала быстро берем локальную сессию для мгновенного UI
-    supabase.auth.getSession().then(({ data: { session } }) => {
+    supabase.auth.getSession().then(({ data: { session }, error }) => {
+      if (error) {
+        // Refresh token протух — чистим сессию без лишнего шума
+        logger.warn('Сессия невалидна, разлогиниваем:', error.message);
+        void supabase.auth.signOut();
+        setSession(null);
+        setLoading(false);
+        setProfileLoading(false);
+        return;
+      }
+
       setSession(session);
       setLoading(false);
 
@@ -134,10 +144,10 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
         useCartStore.getState().revalidatePromoCode();
 
         // Асинхронно сверяем с сервером (вдруг юзер удален из базы)
-        supabase.auth.getUser().then(({ error, data: { user } }) => {
-          if (error || !user) {
+        supabase.auth.getUser().then(({ error: userError, data: { user } }) => {
+          if (userError || !user) {
             logger.warn('Токен невалиден или юзер удалён в БД. Разлогиниваем...');
-            supabase.auth.signOut();
+            void supabase.auth.signOut();
             setSession(null);
           }
         });

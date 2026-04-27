@@ -1,10 +1,4 @@
-import { Platform, UIManager } from 'react-native';
 import { Category } from '@/types';
-
-// Включаем LayoutAnimation для Android
-if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
-  UIManager.setLayoutAnimationEnabledExperimental(true);
-}
 
 /**
  * Чистая функция для иерархической сортировки категорий.

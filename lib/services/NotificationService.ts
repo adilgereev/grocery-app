@@ -6,6 +6,9 @@ import { Platform } from 'react-native';
 import { supabase } from '@/lib/services/supabase';
 import { logger } from '@/lib/utils/logger';
 
+// В Expo Go SDK 53 push-уведомления недоступны — нужен development build
+const IS_EXPO_GO = Constants.appOwnership === 'expo';
+
 // Настройка того, как уведомления будут отображаться, если приложение открыто
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -28,6 +31,7 @@ const STATUS_MESSAGES: Partial<Record<string, { title: string; body: string }>> 
 };
 
 export async function registerForPushNotificationsAsync(): Promise<void> {
+  if (IS_EXPO_GO) return;
   if (Platform.OS === 'android') {
     await Notifications.setNotificationChannelAsync('default', {
       name: 'default',
@@ -53,6 +57,7 @@ export async function registerForPushNotificationsAsync(): Promise<void> {
 // Регистрирует Expo Push Token и сохраняет в profiles.push_token.
 // Требует нативного билда (expo run:android / EAS Build) — не работает в Expo Go.
 export async function registerExpoPushToken(userId: string): Promise<void> {
+  if (IS_EXPO_GO) return;
   if (!Device.isDevice) return;
   if (!EXPO_PROJECT_ID) return;
 

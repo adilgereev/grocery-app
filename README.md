@@ -32,28 +32,34 @@ In the output, you'll find options to open the app in a
 
 You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
-## Get a fresh project
+## Dev build на Android (Wi-Fi отладка)
 
-When you're ready, run:
+### 1. Подготовка телефона (один раз)
+1. Настройки → О телефоне → нажать **Номер сборки 7 раз**
+2. Настройки → Для разработчиков → **Беспроводная отладка** → ON
+
+### 2. Сопряжение (один раз)
+В разделе "Беспроводная отладка" → **Подключить с помощью кода сопряжения**
 
 ```bash
-npm run reset-project
+adb pair <IP>:<порт сопряжения>
+# ввести код с экрана телефона
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### 3. Подключение (каждый раз)
+IP и порт — на главном экране "Беспроводная отладка" (не в "Подключить с помощью кода")
 
-## Learn more
+```bash
+adb connect <IP>:<порт подключения>
+adb devices  # проверить что устройство видно
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+### 4. Запуск
+```bash
+npx expo run:android
+```
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
-
-npm test -- --coverage
+### Переменные окружения (должны быть заданы)
+- `ANDROID_HOME` = `D:\Apps\Android\Sdk`
+- `JAVA_HOME` = `C:\Program Files\Java\jdk-23`
+- `PATH` включает `D:\Apps\Android\Sdk\platform-tools`
