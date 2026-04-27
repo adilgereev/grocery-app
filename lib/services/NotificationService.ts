@@ -91,17 +91,3 @@ export async function notifyOrderStatus(status: string): Promise<void> {
   });
 }
 
-export async function schedulePushNotification(title: string, body: string, seconds: number) {
-  await Notifications.scheduleNotificationAsync({
-    content: {
-      title,
-      body,
-      sound: true,
-    },
-    // Делегируем таймер нативной ОС (чтобы работало даже при свернутом приложении)
-    trigger: {
-      type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
-      seconds,
-    },
-  });
-}
