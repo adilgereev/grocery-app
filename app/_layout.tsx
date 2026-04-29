@@ -4,6 +4,7 @@ import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
 import { useEffect } from 'react';
+import { View, StyleSheet } from 'react-native';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import AuthProvider, { useAuth } from '@/providers/AuthProvider';
@@ -11,8 +12,10 @@ import { useAppStore } from '@/store/appStore';
 import { useAddressStore } from '@/store/addressStore';
 import { registerForPushNotificationsAsync } from '@/lib/services/NotificationService';
 import { useOrderStatusListener } from '@/hooks/useOrderStatusListener';
+import { useNetworkStatus } from '@/hooks/useNetworkStatus';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { ToastContainer } from '@/components/ui/ToastContainer';
+import { NetworkBanner } from '@/components/ui/NetworkBanner';
 
 export const unstable_settings = {
   anchor: '(tabs)',
@@ -28,6 +31,7 @@ function RootLayoutNav() {
   const loadAddresses = useAddressStore(state => state.loadAddresses);
 
   useOrderStatusListener();
+  useNetworkStatus();
 
   useEffect(() => {
     initialize();
@@ -64,22 +68,29 @@ function RootLayoutNav() {
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="(tabs)" />
-        <Stack.Screen name="(auth)" />
-        <Stack.Screen name="setup-profile" />
-        <Stack.Screen name="addresses" />
-        <Stack.Screen name="manage-address" />
-        <Stack.Screen name="checkout" />
-        <Stack.Screen name="orders" />
-        <Stack.Screen name="order-success" />
-        <Stack.Screen name="privacy-policy" />
-        <Stack.Screen name="public-offer" />
-      </Stack>
+      <View style={styles.container}>
+        <NetworkBanner />
+        <Stack screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="(auth)" />
+          <Stack.Screen name="setup-profile" />
+          <Stack.Screen name="addresses" />
+          <Stack.Screen name="manage-address" />
+          <Stack.Screen name="checkout" />
+          <Stack.Screen name="orders" />
+          <Stack.Screen name="order-success" />
+          <Stack.Screen name="privacy-policy" />
+          <Stack.Screen name="public-offer" />
+        </Stack>
+      </View>
       <StatusBar style="dark" />
     </ThemeProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  container: { flex: 1 },
+});
 
 export default function RootLayout() {
   return (
