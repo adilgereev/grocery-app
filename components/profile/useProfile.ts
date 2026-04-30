@@ -4,6 +4,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { fetchUserProfile, signOut } from '@/lib/api/authApi';
 import { useAuth } from '@/providers/AuthProvider';
 import { useCartStore } from '@/store/cartStore';
+import { useToastStore } from '@/store/toastStore';
 import { logger } from '@/lib/utils/logger';
 import { Profile } from '@/types';
 
@@ -29,8 +30,9 @@ export function useProfile(): UseProfileReturn {
       const data = await fetchUserProfile(session.user.id);
       if (data) setProfile(data);
     } catch (error: unknown) {
-      const errorMessage = error instanceof Error ? error.message : 'Неизвестная ошибка';
+      const errorMessage = error instanceof Error ? error.message : 'Не удалось загрузить профиль';
       logger.error('Ошибка загрузки профиля:', errorMessage);
+      useToastStore.getState().showToast('error', errorMessage);
     } finally {
       setLoading(false);
     }

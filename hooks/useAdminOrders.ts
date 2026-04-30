@@ -8,6 +8,7 @@ import {
 import { supabase } from "@/lib/services/supabase";
 import { OrderStatus } from "@/constants/orderStatuses";
 import { useAuth } from "@/providers/AuthProvider";
+import { useToastStore } from "@/store/toastStore";
 import { useCallback, useEffect, useState } from "react";
 import { Alert, Linking } from "react-native";
 import { useAdminItemActions, ReplaceTarget } from "./useAdminItemActions";
@@ -20,6 +21,7 @@ interface UseAdminOrdersReturn {
   activeTab: 'active' | 'history';
   setActiveTab: React.Dispatch<React.SetStateAction<'active' | 'history'>>;
   loading: boolean;
+  error: string | null;
   expandedOrders: string[];
   replaceTarget: ReplaceTarget | null;
   fetchOrders: () => Promise<void>;
@@ -42,6 +44,7 @@ export function useAdminOrders(): UseAdminOrdersReturn {
   const { profile } = useAuth();
   const [orders, setOrders] = useState<AdminOrderWithDetails[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [expandedOrders, setExpandedOrders] = useState<string[]>([]);
   const [replaceTarget, setReplaceTarget] = useState<ReplaceTarget | null>(null);
 
@@ -52,12 +55,13 @@ export function useAdminOrders(): UseAdminOrdersReturn {
 
   const fetchOrders = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const statusFilter = ['pending', 'processing', 'assembled', 'shipped'] as const;
       const data = await fetchAllOrdersWithDetails(statusFilter);
       setOrders(data);
     } catch (e: unknown) {
-      Alert.alert('Ошибка', e instanceof Error ? e.message : 'Не удалось загрузить заказы');
+      setError(e instanceof Error ? e.message : 'Не удалось загрузить заказы');
     }
     setLoading(false);
   }, []);
@@ -73,7 +77,8 @@ export function useAdminOrders(): UseAdminOrdersReturn {
       }
       setHistoryOrders(data);
     } catch (e: unknown) {
-      Alert.alert('Ошибка', e instanceof Error ? e.message : 'Не удалось загрузить историю');
+      const msg = e instanceof Error ? e.message : 'Не удалось загрузить историю';
+      useToastStore.getState().showToast('error', msg);
     }
   }, [role, profile?.id]);
 
@@ -136,7 +141,7 @@ export function useAdminOrders(): UseAdminOrdersReturn {
 
   return {
     orders, historyOrders, activeTab, setActiveTab,
-    loading, expandedOrders, replaceTarget,
+    loading, error, expandedOrders, replaceTarget,
     fetchOrders, fetchHistory,
     toggleExpand, showStatusOptions, showItemOptions, handleConfirmReplace,
     dismissReplaceTarget, callCustomer, showAssignOptions, handleSelfAssign,

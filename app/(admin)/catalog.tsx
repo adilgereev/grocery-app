@@ -7,12 +7,15 @@ import { CatalogProductCard } from '@/components/admin/CatalogProductCard';
 import { CatalogSectionHeader } from '@/components/admin/CatalogSectionHeader';
 import { CatalogSkeleton } from '@/components/admin/CatalogSkeleton';
 import { CatalogSearchBar } from '@/components/admin/CatalogSearchBar';
+import ErrorState from '@/components/ui/ErrorState';
 import { useCatalog } from '@/hooks/useCatalog';
 import { CatalogItem } from '@/lib/utils/catalogHierarchy';
 
 export default function CatalogScreen() {
   const {
     loading,
+    error,
+    refetch,
     query,
     setQuery,
     visibleItems,
@@ -64,6 +67,10 @@ export default function CatalogScreen() {
 
   if (loading) {
     return <CatalogSkeleton />;
+  }
+
+  if (error) {
+    return <ErrorState error={error} onRetry={refetch} />;
   }
 
   return (

@@ -3,6 +3,7 @@ import { StyleSheet, FlatList, RefreshControl } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import ScreenHeader from '@/components/ui/ScreenHeader';
+import ErrorState from '@/components/ui/ErrorState';
 import ProductCard from '@/components/product/ProductCard';
 import FavoritesLoadingSkeleton from '@/components/profile/FavoritesLoadingSkeleton';
 import FavoritesEmptyState from '@/components/profile/FavoritesEmptyState';
@@ -11,7 +12,7 @@ import { Colors, Spacing } from '@/constants/theme';
 
 export default function FavoritesScreen() {
   const router = useRouter();
-  const { products, loading, refreshing, recommended, onRefresh, getItemLayout } = useFavorites();
+  const { products, loading, refreshing, error, recommended, onRefresh, refetch, getItemLayout } = useFavorites();
 
   const handleProductPress = useCallback(
     (id: string, name: string) => {
@@ -26,6 +27,10 @@ export default function FavoritesScreen() {
 
   if (loading && products.length === 0) {
     return <FavoritesLoadingSkeleton />;
+  }
+
+  if (error && products.length === 0) {
+    return <ErrorState error={error} isRetrying={loading} onRetry={refetch} />;
   }
 
   return (

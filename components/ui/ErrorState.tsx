@@ -1,31 +1,30 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors, Spacing } from '@/constants/theme';
+import { Colors, FontSize, Radius, Spacing } from '@/constants/theme';
 
-interface CategoryErrorStateProps {
+interface Props {
   error: string;
+  title?: string;
   isRetrying?: boolean;
-  onRetry: () => void;
+  onRetry?: () => void;
 }
 
-export default function CategoryErrorState({
-  error,
-  isRetrying = false,
-  onRetry,
-}: CategoryErrorStateProps) {
+export default function ErrorState({ error, title = 'Ошибка загрузки', isRetrying = false, onRetry }: Props) {
   return (
     <View style={styles.container}>
       <Ionicons name="alert-circle-outline" size={64} color={Colors.light.error} />
-      <Text style={styles.title}>Ошибка загрузки</Text>
+      <Text style={styles.title}>{title}</Text>
       <Text style={styles.message}>{error}</Text>
-      <TouchableOpacity style={styles.button} onPress={onRetry}>
-        {isRetrying ? (
-          <ActivityIndicator color={Colors.light.white} />
-        ) : (
-          <Text style={styles.buttonText}>Повторить</Text>
-        )}
-      </TouchableOpacity>
+      {onRetry && (
+        <TouchableOpacity style={styles.button} onPress={onRetry} activeOpacity={0.8}>
+          {isRetrying ? (
+            <ActivityIndicator color={Colors.light.white} />
+          ) : (
+            <Text style={styles.buttonText}>Повторить</Text>
+          )}
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
@@ -36,17 +35,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     padding: Spacing.xl,
-    marginTop: 40,
   },
   title: {
-    fontSize: 20,
+    fontSize: FontSize.xl,
     fontWeight: '700',
     color: Colors.light.text,
     marginTop: Spacing.m,
     marginBottom: Spacing.s,
   },
   message: {
-    fontSize: 14,
+    fontSize: FontSize.m,
     color: Colors.light.textSecondary,
     textAlign: 'center',
     marginBottom: Spacing.l,
@@ -55,11 +53,13 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.light.primary,
     paddingHorizontal: Spacing.xl,
     paddingVertical: Spacing.m,
-    borderRadius: Spacing.l,
+    borderRadius: Radius.pill,
+    minWidth: 120,
+    alignItems: 'center',
   },
   buttonText: {
     color: Colors.light.white,
-    fontSize: 16,
+    fontSize: FontSize.m,
     fontWeight: '600',
   },
 });

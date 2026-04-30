@@ -2,6 +2,7 @@ import ScreenHeader from "@/components/ui/ScreenHeader";
 import StaffOrderCard from "@/components/staff/StaffOrderCard";
 import AdminOrdersSkeleton from "@/components/admin/AdminOrdersSkeleton";
 import AdminReplaceItemModal from "@/components/admin/AdminReplaceItemModal";
+import ErrorState from "@/components/ui/ErrorState";
 import { Colors, FontSize, Radius, Shadows, Spacing } from "@/constants/theme";
 import { AdminOrderWithDetails } from "@/lib/api/adminApi";
 import { useAdminOrders } from "@/hooks/useAdminOrders";
@@ -14,7 +15,7 @@ export default function OrdersScreen() {
   const { profile } = useAuth();
   const {
     orders, historyOrders, activeTab, setActiveTab,
-    loading, expandedOrders, replaceTarget, fetchOrders, fetchHistory,
+    loading, error, expandedOrders, replaceTarget, fetchOrders, fetchHistory,
     toggleExpand, callCustomer, showStatusOptions, showItemOptions,
     handleConfirmReplace, dismissReplaceTarget, showAssignOptions,
     handlePickerTakeOrder, handleCompleteAssembly, handleCourierStartDelivery, handleCompleteDelivery,
@@ -73,6 +74,7 @@ export default function OrdersScreen() {
   );
 
   if (loading) return <AdminOrdersSkeleton />;
+  if (error) return <ErrorState error={error} onRetry={fetchOrders} />;
 
   return (
     <SafeAreaView edges={["bottom"]} style={styles.container}>

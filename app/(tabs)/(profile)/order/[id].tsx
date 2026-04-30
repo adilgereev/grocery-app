@@ -4,7 +4,7 @@ import OrderStatusBanner from '@/components/order/OrderStatusBanner';
 import OrderTracker from '@/components/order/OrderTracker';
 import OrderDetailsHeader from '@/components/order/OrderDetailsHeader';
 import OrderDetailsLoadingState from '@/components/order/OrderDetailsLoadingState';
-import OrderDetailsErrorState from '@/components/order/OrderDetailsErrorState';
+import ErrorState from '@/components/ui/ErrorState';
 import OrderTotalCard from '@/components/order/OrderTotalCard';
 import OrderStatusHistory from '@/components/order/OrderStatusHistory';
 import { STATUS_CONFIG, PAYMENT_CONFIG, TRACKER_STEPS } from '@/components/order/orderConfig';
@@ -28,7 +28,7 @@ export default function OrderDetailsScreen() {
   }
 
   if (!order) {
-    return <OrderDetailsErrorState error={error} onRetry={fetchOrderDetails} />;
+    return <ErrorState error={error ?? 'Заказ не найден'} onRetry={fetchOrderDetails} />;
   }
 
   const status = order.status?.toLowerCase() || 'pending';

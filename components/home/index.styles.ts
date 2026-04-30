@@ -85,19 +85,6 @@ export const homeStyles = StyleSheet.create({
     width: Math.floor((SCREEN_WIDTH - Spacing.m * 2 - Spacing.s * 2) / 3),
   },
   storyTitleWatched: { color: Colors.light.textLight },
-  // Скелетон для загрузки сторис
-  storySkeletonCircle: {
-    width: Math.floor((SCREEN_WIDTH - Spacing.m * 2 - Spacing.s * 2) / 3),
-    height: Math.floor((SCREEN_WIDTH - Spacing.m * 2 - Spacing.s * 2) / 3 * 1.25),
-    borderRadius: Radius.xl,
-    backgroundColor: Colors.light.borderLight, marginBottom: Spacing.xs,
-  },
-  storySkeletonTitle: {
-    width: Math.floor((SCREEN_WIDTH - Spacing.m * 2 - Spacing.s * 2) / 3 * 0.7),
-    height: 8, borderRadius: Radius.s,
-    backgroundColor: Colors.light.borderLight,
-  },
-
   // Популярное
   popularSection: { marginBottom: Spacing.xl },
   emptyText: {
