@@ -7,7 +7,7 @@ import { useProductTags } from '@/hooks/useProductTags';
 import CategoryHeader from '@/components/category/CategoryHeader';
 import SubcategoriesSection from '@/components/category/SubcategoriesSection';
 import CategoryLoadingState from '@/components/category/CategoryLoadingState';
-import CategoryErrorState from '@/components/category/CategoryErrorState';
+import ErrorState from '@/components/ui/ErrorState';
 import CategoryEmptyState from '@/components/category/CategoryEmptyState';
 import CategoryProductsList from '@/components/category/CategoryProductsList';
 import { Colors } from '@/constants/theme';
@@ -50,9 +50,8 @@ export default function CategoryProductsScreen() {
       {loading ? (
         <CategoryLoadingState />
       ) : error ? (
-        <CategoryErrorState
+        <ErrorState
           error={error}
-          isRetrying={loading}
           onRetry={() => id && fetchProducts(id as string)}
         />
       ) : products.length === 0 ? (

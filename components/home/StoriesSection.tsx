@@ -1,11 +1,16 @@
 import React, { useCallback, useState } from 'react';
-import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { Dimensions, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Colors } from '@/constants/theme';
+import { Colors, Radius, Spacing } from '@/constants/theme';
 import { useStoriesStore } from '@/store/storiesStore';
+import Skeleton from '@/components/ui/Skeleton';
 import StoryViewer from './StoryViewer';
 import { homeStyles as s } from './index.styles';
+
+const SCREEN_WIDTH = Dimensions.get('window').width;
+const ITEM_W = Math.floor((SCREEN_WIDTH - Spacing.m * 2 - Spacing.s * 2) / 3);
+const IMG_H = Math.floor(ITEM_W * 1.25);
 
 export default function StoriesSection() {
   const { stories, isLoading, markAsViewed, isViewed } = useStoriesStore();
@@ -33,11 +38,11 @@ export default function StoriesSection() {
         testID="home-stories-scroll"
       >
         {isLoading && stories.length === 0
-          // Скелетон во время первой загрузки
           ? Array.from({ length: 4 }).map((_, i) => (
               <View key={i} style={s.storyItem}>
-                <View style={s.storySkeletonCircle} />
-                <View style={s.storySkeletonTitle} />
+                <Skeleton width={ITEM_W} height={IMG_H} borderRadius={Radius.xl}
+                          style={{ marginBottom: Spacing.xs }} />
+                <Skeleton width={ITEM_W * 0.7} height={8} borderRadius={Radius.s} />
               </View>
             ))
           : stories.map((story, i) => {

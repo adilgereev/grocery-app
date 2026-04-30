@@ -12,16 +12,14 @@ export function useCatalog() {
   const [allItems, setAllItems] = useState<CatalogItem[]>([]);
   const [categories, setCategoriesState] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState('');
   const [collapsedRoots, setCollapsedRoots] = useState<Set<string>>(new Set());
   const [collapsedSubs, setCollapsedSubs] = useState<Set<string>>(new Set());
 
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const [prods, cats] = await Promise.all([
         fetchAllProductsWithCategory(),
@@ -30,10 +28,14 @@ export function useCatalog() {
       setCategoriesState(cats);
       setAllItems(buildHierarchy(prods, cats));
     } catch {
-      // Ошибка загрузки
+      setError('Не удалось загрузить каталог');
     }
     setLoading(false);
-  };
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
   const filteredItems = useMemo((): CatalogItem[] => {
     if (!query.trim()) return allItems;
@@ -171,6 +173,8 @@ export function useCatalog() {
     allItems,
     categories,
     loading,
+    error,
+    refetch: fetchData,
     query,
     setQuery,
     collapsedRoots,

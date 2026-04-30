@@ -15,6 +15,7 @@ export function useFavorites() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const favoriteIds = useFavoriteStore(state => state.favoriteIds);
   const favoriteIdsRef = useRef(favoriteIds);
@@ -44,6 +45,7 @@ export function useFavorites() {
 
   const fetchFavoriteProducts = useCallback(async () => {
     const ids = favoriteIdsRef.current;
+    setError(null);
     if (ids.length === 0) {
       setProducts([]);
       setLoading(false);
@@ -54,8 +56,10 @@ export function useFavorites() {
     try {
       const data = await fetchFavoriteProductsByIds(ids);
       setProducts(data);
-    } catch (error) {
-      logger.error('Ошибка загрузки избранного:', error);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Ошибка загрузки избранного';
+      logger.error('Ошибка загрузки избранного:', err);
+      setError(msg);
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -73,5 +77,5 @@ export function useFavorites() {
     fetchFavoriteProducts();
   }, [fetchFavoriteProducts]);
 
-  return { products, loading, refreshing, recommended, onRefresh, cardRowHeight, getItemLayout };
+  return { products, loading, refreshing, error, recommended, onRefresh, refetch: fetchFavoriteProducts, cardRowHeight, getItemLayout };
 }

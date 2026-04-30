@@ -6,6 +6,7 @@ import ProductCard from '@/components/product/ProductCard';
 import SearchHeader from '@/components/search/SearchHeader';
 import SearchEmptyState from '@/components/search/SearchEmptyState';
 import SearchNoResults from '@/components/search/SearchNoResults';
+import SearchResultsSkeleton from '@/components/search/SearchResultsSkeleton';
 import { useSearch } from '@/hooks/useSearch';
 import { Colors, Spacing } from '@/constants/theme';
 
@@ -44,6 +45,8 @@ export default function SearchScreen() {
             onTagPress={handleTagPress}
             onProductPress={handleProductPress}
           />
+        ) : loading && !hasSearched ? (
+          <SearchResultsSkeleton />
         ) : hasSearched && results.length === 0 ? (
           <SearchNoResults
             error={error}

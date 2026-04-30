@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useMemo } from 'react';
-import { ActivityIndicator, FlatList, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { FlatList, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { useRouter } from 'expo-router';
 import { usePopularProductsStore } from '@/store/popularProductsStore';
 import { Product } from '@/types';
 import ProductCard from '@/components/product/ProductCard';
+import CartRecommendationsSkeleton from '@/components/cart/CartRecommendationsSkeleton';
 import { Colors, FontSize, Spacing } from '@/constants/theme';
 
 interface Props {
@@ -52,11 +53,7 @@ export default function CartRecommendations({ excludeIds }: Props) {
   );
 
   if (isLoading && products.length === 0) {
-    return (
-      <View style={styles.loaderContainer}>
-        <ActivityIndicator color={Colors.light.primary} />
-      </View>
-    );
+    return <CartRecommendationsSkeleton cardWidth={cardWidth} />;
   }
 
   if (recommended.length === 0) {
@@ -88,10 +85,6 @@ const styles = StyleSheet.create({
   container: {
     marginTop: Spacing.xl,
     paddingBottom: Spacing.xl,
-  },
-  loaderContainer: {
-    padding: Spacing.xl,
-    alignItems: 'center',
   },
   title: {
     fontSize: FontSize.xl,
