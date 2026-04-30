@@ -6,13 +6,13 @@ import 'react-native-reanimated';
 import { useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useColorScheme } from '@/hooks/ui/use-color-scheme';
 import AuthProvider, { useAuth } from '@/providers/AuthProvider';
 import { useAppStore } from '@/store/appStore';
 import { useAddressStore } from '@/store/addressStore';
 import { registerForPushNotificationsAsync } from '@/lib/services/NotificationService';
-import { useOrderStatusListener } from '@/hooks/useOrderStatusListener';
-import { useNetworkStatus } from '@/hooks/useNetworkStatus';
+import { useOrderStatusListener } from '@/hooks/domain/useOrderStatusListener';
+import { useNetworkStatus } from '@/hooks/ui/useNetworkStatus';
 import { ErrorBoundary } from '@/components/ui/ErrorBoundary';
 import { ToastContainer } from '@/components/ui/ToastContainer';
 import { NetworkBanner } from '@/components/ui/NetworkBanner';

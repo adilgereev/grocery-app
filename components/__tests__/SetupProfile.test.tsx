@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent, waitFor, act } from '@testing-library/react-native';
-import SetupProfileScreen from '@/app/setup-profile';
+import SetupProfileScreen from '@/app/(profile)/setup-profile';
 import { useAuth } from '@/providers/AuthProvider';
 import { supabase } from '@/lib/services/supabase';
 
@@ -123,3 +123,4 @@ describe('SetupProfileScreen', () => {
   });
 
 });
+

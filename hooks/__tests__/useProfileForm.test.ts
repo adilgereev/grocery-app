@@ -1,5 +1,5 @@
 import { renderHook, waitFor } from '@testing-library/react-native';
-import { useProfileForm } from '../useProfileForm';
+import { useProfileForm } from '../forms/useProfileForm';
 import { useAuth } from '@/providers/AuthProvider';
 import * as authApi from '@/lib/api/authApi';
 
@@ -133,3 +133,4 @@ describe('useProfileForm', () => {
     expect(result.current.phone).toBe('+79999999999');
   });
 });
+

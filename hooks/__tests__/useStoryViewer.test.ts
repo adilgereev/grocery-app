@@ -1,5 +1,5 @@
 import { act, renderHook } from '@testing-library/react-native';
-import { useStoryViewer } from '../useStoryViewer';
+import { useStoryViewer } from '../ui/useStoryViewer';
 import { Story } from '@/types';
 
 const makeStory = (id: string): Story => ({
@@ -169,3 +169,4 @@ describe('useStoryViewer', () => {
     expect(onClose).not.toHaveBeenCalled();
   });
 });
+

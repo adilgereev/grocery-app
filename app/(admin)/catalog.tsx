@@ -8,7 +8,7 @@ import { CatalogSectionHeader } from '@/components/admin/CatalogSectionHeader';
 import { CatalogSkeleton } from '@/components/admin/CatalogSkeleton';
 import { CatalogSearchBar } from '@/components/admin/CatalogSearchBar';
 import ErrorState from '@/components/ui/ErrorState';
-import { useCatalog } from '@/hooks/useCatalog';
+import { useCatalog } from '@/hooks/domain/useCatalog';
 import { CatalogItem } from '@/lib/utils/catalogHierarchy';
 
 export default function CatalogScreen() {

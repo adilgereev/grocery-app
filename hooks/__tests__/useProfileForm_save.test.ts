@@ -1,5 +1,5 @@
 import { act, renderHook, waitFor } from '@testing-library/react-native';
-import { useProfileForm } from '../useProfileForm';
+import { useProfileForm } from '../forms/useProfileForm';
 import { useAuth } from '@/providers/AuthProvider';
 import * as authApi from '@/lib/api/authApi';
 import { useRouter } from 'expo-router';
@@ -152,3 +152,4 @@ describe('useProfileForm - Save & Validation', () => {
     expect(result.current.onSave).toBeDefined();
   });
 });
+

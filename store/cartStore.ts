@@ -3,7 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { supabase } from '@/lib/services/supabase';
 import { useToastStore } from '@/store/toastStore';
-import { CartState, calculateTotals } from '@/store/cartUtils';
+import { CartState, calculateTotals } from '@/lib/utils/cartUtils';
 
 export const useCartStore = create<CartState>()(
   persist(

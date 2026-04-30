@@ -94,13 +94,13 @@ export function useCheckout() {
     }
   }, [session?.user, items, totalPrice, selectedAddress, discount, promoCode, clearCart, router]);
 
-  const handleSelectAddress = () => {
+  const handleSelectAddress = useCallback(() => {
     if (!session?.user) {
       router.push('/(auth)/login');
     } else {
       router.push('/addresses');
     }
-  };
+  }, [session?.user, router]);
 
   // Переход к экрану оформления заказа из корзины
   const navigateToCheckout = useCallback(() => {

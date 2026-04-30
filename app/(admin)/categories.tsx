@@ -8,7 +8,7 @@ import CategoryItem from '@/components/admin/CategoryItem';
 import CategoriesSkeleton from '@/components/admin/CategoriesSkeleton';
 import ScreenHeader from '@/components/ui/ScreenHeader';
 import { Colors, Spacing } from '@/constants/theme';
-import { useCategories } from '@/hooks/useCategories';
+import { useCategories } from '@/hooks/domain/useCategories';
 
 export default function CategoriesScreen() {
   const {

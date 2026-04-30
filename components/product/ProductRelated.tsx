@@ -4,7 +4,7 @@ import { Image } from 'expo-image';
 import { Colors, Radius, Spacing, Shadows } from '@/constants/theme';
 import { Product } from '@/types';
 import Skeleton from '@/components/ui/Skeleton';
-import { useImageKit } from '@/hooks/useImageKit';
+import { useImageKit } from '@/hooks/ui/useImageKit';
 
 /** Карточка одного рекомендуемого товара */
 const RelatedProductCard = ({ item, onPress }: { item: Product; onPress: () => void }) => {

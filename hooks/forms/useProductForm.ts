@@ -2,8 +2,8 @@ import { createProduct, fetchProductForEdit, updateProduct } from '@/lib/api/adm
 import { usePopularProductsStore } from '@/store/popularProductsStore';
 import { showAlert } from '@/lib/utils/platformUtils';
 import { productSchema, ProductFormData } from '@/lib/utils/schemas';
-import { useCategoryList } from '@/hooks/useCategoryList';
-import { useImagePicker } from '@/hooks/useImagePicker';
+import { useCategoryList } from '@/hooks/domain/useCategoryList';
+import { useImagePicker } from '@/hooks/ui/useImagePicker';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useRouter } from 'expo-router';
 import { useCallback, useEffect, useState } from 'react';

@@ -7,7 +7,7 @@ import { useCartStore } from '@/store/cartStore';
 import Animated, { FadeInDown } from 'react-native-reanimated';
 import { Colors, Spacing, Radius, Duration, Shadows } from '@/constants/theme';
 import { Product } from '@/types';
-import { useImageKit } from '@/hooks/useImageKit';
+import { useImageKit } from '@/hooks/ui/useImageKit';
 
 const AnimatedTouchable = Animated.createAnimatedComponent(TouchableOpacity);
 

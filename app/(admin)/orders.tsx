@@ -5,7 +5,7 @@ import AdminReplaceItemModal from "@/components/admin/AdminReplaceItemModal";
 import ErrorState from "@/components/ui/ErrorState";
 import { Colors, FontSize, Radius, Shadows, Spacing } from "@/constants/theme";
 import { AdminOrderWithDetails } from "@/lib/api/adminApi";
-import { useAdminOrders } from "@/hooks/useAdminOrders";
+import { useAdminOrders } from '@/hooks/admin/useAdminOrders';
 import { useAuth } from "@/providers/AuthProvider";
 import React, { useCallback } from "react";
 import { FlatList, StyleSheet, Text, TouchableOpacity, View } from "react-native";

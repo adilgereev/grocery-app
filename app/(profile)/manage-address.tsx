@@ -4,7 +4,7 @@ import { AddressActionButtons } from '@/components/address/AddressActionButtons'
 import { AddressDetailsSection } from '@/components/address/AddressDetailsSection';
 import { AddressMainSection } from '@/components/address/AddressMainSection';
 import { Colors, Radius, Spacing } from '@/constants/theme';
-import { useManageAddress } from '@/hooks/useManageAddress';
+import { useManageAddress } from '@/hooks/forms/useManageAddress';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Modal, StyleSheet, Text, TouchableOpacity, View } from 'react-native';

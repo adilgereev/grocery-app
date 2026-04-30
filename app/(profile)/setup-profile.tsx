@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableWithoutFeedback, Keyboard } from 'reac
 import { LinearGradient } from 'expo-linear-gradient';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Colors, Radius, Shadows, Spacing } from '@/constants/theme';
-import { useSetupProfileForm } from '@/hooks/useSetupProfileForm';
+import { useSetupProfileForm } from '@/hooks/forms/useSetupProfileForm';
 import SetupProfileHeader from '@/components/profile/SetupProfileHeader';
 import NameInputs from '@/components/profile/NameInputs';
 import SaveButton from '@/components/profile/SaveButton';

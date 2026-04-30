@@ -13,7 +13,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/constants/theme';
 import { Story } from '@/types';
 import { getOptimizedImage } from '@/lib/utils/imageKit';
-import { useStoryViewer } from '@/hooks/useStoryViewer';
+import { useStoryViewer } from '@/hooks/ui/useStoryViewer';
 import StoryProgressBars from './StoryProgressBars';
 import StoryBadge from './StoryBadge';
 import StoryTextContent from './StoryTextContent';

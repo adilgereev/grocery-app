@@ -7,7 +7,7 @@ import ErrorState from '@/components/ui/ErrorState';
 import ProductCard from '@/components/product/ProductCard';
 import FavoritesLoadingSkeleton from '@/components/profile/FavoritesLoadingSkeleton';
 import FavoritesEmptyState from '@/components/profile/FavoritesEmptyState';
-import { useFavorites } from '@/hooks/useFavorites';
+import { useFavorites } from '@/hooks/domain/useFavorites';
 import { Colors, Spacing } from '@/constants/theme';
 
 export default function FavoritesScreen() {

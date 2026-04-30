@@ -14,7 +14,7 @@ import {
 
 import { Colors } from '@/constants/theme';
 import { Category } from '@/types';
-import { useImagePicker } from '@/hooks/useImagePicker';
+import { useImagePicker } from '@/hooks/ui/useImagePicker';
 import { showAlert } from '@/lib/utils/platformUtils';
 import { slugify } from '@/lib/utils/slugify';
 

@@ -1,9 +1,9 @@
 import React, { useCallback, useEffect } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useCategoryData } from '@/hooks/useCategoryData';
-import { useCategoryProducts } from '@/hooks/useCategoryProducts';
-import { useProductTags } from '@/hooks/useProductTags';
+import { useCategoryData } from '@/hooks/domain/useCategoryData';
+import { useCategoryProducts } from '@/hooks/domain/useCategoryProducts';
+import { useProductTags } from '@/hooks/domain/useProductTags';
 import CategoryHeader from '@/components/category/CategoryHeader';
 import SubcategoriesSection from '@/components/category/SubcategoriesSection';
 import CategoryLoadingState from '@/components/category/CategoryLoadingState';

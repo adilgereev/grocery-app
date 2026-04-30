@@ -1,7 +1,7 @@
 import { act, renderHook } from '@testing-library/react-native';
 import { Alert } from 'react-native';
 import * as Haptics from 'expo-haptics';
-import { useCart } from '../useCart';
+import { useCart } from '../domain/useCart';
 import { useCartStore } from '@/store/cartStore';
 import { Product } from '@/types';
 
@@ -12,7 +12,7 @@ jest.mock('react-native-safe-area-context', () => ({
   useSafeAreaInsets: () => ({ top: 44, bottom: 0, left: 0, right: 0 }),
 }));
 
-jest.mock('@/hooks/useCheckout', () => ({
+jest.mock('@/hooks/domain/useCheckout', () => ({
   useCheckout: () => ({ navigateToCheckout: mockNavigateToCheckout }),
 }));
 
@@ -154,3 +154,4 @@ describe('useCart - Actions & Timers', () => {
     jest.restoreAllMocks();
   });
 });
+

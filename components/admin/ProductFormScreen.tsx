@@ -5,7 +5,7 @@ import ProductImageField from '@/components/admin/ProductImageField';
 import ProductNutrientsSection from '@/components/admin/ProductNutrientsSection';
 import { s } from '@/components/admin/ProductFormScreen.styles';
 import { Colors } from '@/constants/theme';
-import { useProductForm } from '@/hooks/useProductForm';
+import { useProductForm } from '@/hooks/forms/useProductForm';
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
 import { Controller } from 'react-hook-form';

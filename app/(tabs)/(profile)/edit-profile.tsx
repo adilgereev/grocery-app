@@ -4,7 +4,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ScreenHeader from '@/components/ui/ScreenHeader';
 import { Colors, Spacing } from '@/constants/theme';
-import { useProfileForm } from '@/hooks/useProfileForm';
+import { useProfileForm } from '@/hooks/forms/useProfileForm';
 import PhoneSection from '@/components/profile/PhoneSection';
 import NameInputs from '@/components/profile/NameInputs';
 import SaveButton from '@/components/profile/SaveButton';

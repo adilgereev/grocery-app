@@ -6,7 +6,7 @@ import * as Haptics from 'expo-haptics';
 import { Colors, Spacing, Radius, Duration, FontSize } from '@/constants/theme';
 import Animated, { FadeInLeft, FadeOutLeft, LinearTransition } from 'react-native-reanimated';
 import { Product } from '@/types';
-import { useImageKit } from '@/hooks/useImageKit';
+import { useImageKit } from '@/hooks/ui/useImageKit';
 
 interface CartItemProps {
   item: {

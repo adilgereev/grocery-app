@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text, StyleSheet, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useAddresses } from '@/hooks/useAddresses';
+import { useAddresses } from '@/hooks/domain/useAddresses';
 import { AddressCard } from '@/components/address/AddressCard';
 import { AddressEmptyState } from '@/components/address/AddressEmptyState';
 import { AddressFooter } from '@/components/address/AddressFooter';

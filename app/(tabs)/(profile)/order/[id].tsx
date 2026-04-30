@@ -10,7 +10,7 @@ import OrderStatusHistory from '@/components/order/OrderStatusHistory';
 import { STATUS_CONFIG, PAYMENT_CONFIG, TRACKER_STEPS } from '@/components/order/orderConfig';
 import { Colors, Spacing, Shadows, Radius } from '@/constants/theme';
 import { cleanAddress } from '@/lib/utils/addressUtils';
-import { useOrderDetails } from '@/hooks/useOrderDetails';
+import { useOrderDetails } from '@/hooks/domain/useOrderDetails';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';

@@ -1,4 +1,4 @@
-import { useCheckout } from '@/hooks/useCheckout';
+import { useCheckout } from '@/hooks/domain/useCheckout';
 import { useCartStore } from '@/store/cartStore';
 import { Product } from '@/types';
 import * as Haptics from 'expo-haptics';

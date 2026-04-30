@@ -19,7 +19,7 @@ import OrderReceipt from '@/components/cart/OrderReceipt';
 import PromoCodeInput from '@/components/cart/PromoCodeInput';
 
 import { Colors, FontSize, Radius, Shadows, Spacing } from '@/constants/theme';
-import { useCheckout } from '@/hooks/useCheckout';
+import { useCheckout } from '@/hooks/domain/useCheckout';
 import { useCartStore } from '@/store/cartStore';
 import { formatFullAddress } from '@/lib/utils/addressFormatter';
 import { Address, PaymentMethod } from '@/types';

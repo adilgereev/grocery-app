@@ -1,7 +1,7 @@
 import AdminMenuItem from '@/components/admin/AdminMenuItem';
 import ScreenHeader from '@/components/ui/ScreenHeader';
 import { Colors, Radius, Shadows, Spacing } from '@/constants/theme';
-import { useAdminDashboard } from '@/hooks/useAdminDashboard';
+import { useAdminDashboard } from '@/hooks/admin/useAdminDashboard';
 import { useAuth } from '@/providers/AuthProvider';
 import { useRouter } from 'expo-router';
 import React from 'react';

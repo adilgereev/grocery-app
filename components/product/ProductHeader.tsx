@@ -5,7 +5,7 @@ import { useRouter } from 'expo-router';
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View, useWindowDimensions } from 'react-native';
 import { Image } from 'expo-image';
-import { useImageKit } from '@/hooks/useImageKit';
+import { useImageKit } from '@/hooks/ui/useImageKit';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 interface ProductHeaderProps {
