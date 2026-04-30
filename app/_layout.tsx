@@ -44,8 +44,8 @@ function RootLayoutNav() {
     if (loading || !isReady || (session && profileLoading)) return;
 
     const inAuthGroup = segments[0] === '(auth)';
-    const inSetupProfile = segments[0] === 'setup-profile';
-    const inPrivacyPolicy = segments[0] === 'privacy-policy';
+    const inSetupProfile = segments[0] === '(profile)' && segments[1] === 'setup-profile';
+    const inPrivacyPolicy = segments[0] === '(legal)' && segments[1] === 'privacy-policy';
 
     if (session) {
       // Первый вход — нужно заполнить имя
@@ -73,14 +73,15 @@ function RootLayoutNav() {
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="(auth)" />
-          <Stack.Screen name="setup-profile" />
-          <Stack.Screen name="addresses" />
-          <Stack.Screen name="manage-address" />
-          <Stack.Screen name="checkout" />
+          <Stack.Screen name="(profile)/setup-profile" />
+          <Stack.Screen name="(profile)/addresses" />
+          <Stack.Screen name="(profile)/manage-address" />
+          <Stack.Screen name="(checkout)/checkout" />
           <Stack.Screen name="orders" />
-          <Stack.Screen name="order-success" />
-          <Stack.Screen name="privacy-policy" />
-          <Stack.Screen name="public-offer" />
+          <Stack.Screen name="(checkout)/order-success" />
+          <Stack.Screen name="(legal)/legal" />
+          <Stack.Screen name="(legal)/privacy-policy" />
+          <Stack.Screen name="(legal)/public-offer" />
         </Stack>
       </View>
       <StatusBar style="dark" />

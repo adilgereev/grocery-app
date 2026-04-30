@@ -9,15 +9,16 @@ import { logger } from '@/lib/utils/logger';
 // В Expo Go SDK 53 push-уведомления недоступны — нужен development build
 const IS_EXPO_GO = Constants.appOwnership === 'expo';
 
-// Настройка того, как уведомления будут отображаться, если приложение открыто
-Notifications.setNotificationHandler({
-  handleNotification: async () => ({
-    shouldPlaySound: true,
-    shouldSetBadge: false,
-    shouldShowBanner: true,
-    shouldShowList: true,
-  }),
-});
+if (!IS_EXPO_GO) {
+  Notifications.setNotificationHandler({
+    handleNotification: async () => ({
+      shouldPlaySound: true,
+      shouldSetBadge: false,
+      shouldShowBanner: true,
+      shouldShowList: true,
+    }),
+  });
+}
 
 const EXPO_PROJECT_ID = Constants.expoConfig?.extra?.eas?.projectId as string | undefined;
 

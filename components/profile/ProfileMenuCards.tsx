@@ -93,22 +93,11 @@ export default function ProfileMenuCards({ isAdmin, isStaff, onLogout, onNavigat
 
         <TouchableOpacity
           style={styles.menuItem}
-          onPress={() => onNavigate('/privacy-policy')}
-          testID="profile-menu-privacy"
+          onPress={() => onNavigate('/legal')}
+          testID="profile-menu-legal"
         >
           <Ionicons name="document-text-outline" size={22} color={Colors.light.textSecondary} style={styles.menuItemIcon} />
-          <Text style={styles.menuText}>Политика конфиденциальности</Text>
-          <Ionicons name="chevron-forward" size={18} color={Colors.light.border} />
-        </TouchableOpacity>
-        <View style={styles.divider} />
-
-        <TouchableOpacity
-          style={styles.menuItem}
-          onPress={() => onNavigate('/public-offer')}
-          testID="profile-menu-public-offer"
-        >
-          <Ionicons name="reader-outline" size={22} color={Colors.light.textSecondary} style={styles.menuItemIcon} />
-          <Text style={styles.menuText}>Публичная оферта</Text>
+          <Text style={styles.menuText}>Юридическая информация</Text>
           <Ionicons name="chevron-forward" size={18} color={Colors.light.border} />
         </TouchableOpacity>
         <View style={styles.divider} />
